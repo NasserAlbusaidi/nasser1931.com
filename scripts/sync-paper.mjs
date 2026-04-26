@@ -138,6 +138,35 @@ function stripV2DuplicateHead(markdown) {
 	return out;
 }
 
+// v2 uses standalone markdown images: ![Figure N. caption](/paper/figures/figXX.png)
+// These render as <p><img></p>, which the breakout CSS (figure { margin-left: 50% ... })
+// does not target — so figures stay column-width. Convert each standalone-paragraph
+// image into a <figure>/<figcaption> block so the breakout layout applies and the
+// caption renders alongside the image.
+const V2_FIGURE_RE = /^!\[Figure (\d+)\. ([\s\S]+?)\]\((\/paper\/figures\/fig[0-9_a-z]+\.png)\)\s*$/;
+
+function mdItalicsToEm(text) {
+	// *foo* -> <em>foo</em>, ignoring ** (bold) and unmatched single asterisks.
+	return text.replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, '<em>$1</em>');
+}
+
+function escapeAttr(text) {
+	return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/\*/g, '');
+}
+
+function convertMarkdownImagesToFigures(markdown) {
+	return markdown
+		.split(/\n\n+/)
+		.map((para) => {
+			const match = para.trim().match(V2_FIGURE_RE);
+			if (!match) return para;
+			const [, num, caption, src] = match;
+			const altText = `Figure ${num}. ${caption}`.replace(/\s+/g, ' ');
+			return `<figure>\n  <img src="${src}" alt="${escapeAttr(altText)}" loading="lazy" />\n  <figcaption><strong>Figure ${num}.</strong> ${mdItalicsToEm(caption)}</figcaption>\n</figure>`;
+		})
+		.join('\n\n');
+}
+
 // Rewrite relative figure paths to absolute /paper/figures/... so Astro/Vite
 // resolves them to public/ instead of trying to import them as modules.
 function absolutizeFigurePaths(markdown) {
@@ -154,7 +183,9 @@ async function syncV2() {
 		console.warn(`[sync-paper] study-v2.md not found at ${src} — skipping /paper sync`);
 		return false;
 	}
-	const body = stripV2DuplicateHead(absolutizeFigurePaths(await readFile(src, 'utf8')));
+	const body = convertMarkdownImagesToFigures(
+		stripV2DuplicateHead(absolutizeFigurePaths(await readFile(src, 'utf8'))),
+	);
 	const dest = join(PAGES_PAPER, 'index.md');
 	const updated = await writeIfChanged(dest, V2_FRONTMATTER + body);
 	console.log(`[sync-paper] study-v2.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
