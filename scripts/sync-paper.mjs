@@ -199,9 +199,9 @@ function absolutizeFigurePaths(markdown) {
 }
 
 async function syncV2() {
-	const src = join(SOURCE, 'study-v2.md');
+	const src = join(SOURCE, 'study-v3.md');
 	if (!existsSync(src)) {
-		console.warn(`[sync-paper] study-v2.md not found at ${src} — skipping /paper sync`);
+		console.warn(`[sync-paper] study-v3.md not found at ${src} — skipping /paper sync`);
 		return false;
 	}
 	const body = convertMarkdownImagesToFigures(
@@ -209,7 +209,7 @@ async function syncV2() {
 	);
 	const dest = join(PAGES_PAPER, 'index.md');
 	const updated = await writeIfChanged(dest, V2_FRONTMATTER + body);
-	console.log(`[sync-paper] study-v2.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
+	console.log(`[sync-paper] study-v3.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
 	return updated;
 }
 
