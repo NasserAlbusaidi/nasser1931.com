@@ -1,48 +1,115 @@
 ---
-import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
-<header>
+<header class="site-header">
 	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/paper">Paper</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+		<a href="/" class="brand" aria-label="nasser1931.com — home">
+			<span class="brand-text">nasser1931<span class="brand-dot">.</span>com</span>
+		</a>
+		<div class="links">
+			<HeaderLink href="/paper">paper</HeaderLink>
+			<HeaderLink href="/blog">blog</HeaderLink>
+			<HeaderLink href="/field">field</HeaderLink>
+			<HeaderLink href="/stupidshit">stupidshit</HeaderLink>
+			<HeaderLink href="/reading">reading</HeaderLink>
+			<HeaderLink href="/about">about</HeaderLink>
 		</div>
+		<ThemeToggle />
 	</nav>
 </header>
+
 <style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		backdrop-filter: saturate(140%) blur(8px);
+		-webkit-backdrop-filter: saturate(140%) blur(8px);
+		background: color-mix(in srgb, var(--bg) 82%, transparent);
+		border-bottom: 1px solid var(--rule);
 	}
 
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-	}
 	nav {
+		max-width: var(--container-wide);
+		margin: 0 auto;
+		padding: 0.85rem 1.25rem;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		gap: 1.25rem;
 	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
+
+	.brand {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 17px;
+		font-variation-settings: "opsz" 36;
+		letter-spacing: -0.01em;
+		color: var(--ink);
 		text-decoration: none;
+		transition: color 100ms ease-out;
 	}
-	nav a.active {
+
+	.brand:hover {
+		color: var(--ink);
+	}
+
+	.brand-text {
+		display: inline-block;
+	}
+
+	.brand-dot {
+		color: var(--accent);
+	}
+
+	.links {
+		display: flex;
+		gap: 0.25rem;
+		flex: 1;
+		flex-wrap: wrap;
+	}
+
+	.links :global(a) {
+		font-family: var(--font-ui);
+		font-size: 14px;
+		font-weight: 400;
+		color: var(--muted);
 		text-decoration: none;
-		border-bottom-color: var(--accent);
+		padding: 0.35rem 0.55rem;
+		border-radius: var(--radius-md);
+		transition: color 100ms ease-out, background-color 100ms ease-out;
+	}
+
+	.links :global(a:hover) {
+		color: var(--ink);
+		background: var(--surface);
+	}
+
+	.links :global(a.active) {
+		color: var(--ink);
+		font-weight: 500;
+	}
+
+	.links :global(a.active::before) {
+		content: "";
+		display: inline-block;
+		width: 4px;
+		height: 4px;
+		border-radius: var(--radius-full);
+		background: var(--accent);
+		margin-right: 0.4em;
+		vertical-align: 2px;
+	}
+
+	@media (max-width: 720px) {
+		nav {
+			gap: 0.5rem;
+			padding: 0.75rem 1rem;
+		}
+		.links :global(a) {
+			padding: 0.3rem 0.4rem;
+			font-size: 13px;
+		}
 	}
 </style>

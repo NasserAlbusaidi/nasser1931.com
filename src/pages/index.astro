@@ -9,115 +9,144 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 3em 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.intro {
-				margin-bottom: 3em;
-			}
-			.intro h1 {
-				margin: 0 0 0.4em 0;
-				font-size: 2.6rem;
-				line-height: 1.1;
-			}
-			.intro p {
-				font-size: 1.1rem;
-				line-height: 1.6;
-				color: rgb(var(--gray));
-				margin: 0.6em 0;
-			}
-			.feature-link {
-				display: block;
-				text-decoration: none;
-				color: inherit;
-			}
-			.feature {
-				border: 1px solid rgb(var(--gray-light));
-				border-radius: 12px;
-				padding: 1.6em 1.8em;
-				margin: 2em 0;
-				transition: box-shadow 0.2s ease;
-			}
-			.feature-link:hover .feature {
-				box-shadow: var(--box-shadow);
-			}
-			.feature .label {
-				font-size: 0.8rem;
-				text-transform: uppercase;
-				letter-spacing: 0.08em;
-				color: rgb(var(--accent));
-				font-weight: 600;
-				margin-bottom: 0.4em;
-			}
-			.feature h2 {
-				margin: 0 0 0.4em 0;
-				font-size: 1.5rem;
-				color: rgb(var(--black));
-				transition: color 0.15s ease;
-			}
-			.feature:hover h2 {
-				color: rgb(var(--accent));
-			}
-			.feature .subtitle {
-				color: rgb(var(--gray));
-				font-style: italic;
-				margin: 0 0 1em 0;
-				font-size: 0.95rem;
-			}
-			.feature p {
-				margin: 0.6em 0;
-				line-height: 1.6;
-			}
-			.feature .cta {
-				display: inline-block;
-				margin-top: 0.8em;
-				font-size: 0.95rem;
-				font-weight: 500;
-			}
-			.also {
-				margin-top: 3em;
-				padding-top: 2em;
-				border-top: 1px solid rgb(var(--gray-light));
-				color: rgb(var(--gray));
-			}
-			.also a {
-				color: rgb(var(--gray-dark));
-			}
-		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			<section class="intro">
-				<h1>Nasser Al Busaidi</h1>
-				<p>
-					Muscat-based. I measure things — myself, mostly — and write down what survived being checked. This is where the receipts live.
+			<section class="hero">
+				<h1 class="display">Nasser <span class="family">Al Busaidi</span></h1>
+				<p class="tagline">
+					<em>Engineer in Muscat. Triathlete on the side. Writes long things, occasionally retracts them on the page.</em>
+				</p>
+				<p class="meta">
+					<span>Muscat, Oman</span>
+					<span class="dot">·</span>
+					<span>currently: training-block volume + a paper retraction</span>
+					<span class="dot">·</span>
+					<span>last updated 2026-04-26</span>
 				</p>
 			</section>
 
-			<a href="/paper" class="feature-link">
-				<div class="feature">
-					<div class="label">Field report</div>
-					<h2>Becoming a Cyclist on Camera</h2>
-					<p class="subtitle">A four-year self-experiment, written for a reader.</p>
-					<p>
-						Four years of daily body composition, sleep, HRV, and cycling performance data, audited against a six-check guardrail. Three findings survived. Two were retracted on the page. The most-attached-to one fails Check 3 in the next ten pages.
-					</p>
-					<span class="cta">Read the paper →</span>
-				</div>
-			</a>
+			<section class="entries-block">
+				<h2 class="section-head">paper</h2>
+				<ul class="entries">
+					<li>
+						<time datetime="2026-04">2026-04</time>
+						<a href="/paper">Becoming a Cyclist on Camera</a>
+						<span class="summary">— four-year N=1 field report, with the retractions still in.</span>
+					</li>
+				</ul>
+			</section>
 
-			<div class="also">
-				<p>
-					More odds and ends in the <a href="/blog">blog</a>, or <a href="/about">about me</a>.
-				</p>
-			</div>
+			<section class="entries-block">
+				<h2 class="section-head">field</h2>
+				<ul class="entries placeholder">
+					<li>
+						<span class="muted-row">First field entries land soon — race results, training milestones, hinge moments.</span>
+					</li>
+				</ul>
+			</section>
+
+			<section class="entries-block">
+				<h2 class="section-head">stupidshit</h2>
+				<ul class="entries placeholder">
+					<li>
+						<span class="muted-row">A folder for one-off oddities and weird hacks that warrant a permanent URL.</span>
+					</li>
+				</ul>
+			</section>
+
+			<section class="entries-block">
+				<h2 class="section-head">blog</h2>
+				<ul class="entries placeholder">
+					<li>
+						<span class="muted-row">No essays here yet. The paper has eaten everything I'd otherwise be writing.</span>
+					</li>
+				</ul>
+			</section>
 		</main>
 		<Footer />
+
+		<style>
+			main {
+				max-width: var(--container-wide);
+				margin: 0 auto;
+				padding: 4rem 1.25rem 2rem;
+			}
+
+			.hero {
+				margin: 1rem 0 4rem;
+			}
+
+			.display {
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: clamp(56px, 8vw, 96px);
+				line-height: 0.95;
+				letter-spacing: -0.025em;
+				font-variation-settings: "opsz" 144;
+				margin: 0 0 0.5rem;
+			}
+
+			.family {
+				color: var(--accent);
+			}
+
+			.tagline {
+				font-family: var(--font-body);
+				font-size: 19px;
+				line-height: 1.55;
+				color: var(--ink);
+				max-width: 38ch;
+				margin: 0 0 1rem;
+			}
+
+			.tagline em {
+				font-style: italic;
+			}
+
+			.meta {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				line-height: 1.5;
+				color: var(--muted);
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5em;
+				margin: 0;
+			}
+
+			.meta .dot {
+				color: var(--rule);
+			}
+
+			.entries-block {
+				margin: 2.5rem 0;
+			}
+
+			.section-head {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--muted);
+				margin: 0 0 0.5rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid var(--rule);
+			}
+
+			.entries.placeholder li {
+				border-bottom: none;
+				padding: 0.5em 0;
+			}
+
+			.muted-row {
+				color: var(--muted);
+				font-size: 15px;
+				font-style: italic;
+			}
+		</style>
 	</body>
 </html>

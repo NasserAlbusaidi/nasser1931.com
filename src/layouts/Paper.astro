@@ -13,128 +13,261 @@ interface Props {
 const { title, description, subtitle, byline } = Astro.props;
 ---
 
+<!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-				font-size: 1.05rem;
-				line-height: 1.7;
-			}
-			.title {
-				margin-bottom: 2em;
-				padding: 2em 0 1em 0;
-				text-align: center;
-			}
-			.title h1 {
-				margin: 0 0 0.4em 0;
-				font-size: 2.4rem;
-				line-height: 1.15;
-			}
-			.subtitle {
-				font-size: 1.1rem;
-				color: rgb(var(--gray));
-				font-style: italic;
-				margin: 0 0 0.6em 0;
-			}
-			.byline {
-				color: rgb(var(--gray));
-				font-size: 0.95rem;
-			}
-			.prose :global(h2) {
-				margin-top: 2.4em;
-				margin-bottom: 0.8em;
-				font-size: 1.5rem;
-			}
-			.prose :global(h3) {
-				margin-top: 1.6em;
-				font-size: 1.15rem;
-			}
-			.prose :global(blockquote) {
-				border-left: 3px solid rgb(var(--accent));
-				padding: 0.5em 1em;
-				margin: 1.4em 0;
-				color: rgb(var(--gray));
-				background: rgba(var(--gray-light), 0.4);
-				font-style: italic;
-			}
-			.prose :global(figure) {
-				margin-top: 2.5em;
-				margin-bottom: 2.5em;
-				margin-left: 50%;
-				transform: translateX(-50%);
-				width: min(1100px, calc(100vw - 2em));
-			}
-			.prose :global(img) {
-				width: 100%;
-				height: auto;
-				border-radius: 8px;
-				box-shadow: var(--box-shadow);
-				display: block;
-			}
-			.prose :global(figcaption) {
-				margin-top: 0.9em;
-				font-size: 0.88rem;
-				line-height: 1.55;
-				color: rgb(var(--gray));
-				font-style: italic;
-				max-width: 720px;
-				margin-left: auto;
-				margin-right: auto;
-				text-align: left;
-			}
-			.prose :global(figcaption strong) {
-				color: rgb(var(--gray-dark));
-				font-style: normal;
-			}
-			.prose :global(hr) {
-				border: none;
-				border-top: 1px solid rgb(var(--gray-light));
-				margin: 3em 0;
-			}
-			.prose :global(code) {
-				background: rgba(var(--gray-light), 0.6);
-				padding: 0.15em 0.35em;
-				border-radius: 4px;
-				font-size: 0.9em;
-			}
-			.receipts {
-				margin-top: 4em;
-				padding: 1.5em;
-				background: rgba(var(--gray-light), 0.4);
-				border-radius: 8px;
-				font-size: 0.95rem;
-			}
-			.receipts h3 {
-				margin-top: 0;
-			}
-		</style>
 	</head>
 
 	<body>
 		<Header />
 		<main>
 			<article>
+				<header class="paper-head">
+					<p class="eyebrow">field report</p>
+					<h1 class="paper-title">{title}</h1>
+					{subtitle && <p class="paper-subtitle"><em>{subtitle}</em></p>}
+					{byline && <p class="paper-byline">{byline}</p>}
+				</header>
 				<div class="prose">
-					<div class="title">
-						<h1>{title}</h1>
-						{subtitle && <p class="subtitle">{subtitle}</p>}
-						{byline && <p class="byline">{byline}</p>}
-					</div>
 					<slot />
 				</div>
 			</article>
 		</main>
 		<Footer />
+
+		<style>
+			main {
+				margin: 0;
+				padding: 0;
+			}
+
+			article {
+				max-width: 100%;
+			}
+
+			.paper-head {
+				max-width: var(--container-prose);
+				margin: 0 auto;
+				padding: 5rem 1.25rem 3rem;
+			}
+
+			.eyebrow {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--muted);
+				margin: 0 0 1.5rem;
+			}
+
+			.paper-title {
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: clamp(40px, 5.5vw, 56px);
+				line-height: 1.05;
+				letter-spacing: -0.02em;
+				font-variation-settings: "opsz" 96;
+				color: var(--ink);
+				margin: 0 0 1rem;
+			}
+
+			.paper-subtitle {
+				font-family: var(--font-body);
+				font-size: 19px;
+				line-height: 1.5;
+				color: var(--muted);
+				margin: 0 0 1.25rem;
+			}
+
+			.paper-subtitle em {
+				font-style: italic;
+			}
+
+			.paper-byline {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				line-height: 1.5;
+				color: var(--muted);
+				margin: 0;
+			}
+
+			.prose {
+				max-width: var(--container-prose);
+				margin: 0 auto;
+				padding: 1rem 1.25rem 4rem;
+				color: var(--ink);
+				font-family: var(--font-body);
+				font-size: 17px;
+				line-height: 1.65;
+				font-feature-settings: "onum" 1;
+			}
+
+			.prose :global(p) {
+				margin: 0 0 1.1em;
+			}
+
+			.prose :global(h2) {
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: 32px;
+				line-height: 1.2;
+				letter-spacing: -0.01em;
+				font-variation-settings: "opsz" 48;
+				color: var(--ink);
+				margin: 2.4em 0 0.6em;
+			}
+
+			.prose :global(h3) {
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: 22px;
+				line-height: 1.3;
+				font-variation-settings: "opsz" 36;
+				color: var(--ink);
+				margin: 2em 0 0.5em;
+			}
+
+			.prose :global(em),
+			.prose :global(i) {
+				font-style: italic;
+			}
+
+			.prose :global(strong),
+			.prose :global(b) {
+				font-weight: 600;
+			}
+
+			.prose :global(blockquote) {
+				border-left: 2px solid var(--accent);
+				padding: 0 1.25em;
+				margin: 1.6em 0;
+				font-style: italic;
+				color: var(--muted);
+			}
+
+			.prose :global(blockquote p) {
+				margin: 0.5em 0;
+			}
+
+			.prose :global(a) {
+				color: var(--accent);
+				text-decoration: underline;
+				text-decoration-thickness: 1px;
+				text-underline-offset: 3px;
+			}
+
+			.prose :global(a:hover) {
+				text-decoration-thickness: 2px;
+			}
+
+			.prose :global(hr) {
+				border: 0;
+				border-top: 1px solid var(--rule);
+				margin: 3em 0;
+			}
+
+			.prose :global(code) {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 0.9em;
+				background: var(--accent-soft);
+				color: var(--accent);
+				padding: 0.1em 0.4em;
+				border-radius: var(--radius-md);
+			}
+
+			.prose :global(pre) {
+				font-family: var(--font-mono);
+				font-size: 14px;
+				line-height: 1.55;
+				background: var(--surface);
+				border: 1px solid var(--rule);
+				border-radius: var(--radius-md);
+				padding: 1em 1.2em;
+				overflow-x: auto;
+				margin: 1.5em 0;
+			}
+
+			.prose :global(pre code) {
+				background: transparent;
+				color: var(--ink);
+				padding: 0;
+				border-radius: 0;
+				font-size: 14px;
+			}
+
+			.prose :global(ul),
+			.prose :global(ol) {
+				padding-left: 1.5em;
+				margin: 1em 0;
+			}
+
+			.prose :global(li) {
+				margin: 0.4em 0;
+			}
+
+			/* Full-bleed figures break out of the prose column */
+			.prose :global(figure) {
+				margin: 2.5em auto;
+				margin-left: 50%;
+				transform: translateX(-50%);
+				width: min(var(--container-figure), calc(100vw - 2.5rem));
+			}
+
+			.prose :global(figure img) {
+				width: 100%;
+				height: auto;
+				display: block;
+				border-radius: var(--radius-lg);
+				border: 1px solid var(--rule);
+			}
+
+			.prose :global(figcaption) {
+				font-family: var(--font-body);
+				font-size: 14px;
+				line-height: 1.55;
+				color: var(--muted);
+				margin: 0.9em auto 0;
+				max-width: var(--container-prose);
+				padding: 0 0.5rem;
+				font-style: italic;
+			}
+
+			.prose :global(figcaption strong) {
+				color: var(--ink);
+				font-style: normal;
+				font-weight: 600;
+				margin-right: 0.25em;
+			}
+
+			/* Tables */
+			.prose :global(table) {
+				border-collapse: collapse;
+				width: 100%;
+				margin: 1.5em 0;
+				font-size: 15px;
+			}
+
+			.prose :global(th) {
+				font-family: var(--font-mono);
+				font-size: 12px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				color: var(--muted);
+				text-align: left;
+				padding: 0.6em 0.8em;
+				border-bottom: 1px solid var(--rule);
+			}
+
+			.prose :global(td) {
+				padding: 0.6em 0.8em;
+				border-bottom: 1px solid var(--rule);
+				vertical-align: top;
+			}
+		</style>
 	</body>
 </html>
