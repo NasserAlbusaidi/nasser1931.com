@@ -122,6 +122,22 @@ async function syncFigures(srcDir, destDir) {
 	return { total: pngs.length, copied };
 }
 
+// The Paper layout already renders title/subtitle/byline from frontmatter.
+// Source markdown re-prints them at the top — strip the duplicates so the
+// rendered page doesn't show the title twice.
+function stripLeadingH1(markdown) {
+	return markdown.replace(/^#\s+[^\n]+\n+/, '');
+}
+
+function stripV2DuplicateHead(markdown) {
+	// v2 starts with: # Title \n\n ### Subtitle \n\n *Byline* \n\n
+	// All three mirror the frontmatter exactly — strip them.
+	let out = stripLeadingH1(markdown);
+	out = out.replace(/^###\s+[^\n]+\n+/, '');
+	out = out.replace(/^\*[^\n*][^\n]*\*\n+/, '');
+	return out;
+}
+
 // Rewrite relative figure paths to absolute /paper/figures/... so Astro/Vite
 // resolves them to public/ instead of trying to import them as modules.
 function absolutizeFigurePaths(markdown) {
@@ -138,7 +154,7 @@ async function syncV2() {
 		console.warn(`[sync-paper] study-v2.md not found at ${src} — skipping /paper sync`);
 		return false;
 	}
-	const body = absolutizeFigurePaths(await readFile(src, 'utf8'));
+	const body = stripV2DuplicateHead(absolutizeFigurePaths(await readFile(src, 'utf8')));
 	const dest = join(PAGES_PAPER, 'index.md');
 	const updated = await writeIfChanged(dest, V2_FRONTMATTER + body);
 	console.log(`[sync-paper] study-v2.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
@@ -151,7 +167,7 @@ async function syncV1Page() {
 		console.warn(`[sync-paper] study-v1.md not found at ${src} — skipping /paper/v1 sync`);
 		return false;
 	}
-	const body = await readFile(src, 'utf8');
+	const body = stripLeadingH1(await readFile(src, 'utf8'));
 	const transformed = embedFigures(body);
 	const dest = join(PAGES_PAPER, 'v1.md');
 	const updated = await writeIfChanged(dest, V1_FRONTMATTER + transformed);
