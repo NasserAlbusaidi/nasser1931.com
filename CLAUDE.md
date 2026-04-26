@@ -24,11 +24,23 @@ The Firebase project ID is **`nasser-portfolio`**, not `nasser1931`. A 2026-04-2
 
 ```bash
 npm run dev                                          # local dev server, http://localhost:4321
+npm run dev:paper                                    # dev + chokidar watcher syncing v1/figures from ProjecrFurnance
+npm run sync-paper                                   # one-shot mirror of v1 + figures from ProjecrFurnance
 npm run build                                        # static output to dist/
-firebase deploy --only hosting --project nasser-portfolio  # ship
+firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
 
 A redeploy is the easiest way to invalidate Fastly's edge cache if the site appears stale on the custom domain.
+
+## Deployment workflow
+
+Repo: https://github.com/NasserAlbusaidi/nasser1931.com
+
+- **Push to `main`** → GitHub Actions runs `npm ci && npm run build` and deploys to Firebase Hosting live channel (`nasser1931.com`).
+- **Open a PR** → Action deploys to a Firebase preview channel and posts the URL as a PR comment. Channel auto-expires after 7 days.
+- Workflow files live in `.github/workflows/firebase-hosting-{merge,pull-request}.yml`. Secret: `FIREBASE_SERVICE_ACCOUNT_NASSER_PORTFOLIO`.
+
+For one-off manual deploys, the legacy command above still works — useful for cache-busting Fastly without a code change (`firebase deploy --only hosting --project nasser-portfolio`).
 
 ## Site structure
 
@@ -59,25 +71,20 @@ public/
 
 ## The paper
 
-**Source of truth lives elsewhere** — at `~/Desktop/Personal/ProjecrFurnance/paper/`:
-- `study-v2.md` is the readable layer published on the site.
-- `study-v1.md` is the canonical version with appendices, served raw at `/paper/study-v1.md`.
-- `figures/fig0[1-7]_*.png` are the 7 plot outputs.
+Sources of truth split across two places:
 
-To update the paper after edits in ProjecrFurnance:
+- **Published prose** — `src/pages/paper/index.md` is canonical. Edit it here. `npm run dev` gives instant HMR preview at http://localhost:4321/paper. This is the version that diverged from v2 as the prose was iterated; v2 in ProjecrFurnance is now an older draft.
+- **Receipts (`study-v1.md`) + figures** — still live in `~/Desktop/Personal/ProjecrFurnance/paper/` next to the analysis scripts. Mirrored into `public/paper/` by `npm run sync-paper`.
+
+Workflow:
 
 ```bash
-# 1. Sync v1 (raw download)
-cp ~/Desktop/Personal/ProjecrFurnance/paper/study-v1.md public/paper/study-v1.md
+npm run dev:paper        # astro dev + watcher; figure changes in ProjecrFurnance auto-sync and HMR-reload
+npm run sync-paper       # one-shot sync if you don't want the watcher
+PAPER_SOURCE=/some/other/path npm run sync-paper  # override the source dir
+```
 
-# 2. Sync figures
-cp ~/Desktop/Personal/ProjecrFurnance/paper/figures/*.png public/paper/figures/
-
-# 3. Sync v2 → src/pages/paper/index.md
-#    NOT a straight copy. The published version has:
-#    - Frontmatter (layout/title/subtitle/byline/description) replacing v2 lines 1-9
-#    - Figure refs rewritten: ![..](figures/X.png) → <figure><img src="/paper/figures/X.png" alt="Figure N." /><figcaption>...</figcaption></figure>
-#    - The §10 v1 references linked: [`study-v1.md`](/paper/study-v1.md)
+The synced files (`public/paper/study-v1.md`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if v1 or a figure changed in ProjecrFurnance.
 #    Easiest: hand-merge new content into the existing index.md, preserving the HTML <figure> blocks.
 ```
 
