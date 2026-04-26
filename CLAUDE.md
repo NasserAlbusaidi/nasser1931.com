@@ -2,6 +2,12 @@
 
 Personal site. Astro static build, deployed to Firebase Hosting. Centerpiece is the field-report paper at `/paper`; everything else is scaffolding.
 
+## Design System
+
+Always read **DESIGN.md** before making any visual or UI decision. All font choices, colors, spacing, type scale, layout widths, motion durations, category names, and component patterns are defined there. Do not deviate without explicit user approval. The system is named "Field Journal" — editorial-personal, cream-on-ink with rust accent, Fraunces / Source Serif 4 / Geist / Geist Mono. Anti-patterns (purple gradients, icon-in-circle grids, etc.) are listed explicitly.
+
+When QA-ing a UI change, flag any code that doesn't match DESIGN.md.
+
 ## Stack
 
 - **Framework:** Astro 6 (blog template, heavily customized).
