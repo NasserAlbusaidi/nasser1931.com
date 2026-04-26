@@ -55,44 +55,55 @@ src/
 ├── consts.ts                  ← SITE_TITLE, SITE_DESCRIPTION
 ├── pages/
 │   ├── index.astro            ← home page, features the paper
-│   ├── about.astro            ← (still template boilerplate)
-│   ├── paper/index.md         ← THE paper (renders /paper)
-│   ├── blog/                  ← Astro template index + dynamic post route
+│   ├── about.astro
+│   ├── paper/
+│   │   ├── index.md           ← /paper — readable cut (synced from study-v2.md)
+│   │   └── v1.md              ← /paper/v1 — receipts (synced from study-v1.md, figures auto-embedded)
+│   ├── field/                 ← /field index + dynamic [...slug] route
+│   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
+│   ├── reading/               ← /reading stub
+│   ├── blog/                  ← blog index + dynamic [...slug] route
 │   └── rss.xml.js
-├── content/blog/              ← markdown blog posts (template demos still here)
+├── content/
+│   ├── blog/                  ← markdown blog posts (empty — template demos removed)
+│   ├── field/                 ← /field entries
+│   └── stupidshit/            ← /stupidshit entries
 ├── layouts/
-│   ├── BlogPost.astro         ← stock template layout for blog posts
-│   └── Paper.astro            ← custom long-form layout for /paper
+│   ├── BlogPost.astro
+│   ├── Entry.astro            ← shared layout for /field + /stupidshit entries
+│   └── Paper.astro            ← long-form layout for /paper + /paper/v1
 ├── components/
-│   ├── Header.astro           ← nav: Home / Paper / Blog / About
+│   ├── Header.astro           ← nav: paper / blog / field / stupidshit / reading / about + theme toggle
 │   ├── Footer.astro
 │   ├── BaseHead.astro
 │   ├── HeaderLink.astro
+│   ├── ThemeToggle.astro      ← light/dark toggle (FOUC-safe boot in BaseHead)
 │   └── FormattedDate.astro
 public/
 └── paper/
-    ├── study-v1.md            ← canonical v1 (raw download, served as-is)
-    └── figures/               ← 7 PNG figures referenced from paper/index.md
+    ├── study-v1.md            ← raw v1 download (synced from ProjecrFurnance, served as-is)
+    └── figures/               ← 8 PNG figures
 ```
 
 ## The paper
 
-Sources of truth split across two places:
+Two-layer paper, both rendered on the site:
 
-- **Published prose** — `src/pages/paper/index.md` is canonical. Edit it here. `npm run dev` gives instant HMR preview at http://localhost:4321/paper. This is the version that diverged from v2 as the prose was iterated; v2 in ProjecrFurnance is now an older draft.
-- **Receipts (`study-v1.md`) + figures** — still live in `~/Desktop/Personal/ProjecrFurnance/paper/` next to the analysis scripts. Mirrored into `public/paper/` by `npm run sync-paper`.
+- **`/paper`** — readable cut. Source: `~/Desktop/Personal/ProjecrFurnance/paper/study-v2.md`. `npm run sync-paper` mirrors it into `src/pages/paper/index.md` (with frontmatter prepended; relative figure paths rewritten to absolute `/paper/figures/...`).
+- **`/paper/v1`** — data-doc / receipts. Source: `~/Desktop/Personal/ProjecrFurnance/paper/study-v1.md`. Same sync; mirrored into `src/pages/paper/v1.md` with the figure-embedding pass — every `**Figure N** (\`paper/figures/figXX.png\`)` reference gets a real `<figure>` block injected after the paragraph it appears in.
+- **Raw download** — `public/paper/study-v1.md` is the unaltered v1 file (still served at https://nasser1931.com/paper/study-v1.md for anyone who wants the exact source).
+
+Source of truth lives in ProjecrFurnance. **Edit prose in `~/Desktop/Personal/ProjecrFurnance/paper/study-v{1,2}.md`, then run `npm run sync-paper` from this repo to publish.** The `src/pages/paper/{index,v1}.md` files are generated artifacts — don't hand-edit them; the next sync will overwrite. Frontmatter for both is hard-coded in `scripts/sync-paper.mjs` (title, subtitle, byline, eyebrow, companion link).
 
 Workflow:
 
 ```bash
 npm run dev:paper        # astro dev + watcher; figure changes in ProjecrFurnance auto-sync and HMR-reload
-npm run sync-paper       # one-shot sync if you don't want the watcher
+npm run sync-paper       # one-shot sync of v1 + v2 + figures
 PAPER_SOURCE=/some/other/path npm run sync-paper  # override the source dir
 ```
 
-The synced files (`public/paper/study-v1.md`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if v1 or a figure changed in ProjecrFurnance.
-#    Easiest: hand-merge new content into the existing index.md, preserving the HTML <figure> blocks.
-```
+The synced files (`src/pages/paper/index.md`, `src/pages/paper/v1.md`, `public/paper/study-v1.md`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if v1 or v2 prose or a figure changed in ProjecrFurnance.
 
 The figure-numbering quirk from `ProjecrFurnance/paper/CLAUDE.md` carries over: filenames are in v1 build-artifact order, displayed in v2 reading order. e.g., **Figure 3** in the rendered paper is `fig06_strength_regression.png`. Don't rename the files.
 

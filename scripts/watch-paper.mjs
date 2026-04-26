@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Watch the ProjecrFurnance paper source for v1 and figure changes,
+// Watch the ProjecrFurnance paper source for v1, v2, and figure changes,
 // re-run sync-paper on debounce. Pair with `astro dev` via npm run dev:paper.
 
 import { spawn } from 'node:child_process';
@@ -46,7 +46,7 @@ function runSync() {
 }
 
 const watcher = chokidar.watch(
-  [join(SOURCE, 'study-v1.md'), join(SOURCE, 'figures')],
+  [join(SOURCE, 'study-v1.md'), join(SOURCE, 'study-v2.md'), join(SOURCE, 'figures')],
   {
     ignoreInitial: true,
     awaitWriteFinish: { stabilityThreshold: 250, pollInterval: 50 },

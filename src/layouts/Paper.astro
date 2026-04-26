@@ -3,14 +3,30 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 
-interface Props {
+interface Frontmatter {
 	title: string;
 	description: string;
 	subtitle?: string;
 	byline?: string;
+	eyebrow?: string;
+	companion?: { href: string; label: string };
 }
 
-const { title, description, subtitle, byline } = Astro.props;
+interface Props extends Frontmatter {
+	frontmatter?: Frontmatter;
+}
+
+// Astro markdown layouts receive frontmatter under `Astro.props.frontmatter`.
+// Direct .astro callers can pass these fields as top-level props instead.
+const fm: Frontmatter = (Astro.props.frontmatter as Frontmatter) ?? (Astro.props as Frontmatter);
+const {
+	title,
+	description,
+	subtitle,
+	byline,
+	eyebrow = 'field report',
+	companion,
+} = fm;
 ---
 
 <!doctype html>
@@ -24,10 +40,15 @@ const { title, description, subtitle, byline } = Astro.props;
 		<main>
 			<article>
 				<header class="paper-head">
-					<p class="eyebrow">field report</p>
+					<p class="eyebrow">{eyebrow}</p>
 					<h1 class="paper-title">{title}</h1>
 					{subtitle && <p class="paper-subtitle"><em>{subtitle}</em></p>}
 					{byline && <p class="paper-byline">{byline}</p>}
+					{companion && (
+						<p class="paper-companion">
+							<a href={companion.href}>{companion.label}</a>
+						</p>
+					)}
 				</header>
 				<div class="prose">
 					<slot />
@@ -92,6 +113,22 @@ const { title, description, subtitle, byline } = Astro.props;
 				line-height: 1.5;
 				color: var(--muted);
 				margin: 0;
+			}
+
+			.paper-companion {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				line-height: 1.5;
+				color: var(--muted);
+				margin: 1.25rem 0 0;
+			}
+
+			.paper-companion a {
+				color: var(--accent);
+				text-decoration: underline;
+				text-decoration-thickness: 1px;
+				text-underline-offset: 3px;
 			}
 
 			.prose {
@@ -209,20 +246,38 @@ const { title, description, subtitle, byline } = Astro.props;
 				margin: 0.4em 0;
 			}
 
-			/* Full-bleed figures break out of the prose column */
+			/* Figures sit on the page like print — no card framing.
+			   Wider than prose, narrower than the screen. Hairline above
+			   and below ties them into the typography rhythm. */
 			.prose :global(figure) {
-				margin: 2.5em auto;
+				margin: 3em auto;
 				margin-left: 50%;
 				transform: translateX(-50%);
 				width: min(var(--container-figure), calc(100vw - 2.5rem));
+				padding: 1.5em 0 0;
+				border-top: 1px solid var(--rule);
 			}
 
 			.prose :global(figure img) {
 				width: 100%;
 				height: auto;
 				display: block;
-				border-radius: var(--radius-lg);
-				border: 1px solid var(--rule);
+				border: 0;
+				border-radius: 0;
+				/* Mix-blend keeps PNG whites from sitting as a bright slab on
+				   cream paper, without darkening colored data lines. */
+				background: transparent;
+			}
+
+			/* Optional darker-paper dim in dark mode — keeps figures from
+			   glowing against the dark background. */
+			:global(html.dark) .prose :global(figure img) {
+				opacity: 0.92;
+				transition: opacity 150ms ease-out;
+			}
+
+			:global(html.dark) .prose :global(figure img:hover) {
+				opacity: 1;
 			}
 
 			.prose :global(figcaption) {
@@ -230,9 +285,10 @@ const { title, description, subtitle, byline } = Astro.props;
 				font-size: 14px;
 				line-height: 1.55;
 				color: var(--muted);
-				margin: 0.9em auto 0;
+				margin: 1em auto 0;
 				max-width: var(--container-prose);
-				padding: 0 0.5rem;
+				padding: 1em 0.5rem 0;
+				border-top: 1px solid var(--rule);
 				font-style: italic;
 			}
 
