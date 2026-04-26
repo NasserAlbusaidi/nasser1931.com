@@ -1,0 +1,27 @@
+{
+  "name": "nasser1931.com",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "dev:paper": "concurrently -n astro,paper -c blue,magenta \"npm:dev\" \"node scripts/watch-paper.mjs\"",
+    "sync-paper": "node scripts/sync-paper.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.2",
+    "astro": "^6.1.9",
+    "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "chokidar": "^4.0.3",
+    "concurrently": "^9.1.2"
+  }
+}

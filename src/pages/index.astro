@@ -1,0 +1,123 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 3em 1em;
+				color: rgb(var(--gray-dark));
+			}
+			.intro {
+				margin-bottom: 3em;
+			}
+			.intro h1 {
+				margin: 0 0 0.4em 0;
+				font-size: 2.6rem;
+				line-height: 1.1;
+			}
+			.intro p {
+				font-size: 1.1rem;
+				line-height: 1.6;
+				color: rgb(var(--gray));
+				margin: 0.6em 0;
+			}
+			.feature-link {
+				display: block;
+				text-decoration: none;
+				color: inherit;
+			}
+			.feature {
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 12px;
+				padding: 1.6em 1.8em;
+				margin: 2em 0;
+				transition: box-shadow 0.2s ease;
+			}
+			.feature-link:hover .feature {
+				box-shadow: var(--box-shadow);
+			}
+			.feature .label {
+				font-size: 0.8rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: rgb(var(--accent));
+				font-weight: 600;
+				margin-bottom: 0.4em;
+			}
+			.feature h2 {
+				margin: 0 0 0.4em 0;
+				font-size: 1.5rem;
+				color: rgb(var(--black));
+				transition: color 0.15s ease;
+			}
+			.feature:hover h2 {
+				color: rgb(var(--accent));
+			}
+			.feature .subtitle {
+				color: rgb(var(--gray));
+				font-style: italic;
+				margin: 0 0 1em 0;
+				font-size: 0.95rem;
+			}
+			.feature p {
+				margin: 0.6em 0;
+				line-height: 1.6;
+			}
+			.feature .cta {
+				display: inline-block;
+				margin-top: 0.8em;
+				font-size: 0.95rem;
+				font-weight: 500;
+			}
+			.also {
+				margin-top: 3em;
+				padding-top: 2em;
+				border-top: 1px solid rgb(var(--gray-light));
+				color: rgb(var(--gray));
+			}
+			.also a {
+				color: rgb(var(--gray-dark));
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="intro">
+				<h1>Nasser Al Busaidi</h1>
+				<p>
+					Muscat-based. I measure things — myself, mostly — and write down what survived being checked. This is where the receipts live.
+				</p>
+			</section>
+
+			<a href="/paper" class="feature-link">
+				<div class="feature">
+					<div class="label">Field report</div>
+					<h2>Becoming a Cyclist on Camera</h2>
+					<p class="subtitle">A four-year self-experiment, written for a reader.</p>
+					<p>
+						Four years of daily body composition, sleep, HRV, and cycling performance data, audited against a six-check guardrail. Three findings survived. Two were retracted on the page. The most-attached-to one fails Check 3 in the next ten pages.
+					</p>
+					<span class="cta">Read the paper →</span>
+				</div>
+			</a>
+
+			<div class="also">
+				<p>
+					More odds and ends in the <a href="/blog">blog</a>, or <a href="/about">about me</a>.
+				</p>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

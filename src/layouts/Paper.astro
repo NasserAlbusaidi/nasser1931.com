@@ -1,0 +1,140 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	subtitle?: string;
+	byline?: string;
+}
+
+const { title, description, subtitle, byline } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				width: calc(100% - 2em);
+				max-width: 100%;
+				margin: 0;
+			}
+			.prose {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+				color: rgb(var(--gray-dark));
+				font-size: 1.05rem;
+				line-height: 1.7;
+			}
+			.title {
+				margin-bottom: 2em;
+				padding: 2em 0 1em 0;
+				text-align: center;
+			}
+			.title h1 {
+				margin: 0 0 0.4em 0;
+				font-size: 2.4rem;
+				line-height: 1.15;
+			}
+			.subtitle {
+				font-size: 1.1rem;
+				color: rgb(var(--gray));
+				font-style: italic;
+				margin: 0 0 0.6em 0;
+			}
+			.byline {
+				color: rgb(var(--gray));
+				font-size: 0.95rem;
+			}
+			.prose :global(h2) {
+				margin-top: 2.4em;
+				margin-bottom: 0.8em;
+				font-size: 1.5rem;
+			}
+			.prose :global(h3) {
+				margin-top: 1.6em;
+				font-size: 1.15rem;
+			}
+			.prose :global(blockquote) {
+				border-left: 3px solid rgb(var(--accent));
+				padding: 0.5em 1em;
+				margin: 1.4em 0;
+				color: rgb(var(--gray));
+				background: rgba(var(--gray-light), 0.4);
+				font-style: italic;
+			}
+			.prose :global(figure) {
+				margin-top: 2.5em;
+				margin-bottom: 2.5em;
+				margin-left: 50%;
+				transform: translateX(-50%);
+				width: min(1100px, calc(100vw - 2em));
+			}
+			.prose :global(img) {
+				width: 100%;
+				height: auto;
+				border-radius: 8px;
+				box-shadow: var(--box-shadow);
+				display: block;
+			}
+			.prose :global(figcaption) {
+				margin-top: 0.9em;
+				font-size: 0.88rem;
+				line-height: 1.55;
+				color: rgb(var(--gray));
+				font-style: italic;
+				max-width: 720px;
+				margin-left: auto;
+				margin-right: auto;
+				text-align: left;
+			}
+			.prose :global(figcaption strong) {
+				color: rgb(var(--gray-dark));
+				font-style: normal;
+			}
+			.prose :global(hr) {
+				border: none;
+				border-top: 1px solid rgb(var(--gray-light));
+				margin: 3em 0;
+			}
+			.prose :global(code) {
+				background: rgba(var(--gray-light), 0.6);
+				padding: 0.15em 0.35em;
+				border-radius: 4px;
+				font-size: 0.9em;
+			}
+			.receipts {
+				margin-top: 4em;
+				padding: 1.5em;
+				background: rgba(var(--gray-light), 0.4);
+				border-radius: 8px;
+				font-size: 0.95rem;
+			}
+			.receipts h3 {
+				margin-top: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<div class="prose">
+					<div class="title">
+						<h1>{title}</h1>
+						{subtitle && <p class="subtitle">{subtitle}</p>}
+						{byline && <p class="byline">{byline}</p>}
+					</div>
+					<slot />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
