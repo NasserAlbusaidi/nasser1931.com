@@ -73,6 +73,21 @@ const {
 				padding: 5rem 1.25rem 3rem;
 			}
 
+			@media (max-width: 720px) {
+				.paper-head {
+					padding: 2.5rem 1.25rem 2rem;
+				}
+				.eyebrow {
+					margin-bottom: 1rem;
+				}
+				.paper-title {
+					font-size: clamp(32px, 8vw, 40px);
+				}
+				.paper-subtitle {
+					font-size: 17px;
+				}
+			}
+
 			.eyebrow {
 				font-family: var(--font-mono);
 				font-size: 11px;
@@ -323,6 +338,46 @@ const {
 				padding: 0.6em 0.8em;
 				border-bottom: 1px solid var(--rule);
 				vertical-align: top;
+			}
+
+			@media (max-width: 720px) {
+				.prose {
+					font-size: 16px;
+					padding: 0.5rem 1.25rem 3rem;
+				}
+				.prose :global(h2) {
+					font-size: 26px;
+					margin-top: 2em;
+				}
+				.prose :global(h3) {
+					font-size: 19px;
+				}
+				.prose :global(figure) {
+					margin: 2em auto;
+					margin-left: 50%;
+					transform: translateX(-50%);
+					width: calc(100vw - 2rem);
+					padding-top: 1em;
+				}
+				.prose :global(figcaption) {
+					font-size: 13px;
+					padding: 0.85em 0.25rem 0;
+				}
+				.prose :global(pre) {
+					font-size: 13px;
+					padding: 0.85em 1em;
+					/* Allow horizontal scroll without trapping the page scroll */
+					margin-left: -1.25rem;
+					margin-right: -1.25rem;
+					border-radius: 0;
+					border-left: 0;
+					border-right: 0;
+				}
+				.prose :global(table) {
+					display: block;
+					overflow-x: auto;
+					-webkit-overflow-scrolling: touch;
+				}
 			}
 		</style>
 	</body>
