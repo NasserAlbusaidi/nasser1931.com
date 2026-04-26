@@ -33,23 +33,22 @@ subtitle: "Field report from a four-year self-experiment, written for a reader."
 byline: "Nasser Al Busaidi — Muscat, Oman — drafted April 2026"
 description: "Four years of daily body composition, sleep, HRV, and cycling performance data, audited against a six-check guardrail. Three findings survived. Two were retracted on the page."
 eyebrow: "field report"
-companion:
-  href: "/paper/v1"
-  label: "see the receipts → /paper/v1"
+ogType: "article"
+image: "/paper/figures/fig01_longitudinal_multipanel.png"
 ---
 
 `;
 
 const V1_FRONTMATTER = `---
 layout: ../../layouts/Paper.astro
-title: "Becoming a Cyclist on Camera — v1"
+title: "Becoming a Cyclist on Camera — data-doc"
 subtitle: "Data-doc: receipts, appendices, retracted findings, and the audits that caught them."
 byline: "Nasser Al Busaidi — Muscat, Oman — drafted April 2026"
 description: "Full receipts version of the field report. Per-section reproduction scripts, data dictionary, retracted findings, and the audits that caught them."
 eyebrow: "data-doc / receipts"
-companion:
-  href: "/paper"
-  label: "← back to the readable cut"
+ogType: "article"
+image: "/paper/figures/fig01_longitudinal_multipanel.png"
+share: false
 ---
 
 `;
@@ -167,6 +166,28 @@ function convertMarkdownImagesToFigures(markdown) {
 		.join('\n\n');
 }
 
+// Replace `protocol.json` (the internal phase-config filename) with a more
+// readable term for the published paper. Order matters: more specific patterns
+// run first so they don't get clobbered by the catch-all replacement.
+function renameProtocolJson(markdown) {
+	return markdown
+		.replace(/`protocol\.json\.phases`/g, 'the phase manifest')
+		.replace(/`protocol\.json` phase boundaries/g, 'the phase manifest')
+		.replace(/`protocol\.json`/g, 'the phase manifest')
+		.replace(/\bprotocol\.json\b/g, 'phase manifest');
+}
+
+// Rewrite the internal source-file names (`study-v1.md`, `study-v2.md`) to the
+// reader-facing labels. The on-disk artifacts get a clean public name without
+// the .md extension as well — see syncV1Raw().
+function renameSourceFiles(markdown) {
+	return markdown
+		.replace(/`study-v1\.md`/g, 'the data-doc')
+		.replace(/`study-v2\.md`/g, 'the field report')
+		.replace(/\bstudy-v1\.md\b/g, 'the data-doc')
+		.replace(/\bstudy-v2\.md\b/g, 'the field report');
+}
+
 // Rewrite relative figure paths to absolute /paper/figures/... so Astro/Vite
 // resolves them to public/ instead of trying to import them as modules.
 function absolutizeFigurePaths(markdown) {
@@ -184,7 +205,7 @@ async function syncV2() {
 		return false;
 	}
 	const body = convertMarkdownImagesToFigures(
-		stripV2DuplicateHead(absolutizeFigurePaths(await readFile(src, 'utf8'))),
+		stripV2DuplicateHead(renameSourceFiles(renameProtocolJson(absolutizeFigurePaths(await readFile(src, 'utf8'))))),
 	);
 	const dest = join(PAGES_PAPER, 'index.md');
 	const updated = await writeIfChanged(dest, V2_FRONTMATTER + body);
@@ -198,7 +219,7 @@ async function syncV1Page() {
 		console.warn(`[sync-paper] study-v1.md not found at ${src} — skipping /paper/v1 sync`);
 		return false;
 	}
-	const body = stripLeadingH1(await readFile(src, 'utf8'));
+	const body = stripLeadingH1(renameSourceFiles(renameProtocolJson(absolutizeFigurePaths(await readFile(src, 'utf8')))));
 	const transformed = embedFigures(body);
 	const dest = join(PAGES_PAPER, 'v1.md');
 	const updated = await writeIfChanged(dest, V1_FRONTMATTER + transformed);
@@ -207,11 +228,12 @@ async function syncV1Page() {
 }
 
 async function syncV1Raw() {
-	const updated = await copyIfChanged(
-		join(SOURCE, 'study-v1.md'),
-		join(PUBLIC_PAPER, 'study-v1.md'),
-	);
-	console.log(`[sync-paper] study-v1.md -> public/paper/study-v1.md: ${updated ? 'updated' : 'unchanged'}`);
+	const src = join(SOURCE, 'study-v1.md');
+	if (!existsSync(src)) return false;
+	const body = renameSourceFiles(renameProtocolJson(await readFile(src, 'utf8')));
+	const dest = join(PUBLIC_PAPER, 'data-doc');
+	const updated = await writeIfChanged(dest, body);
+	console.log(`[sync-paper] study-v1.md -> public/paper/data-doc: ${updated ? 'updated' : 'unchanged'}`);
 	return updated;
 }
 

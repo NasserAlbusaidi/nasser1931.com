@@ -10,6 +10,9 @@ interface Frontmatter {
 	byline?: string;
 	eyebrow?: string;
 	companion?: { href: string; label: string };
+	image?: string;
+	ogType?: 'website' | 'article';
+	share?: boolean;
 }
 
 interface Props extends Frontmatter {
@@ -26,13 +29,18 @@ const {
 	byline,
 	eyebrow = 'field report',
 	companion,
+	image,
+	ogType = 'article',
+	share = true,
 } = fm;
+
+const ogImage = image ? { src: image } : undefined;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} image={ogImage} ogType={ogType} />
 	</head>
 
 	<body>
@@ -53,9 +61,51 @@ const {
 				<div class="prose">
 					<slot />
 				</div>
+				{share && (
+					<aside class="paper-share" data-share>
+						<p class="share-eyebrow">Share</p>
+						<button type="button" class="share-button" data-share-trigger>
+							<span class="share-label">Share this report</span>
+						</button>
+						<p class="share-status" data-share-status aria-live="polite"></p>
+					</aside>
+				)}
 			</article>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			(function () {
+				const root = document.querySelector('[data-share]');
+				if (!root) return;
+				const btn = root.querySelector('[data-share-trigger]');
+				const status = root.querySelector('[data-share-status]');
+				if (!btn) return;
+				btn.addEventListener('click', async function () {
+					const url = window.location.href;
+					const title = document.title;
+					const descMeta = document.querySelector('meta[name="description"]');
+					const text = descMeta ? descMeta.getAttribute('content') || '' : '';
+					if (navigator.share) {
+						try {
+							await navigator.share({ title: title, text: text, url: url });
+						} catch (_) {
+							/* user cancelled — silent */
+						}
+						return;
+					}
+					try {
+						await navigator.clipboard.writeText(url);
+						if (status) {
+							status.textContent = 'link copied';
+							setTimeout(function () { status.textContent = ''; }, 2200);
+						}
+					} catch (_) {
+						if (status) status.textContent = url;
+					}
+				});
+			})();
+		</script>
 
 		<style>
 			main {
@@ -144,6 +194,57 @@ const {
 				text-decoration: underline;
 				text-decoration-thickness: 1px;
 				text-underline-offset: 3px;
+			}
+
+			.paper-share {
+				max-width: var(--container-prose);
+				margin: 4rem auto 0;
+				padding: 2rem 1.25rem 3rem;
+				border-top: 1px solid var(--rule);
+			}
+
+			.share-eyebrow {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--muted);
+				margin: 0 0 1rem;
+			}
+
+			.share-button {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5em;
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.16em;
+				color: var(--accent);
+				background: transparent;
+				border: 1px solid var(--accent);
+				border-radius: var(--radius-md);
+				padding: 0.7em 1.1em;
+				cursor: pointer;
+				transition: background 120ms ease-out, color 120ms ease-out;
+			}
+
+			.share-button:hover,
+			.share-button:focus-visible {
+				background: var(--accent-soft);
+				outline: none;
+			}
+
+			.share-status {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--muted);
+				margin: 0.75rem 0 0;
+				min-height: 1em;
 			}
 
 			.prose {

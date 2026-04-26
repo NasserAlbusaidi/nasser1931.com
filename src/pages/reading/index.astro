@@ -2,25 +2,202 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+
+type Book = {
+	title: string;
+	author: string;
+	rating?: number;
+	note?: string;
+};
+
+const reading: Book[] = [
+	{ title: "Heaven's River", author: "Dennis E. Taylor", note: 'Bobiverse #4. Slower burn, focused on one alien megastructure. Many fans say it is the best in the series.' },
+];
+
+const bobiverse: Book[] = [
+	{ title: 'We Are Legion (We Are Bob)', author: 'Dennis E. Taylor', rating: 5, note: '#1' },
+	{ title: 'For We Are Many', author: 'Dennis E. Taylor', rating: 5, note: '#2' },
+	{ title: 'All These Worlds', author: 'Dennis E. Taylor', note: '#3' },
+];
+
+const asoiaf: Book[] = [
+	{ title: 'A Game of Thrones', author: 'George R.R. Martin', rating: 5 },
+	{ title: 'A Clash of Kings', author: 'George R.R. Martin', rating: 5 },
+	{ title: 'A Storm of Swords', author: 'George R.R. Martin', rating: 5 },
+	{ title: 'A Feast for Crows', author: 'George R.R. Martin', rating: 5 },
+	{ title: 'A Dance with Dragons', author: 'George R.R. Martin', rating: 5 },
+	{ title: 'The World of Ice and Fire', author: 'George R.R. Martin', rating: 4, note: 'companion' },
+	{ title: 'Fire and Blood', author: 'George R.R. Martin', rating: 3.5, note: 'companion' },
+];
+
+const dune: Book[] = [
+	{ title: 'Dune', author: 'Frank Herbert', rating: 5 },
+	{ title: 'Dune Messiah', author: 'Frank Herbert', rating: 4.5 },
+];
+
+const crichton: Book[] = [
+	{ title: 'Jurassic Park', author: 'Michael Crichton', rating: 5 },
+	{ title: 'The Lost World', author: 'Michael Crichton', rating: 4.5 },
+];
+
+const standalones: Book[] = [
+	{ title: 'Project Hail Mary', author: 'Andy Weir', rating: 5 },
+	{ title: '1984', author: 'George Orwell', rating: 4.5 },
+	{ title: 'Solaris', author: 'Stanisław Lem', rating: 4 },
+];
+
+const nextUp: Book[] = [
+	{ title: 'Not Till We Are Lost', author: 'Dennis E. Taylor', note: 'Bobiverse #5. Picks the pace back up; pushes the alien-contact thread further.' },
+	{ title: 'The Martian', author: 'Andy Weir', note: 'The one that started Weir.' },
+];
+
+const wider: Book[] = [
+	{ title: 'House of Suns', author: 'Alastair Reynolds', note: 'Clones of one mind split up, explore the galaxy for millions of years, periodically reconvene to share memories. The book most directly Bobiverse-shaped.' },
+	{ title: 'Children of Time', author: 'Adrian Tchaikovsky', note: 'First contact done as anthropology rather than combat. Uplifted spiders, generation ships, lingers on alien perspective.' },
+	{ title: 'Blindsight', author: 'Peter Watts', note: 'Short, brutal. Genuinely alien aliens with a truly unsettling cognitive architecture. Free legally on the author’s site.' },
+	{ title: 'A Fire Upon the Deep', author: 'Vernor Vinge', note: 'The Tines: a group-mind species made of dog-like creatures. Structurally alien, not humans in suits.' },
+	{ title: 'Revelation Space', author: 'Alastair Reynolds', note: 'The harder, creepier end of exploration. Slower-than-light travel taken seriously, deep-time dread.' },
+	{ title: 'The Algebraist', author: 'Iain M. Banks', note: 'Gas-giant aliens, deep time, weird civilizations. Standalone.' },
+	{ title: 'Aurora', author: 'Kim Stanley Robinson', note: 'Counter-argument. A rigorous rebuttal to the romantic interstellar-travel fantasy. Useful either way.' },
+	{ title: 'The Mote in God’s Eye', author: 'Niven & Pournelle', note: 'The first-contact novel that almost everything else is in conversation with.' },
+];
+
+function stars(n: number | undefined): string {
+	if (n === undefined) return '';
+	const formatted = Number.isInteger(n) ? `${n}` : n.toFixed(1);
+	return `${formatted} / 5`;
+}
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title="Reading — Nasser Al Busaidi" description="Books finished, with star rating and date." />
+		<BaseHead title="Reading — Nasser Al Busaidi" description="Books finished, currently reading, and what is next." />
 	</head>
 	<body>
 		<Header />
 		<main>
 			<header class="page-head">
 				<p class="eyebrow">reading</p>
-				<h1>Books finished.</h1>
+				<h1>Books.</h1>
 				<p class="lede">
-					<em>Coming soon — backfilling the last year or so of finished books, with date and a one-line take.</em>
+					<em>Finished, in progress, queued. Heavy on sci-fi exploration and one cursed re-read of all of ASOIAF.</em>
 				</p>
 			</header>
 
-			<p class="placeholder">Nothing here yet.</p>
+			<section class="shelf">
+				<h2>Currently reading</h2>
+				<ul class="books">
+					{reading.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								<span class="author">{b.author}</span>
+							</div>
+							{b.note && <p class="note">{b.note}</p>}
+						</li>
+					))}
+				</ul>
+			</section>
+
+			<section class="shelf">
+				<h2>Finished</h2>
+
+				<h3>Bobiverse — Dennis E. Taylor</h3>
+				<ul class="books">
+					{bobiverse.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								{b.note && <span class="meta-tag">{b.note}</span>}
+								{b.rating && <span class="rating">{stars(b.rating)}</span>}
+							</div>
+						</li>
+					))}
+				</ul>
+
+				<h3>A Song of Ice and Fire — George R.R. Martin</h3>
+				<ul class="books">
+					{asoiaf.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								{b.rating && <span class="rating">{stars(b.rating)}</span>}
+							</div>
+						</li>
+					))}
+				</ul>
+
+				<h3>Dune — Frank Herbert</h3>
+				<ul class="books">
+					{dune.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								{b.rating && <span class="rating">{stars(b.rating)}</span>}
+							</div>
+						</li>
+					))}
+				</ul>
+
+				<h3>Michael Crichton</h3>
+				<ul class="books">
+					{crichton.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								{b.rating && <span class="rating">{stars(b.rating)}</span>}
+							</div>
+						</li>
+					))}
+				</ul>
+
+				<h3>Standalones</h3>
+				<ul class="books">
+					{standalones.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								<span class="author">{b.author}</span>
+								{b.rating && <span class="rating">{stars(b.rating)}</span>}
+							</div>
+						</li>
+					))}
+				</ul>
+			</section>
+
+			<section class="shelf">
+				<h2>Up next</h2>
+				<ul class="books">
+					{nextUp.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								<span class="author">{b.author}</span>
+							</div>
+							{b.note && <p class="note">{b.note}</p>}
+						</li>
+					))}
+				</ul>
+			</section>
+
+			<section class="shelf">
+				<h2>The longer queue</h2>
+				<p class="shelf-lede">
+					Curated list of exploration / first-contact sci-fi to chase the Bobiverse high. Order is roughly priority.
+				</p>
+				<ul class="books">
+					{wider.map((b) => (
+						<li>
+							<div class="row">
+								<span class="title">{b.title}</span>
+								<span class="author">{b.author}</span>
+							</div>
+							{b.note && <p class="note">{b.note}</p>}
+						</li>
+					))}
+				</ul>
+			</section>
 		</main>
 		<Footer />
 
@@ -65,9 +242,98 @@ import Footer from '../../components/Footer.astro';
 				margin: 0;
 			}
 
-			.placeholder {
+			.shelf {
+				margin: 2.75rem 0 0;
+			}
+
+			.shelf h2 {
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: 26px;
+				font-variation-settings: "opsz" 36;
+				margin: 0 0 1rem;
+				letter-spacing: -0.01em;
+			}
+
+			.shelf h3 {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--muted);
+				margin: 1.6rem 0 0.5rem;
+			}
+
+			.shelf-lede {
+				font-family: var(--font-body);
+				font-size: 15px;
+				line-height: 1.55;
 				color: var(--muted);
 				font-style: italic;
+				margin: 0 0 1rem;
+				max-width: 56ch;
+			}
+
+			.books {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+
+			.books li {
+				padding: 0.65rem 0;
+				border-bottom: 1px solid var(--rule);
+			}
+
+			.books li:last-child {
+				border-bottom: 0;
+			}
+
+			.row {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: baseline;
+				gap: 0.6em;
+			}
+
+			.title {
+				font-family: var(--font-body);
+				font-size: 17px;
+				color: var(--ink);
+			}
+
+			.author {
+				font-family: var(--font-body);
+				font-style: italic;
+				font-size: 15px;
+				color: var(--muted);
+			}
+
+			.meta-tag {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 11px;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.12em;
+			}
+
+			.rating {
+				font-family: var(--font-mono);
+				font-size: 12px;
+				color: var(--accent);
+				margin-left: auto;
+				letter-spacing: 0.05em;
+			}
+
+			.note {
+				font-family: var(--font-body);
+				font-size: 15px;
+				line-height: 1.55;
+				color: var(--muted);
+				margin: 0.35em 0 0;
+				max-width: 64ch;
 			}
 		</style>
 	</body>

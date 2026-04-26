@@ -81,7 +81,7 @@ src/
 │   └── FormattedDate.astro
 public/
 └── paper/
-    ├── study-v1.md            ← raw v1 download (synced from ProjecrFurnance, served as-is)
+    ├── data-doc               ← raw markdown download (synced from study-v1.md, no extension)
     └── figures/               ← 8 PNG figures
 ```
 
@@ -91,7 +91,7 @@ Two-layer paper, both rendered on the site:
 
 - **`/paper`** — readable cut. Source: `~/Desktop/Personal/ProjecrFurnance/paper/study-v2.md`. `npm run sync-paper` mirrors it into `src/pages/paper/index.md` (with frontmatter prepended; relative figure paths rewritten to absolute `/paper/figures/...`).
 - **`/paper/v1`** — data-doc / receipts. Source: `~/Desktop/Personal/ProjecrFurnance/paper/study-v1.md`. Same sync; mirrored into `src/pages/paper/v1.md` with the figure-embedding pass — every `**Figure N** (\`paper/figures/figXX.png\`)` reference gets a real `<figure>` block injected after the paragraph it appears in.
-- **Raw download** — `public/paper/study-v1.md` is the unaltered v1 file (still served at https://nasser1931.com/paper/study-v1.md for anyone who wants the exact source).
+- **Raw download** — `public/paper/data-doc` is the v1 markdown source after the in-flight prose renames (`protocol.json` → "the phase manifest", `study-v1.md` / `study-v2.md` → reader-facing labels). Served at https://nasser1931.com/paper/data-doc with `Content-Type: text/markdown` (set in `firebase.json`). The file is intentionally extension-less so the URL doesn't leak `.md`.
 
 Source of truth lives in ProjecrFurnance. **Edit prose in `~/Desktop/Personal/ProjecrFurnance/paper/study-v{1,2}.md`, then run `npm run sync-paper` from this repo to publish.** The `src/pages/paper/{index,v1}.md` files are generated artifacts — don't hand-edit them; the next sync will overwrite. Frontmatter for both is hard-coded in `scripts/sync-paper.mjs` (title, subtitle, byline, eyebrow, companion link).
 
@@ -103,7 +103,7 @@ npm run sync-paper       # one-shot sync of v1 + v2 + figures
 PAPER_SOURCE=/some/other/path npm run sync-paper  # override the source dir
 ```
 
-The synced files (`src/pages/paper/index.md`, `src/pages/paper/v1.md`, `public/paper/study-v1.md`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if v1 or v2 prose or a figure changed in ProjecrFurnance.
+The synced files (`src/pages/paper/index.md`, `src/pages/paper/v1.md`, `public/paper/data-doc`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if v1 or v2 prose or a figure changed in ProjecrFurnance.
 
 The figure-numbering quirk from `ProjecrFurnance/paper/CLAUDE.md` carries over: filenames are in v1 build-artifact order, displayed in v2 reading order. e.g., **Figure 3** in the rendered paper is `fig06_strength_regression.png`. Don't rename the files.
 
