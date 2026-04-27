@@ -1,359 +1,377 @@
 ---
 layout: ../../layouts/Paper.astro
-title: "Becoming a Cyclist on Camera"
-subtitle: "Field report from a four-year self-experiment, written for a reader."
-byline: "Nasser Al Busaidi — Muscat, Oman — drafted April 2026"
-description: "Four years of daily body composition, sleep, HRV, and cycling performance data, audited against a six-check guardrail. Three findings survived. Two were retracted on the page."
+title: "The Silent Creep"
+subtitle: "How a +387 kcal/day drift erased a 67%-efficient training block."
+byline: "Nasser Al Busaidi · Muscat · April 2026"
+description: "1,300 days of training, eating, and weight data, walked through six guardrails. Headline: training works at 67% efficiency, but baseline intake quietly drifted +387 kcal/day across four phases."
 eyebrow: "field report"
 ogType: "article"
-image: "/paper/figures/fig01_longitudinal_multipanel.png"
+image: "/paper/figures/fig1_hero_landscape.png"
 ---
 
-> This is the readable layer of a longer working document. The full receipts (data dictionary, reproduction scripts, bug post-mortems, bibliography) live in the data-doc, kept against the project's analysis code, available on request. This one is meant to be read in a sitting.
+## §1 — The belief, the data, the question
+
+### 1.1 The belief
+
+There is a story endurance athletes tell themselves. I have told it to myself on rides where the wind was blowing the right way and I felt strong enough to lie. The story goes: I trained hard today, so what I eat tonight does not matter. The deficit on the watch said 1,800 kcal; the pizza at dinner is a rounding error inside that. I earned this. Cyclists say it. Triathletes say it louder. Anyone who has ever gone five hours past the last cafe stop has said some version of it.
+
+The polite version of the story is "fueling." The honest version is what the gym crowd shouts at it from the other side of the room: *you can't outrun a bad diet.*
+
+This paper is what happened when I pointed three and a half years of my own data at that argument.
+
+### 1.2 Who is doing this and why
+
+I am 28. I live in Oman. In late 2024 I bought a road bike and rearranged my life around it. By autumn 2025 I had registered for an Ironman 70.3 — that was the Muscat 70.3 on February 14, 2026 — and somewhere between those two points the question of what I weigh became a question I could no longer wave away. A triathlon is a long uncomfortable conversation about kilograms. A bike going up a hill does not care how strong you feel. It cares what is on top of it.
+
+So for the last three and a half years I have been logging. Every meal goes into MacroFactor. Every workout goes into Garmin. Body weight, body fat, sleep, HRV, daily stress score, all of it persisted, day after day, 1,300 days deep, with the kind of completeness that only a lonely person with too many devices can achieve. None of this was collected for a study. It was collected because I am the kind of person who collects.
+
+The question I am pointing the data at, the one this paper will and will not answer:
+
+> Across 1,300 days of training and eating, did the training do what I told myself it was doing — earn me caloric license — or did the eating around the training quietly grow until it ate the deficit?
+
+This is not a study about other people. It is N=1. The findings are mine and only mine. But the *machinery* — the six guardrails I had to walk the original claim through to keep myself honest. Most quantified-self analyses skip three of these six guardrails. That is, I think, why most of them confidently report effects that the underlying data does not actually support.
+
+### 1.3 The data
+
+- **Coverage:** Oct 5, 2022 → Apr 26, 2026. 1,300 daily observations.
+- **Stress:** Garmin daily average stress score (0–100, autonomic load proxy). 1,300 days.
+- **Caloric intake:** MacroFactor logged kcal. 1,268 days. Estimated under-log of about 450 kcal/day (triangulated from energy-balance reconciliation against scale weight; see §6).
+- **Training:** Every Garmin-logged activity from Sep 2022 forward. 2,124 sessions. Twenty-two activity types — outdoor and indoor cycling, road and trail running, treadmill, lap and open-water swimming, strength sessions, multi-sport (brick) workouts, walking, hiking, soccer, elliptical. Per-session calories 100% covered by Garmin in the cycling era.
+- **Weight:** MacroFactor "Trend Weight" — an exponentially-smoothed daily series — supplemented with the raw scale series. 1,278 days from MF, extended through April 2026 with my own scale logs.
+- **Expenditure (TDEE):** MacroFactor's modelled daily expenditure, available through Mar 5, 2026.
+- **Sleep:** Garmin nightly summary (hours, deep%, REM%, score). 1,300 nights, with caveats (see §3.3).
+
+The dataset spans four behavioural phases that I am locking up front. The boundaries are real-world events, not data-driven cuts:
+
+| Phase | Span | Days | What I was doing |
+|---|---|---|---|
+| **P1 pre-cycling** | Sep 2022 → Dec 1, 2024 | 789 | Strength training and running. No bike. |
+| **P2 cycle + run** | Dec 2, 2024 → Mar 1, 2025 | 90 | Bought the bike. Running and cycling in parallel. |
+| **P3 knee injury** | Mar 2, 2025 → Oct 31, 2025 | 244 | Left knee blew up on a 10 km run at As Seeb on Mar 2. Did not run again for ~5 months. Cycling continued and grew. |
+| **P4 triathlon** | Nov 1, 2025 → today | 177 | Returned to running, added swimming, registered for Muscat 70.3. Brick workouts entered the rotation. |
+
+The phase boundaries matter. A pooled correlation across these four very different lifestyles is not measuring one thing. The single-most useful methodological move in the entire paper, repeated in every test, is **stratify by phase before you trust a number**.
+
+### 1.4 The question, restated more precisely
+
+I want to know two things, and I want them in this order, because the first one is what the popular argument is *actually* about and the second one is what most n=1 self-experimentation papers accidentally study instead.
+
+**Q1 (what the aphorism is actually claiming): Does increasing training volume buy weight loss?**
+Concretely: across weeks where I trained more than my baseline, did I lose more weight than weeks where I trained less? Within phase, controlling for what I ate? This is the load-bearing question. If training volume predicts weight loss, you can outrun a bad diet at least partially. If it does not, you cannot, and that is the paper's headline.
+
+**Q2 (what most of the analytical literature studies because it is easier): Does training-day stress predict same-day overeating?**
+This is the question I started with — Experiment 16 in my own notebooks, which found a same-day Pearson r of +0.43 between Garmin daily stress and intake surplus, restricted to YTD 2026 data (n=105). I almost wrote that one up. Walking the original claim through five guardrails turned it into something different and more honest. That walk is how this paper is structured.
+
+The two questions are connected. If the answer to Q2 is "yes, training and stress drive same-day overeating," then the *mechanism* by which a bad diet would survive training is post-session compensatory eating. If the answer to Q1 is "no, more training does not produce more weight loss," then whatever Q2 says about same-day behaviour, the cumulative effect at the multi-month horizon is what matters.
+
+I will give you both answers. They do not contradict. They sit on top of each other in a way that, taken together, explains why my weight has done what it has done across these 1,300 days, and why an athlete heavier than they want to be can train themselves into exhaustion without making the scale move.
+
+### 1.5 What the rest of this paper does
+
+- **§2** revisits the YTD-only analysis that started this whole investigation: Pearson r=+0.43, p<0.001, between same-day stress and intake surplus across the first 105 days of 2026. The kind of finding most n=1 self-experimentation papers stop at and report.
+- **§3** walks that finding through six guardrails. Each one strips something off:
+   - **§3.1 Pooled vs walk-forward** — the YTD signal does not survive expansion to 1,263 days.
+   - **§3.2 Era / phase stratification** — the residual signal lives in the cycling era only.
+   - **§3.3 Training-load control** — about a third of the cycling-era signal is co-varying training load. The rest is a real but smaller residual stress channel.
+   - **§3.4 Weekly aggregation** — the daily threshold rule has no weekly footprint. Body self-compensates.
+   - **§3.5 Phase × weight regression** — the actual outrun-the-diet test, on log-immune scale data. Across all 182 informative weeks, no phase shows a slope from training kcal to weight delta that survives joint regression with intake.
+   - **§3.6 Physiological rescue narratives** — three pre-registered tests for the obvious comebacks (yesterday-load rebound, P4 was muscle, NEAT crater). All three rejected.
+- **§4** synthesises what each guardrail showed and lands the headline: the training works at ~67% kcal efficiency on a per-session basis, but baseline intake has crept upward by enough across phases to erase the deficit at the multi-month horizon. *That* is the mechanism by which you can't outrun a bad diet for this subject. It is not that training is futile. It is that the lifestyle around heavier training quietly inflates the eating to match.
+- **§5** turns that finding into operational rules, both the ones that survive and the ones I have to retire — including the "Garmin stress > 28 = budget at risk" daily threshold from Experiment 16, which TEST 2 falsified at the weekly level.
+- **§6** is the methodology contribution: the six-guardrail framework, written in a form portable to anyone running a quantified-self analysis on their own logs. The headline number every quantified-self post leads with is almost always one of these six guardrails away from the truth. I include the audit checklist I wish I had been forced to use before writing up Experiment 16 the first time.
+- **§7** lists what this paper does not claim, where the data is weakest, and what the next round of self-experimentation should test.
+
+A note on tone. This is not a clinical write-up and I am not pretending to be a researcher writing in the third person. I am the subject and the analyst. When I say "I gained 2.42 kg in P4," I mean that I, Nasser, gained 2.42 kg between November 2025 and April 2026 while training for an Ironman 70.3. The paper is more useful if I do not hide behind the passive voice when reporting results that are personal.
 
 ---
-
-## Research summary
-
-**Question.** What does four years of daily-resolution self-tracking actually let one person know about their own body?
-
-**Subject and data.** N = 1, me. 28-year-old male, 172 cm, Muscat, Sep 6 2022 → Apr 26 2026. Roughly 1,316 days of body-composition data from a Garmin watch, a bioimpedance scale, and MacroFactor food logs. 165 outdoor cycling activities since December 2024. 1,204 strength sessions across six and a half years.
-
-**Method.** Daily measurement, plus six pre-specified guardrail checks any candidate signal has to clear before I'm allowed to call it a finding: survival under data-gap removal, replication within phase, walk-forward replication, biological plausibility, effect-size reporting, full distributional plot. Exploration with strict filters bolted on, not pre-registered confirmatory work.
-
-**The big structural finding.** In small-N longitudinal data, lagged predictors that look bulletproof in the pooled view tend to fall apart once you replicate them on a held-out window. The §6 result, *morning RHR predicts long-ride speed*, full-window detrended r = −0.35 on rides ≥50 km, is the worked example. Train half r = −0.51, test half r = +0.00. I'm calling this category *regime-bound*: real inside one window, gone in the next. It accounts for as much of the surviving ledger as the validated category does, and twice the falsified count outright.
-
-**Findings ledger.**
-
-- **Validated (2).** Logged-intake systematic under-count of ~555 kcal/day (Bayesian triangulation against scale-weight, MacroFactor, and Garmin expenditure; robust under prior sensitivity). REM scarcity is duration-bound rather than a production failure: 65.4% of REM concentrates in the last third of the night, so short nights truncate REM disproportionately.
-- **Regime-bound (2).** Morning RHR → long-ride avg speed: real Dec 2024 – Aug 2025, decayed to zero after that; CI [−0.53, +0.08] crosses zero on bootstrap. HRV(t−1) → next-day calorie intake: held at +24.6 kcal per millisecond of HRV inside the YTD-2026 frame (n = 107) but collapsed to +7.1 kcal/ms (n = 1,113) when I extended back to Mar 2023, and to +0.4 kcal/ms (n = 349) inside the cycling era 2025 (Dec '24 – Nov 19, '25) alone. The variance is concentrated inside calendar 2026. Even within the Iron 70.3 prep phase, the Nov 20 – Dec 31, 2025 portion shows slope −2.7 (n = 42) while the Jan 1 – Feb 13, 2026 portion shows +26.7 (n = 45): same training block, opposite signs across the year boundary. It's not a personal physiology constant. Downgraded from VALIDATED on Apr 26, 2026, the second worked retraction in this paper after the §6 RHR result.
-- **Falsified (1).** A "protein-collapse predictor" that looked clean on a 57-day Ramadan window (AUC 0.929) collapsed to AUC 0.677 on the YTD frame. A phase artifact, not a general signal.
-- **Retracted (1).** RHR(t−1) → next-day fat intake: a +0.51 correlation that flipped to −0.08 once I forced consecutive-day pairs. Shift-across-gaps alignment bug, not a real signal.
-- **Negative result (1).** Day-ahead prediction of recovery state from prior-day metrics fails on this data layer. Every model I tested produced out-of-sample R² < 0 at n = 55.
-
-**What four years of self-tracking actually buys.** Calibrated personal baselines, retroactive accountability for guardrail audits, and the falsification of plausible-sounding hypotheses. Not day-ahead prediction. The discipline cost (running every candidate finding through six pre-specified checks before publishing it) is higher than the time cost of the logging itself.
-
-The rest of this document is the story of how that ledger emerged. §1 walks through the retraction that triggered the guardrail. §§2–3 set up the subject and the instrument chain. §§4–6 walk the body-composition, cycling, and ride-prediction analyses. §7 catalogues the findings. §8 names what self-tracking does and does not buy. §9 is the limitations stack.
-
----
-
-## 1. The correlation that wasn't
-
-On April 23, 2026, I thought I'd found a real signal.
-
-The setup looked clean. Thirty-five days of MacroFactor food logs, thirty-five days of resting heart rate from a Garmin watch, the Ramadan-cut window, when every variable that mattered was moving the most. The hypothesis was about as boring as a hypothesis gets: yesterday's recovery should affect today's eating. A high overnight heart rate (sympathetic tone, poor sleep, accumulated stress) should bleed into the next morning's appetite. I wanted to see if the relationship was strong enough to act on.
-
-So I aligned the two columns, yesterday's RHR against today's fat intake, and got r = +0.51. *p* comfortably below threshold. *n* = 35. Effect size big enough to be operative, sample size adequate by the conventions of self-tracking. By the standards I'd been using on the rest of this self-experiment, that was a finding.
-
-I wrote it up. Drafted a paragraph for the paper. Started thinking about the mechanism. I let myself be pleased.
-
-My mind went straight to *I CRACKED THE CODE.* I thought I could finally understand how my body works and optimize it. Maybe even biohack my metabolism: burn fat more efficiently, eat whatever I want without gaining weight.
-
-Then I ran one more check.
-
-The check was banal. I rebuilt the alignment and only paired days where I had both yesterday's RHR *and* today's intake on consecutive calendar days, no gaps, no interpolation, no nearest-neighbor fill. The dataset shrank slightly. I re-ran the correlation.
-
-It came back at r = −0.079. Wrong sign, near zero. The original +0.51 had been an artifact of how the alignment handled missing days: when RHR was missing on day *t*, the lookup quietly grabbed the nearest available value, which on a phase boundary or a travel gap could be a week later, on the other side of a behavioral change. The shift across the gap was carrying the signal, not the physiology.
-
-I deleted the paragraph.
-
-There's a literature on this exact failure mode. Rehfeld and colleagues described it in 2011 for paleoclimate proxies. Schulz and Stattegger had documented it as far back as 1997. I hadn't read either before I made the mistake. I read them after.
 
 <figure>
-  <img src="/paper/figures/fig08_alignment_mechanism.png" alt="Figure 1. The alignment failure, dissected on the YTD frame. Left: scatter of all 110 nearest-fill pairs, RHR on day t−1 against logged fat on day t. Pairs where the algorithm reached across a gap of two or more days to source RHR are shown as red triangles (n = 19, sized by gap magnitude); pairs where t−1 was a literal calendar day are blue dots. Both OLS lines lie near zero on this snapshot. But on the Apr 23 snapshot, before later backfills closed the gaps, the same algorithm on a 35-day Ramadan-window subset produced r = +0.508. Right: distribution of the offset days the nearest-fill lookup actually used. Seventeen percent of pairs span ≥2 days; the long tail reaches ±7 days. The bug was in the join logic, not the data. On any future short-window pull with similar gap structure, it would re-emerge." loading="lazy" />
-  <figcaption><strong>Figure 1.</strong> The alignment failure, dissected on the YTD frame. Left: scatter of all 110 nearest-fill pairs, RHR on day t−1 against logged fat on day t. Pairs where the algorithm reached across a gap of two or more days to source RHR are shown as red triangles (n = 19, sized by gap magnitude); pairs where t−1 was a literal calendar day are blue dots. Both OLS lines lie near zero on this snapshot. But on the Apr 23 snapshot, before later backfills closed the gaps, the same algorithm on a 35-day Ramadan-window subset produced r = +0.508. Right: distribution of the offset days the nearest-fill lookup actually used. Seventeen percent of pairs span ≥2 days; the long tail reaches ±7 days. The bug was in the join logic, not the data. On any future short-window pull with similar gap structure, it would re-emerge.</figcaption>
+  <img src="/paper/figures/fig1_hero_landscape.png" alt="Figure 1. Longitudinal hero: body weight, ride speed, HRV, and weekly training volume across the four phases of the 1,300-day record." loading="lazy" />
+  <figcaption><strong>Figure 1.</strong> Longitudinal hero: body weight, ride speed, HRV, and weekly training volume across the four phases of the 1,300-day record.</figcaption>
 </figure>
 
 ---
 
-Everything that follows has been forced through six checks, written down before I let any signal call itself a finding. I'll list them once now, because every claim in the rest of this document has had to clear them, and a reader is owed the bar.
+## §2 — The naive answer
 
-A claimed lagged correlation in this paper has to:
+This is the paper Experiment 16 would have been if I had stopped at the first surprising number.
 
-1. Survive when data gaps are imputed or excluded, not be a shift-across-gaps artifact.
-2. Survive when computed inside a single phase, not only pooled across phases.
-3. Replicate in a held-out window. Walk-forward, not just leave-one-out.
-4. Have a plausible biological mechanism, named on the page.
-5. Report effect size, not just *p*-value.
-6. Include the full distributional plot, not the scalar alone.
+In the first half of April 2026, while running a routine cross-domain pull on the YTD-2026 daily logs, I noticed something. Plotting Garmin's daily stress score against caloric surplus (logged kcal − MacroFactor TDEE) for Jan 1 → Apr 15, n = 105 days, the cloud was not a cloud. It tilted. The slope ran the right way around — stress up, surplus up — and the OLS fit returned **Pearson r = +0.43, p < 0.001**. A correlation that strong on a hundred-day daily series is the kind of thing a self-tracker writes up the same evening.
 
-The RHR → fat-intake correlation failed check 1. A "protein-collapse predictor" I'd been excited about earlier in the season (clean at *n* = 57, AUC 0.929) failed check 2; it was a Ramadan-phase artifact and went to AUC 0.677 on the year-to-date frame. The single most-attached-to finding in this paper, the §6 headline I had written and re-written, will fail check 3 in the next ten pages.
+The story almost wrote itself. *Garmin's autonomic-load proxy is a leading indicator of same-day caloric breach. On any day my morning stress score reads above the 75th-percentile threshold of about 28, I am at elevated risk of over-eating, regardless of how I "feel." A measurable cause of overeating, captured by a wearable I am wearing anyway, converts directly into a coaching rule — "stress > 28, watch the dinner table."* The kind of finding a self-tracker drops into a Notion page and posts. r = +0.43, p < 0.001, n = 105 — those numbers pass any peer-reviewed quantified-self filter on Twitter or a Substack.
 
-Three signals are going to survive. Most won't. This is a list of what survived being checked properly, not a list of what worked.
+I drafted that exact post. It sat in `drafts/` for two days. Then I started thinking about the window.
 
----
+The YTD-2026 frame happens to span the back half of a 70.3 build, race day itself, and the post-race transition into a deliberate 5-week cut. Three high-stress lifestyle phases stacked end-to-end inside one 105-day window. I was about to publish a coefficient that, on its face, claimed a stable subject-wide regularity — *stress drives overeating in Nasser, full stop* — using a hundred days that contained none of his pre-cycling life, none of his injured-knee phase, and none of any quieter season. The honest version of the question is whether the relationship survives data outside that frame.
 
-## 2. What I was actually doing
+The next section walks the +0.43 through six guardrails. The first one — pooled vs walk-forward — already breaks it. The five that follow reshape what is left into something structurally different from the headline.
 
-I've been measuring myself, in some form, for four years. The slightly more pretentious framing is that I'm the only subject in a longitudinal natural experiment where the interventions are my own life choices. Both are true.
+## §3 — The six guardrails
 
-I'm calling this a field report on purpose, not a paper. A paper implies peer review, generalizability across subjects, and a confirmatory frame around pre-registered hypotheses. This work has none of those things and is stronger when it isn't asked to. What follows is one body's measurement record, audited under §1's rules, written down so a reader can decide what survived being checked. The §9 limitations name the cost of the genre directly.
+This section is the spine of the paper. Six tests, run in order, each one against the same headline claim — that daily training stress drives same-day overeating, and that the training itself bought back the deficit. Each guardrail strips something off the original Experiment 16 result. By the end, what is left is not the story I started with.
 
-The case for taking N=1 seriously is straightforward and limited. With only one subject you can't make claims about populations. You can't say "athletes who do X gain Y kilos of muscle." What you *can* do, if the measurement chain is clean enough and the time horizon long enough, is detect signals that exist within a single individual at a resolution no cross-sectional study will ever match. A population study with 100 subjects and four observations each has 400 rows. This dataset has roughly 1,316 days of daily-resolution body composition, 165 cycling activities, 1,204 strength sessions, and night-by-night sleep architecture across almost four years. You give up generalizability and you get resolution. I'm betting that within a single body, a high-resolution longitudinal record can answer questions the population literature can't, and I'm willing for the answer in some cases to be "no, it can't."
+### §3.1 Pooled vs walk-forward
 
-The subject is me. I'm 28, male, 172 cm, and I live in Muscat, Oman. I started weighing myself daily on September 6, 2022, when the bioimpedance scale and the food-logging app got linked in the same week. I haven't anonymized this paper, for the same reason I haven't pretended to a larger *n*: the warts-and-all framing only works if you put your name on it.
+The original Experiment 16 finding was a Pearson r = +0.43 between Garmin daily stress (the autonomic-load proxy) and intake surplus (logged kcal − modelled TDEE), p < 0.001, n = 105 days, restricted to YTD 2026. A correlation that strong on a hundred-day window is the kind of thing a self-tracker writes up immediately. I almost did.
 
-The dataset has a clear hinge.
+The first guardrail is to extend the window. Pull the same regression across the full 1,263 days of cycling-era + pre-cycling-era data and the pooled coefficient collapses. The relationship is not absent across the whole record — it is concentrated in a slice. A YTD-only window is a walk-forward training set with no test set, and the published r value is being driven by *whichever phase of life the subject is in this year*, not by a stable subject-wide property. The right discipline is to refuse to claim anything until the signal survives the held-out half.
 
-Until late 2024 I was a strength athlete. Four-plus lifting sessions a week, training cycle by training cycle, with peak compound lifts of a 115 kg back squat and a 150 kg deadlift. The body in those years was the densest strength block of my life, 4.29 sessions per week on the rolling average, and it shows in the body-composition trace as a stable upper-70s kilogram weight built around lean mass. There was cardio, but it was instrumental: enough to keep the lifts moving, never enough to be the point.
+**Verdict:** the YTD r=+0.43 does not survive expansion. The headline number was a regime-bound artifact of a single high-variance window.
 
-On December 1, 2024 I did my first FTP test on a bike. 135-watt ramp, terminated early, descriptive only. It was also the moment the dataset's center of gravity moved.
+### §3.2 Era / phase stratification
 
-I had just bought my indoor trainer and, since I was still using a city bike, I figured why not do an FTP test on it. The test was only twenty minutes. The result was less than impressive: 135 watts. About 20 watts below what a beginner cyclist should be able to produce. But it was a start.
+If the pooled signal lives in a slice, the next question is *which slice*. The four phases I locked up front (P1 pre-cycling / P2 cycle+run / P3 knee injury / P4 triathlon) were not chosen by the data — they were chosen by real-world events (bought a bike, blew up a knee, registered for a 70.3). Stratifying the same surplus-on-stress regression by phase reveals the structure: the relationship is concentrated in the cycling-era phases (P2 / P3 / P4), and is essentially flat in P1 (pre-cycling, n=789 days). Whatever is generating the link between stress and surplus, it is downstream of the bike.
 
-That's not to say I didn't enjoy it. I've always been a numbers guy, and the data from the test was fascinating. New challenge, new metric to chase. So I decided to get a *real* bike. A road bike. That meant a few changes to my life. The main one: drop lifting weights.
+This is also the moment the analytical disposition flips. Up to here, the question has been "is there a same-day stress-overeating link." From here on, the question is *which channel* that link runs through — same-day appetite suppression, training kcal cost, post-training compensation, multi-week phase shifts, or some combination.
 
-From that day on the operative question stopped being *how strong can I get* and started being *can I become a cyclist.* Within eighteen months I'd ridden three triathlons (Al Bustan Sprint in November 2025, Athiba Olympic in January 2026, Muscat 70.3 in February), built up to 80–100 km weekend rides, and watched my back squat regress from 115 kg to 100 kg, sessions per week drop by twenty percent, and total weekly tonnage drop almost in half.
+**Verdict:** the residual same-day signal lives in the cycling era only. Pre-cycling life has no detectable stress→surplus relationship.
 
-I call those two periods Act I and Act II. The boundary between them is the cleanest natural experiment in the file. Same person, same scale, same watch, mostly the same diet patterns, but a complete reallocation of finite recovery from one modality to another. Almost every comparison in this paper that has teeth is a comparison across that boundary.
+### §3.3 Training-load control — TEST 1
 
-What this paper is trying to do, then, isn't predict a race. It's to take the measurement record and ask: across four years of one body's data, what does the daily-tracking layer actually let you know that you wouldn't already know from the gym mirror and the bathroom scale?
+This is the first guardrail with a pre-registered model spec, and the first that produces a number this paper claims. The cohort is the cycling era — Dec 2, 2024 → Apr 22, 2026, n = 503 days. The naïve Model M1 regresses caloric surplus on stress alone and gives β_stress = +34.5 kcal per stress-pt (p < 0.0001). Add the full activity-kcal stack as a covariate (M2: cycling + running + swim + strength + multi-sport + indoor + soccer + everything except walking, after a v2 fix that originally excluded swim and strength) and β_stress drops to +20.0 kcal per stress-pt — a **41.9% drop**. Add walking kcal as a separate term (M3) and stress drops further to +18.5 (p = 0.0003). VIF stays clean (≤ 2.1) across all M3 covariates.
 
-What it isn't trying to do matters more. It doesn't aim at a race-day prediction. The original draft had Ironman Oman on December 5, 2026 as its closing data point, the test of whether a self-tracking model could project a finishing time. I removed that endpoint in April 2026. Partly because it was overfitting the analysis to a single date eight months out, and partly because the more I looked at the dataset the clearer it became that the trajectory is the interesting thing, not the terminal value. If the race goes well in December, that's a chapter. If it goes badly, that's also a chapter. Neither outcome would change what's already on the page.
+The two coefficients that survive M3 deserve to be named in plain English.
 
-The paper has a subject, a measurement record, a hinge, and a question. It doesn't have a punchline waiting in the future to redeem it. Everything claimed in the rest of this document has had to clear the six checks from §1 against the data already in hand.
+The β on activity kcal is **+0.33** (p < 0.0001). Read it directly: every kcal of training generates +0.33 kcal of compensatory eating. The complement, **0.67**, is what gets retained as actual deficit. *A 1,000 kcal session yields ~670 kcal of net deficit, not 1,000.* The folk "endurance license" exists — eating after a hard ride is real — but it claws back about a third of the burn, not all of it. Per session, the training works, at two-thirds efficiency.
 
----
+The residual β on stress is **+18-20 kcal per stress-pt** (p < 0.001 across M2/M3/M4). A +20-pt elevation in Garmin's daily stress score, *independent of how much I trained that day*, predicts about +360-400 kcal of extra intake. This is the clean stress channel, after activity is partialed out. It is real, smaller than v1 reported, and survives p < 0.001.
 
-## 3. The receipts
+The β on walking kcal is **+0.78** (M3) — almost double the per-kcal effect of training. This almost certainly reflects walking's correlation with eating contexts (errand walks, post-meal strolls, social walks, the after-dinner promenade) more than a true biological compensation rate. The reason walking is broken out as its own term is exactly to keep that contamination out of the training estimate.
 
-Garmin watch. MacroFactor. A bioimpedance scale. Hevy.
-
-The Garmin has been on my wrist the whole window. An older model from October 2022 through January 2023, then a newer one from January 2023 onward. It records every activity (duration, distance, heart rate, cadence, GPS, splits) plus sleep architecture, overnight HRV, resting heart rate, body battery, daily training status, FTP estimate, and a VO2max-derived race predictor. Anywhere this paper says "Garmin," that's the source. One caveat. The older watch had no `strength_training` activity type, so gym sessions in late 2022 and early 2023 got logged as generic indoor cardio. The newer watch supported the type from day one but I didn't actually start using it for lifts until December 2024. Hevy on my phone was always the system of record for the lift itself; the watch was there for HR and duration. So pre-December-2024 indoor-cardio volume in the Garmin record is mostly mislabeled lifting, regardless of which watch was on the wrist that month. Don't read it as endurance work.
-
-MacroFactor has been running since September 2022 and holds 1,318 daily summaries: calories, protein, fat, carbs, expenditure, weight, body-fat estimate. Logging fidelity is mixed. At home I weigh food on a kitchen scale. At restaurants and at work I use the app's photo-and-voice estimation. So *logged intake* is a blend, with the photo-estimated half diluting the weighed half. §7 puts the dilution at roughly 555 kcal per day on the rolling average and treats it as a finding in its own right.
-
-The bioimpedance scale (single-frequency, consumer-grade) weighs me most mornings under the same conditions: empty stomach, post-bathroom, before water. I trust the weight reading to within 0.1 kg. The body-fat number is good to ±2–3 percentage points on absolute readings, ±1 pp on the within-week trend. Every body-fat claim in this paper is a *change*, never an absolute leanness number. The device can't support one.
-
-The Hevy log runs from August 2019 through January 2026 and stores 26,023 sets across 1,184 strength sessions. Every exercise, every weight, every rep. In February 2026 I migrated lift logging to MacroFactor's workout module. That added 878 sets across 20 more sessions. Both halves are merged into a single 1,204-session timeline used in §5.
-
-Three things on the chain are worth flagging.
-
-The bioimpedance scale drifts on firmware updates and reads body fat 3–4 percentage points away from a same-day DEXA. Relative comparisons only. The scale itself was retired in early March 2026, so the body-fat trace stops there.
-
-The logged-calorie number is systematically low. It shows up cleanly when you triangulate logged intake against MacroFactor's expenditure estimate, against Garmin's daily energy out, and against the actual scale-weight trajectory. Bayesian posterior mean is roughly 555 kcal/day. §7 treats it as a finding in its own right, but it has to be on the table before any *calories vs. outcome* sentence in the rest of the paper makes sense.
-
-Between January and April 2026 a parsing bug in Garmin's typed-split data inflated the recorded distance on three rides and corrupted the FTP estimates derived from them. Traced, recomputed, fixed. The FTP-progression numbers in §5 use the corrected values. Anyone running an audit should start with the typed-splits post-mortem in the working document (Appendix C).
-
-That's the chain.
-
----
-
-## 4. Body composition, four years
-
-> **Finding.** Across four years, trend weight cycled inside a 6.7 kg corridor and never broke it — no downward trajectory toward any race weight in the record. The single robust physiological change isn't a body-composition number but a metabolic one: expenditure floor lifted by ~175 kcal/day in the cycling era (Act I weekly low 1,864 kcal/day → Act II weekly low 2,039 kcal/day). Body-fat readings are reported as within-subject change only; the bioimpedance scale's ±2–3 pp absolute error band makes leanness levels uninterpretable.
-
-The body-composition record opens on September 6, 2022, on a kitchen scale and a freshly installed food-logging app. By April 2026 it had piled up 1,316 daily measurements, 1,232 of them with a scale weight and 970 with a body-fat reading from the bioimpedance device. Three and a half years and one career-of-the-body switch later, the headline is "+4.47 kg net" — 73.60 kg trend in the first week, 78.07 kg in the most recent. That number is also the least interesting one in this section. How it got there is more interesting.
-
-The path has eight swings. A swing here means a continuous direction in trend weight that crosses two kilograms before reversing. Two cuts and two gains in the pre-cycling era, two of each in the cycling era. The four cuts together took 10.4 kg off. The four gains together added 15.7 kg back. Net of all eight: +5.3 kg, in line with the long-run trend. The small gap from the +4.47 kg endpoint figure is expected, because swing reversals don't fall exactly on the file's first and last weeks, so the sum of swing magnitudes and the endpoint-to-endpoint trend can disagree by a kilogram or so.
-
-In plain language: the body has been *cycling* through a corridor under seven kilograms wide. Roughly 71.6 kg at its low (week of April 17, 2023) to 78.3 kg at its high (week of February 2, 2026, twelve days before Muscat 70.3). For almost the entire measurement window. No downward trajectory toward any kind of race weight.
-
-The phase ladder reads as cuts and rebuilds in alternation. The clearest cut in the file ran from January through April 2023 and bottomed at the all-time low. The clearest gain ran May 2023 through January 2024 and erased it. A faster cut in spring 2024 (about four kilograms in twelve weeks, –0.34 kg/week) was the largest in the record by both magnitude and rate, faster than anything since. The Ramadan cut in February-March 2026 dropped roughly three kilograms in a month. Ordinary in pace. Extraordinary in everything around it: HRV never reached "balanced" status across the entire 30-day window, and sleep volume worsened week by week. §7 picks that up. For now the point is small. Ramadan wasn't the most aggressive cut in the file, but it was the most physiologically expensive one.
-
-The single clearest physiological change in the four-year record isn't a body-composition number at all. It's the metabolic baseline.
-
-Before December 2024, in the 117 weeks of Act I, MacroFactor's expenditure estimate averaged 2,236 kcal per day. After December 2024, in the 72 weeks of Act II so far, the average is 2,433. That's +197 kcal per day on the mean, but the more telling number is the floor. The lowest expenditure week in Act I was 1,864 kcal per day, in January 2024. A body that had effectively stopped moving outside of the gym. The lowest expenditure week in Act II is 2,039 kcal per day. The floor lifted by roughly 175 kcal per day. From the worst Act I week to the best Act II week (2,725 kcal per day, in February 2026, the week before Muscat 70.3), the swing is about 860 kcal per day across twenty-five months.
-
-The body-fat trace deserves a paragraph of caveats and can then be largely ignored. The recorded range is 14.5 percent to 20.83 percent. The 14.5 percent reading from February 2023 came from a bioimpedance scale during an extended cut and is almost certainly low. These devices systematically under-read body fat in lean, well-hydrated subjects. The 20.83 percent reading from January 2026, at the dataset's highest scale weight, is more plausibly close to truth, but the device's error band is still ±2–3 percentage points. The bioimpedance sensor stopped recording in early March 2026 when the smart scale was retired. Every body-fat claim in this paper is *relative*. A within-subject change. Never an absolute leanness number.
-
-A few things the trajectory doesn't show. It doesn't show a smooth descent toward any race weight. It doesn't show cycling driving weight loss on its own: the pre-prep cycling era (Dec 2024 → Nov 17, 2025) ended −0.50 kg from where it began across 51 weeks, with the gains and losses inside it netting to roughly zero. It doesn't show Ramadan as an unusually fast cut. What it does show, robustly, is that the metabolic baseline lifted by roughly 200 kcal per day, that body-fat coupling tightened in the cycling era so almost every kilogram regained brought a percentage point of body fat with it, and that the body's natural operating range is a corridor under seven kilograms wide that hasn't been broken in four years.
-
-Whether anything else in the dataset has the leverage to break that corridor is what the cycling sections and the phase-response work go after.
+**Verdict:** two channels, both real, both partial. Per-session training delivers ~67% of its theoretical kcal benefit. A residual stress channel adds ~+18-20 kcal per stress-pt independent of training. The 67% number is the one the paper title will eventually anchor on.
 
 <figure>
-  <img src="/paper/figures/fig01_longitudinal_multipanel.png" alt="Figure 2. The body-composition corridor and the expenditure floor lift, Sep 2022 → Apr 2026. Black: trend weight (MF EMA), with the all-time low (71.6 kg, Apr 2023) and high (78.3 kg, Feb 2026) marked, the 70 kg target reference line, and a vertical at Dec 1, 2024 (the Act I → Act II hinge). The shaded blue band is the 6.7 kg corridor the trend has cycled inside for the entire window. Orange (right axis): MacroFactor's expenditure estimate, raw weekly values plus an 8-week rolling mean. Two horizontal references mark the floors named in §4: Act I floor 1,864 kcal/day (Jan 2024) and Act II floor 2,039 kcal/day. What moved across the hinge is the orange line, not the black one. Phase shading from the phase manifest." loading="lazy" />
-  <figcaption><strong>Figure 2.</strong> The body-composition corridor and the expenditure floor lift, Sep 2022 → Apr 2026. Black: trend weight (MF EMA), with the all-time low (71.6 kg, Apr 2023) and high (78.3 kg, Feb 2026) marked, the 70 kg target reference line, and a vertical at Dec 1, 2024 (the Act I → Act II hinge). The shaded blue band is the 6.7 kg corridor the trend has cycled inside for the entire window. Orange (right axis): MacroFactor's expenditure estimate, raw weekly values plus an 8-week rolling mean. Two horizontal references mark the floors named in §4: Act I floor 1,864 kcal/day (Jan 2024) and Act II floor 2,039 kcal/day. What moved across the hinge is the orange line, not the black one. Phase shading from the phase manifest.</figcaption>
+  <img src="/paper/figures/test1_partial_residual.png" alt="Figure 4. Test 1 partial residual: stress → surplus after activity_kcal is partialled out. The slope is the residual stress channel." loading="lazy" />
+  <figcaption><strong>Figure 4.</strong> Test 1 partial residual: stress → surplus after activity_kcal is partialled out. The slope is the residual stress channel.</figcaption>
 </figure>
 
----
+### §3.4 Weekly aggregation — TEST 2
 
-## 5. Cycling, from zero
+If the daily layer is two partial channels, the next question is whether either of them adds up to a weekly footprint. The premise of Experiment 16's daily threshold rule — "Garmin stress > 28 = today is a budget-at-risk day" — is that a few high-stress days in a week pile up into a weekly caloric breach. TEST 2 is the audit of that premise.
 
-> **Finding.** Average ride speed climbed +5.2 kph at constant heart rate across five quarters (25.7 → 30.9 kph in 145–151 bpm corridor) before plateauing. Three race-day bike legs traced a textbook decreasing-power-with-distance curve: 200 → 186 → 163 W as distance grew 21 → 40 → 89 km, with watts-per-bpm declining 1.23 → 1.19 → 1.11 in lockstep. The cycling era cost 47% of weekly strength tonnage and a working-weight regression on every compound lift (squat 115 → 100 kg, deadlift 150 → 140 kg, bench 75×5 → 72.5×1, OHP 50 → 42.5 kg), larger than the published concurrent-training literature predicts for cycling-mode endurance. Most of that is probably reallocation of recovery, not molecular interference.
+Daily data was bucketed into 72 Thu–Wed weeks across the cycling era (≥5 valid days/week filter). Weeks were sorted into "Q4-containing" (≥1 day with stress > 28) vs "no-Q4." The Q4-containing weeks (n = 56) showed +860 kcal mean weekly surplus vs +195 kcal for the no-Q4 weeks (n = 16). At first read that is a +665 kcal weekly delta, in the predicted direction. The pre-registered binary tag is "partial_hole."
 
-The first FTP test is dated December 1, 2024. Seventeen minutes, terminated early, no FTP value produced. Eighteen days later, December 19, the same body knocked out an 80.4 km loop through Bawshar at 144 bpm average. Six days after that, 65 km on the As Seeb road. On December 29 it crashed. The activity Garmin saved is named, verbatim, *"As Seeb Road Cycling | crashed lmao"* — 26.7 km, max HR 171, the heart-rate trace consistent with picking yourself up and finishing the loop.
+Both null-hypothesis tests fail. Welch's t gives p = 0.144, Mann-Whitney U gives p = 0.390 — neither reaches significance. More importantly, the dose-response Pearson on the count of Q4 days per week against weekly surplus, run across all 72 weeks (so no class-imbalance penalty), comes back at **r = +0.056, p = 0.642**. A flat null. More high-stress days in a week does not predict a worse weekly balance.
 
-This was my road bike's first crash, but it wouldn't be my last. I tried to avoid a speed bump, veered off-road and crashed onto the pavement. Nothing broken, but the bike had a new scratch. Call it a rite of passage.
+The +665 kcal mean delta is being driven by a handful of outlier weeks in the Q4 cohort, not a systematic shift. Class imbalance (56 vs 16) limits binary-test power, but the dose-response runs across the full window and finds nothing.
 
-By January 6, 2025, thirty-six days after that aborted FTP test, there was a 100 km ride. By January 31, 120 km.
-
-Those numbers don't add up for a true cold-start cyclist. They add up for what was actually true: I'd been riding a city bike around Muscat for almost two years before I told the watch to start counting. Act II opens with the moment training got logged, not the moment cycling began.
-
-Outdoor volume since: 5,959 km across 124 outdoor training rides over sixteen months (the 161 figure that appears elsewhere in the file is total rides including indoor TrainerRoad), spread across seven quarters. The shape is informative. 2024 Q4 only has seven rides because the era was a month old. Q1 2025 jumped to eighteen rides, Q2 to twenty-two, with quarterly totals climbing 951 → 1,187 km. Q3 2025 was the highest-volume quarter in the file: 1,542 km across twenty-nine rides. After that the curve gets choppy.
-
-Three travel gaps explain the choppiness. Qatar in late May, Southeast Asia in July, Europe in October 2025. TrainerRoad bridged the Qatar window. The other two were full off-bike, two-and-a-half weeks each. The post-gap rebuild took about two weeks each time and never failed to recover the prior block's volume. Those gaps are the only structural breaks in the file.
-
-The cleanest piece of evidence that the cycling era did anything to the body is the speed-at-equal-HR signal. Average ride speed climbed from 25.7 kph in 2024 Q4 to 30.9 kph in 2026 Q1, a +5.2 kph swing across five quarters. Average ride heart rate over the same window stayed in a tight 145–151 bpm corridor. The biggest single-quarter jump (+2.5 kph) happened between Q1 and Q2 2025, right when structured TrainerRoad workouts started showing up in the activity log. After Q2 2025 the average plateaued in the 29.7–30.9 kph corridor and has stayed there. That probably doesn't mean fitness plateaued. It means looking at average-speed-by-quarter without controlling for terrain, weather, and group-versus-solo can't resolve the gains anymore.
-
-Five FTP/ramp tests bracket the era. The first two (December 1, 2024 and April 22, 2025) terminated early and produced no recorded FTP. The first useful test was the June 5, 2025 TrainerRoad ramp. The first outdoor test was November 20, 2025, almost a year into structured training. Garmin's normalized-power values for the five tests, in chronological order: 135 → 172 → 193 → 217 → 206 watts. The fifth test, in January 2026, was three weeks before Muscat 70.3 — the closest thing to a race-pacing baseline.
-
-Three triathlons sit inside this window, and the cleanest cycling-era story this dataset tells is on the three race-day bike legs.
-
-**Al Bustan Sprint** (November 15, 2025) was 21 km of hilly course at 200 W average and 31.5 kph, max HR 178. Ridden all-out in a way no training session has been, on the steepest course of the three by elevation gain per kilometer. **Athiba Olympic** (January 31, 2026) was 40 km at 186 W and 34.6 kph. Lower power, faster ride, because the course was flat and the format was sustained-tempo rather than sprint-redline. Athiba's 34.6 kph is +3.7 kph above the 2026 Q1 training average. **Muscat 70.3** (February 14, 2026) was 89 km at 163 W and 29.9 kph, with +818 m of climbing, ridden three hours under threshold before a half-marathon. Average speed below the training corridor on a course nearly four times steeper than typical training routes.
-
-The pacing curve across those three legs is textbook physiology. Distance grew 21 → 40 → 89 km. Average power went 200 → 186 → 163 W. Average heart rate went 163 → 156 → 147 bpm. Watts-per-bpm, a crude pacing-discipline metric, descended right alongside at 1.23 → 1.19 → 1.11. No outliers, no surprises, just the body doing what longer formats demand.
-
-The cycling era didn't come for free. Across the twelve months immediately before and after the cycling onset, strength sessions per week dropped 20 percent. Total weekly tonnage dropped almost half, 48 percent. Sessions didn't just get rarer; they got lighter and shorter. Every primary compound regressed from its Act I peak: back squat 115 → 100 kg, deadlift 150 → 140 kg, overhead press 50 → 42.5 kg, and bench from a 75 kg working five down to 72.5 kg for a single rep — a real working-weight collapse hidden inside an apparently flat one-rep-max.
-
-I remember one day I was trying to deadlift 140 kg for 3 reps and I could barely do it. My grip was failing. I was using a double overhand and couldn't hold the bar. I switched to mixed grip to complete the lift and still failed the last rep. That was the moment I realized I had to pick my poison: cycling or weightlifting.
-
-The published concurrent-training literature (Wilson 2012, Coffey and Hawley 2017, Petré 2021 on trained populations) says cycling-mode endurance, in mostly-separated sessions, should produce only a small interference effect. What I'm seeing is bigger than that. The most defensible read is that most of the regression is reallocation of finite recovery and finite time onto a new outcome variable, not the molecular interference effect itself. Strength didn't disappear, it became maintenance.
-
-Whether and how to rebuild it as the long-distance build moves into its later phases is a question the rest of the protocol owes an answer to. The dataset doesn't pretend to know.
+**Verdict:** the Garmin daily stress > 28 rule does not produce a weekly footprint. Local +600 kcal Q4-day overshoots are absorbed by compensation days in the same week. The body self-regulates the weekly accounting; the daily threshold rule is theatre. Experiment 16's flagship operational rule does not survive its own multi-week test.
 
 <figure>
-  <img src="/paper/figures/fig06_strength_regression.png" alt="Figure 3. Strength regression across the Act I → Act II hinge. Panel A: total weekly tonnage from 296 weeks of training, Aug 2019 → Apr 2026, with a 4-week rolling mean overlaid. Act I average (last twelve months pre-hinge) is 37,303 kg/week; Act II average is 19,900 kg/week, a 47 percent drop, in line with the 48 percent figure in the prose. The vertical at Dec 1, 2024 marks the cycling-era hinge. Panel B: estimated 1RM (Epley, top working set per session, 8-session rolling mean) for the big four. Each lift's Act I peak and most-recent Act II value are in the legend. Bench press ends at Dec 2025 — that was the last logged barbell bench session in the file. One ghost session of 1.72 million kg (a Hevy unit-confusion artifact on 2023-06-25) is filtered out of Panel A by a 50,000 kg/session sanity threshold." loading="lazy" />
-  <figcaption><strong>Figure 3.</strong> Strength regression across the Act I → Act II hinge. Panel A: total weekly tonnage from 296 weeks of training, Aug 2019 → Apr 2026, with a 4-week rolling mean overlaid. Act I average (last twelve months pre-hinge) is 37,303 kg/week; Act II average is 19,900 kg/week, a 47 percent drop, in line with the 48 percent figure in the prose. The vertical at Dec 1, 2024 marks the cycling-era hinge. Panel B: estimated 1RM (Epley, top working set per session, 8-session rolling mean) for the big four. Each lift's Act I peak and most-recent Act II value are in the legend. Bench press ends at Dec 2025 — that was the last logged barbell bench session in the file. One ghost session of 1.72 million kg (a Hevy unit-confusion artifact on 2023-06-25) is filtered out of Panel A by a 50,000 kg/session sanity threshold.</figcaption>
+  <img src="/paper/figures/test2_weekly_distributions.png" alt="Figure 5. Test 2 weekly distributions: weekly net surplus by Q4-day presence, with the dose-response slope." loading="lazy" />
+  <figcaption><strong>Figure 5.</strong> Test 2 weekly distributions: weekly net surplus by Q4-day presence, with the dose-response slope.</figcaption>
 </figure>
 
----
+### §3.5 Phase × weight regression — TEST 3
 
-## 6. What predicts a good ride
+This is the test the paper's headline depends on. Surplus and stress are intermediate variables; **scale weight is the outcome**. If training volume is buying weight loss, weeks with more training kcal should show more negative weight deltas — within phase, controlling for intake. The cohort is 182 Thu–Wed weeks across all four phases, each with ≥5 intake-logged AND ≥5 weight-logged days, spanning Oct 2022 → Apr 2026.
 
-> **Finding.** Across 124 outdoor rides, no individual recovery-state, environmental, or fueling-state predictor stably explains average ride speed. The earlier-draft headline of this section — morning RHR predicting long-ride speed at full-window detrended r = −0.35 — failed walk-forward replication (train half r = −0.51, test half r = +0.00; bootstrap CI [−0.53, +0.08] crosses zero) and is downgraded to a regime-bound Act-II onboarding-window phenomenon. Effort (avg HR) and route still dominate ride speed. Recovery-state metrics do not earn a forward-going coaching role on this stack.
+The per-phase weight slopes on weekly training kcal are these:
 
-The dataset is 124 outdoor cycling days between December 2024 and April 2026. Each day is cross-joined with the Garmin sleep summary, overnight HRV, and resting heart rate from the night before. The dependent variable is the day's average speed. The independent variables are everything the watch knows about how the body went into the ride.
+| Phase | n weeks | train kcal/wk | mean intake/wk | weight Δ/wk | total weight change | M1 β / +1,000 train kcal (p) | M2 joint w/ intake p |
+|---|---|---|---|---|---|---|---|
+| P1 pre-cycling | 110 | 1,419 | 15,399 | +0.04 kg | **+4.31 kg** | +0.097 kg (p=0.044) ← wrong direction | 0.46 (null) |
+| P2 cycle + run | 12 | 3,161 | 16,978 | −0.04 kg | −0.49 kg | −0.165 kg (p=0.071) | 0.12 (null) |
+| P3 knee injury | 35 | 2,772 | 16,825 | 0.00 kg | −0.13 kg | −0.020 kg (p=0.609) | 0.58 (null) |
+| P4 triathlon | 25 | 3,330 | 18,108 | +0.10 kg | **+2.42 kg** | +0.016 kg (p=0.767) | 0.76 (null) |
 
-The boring finding has to come first.
-
-Across 124 trials, single-night sleep duration does not predict ride speed. Neither does sleep score, deep-sleep percentage, REM percentage, average overnight HRV, or HRV stress score. The pooled correlations across the full window are all small, and every detrended 95 percent confidence interval crosses zero. That includes every variable a recreational cyclist would name first if you asked them what makes a good ride. *I slept badly, so I'll have a bad ride* is not visible in the data over 124 trials. The boring corollary is that the strongest predictor of how fast a given ride was is how hard it was ridden — average heart rate explains more between-ride variance in speed than every recovery-state variable combined, and effort is mostly a choice, not physiology. There's a 2.8 kph spread between the lowest and highest HR third on the same dataset, and recovery-state variables are essentially flat across those buckets.
-
-Inside that boring frame, one variable looked, for almost a year, like a real exception.
-
-Across the full 124-ride window, morning RHR on the day of the ride correlated negatively with average ride speed at r = −0.28. Restricted to long rides only (fifty kilometers or more, n = 54), the same correlation tightened to r = −0.35 after detrending, with a 95 percent confidence interval of [−0.56, −0.09] that excluded zero. Lower morning RHR going into a long ride, faster long ride. The effect size was larger than anything else in §6 by a factor of two. The mechanism was plausible: morning RHR is a recognized marker of overnight recovery state and parasympathetic tone, and is the most sensitive single number on the watch for catching accumulated training stress. I had this finding written up as the §6 headline.
-
-Then I ran check 3.
-
-Check 3 is walk-forward replication. You take the first half of the data chronologically, fit the relationship there, and ask whether it holds in the second half — held out, never seen. Splitting the 54 long rides into a chronological 50/50 (December 2024 → August 2025 train, August 2025 → April 2026 test), the detrended correlation came back at −0.51 on the training half and +0.00 on the test half. Not weaker. Zero. A 28-day-block bootstrap on the long-ride sample produced a confidence interval of [−0.53, +0.08], a range that contains the train-half effect, contains no effect at all, and contains a small positive effect. Walk-forward replication failed.
+Read the table column by column. The M1 direct slope on training kcal alone is statistically null in three of four phases. The fourth (P1) is significant in M1 but points in the *wrong* direction — more training, more weight gain — which is exactly what a confound with intake would look like across a 110-week phase where both crept upward together. And indeed, partialling intake out in M2 kills it (p = 0.46). Across all 182 weeks, **no phase shows a training→weight-loss slope that survives the joint regression**. P2 is the only one whose sign is even physiologically right, and it does not clear p < 0.05 in either model on its 12-week sample.
 
 <figure>
-  <img src="/paper/figures/fig02_rhr_vs_speed_long_rides.png" alt="Figure 4. Walk-forward replication of the morning-RHR → average-speed signal on long rides (≥50 km). Left: training half (Dec 2024 – Aug 2025, n = 27), detrended r = −0.51 — the negative slope an earlier draft of this paper had carried as its §6 headline. Right: test half (Aug 2025 – Apr 2026, n = 27), detrended r = +0.00 — a flat cloud. Both raw and detrended points are shown; OLS fit overlaid; full Fisher CI in the inset stats panel. This is the paper's second worked retraction: the §1 RHR → fat-intake correlation failed Check 1 (shift-across-gaps); this one fails Check 3 (walk-forward replication)." loading="lazy" />
-  <figcaption><strong>Figure 4.</strong> Walk-forward replication of the morning-RHR → average-speed signal on long rides (≥50 km). Left: training half (Dec 2024 – Aug 2025, n = 27), detrended r = −0.51 — the negative slope an earlier draft of this paper had carried as its §6 headline. Right: test half (Aug 2025 – Apr 2026, n = 27), detrended r = +0.00 — a flat cloud. Both raw and detrended points are shown; OLS fit overlaid; full Fisher CI in the inset stats panel. This is the paper's second worked retraction: the §1 RHR → fat-intake correlation failed Check 1 (shift-across-gaps); this one fails Check 3 (walk-forward replication).</figcaption>
+  <img src="/paper/figures/test3_phase_panels.png" alt="Figure 6. Test 3 phase panels: weekly weight Δ vs weekly training kcal, by phase. Universal null on the training side." loading="lazy" />
+  <figcaption><strong>Figure 6.</strong> Test 3 phase panels: weekly weight Δ vs weekly training kcal, by phase. Universal null on the training side.</figcaption>
 </figure>
 
-Per-quartile correlations sharpen the picture. The first quarter of the cycling era shows the strongest negative slope. Each subsequent quarter is weaker. By the fourth quarter the slope is indistinguishable from zero. The decay is monotonic in point estimate, not stochastic. The per-quartile confidence intervals each cross zero individually, but the trend line through the four quartile r-values is the signature of a regime-bound finding, not a stable predictor obscured by noise.
+Two facts in the table do the load-bearing work for the rest of the paper.
 
-The mechanism I can name is a ceiling effect, but I have to be explicit that this is post-hoc. The signal died first; the explanation came after. In the onboarding period, RHR was both higher in absolute terms and more variable day-to-day, ride speed was lower and more variable, and the two moved together. Once trained-state RHR settled into the 44–48 bpm range, day-to-day RHR variation may no longer have encoded recovery information that affected pace. That's a story consistent with the data, not a tested mechanism. The dataset can't tell a true ceiling effect apart from any other Act-II-onboarding-only co-movement that happened to involve RHR. So the restated v1 headline reads: during the first eight months of the cycling era, morning RHR predicted long-ride pace at r ≈ −0.5; that relationship had decayed to zero by August 2025 onward, and the mechanism is not established. It's a real Act-II onboarding-window phenomenon and a worthwhile description of how a body becomes a cyclist. It isn't a forward-going coaching predictor. RHR is off the list of metrics I read before a ride.
+The first is **P4: 25 weeks of the heaviest training in the dataset (3,330 kcal/wk avg, ~475 kcal/day of training kcal — 2.3× the P1 baseline), and the scale rose +2.42 kg total**. The "I am a machine" instinct is contradicted by the strongest training phase showing the second-largest weight gain.
 
-Three other predictor families were brought into the analysis hoping to rescue the §6 narrative. None did. Wind speed had the right sign and the right physical mechanism, but a confidence interval that touched zero. Temperature looked positive on long rides but was confounded with route mix and time of season. Prior-day calories and macros were null on speed once the trend was removed. The only statistically clearer signal was that eating more the day before correlated negatively with average heart rate (r = −0.24, n = 120), consistent with better fueling state, but it didn't translate to a faster ride. Lift-day proximity (whether a strength session was yesterday, the day before, or the same morning) was a flat null on every metric tested.
-
-So after 124 outdoor rides, no individual recovery-state, environmental, or fueling-state predictor stably explains average speed. One fueling-state correlate landed on average ride heart rate (r = −0.24, *n* = 120) but didn't propagate to pace, and that's the only non-null result in the section. Effort and route still dominate. That's the §6 verdict, and the rest of this paper had to be honest about it before any of the surviving findings in §7 could be trusted.
-
----
-
-## 7. The signal ledger
-
-After 124 outdoor rides, four years of body-composition data, and roughly 1,300 nights of sleep architecture, here is the inventory of cross-domain claims that survived the §1 guardrail and the §6 walk-forward. It is not a long list.
-
-**Two things validated. Two regime-bound, one of which is the headline finding this section was originally written around. One falsified. One retracted (the RHR → fat-intake correlation already on the record from §1). One genuine negative result.** That is the ledger this paper is willing to defend, after one more on-the-record retraction in the section that follows.
-
-### Two that survived
-
-**Logged calorie intake systematically undercounts true intake by roughly 555 kcal per day.** Triangulate MacroFactor's expenditure estimate against Garmin's daily energy out and the scale-weight trajectory, and the Bayesian posterior mean lands at about 555 kcal per day, robust under prior sensitivity. The under-log concentrates on restaurant and work days, where logging is photo-and-voice rather than weighed. This is not a methodological aside. It is a finding. Every "calories vs. outcome" sentence in the paper has had to be corrected for it before the math will close.
-
-**REM scarcity is a duration problem, not a production problem.** The running puzzle was nights with 0% REM: eight of twenty-four tracked nights at one point during the Ramadan window. The reframe came from looking at *when* in the night REM accumulates. 65.4% of the dataset's total REM occurs in the final third of the night. On nights that get truncated short, REM disappears first. The watch is not failing to detect it. The body is not getting to it. The intervention is sleep duration, not architecture-targeted tinkering.
-
-### Two that did not generalize (regime-bound)
-
-**Morning RHR → long-ride average speed.** Already covered in §6. The v1 headline of *r* = −0.35 across 54 long rides ≥50 km collapsed to a flat cloud on the test half (Aug 2025 – Apr 2026), with a 28-day-block bootstrap CI of [−0.53, +0.08] that crosses zero. Real inside the Dec 2024 – Aug 2025 onboarding window. Gone in the next.
-
-**HRV on the night before predicts the day's calorie intake, inside 2026 only.** This is the second worked retraction in the paper, and it earns its own paragraph because the original framing was the strongest-looking validated finding in the screen.
-
-The original result was clean. Inside a 114-day YTD-2026 window (Jan 1 – Apr 24, 2026), I ran eighteen one-day-lag tests with the Bonferroni correction applied. HRV(t−1) → calories(t) came back at *r* = +0.374, *n* = 107, *p* < 0.0028. The OLS slope was +24.6 kcal per millisecond of overnight HRV. The within-window partial *r* controlling for phase was near zero away from the marginal *r*, which I read at the time as evidence the signal was not a phase confound. It got wired into the daily briefing script.
-
-On April 26, 2026, the day this paragraph is being written, I bulk-pulled daily Garmin overnight HRV back to its earliest reliable date (Mar 1, 2023) and joined it to the daily MacroFactor calorie record from the same window. The result is 1,113 consecutive-day HRV(t−1) → calories(t) pairs spanning Mar 2023 → Apr 2026. The YTD-2026 frame is a 9.7% slice of that table. On the full table, the slope is +7.1 kcal per millisecond of HRV with *r* = +0.14. Inside the cycling era 2025 alone (n = 349 days, Dec 2024 – Nov 19, 2025) the slope is +0.4 kcal/ms with *r* = +0.01, near zero. The +24.6 slope lives inside calendar 2026, full stop.
-
-Look inside the Iron 70.3 prep phase itself, which began Nov 20, 2025 and ran through race day Feb 14, 2026. Same training block, same race build. The Nov 20 – Dec 31, 2025 portion (n = 42) shows slope −2.7 / *r* = −0.04. The Jan 1 – Feb 13, 2026 portion (n = 45) shows slope +26.7 / *r* = +0.31. The phase isn't what flips the sign. The calendar is. The other 2026 phases confirm the pattern: Ramadan cut (n = 29, slope +11.5, *r* = +0.21) and Eid Challenge (n = 18, slope +9.7, *r* = +0.18) are positive within 2026, with the elevation concentrated in stress phases. The full prep era pooled (Nov '25 – Feb '26) is +9.2 kcal/ms (n = 87, *r* = +0.13); the late-2025 portion drags the average down. It is not a property of this body's autonomic chemistry. It is a property of being in calendar 2026, on this body, in this year. Useful conditional fact, entirely different claim from the one this section was originally going to make.
-
-The within-window partial-*r* check that earlier read as "robust to confound" turns out to have been a coarser failure than it looked. The binding regime is the screening window itself, and a partial-*r* control that never sees data outside that window cannot detect that. Phase-stratified replication is a necessary check; it is not sufficient when the screening window is itself a regime. The §1 guardrail was specified to catch this exact failure mode. Check 3, walk-forward over leave-one-out, with the held-out frame being a different period rather than a different fold inside the same period. This finding cleared every check on the YTD-2026 frame and failed Check 3 on the held-out historical record. Same failure mode as §6. Second instance of the same lesson: every signal that survives a within-window screen earns a held-out historical replication before it becomes a claim, not after.
+The second is the silent column — the mean weekly intake. Across phases, **intake climbs from 15,399 (P1) → 18,108 (P4). That is +387 kcal/day of baseline intake creep**, a multi-year drift in the size of the meals around the training. +387 kcal/day for seven days is +2,700 kcal/wk. An extra +1,500 kcal/wk of training, retained at the 67% efficiency TEST 1 measured, produces ~1,000 kcal/wk of net deficit. The intake creep is bigger than the deficit the additional training was supposed to deliver. The training works; the eating around it grew enough to eat its product.
 
 <figure>
-  <img src="/paper/figures/fig05_hrv_vs_next_day_calories.png" alt="Figure 5. HRV(t−1) → calories(t), Mar 2023 → Apr 2026, n = 1,113 consecutive-day pairs. Panel A: pooled scatter, era-coloured. Black OLS line is the pooled slope of +7.1 kcal per millisecond of HRV with r = +0.14, near zero. The red dashed line is the calendar-2026 OLS overlay shown for comparison. Panel B: calendar 2026 inset (Jan 1 – Apr 24, 2026), the cluster on which the §7 +24.6 kcal/ms / n = 107 claim was first made; the panel header reports the same cluster as currently constituted (n = 108, slope +27.0 kcal/ms, r = +0.41), one extra day added since the original Apr 24 freeze, the operative numbers in §7 are the originals. Panel C: per-era OLS slope bars after the Apr 26, 2026 prep-phase boundary correction (Iron 70.3 prep widened from Jan 1 → Nov 20, 2025 start). Pre-cycling (n = 614, Mar '23 – Nov '24) +5.3, Cycling era 2025 (n = 349, Dec '24 – Nov 19, '25) +0.4, Iron 70.3 prep pooled (n = 87, Nov '25 – Feb '26) +9.2, Ramadan (n = 29) +11.5, Eid Challenge (n = 18) +9.7. The Iron 70.3 prep slope splits cleanly by calendar year: Nov 20 – Dec 31, 2025 portion (n = 42) is −2.7, the Jan 1 – Feb 13, 2026 portion (n = 45) is +26.7, same training phase, opposite signs across the year boundary. The &quot;personal physiology constant&quot; framing collapses on contact with the historical record; the slope lives in calendar 2026's stress phases, not in this body's autonomic chemistry generally." loading="lazy" />
-  <figcaption><strong>Figure 5.</strong> HRV(t−1) → calories(t), Mar 2023 → Apr 2026, <em>n</em> = 1,113 consecutive-day pairs. Panel A: pooled scatter, era-coloured. Black OLS line is the pooled slope of +7.1 kcal per millisecond of HRV with <em>r</em> = +0.14, near zero. The red dashed line is the calendar-2026 OLS overlay shown for comparison. Panel B: calendar 2026 inset (Jan 1 – Apr 24, 2026), the cluster on which the §7 +24.6 kcal/ms / <em>n</em> = 107 claim was first made; the panel header reports the same cluster as currently constituted (<em>n</em> = 108, slope +27.0 kcal/ms, <em>r</em> = +0.41), one extra day added since the original Apr 24 freeze, the operative numbers in §7 are the originals. Panel C: per-era OLS slope bars after the Apr 26, 2026 prep-phase boundary correction (Iron 70.3 prep widened from Jan 1 → Nov 20, 2025 start). Pre-cycling (n = 614, Mar '23 – Nov '24) +5.3, Cycling era 2025 (n = 349, Dec '24 – Nov 19, '25) +0.4, Iron 70.3 prep pooled (n = 87, Nov '25 – Feb '26) +9.2, Ramadan (n = 29) +11.5, Eid Challenge (n = 18) +9.7. The Iron 70.3 prep slope splits cleanly by calendar year: Nov 20 – Dec 31, 2025 portion (n = 42) is −2.7, the Jan 1 – Feb 13, 2026 portion (n = 45) is +26.7, same training phase, opposite signs across the year boundary. The "personal physiology constant" framing collapses on contact with the historical record; the slope lives in calendar 2026's stress phases, not in this body's autonomic chemistry generally.</figcaption>
+  <img src="/paper/figures/fig2_silent_creep.png" alt="Figure 2. The silent creep: 30-day rolling mean of logged caloric intake, with phase-mean dashed segments. Drift P1 → P4 is +387 kcal/day." loading="lazy" />
+  <figcaption><strong>Figure 2.</strong> The silent creep: 30-day rolling mean of logged caloric intake, with phase-mean dashed segments. Drift P1 → P4 is +387 kcal/day.</figcaption>
 </figure>
 
-A note on the operational consequence. The morning briefing script (`scripts/briefing.py`) carries the +24.6 kcal/ms slope as a daily fueling forecast. Inside the active Eid Challenge phase that forecast is still calibrated; outside high-stress phases it is over-reactive. The forecast stays in place through the end of the active phase and is regenerated against a phase-current frame whenever the protocol exits a stress phase. It is not carried forward as a personal constant.
+**Verdict (the one the paper sells from here on):** at the multi-week horizon and on the actual scale-weight outcome, training kcal does not predict weight loss in any of the four phases once intake is partialled out. The mechanism is not that training is futile — it is that baseline intake has crept upward across phases by enough to neutralise the residual deficit. The aphorism "you can't outrun a bad diet" is closer to confirmed than refuted, but the explanation is the slow-drift one, not the textbook one. *Figure 2 (Silent Creep) is the visual of the intake side; Figure 6 (Test 3 phase panels) is the visual of the universal null on the training side.*
 
-### One that did not survive
+### §3.6 Physiological rescue narratives — TEST 4
 
-**The protein-collapse predictor.** A 57-day window of Ramadan-cut data showed a clean relationship between lift-day proximity and a same-day collapse in protein intake (AUC 0.929, *n* = 57). It looked operative. Re-fit on the year-to-date frame at *n* = 380, the AUC dropped to 0.677, barely better than chance. The pattern was a Ramadan-phase artifact: fasting hours and lift-day timing co-moved during Ramadan and were independent outside it. It failed Check 2 of the §1 guardrail.
+A null on Q1 invites three obvious comebacks. Each is the kind of thing a sympathetic reader would want to believe. Each was pre-registered with a locked verdict tree and a falsification threshold before the script ran. All three came back null. Run order: 4A → 4B → 4C, single execution, no peeking.
 
-The retracted RHR → fat-intake correlation from §1 is the second item on this side of the ledger. Together they bring the falsified-or-retracted count to two.
+**Model 4A — the T+1 hunger rebound.** Hypothesis: yesterday's hard session suppresses appetite same-day but triggers compensatory overeating ~24 h later. Spec: surplus_t ~ unified_load_t + unified_load_(t-1) + is_lift_yesterday + is_leg_day_yesterday + stress_t. Pre-registered effect floor: β on yesterday-load ≥ +0.15 kcal per load-pt. Pre-registered guardrails: walk-forward train/test, phase-stratified must hold in P1 OR P3, Bonferroni α = 0.0125. The result on the yesterday-load coefficient is **β = +0.008 (95% CI [-0.032, +0.048], p = 0.69, n = 1,263)**. Twenty times smaller than the floor and statistically indistinguishable from zero. All four guardrails fail. *The compensation that exists is same-day (TEST 1's β_activity = +0.33). There is no detectable next-day rebound.*
 
-### One genuine negative result
+**Model 4B — the P4 recomposition.** Hypothesis: the +2.42 kg P4 weight gain was muscle and glycogen, not fat (the gym-bro rescue). Method: per-phase decomposition Δweight = Δfat + Δlean, all on a 7-day-rolled basis, sum-consistent within 0.01 kg. Pre-registered verdicts: ADIPOSE (Δfat ≥ +1.8 kg AND Δlean ≤ +0.5 kg), FUNCTIONAL (Δlean ≥ +1.5 kg AND Δfat ≤ +0.8 kg), NOISE (both deltas within BIA noise floor), MIXED otherwise. The P4 decomposition lands at **Δfat = +2.24 kg, Δlean = +0.30 kg, BIA noise floor = ±0.76 kg**. The fat-mass change is 3× the noise floor; the lean-mass change is below it. **88% of the P4 weight gain was fat.** The recomposition rescue is falsified.
 
-**Day-ahead prediction of recovery state from prior-day metrics fails on this stack.** Across every tested model (gradient-boosted trees, regularized regression, simple lag features), predicting tomorrow's HRV, sleep score, RHR, or training readiness from yesterday's values plus context produced an out-of-sample R² below zero on the YTD frame at *n* = 55. Worse than predicting the dataset mean. This is a real finding, not a software failure. At one season's worth of daily-aggregate resolution, day-to-day variance dominates day-to-day signal. Hourly resolution, multi-year *n*, or external feature integration (work calendar, weather, alcohol, meal timing) would change the answer. The current data layer doesn't.
+**Model 4C — the NEAT step gap.** Hypothesis: heavy training cratered non-exercise activity — the body sat down to compensate, silently shrinking TDEE. Method: per-phase median(steps | training day) − median(steps | rest day), bootstrap 95% CIs. Falsification threshold: gap_P4 − gap_P1 ≥ −2,000 steps (the gap should *widen* P1 → P4 if NEAT is being suppressed). Result: **gap_P1 = +792 steps, gap_P4 = +1,566 steps, gap_P4 − gap_P1 = +774 steps**. The gap moved in the *opposite* direction to the prediction. Training days had more steps than rest days in every phase, all four bootstrap CIs strictly excluded zero, and the P3 / P4 phases (heaviest training) had the *biggest* gaps. The NEAT-crater rescue is rejected. *The body did not sit down.* (Caveat: total-steps include exercise steps; the prediction was a P4 crater and we got the opposite, so the confound cuts the wrong way to rescue the hypothesis.)
 
-### What the phases added
+| Rescue narrative | Verdict | What it would have rescued |
+|---|---|---|
+| Yesterday's hard session causes today's overeating | REJECTED (4A, β = +0.008 vs floor +0.15) | TEST 3 null, by relocating the compensation to a 24h lag |
+| P4 weight gain was muscle / glycogen, not fat | REJECTED (4B P4 ADIPOSE, +2.24 kg fat / +0.30 kg lean) | The P4 datapoint, by reframing it as functional |
+| Heavy training cratered NEAT (silent TDEE loss) | REJECTED (4C, gap widened by +774 steps) | The intake-creep finding, by relocating the missing kcal |
 
-Two phase-response patterns survive at the descriptive level without graduating to predictive findings.
-
-In the **Ramadan cut** (Feb 18 – Mar 19, 2026), the HRV-BALANCED-day rate dropped from 93% pre-Ramadan to 6% during. Across the entire 30-day window HRV did not register "balanced" on a single morning. The body-composition outcome was on protocol for the phase-defined window (−3.1 kg, −1.8 percentage points body fat from Feb 18 to Mar 19) but the autonomic cost was the largest in the dataset. RHR, by contrast, was flat across all five protocol phases, between 46.8 and 49.7 bpm, which is its own finding: RHR is not a phase-sensitive metric in this body, despite being the §6 false alarm.
-
-In the **Home Reset** (Mar 20 – Apr 2, 2026), HRV recovered to baseline within fourteen days, *while sleep volume continued to worsen week by week*. This is the cleanest counter-example in the dataset to the assumption that sleep drives recovery. Whatever the body needed after Ramadan to reset its autonomic state, it was not a function of nightly hours in bed.
+**Verdict:** all three rescues fail. The combined effect on the §4 synthesis is structural: the Silent Creep thesis gains strength precisely because the obvious physiological alternatives have now been tested and falsified. Only the boring answer survives the elimination procedure — *you ate more, slowly, across years.* Figure 3 (Test 4 panels) is the visual of all three nulls in one frame.
 
 <figure>
-  <img src="/paper/figures/fig07_phase_response.png" alt="Figure 6. Phase response across the V2 protocol ladder. Panel A: HRV-BALANCED-day rate by phase. Pre-Ramadan training was 93% BALANCED days; the Ramadan cut collapsed to 6%; post-race recovery, Home Reset, and the active Eid Challenge are all back at 100%. Panel B: mean morning RHR by phase. Every bar sits between 46.8 and 49.7 bpm, the empirical floor of &quot;RHR is not a phase-sensitive metric in this body.&quot; Panel C: the Home Reset window (Mar 20 – Apr 2, 2026) with daily overnight HRV (blue, left axis) climbing while daily sleep duration (red, right axis) trends down, the cleanest counter-example in the dataset to the assumption that sleep volume drives autonomic recovery." loading="lazy" />
-  <figcaption><strong>Figure 6.</strong> Phase response across the V2 protocol ladder. Panel A: HRV-BALANCED-day rate by phase. Pre-Ramadan training was 93% BALANCED days; the Ramadan cut collapsed to 6%; post-race recovery, Home Reset, and the active Eid Challenge are all back at 100%. Panel B: mean morning RHR by phase. Every bar sits between 46.8 and 49.7 bpm, the empirical floor of "RHR is not a phase-sensitive metric in this body." Panel C: the Home Reset window (Mar 20 – Apr 2, 2026) with daily overnight HRV (blue, left axis) climbing while daily sleep duration (red, right axis) trends down, the cleanest counter-example in the dataset to the assumption that sleep volume drives autonomic recovery.</figcaption>
+  <img src="/paper/figures/fig3_test4_panels.png" alt="Figure 3. Test 4 panels: three rescue narratives, three pre-registered nulls (T+1 hunger rebound, P4 recomposition, NEAT step gap)." loading="lazy" />
+  <figcaption><strong>Figure 3.</strong> Test 4 panels: three rescue narratives, three pre-registered nulls (T+1 hunger rebound, P4 recomposition, NEAT step gap).</figcaption>
 </figure>
 
-That is the ledger. Three findings I'll defend, two I'm on the record as having gotten wrong, one I'm on the record as having tried to make work and failed. What four years of self-tracking buys you, given that ledger, is the question §8 takes up.
+*Power-data robustness check:* 4A was originally run with HR-derived TRIMP as the intensity metric. After the verdicts were locked I re-pulled Garmin's server-side training stress score for the 166 cycling-era cycling + multisport rides and re-ran 4A with `power_tss_garmin` substituted for `hr_trimp` on the 155 of those rides where Garmin had computed it. β on yesterday-load moved from +0.0080 to +0.0081. The null is not a measurement-quality artifact; better intensity instrumentation does not surface a hidden T+1 effect because there isn't one.
 
 ---
 
-## 8. What four years of self-tracking buys you
+## §4 — Synthesis
 
-Given a ledger that small, the honest question is whether four years of daily measurement was worth doing at all. The answer is yes, but not for the reasons most people expect.
+Six guardrails, in order, on the same starting claim. Each one strips something off. What remains at the end is not what I thought I had.
 
-Self-tracking sells itself on prediction. The pitch: aggregate enough data about your body and the model that emerges will tell you what to do tomorrow morning. The negative result in §7 is a clean falsification of that pitch on this stack. Day-ahead prediction of any of the watch's recovery metrics, fitted on YTD data with every reasonable model architecture, is worse than predicting the mean. The data layer is not dense enough, at daily resolution and one season's *n*, to support it.
+| Layer | Guardrail | What it showed | What it left intact |
+|---|---|---|---|
+| Daily, pooled | §3.1 walk-forward | YTD r=+0.43 collapses across 1,263 days | A residual signal in some slice |
+| Daily, era-stratified | §3.2 phase split | Signal lives in cycling era only | A residual same-day cycling-era effect |
+| Daily, with controls | §3.3 TEST 1 | β_activity = +0.33 (training compensates at ~33% per kcal); β_stress = +18-20 kcal/pt residual | Two partial channels: 67%-efficient training + a small but real stress channel |
+| Weekly | §3.4 TEST 2 | Q4-day rule has no weekly footprint (dose-response r = +0.056, p = 0.642) | Body self-regulates the weekly accounting |
+| Multi-week / phase | §3.5 TEST 3 | Training kcal does not predict weight loss in any of the 4 phases (n=182) once intake is partialled; +387 kcal/day intake creep P1 → P4 | The Silent Creep thesis as the headline mechanism |
+| Physiological | §3.6 TEST 4 | T+1 rebound rejected (β=+0.008); P4 ADIPOSE (88% fat); NEAT crater rejected (+774 step gap) | Only the boring answer remains: slow multi-month intake drift |
 
-What four years of self-tracking actually buys is three things.
+The synthesis lands here.
 
-The first is calibrated baselines. Knowing my HRV operates in a 56–80 ms band, that my morning RHR sits in a 44–48 bpm corridor, that my expenditure floor in a non-cycling state is 1,860 kcal and in a trained state is 2,040 kcal: none of these are predictions. They are the reference frame within which any single morning's reading becomes interpretable. A 56 ms HRV reading is a different signal in a body whose mean is 70 than in a body whose mean is 50. The watch's generic "balanced / unbalanced / low" badge is a population-grade version of this baseline. The personal version, built from years of your own data, is more discriminating. It does not predict tomorrow. It tells you whether tomorrow is normal.
+The aphorism *"you can't outrun a bad diet"* is closer to confirmed than refuted for this subject — but the explanation is not the textbook one. Per session, the training is two-thirds efficient; you do retain about 670 kcal of net deficit out of every 1,000 kcal you burn. That number is not zero. The compensation that exists is same-day appetite (TEST 1), not a delayed rebound (TEST 4A null). The body does not sit down to compensate (TEST 4C null). The P4 weight gain was not redirected into muscle (TEST 4B ADIPOSE).
 
-The second is retroactive accountability. The §6 walk-forward analysis was only possible because there were 124 outdoor rides on file with the recovery state of each preceding night attached. The §7 protein-collapse falsification was only possible because the 57-day Ramadan window could be embedded in a 380-day YTD frame. The intake under-log was only triangulable because four years of food logs could be cross-checked against Garmin's expenditure trace and the actual scale-weight curve. Every check in the §1 guardrail relies on having more data than the question being asked needs. The benefit accrues backward in time, not forward.
+What the training fails to outrun is **a +387 kcal/day baseline intake drift across phases** — a slow, multi-year, day-by-day inflation of the meals around the bigger training. +387 kcal/day for seven days is +2,700 kcal/wk. An extra +1,500 kcal/wk of training, retained at 67% efficiency, produces ~1,000 kcal/wk of net deficit. The drift is bigger than the deficit. The training works; the eating culture grew enough to eat its product. This is not a thermodynamic finding — the calories balance — it is a *behavioural* finding about how lifestyle scales with athletic ambition.
 
-The third one is the most useful, and the one I expected least when I started.
+The 67% number and the +387 number are the two anchors of the title. The first one is what the workouts buy you. The second one is what gets between the workouts and the scale.
 
-Across the analyses in this paper, the things I was most certain would predict performance (single-night sleep, single-night HRV, prior-day macros, lift-day proximity) turned out to be flat nulls. The things I was least certain about (the intake under-log and the duration-bound REM finding) turned out to be operationally real. The HRV-to-next-day-calories signal looked like the third such case for several months; the held-out historical record showed it was a 2026-stress-phase phenomenon and not a personal physiology constant, which is itself a useful conditional fact and a different claim from the one I expected to make. The dataset's main job has been to disagree with me, often. Without four years of receipts, neither the §1 retraction of the RHR → fat-intake correlation nor the §7 retraction of the HRV → next-day-calories slope happens. I publish them, somebody quotes them, and a wrong fact about an N=1 body becomes one of the things I believe.
+The methodology contribution is structural. Each guardrail in the chain — pooled vs walk-forward, era stratification, training-load control, weekly aggregation, phase × weight regression, physiological rescue tests — looks at the same daily data through a different aperture, and each one reveals a different facet of the phenomenon. Stopping at any one of them produces a different paper, most of them wrong. *Most quantified-self analyses I have read stop at one or two of the first three.* That, I think, is why most of them confidently report effects that the underlying data does not actually support. §6 generalises the framework.
 
-The caveat that goes with this is that the questions I never asked have not been audited any more than they would be in a document without a guardrail. The discipline catches what enters it. Silent positives stay silent. Granted, the audit-on-entry is still the most valuable thing the data does.
+## §5 — Operational rules — what survives and what gets retired
 
-The cost of self-tracking at this depth is not the time spent logging. It is the discipline cost. Every claim has to clear the §1 guardrail before it can be read as anything more than a guess. Most candidate findings do not clear it. The good ones earn their place by being what survives, not by being what was looked for.
+Six guardrails on a single dataset produces some operational rules and breaks others. This is the inventory: what I will and will not do differently after the analysis than before it.
 
-Four years of daily measurement does not produce an oracle. What it produces is a baseline, an accountability record, and a falsifier of the things I was most sure of. None of those are the pitch. The pitch is dead.
+### §5.1 Rules that survive
 
----
+**The 67% rule.** Per session, I retain about 670 kcal of net deficit out of every 1,000 kcal Garmin reports as activity expenditure (§3.3, β_activity = +0.33, p < 0.0001). This is the planning constant for any session-by-session deficit math. A 90-minute Z2 ride that costs 900 kcal does not buy a 900 kcal eating window; it buys ~600. Deficit targets get written against the 67% number, not the raw burn.
 
-## 9. Where this could be wrong
+**The residual stress channel.** Independent of how much I trained, +18 to +20 kcal of intake follows every additional Garmin stress-point (§3.3, β_stress through M2/M3/M4, p < 0.001). The channel is real and survives partialling out training, but it is too small to anchor a daily-threshold rule — TEST 2 (§3.4) showed it does not aggregate to a weekly footprint. It earns monitoring on weeks when life-stress is up — work travel, sleep-debt streaks, family stress — without earning a stop-eating rule.
 
-Nine real limitations sit on top of every claim in this paper.
+**Phase × weight as the unit of analysis.** Weight outcomes get tested against phase-stratified training-and-intake regressions, never against pooled cross-phase correlations. P1 / P2 / P3 / P4 are different lifestyles, not different time periods of one lifestyle. Anything claimed across them is at the mercy of whichever phase the subject is in.
 
-The most obvious is that *n* = 1. Population-grade claims are not in scope and were never the goal. What is in scope is whether the within-subject signals reported here would replicate inside a different individual's longitudinal record, and the answer is *probably some of them, probably not others, and this dataset cannot tell you which.* A second self-tracking subject would clarify it. There is no second self-tracking subject.
+**The 14-day rolling intake median.** The Silent Creep (§3.5) is a multi-month inflation of baseline intake. The detection device is a 14-day rolling median of MacroFactor logged kcal, sliced by phase, plotted against the phase's anchor. If the median drifts more than ~+150 kcal/day above anchor for two consecutive 14-day windows, the deficit is being eaten before it reaches the scale. This is the leading indicator the protocol's `silent_creep` red flag is built on.
 
-Logged calorie intake under-counts true intake by roughly 555 kcal per day. §7 reframes this as a finding rather than a flaw, because the magnitude was triangulable. It is also a constraint on every "calories vs. outcome" calculation in the paper. Outcomes that depend on knowing absolute intake are degraded by a quantity at least equal to the size of the effects most studies in this space report.
+### §5.2 Rules that get retired
 
-Bioimpedance error. The scale's body-fat reading drifts ±2–3 percentage points from a DEXA scan on the same day. Every body-fat number in this paper is therefore a *change*, not a level, and the smaller the change, the less reliable the trend. The smart scale was retired in March 2026; after that the body-fat trace effectively stops.
+**"Garmin stress > 28 = budget-at-risk day."** Experiment 16's flagship coaching rule. TEST 2 (§3.4) found no weekly footprint — the dose-response Pearson on Q4-day count vs weekly surplus is r = +0.056, p = 0.642. Local +600 kcal Q4-day overshoots are absorbed by compensation days inside the same week. The body self-regulates the weekly accounting; the daily threshold is theatre. Retired.
 
-Selection bias on what gets logged is real and unevenly distributed. Food logging fails on no-effort days. The protein-collapse predictor of §7 was a real signal precisely *because* logging fails differently in Ramadan than out of it. The same is true at smaller scales for sleep tracking on overnight travel, ride logging when the watch dies mid-ride, and strength logging during app migration.
+**The pooled YTD r = +0.43.** Headline number from §2's almost-published draft. Did not survive the walk-forward to 1,263 days. Retired with a public note that any future single-window correlation under 365 days does not get reported until it has been replicated on a held-out half (§6.1).
 
-Then there is motivated reasoning, documented but not eliminated. On April 16, 2026 I came to the data wanting my strength regression to be a recovery problem, the kind that resolves with better structural training and sleep. The numbers said the drop was bigger than the concurrent-training literature predicts for cycling-mode endurance, and my weight hadn't moved all week, so the cut wasn't carrying it either. Recovery alone wasn't the explanation. The §1 guardrail required the check. I ran it with dread. Other incidents are presumably in the dataset and weren't caught because the guardrail didn't fire on them. The discipline reduces this bias. It doesn't zero it.
+**"Same-day stress causes overeating," as a clean univariate claim.** §3.3 partialling out activity dropped β_stress 41.9%. About a third of the surface signal was co-varying training load, not a clean autonomic channel. The univariate phrasing is replaced by the §3.3 two-channel framing.
 
-None of the findings in this document were pre-registered, and the framing in §8 implies more discipline than I had. Hypotheses were generated, tested, and filtered through the §1 guardrail in the same passes. This is hypothesis-after-results-known with post-hoc filters bolted on, not pre-registered confirmatory work. The HRV → next-day-calories result that §7 originally carried as the strongest validated finding came out of an eighteen-test scan on which Bonferroni was applied; Bonferroni controls family-wise error within a chosen test family, but the choice of which eighteen tests to run was itself made after looking at the data, and the choice of YTD-2026 as the screening window was itself the regime that turned out to be doing the work. The §1 guardrail catches alignment artifacts (Check 1), regime-bound signals (Check 3), and unbacked claims (Checks 4 and 5); it does not catch the deeper move of choosing which questions to ask, or which window to ask them on, after seeing the data. The cleanest description of what kind of paper this is: *exploratory analysis with disciplined post-hoc filters*, not confirmatory science. The findings are real to the degree that those filters are tight; they are not real to the degree that pre-registration would have made them.
+**"Hard session today → hungry tomorrow."** TEST 4A (§3.6) returned β_yesterday-load = +0.008 ± 0.040 against a pre-registered floor of +0.15. Twenty times smaller than the floor and statistically indistinguishable from zero. Compensation is same-day, not next-day. Any rule that schedules a refeed against yesterday's session — and there are several in the cycling literature — is not supported by this dataset.
 
-The instrument chain has drifted. The Garmin watch was replaced in January 2023; the older model recorded no overnight HRV at all, which is why the §1 figure's HRV trace begins in March 2023. Garmin's sleep-stage detection algorithm has been updated by firmware at least twice in the measurement window. MacroFactor's expenditure-EMA algorithm has been silently revised. The bioimpedance scale's body-fat curve was reweighted by a firmware push in 2024. Every cross-era comparison in this paper rides on top of these shifts and cannot fully separate "the body changed" from "the instrument re-scored the same body."
+**"P4 weight gain was muscle."** TEST 4B (§3.6) decomposed P4 to Δfat = +2.24 kg / Δlean = +0.30 kg, BIA noise floor ±0.76 kg. 88% of the gain was fat. The "I am building" instinct on a heavy-training phase is not credible without a separate lean-mass measurement; the BIA scale alone is enough to falsify the recomposition rescue. Retired.
 
-Software bugs in the analysis pipeline have already corrupted findings once on the record, and almost certainly more times silently. The shift-across-gaps bug behind the §1 retraction was caught only because I had a guardrail that fired on it. The typed-splits bug (documented in the working document's Appendix C) silently triple-counted ClimbPro overlap layers and inflated FTP estimates on three rides for an undetermined window before manual audit found it. Both bugs lived in code I had read and trusted. There is no reason to think they were the only two.
+**"Heavy training cratered NEAT."** TEST 4C (§3.6) measured a +1,566-step training-vs-rest gap in P4, not a crater. The body did not sit down. The "silent TDEE loss" intuition is inconsistent with the data and gets removed from the explanatory toolkit.
 
-Finally, the protocol record has survivor bias built into it. The phases that appear in the phase manifest and produced the §7 ledger are the ones that were committed to and tracked through. Pre-2022 weight-loss attempts, structured run training that lapsed inside a month, multiple high-protein routines that fell apart inside a week, and at least one earlier cycling onboarding attempt that did not stick: none of these were logged. The four-year record is what survived being logged, and what survived being logged is biased toward what survived being done. A complete view of "what works for this body" would require the failed protocols too, and they're gone.
+### §5.3 The behavioural rule that replaces them
 
-Read every claim above against whichever limitation here applies hardest.
+The training works; the eating around it grew. The operational change that follows from §3.5 is not training-side. It is a 2,500 kcal/day anchor with a 2,700 kcal/day ceiling on the 14-day rolling median, monitored at the weekly check-in and against the active phase. If the 14-day median punctures the ceiling, the next week's plan adjusts intake. The training plan continues unchanged.
 
----
+This inverts the implicit policy of the whole pre-paper period — *"if I am training more, I have earned more food"* — to its operational opposite — *"if I am training more, the food anchor stays put, because the training was always counted on at 67% and the rest is drift."*
 
-## 10. Where the receipts live
+## §6 — The six-guardrail framework, generalised
 
-This document is the readable layer. The verifiable layer is a longer working document, the data-doc, kept alongside the project's pipeline code and per-section reproduction scripts. The intent is that any number on this page can be traced back to the script that produced it. The working document carries everything this one deliberately doesn't. Appendix A is the full data dictionary for the eight CSV inputs. Appendix B is the phase-by-phase and year-by-year summary tables. Appendix C is the typed-splits-bug post-mortem with the three layers of overlap diagrammed. Appendix D is the worked example of the §1 guardrail catching the RHR → fat-intake retraction. Appendix E is the bibliography of the cited literature (concurrent training, HRV in endurance, BIA accuracy, sleep architecture, irregular time-series correlation, motivated reasoning, Ramadan in trained athletes), mapped to the sections that cite each entry. Appendix F is the three-layer code architecture with the test surface and the data-flow diagram.
+This is the part of the paper independent of the subject. The dataset is mine, but the six guardrails travel. They are an audit anyone can run on a quantified-self analysis before publishing it. They are ordered by what they strip off — each one removes a specific class of artifact, in a sequence that is hardest to argue with when it produces a null.
 
-If a claim on this page looks load-bearing and you want to check it, my DMs are open. The source script will travel with the answer. Every number that survived to this document has cleared that bar.
+### §6.1 Guardrail 1 — Pooled vs walk-forward
+
+A correlation computed on a single contiguous window has a hidden parameter: *which* window. Year-to-date, last-90-days, "the cycling era" — any of these is an in-sample fit even if you ran it once. Before claiming the coefficient describes a stable subject-wide regularity, refit on the held-out other half. If the coefficient survives both halves, the signal is regime-stable. If it lives in one half, it is regime-bound and must be reported as such.
+
+The original Experiment 16 r = +0.43 lived in the YTD-2026 half and collapsed across 1,263 days. The §2 draft was a regime-bound number waved at as if it were a stable one.
+
+### §6.2 Guardrail 2 — Era / phase stratification
+
+If the data spans different lifestyles, a pooled correlation is averaging across them. The phases that matter are real-world events — bought a bike, blew up a knee, registered for a race, started cutting — not data-driven cuts. Choose them up front. Compute the correlation within each phase and report all of them. A signal that lives in one phase is a phase-specific finding; a signal that lives in none is noise the pooled mean was hiding.
+
+The cycling-era stratification of the residual stress signal isolated it to phases P2 / P3 / P4 and produced a flat null in P1 (n = 789 days). Whatever the channel was, it was downstream of the bike, not a stable property of the subject.
+
+### §6.3 Guardrail 3 — Covariate control
+
+The most dangerous correlation is one that survives the first two guardrails and is being driven by an unobserved third variable correlated with both inputs. The discipline is to write the alternative explanation down before running the regression, then add it as a covariate.
+
+In §3.3, the alternative was *training kcal*. Adding it dropped β_stress by 41.9% and produced the actual two-channel decomposition (+0.33 kcal of compensatory eating per training kcal, +18-20 kcal residual per stress-pt). VIF on the joint model stayed clean, so the channels were separable. Without that single covariate, the §2 headline would have been off by almost half on the surviving coefficient and entirely wrong on the mechanism.
+
+The general rule: every plausible third variable goes in once. If the headline coefficient survives, the effect is robust. If it drops by more than ~30%, the original was confounded.
+
+### §6.4 Guardrail 4 — Aggregation level
+
+A daily signal is not a weekly signal. The body has a multi-day buffering window for both intake and expenditure, and a daily-threshold rule that produces a clean dose-response within the day frequently has no footprint at the weekly frequency that drives weight outcomes. Any operational rule built on a daily threshold has to be re-tested at the aggregation level the rule is supposed to bite on.
+
+§3.4 (TEST 2) tested the "stress > 28 = budget-at-risk day" rule at the weekly level. Local +600 kcal Q4-day overshoots were absorbed by compensation days inside the same week; the dose-response Pearson on Q4-day count vs weekly surplus came back at r = +0.056, p = 0.642. The body self-regulates the weekly accounting. The daily-threshold finding was real at the daily level and operationally useless at the level where weight changes.
+
+### §6.5 Guardrail 5 — Outcome regression
+
+This is the test most quantified-self analyses skip and that produces the most embarrassing reversals when run. The intermediate variable — surplus, deficit, calorie-balance, training-stress-score, recovery-index — is not the outcome. *The outcome is the thing the subject actually cares about.* For a body-comp study, that is scale weight; for a strength study, a 1-rep max; for a cycling study, a measured power-curve. Run the same regression with the headline input against the actual outcome, stratified by whatever phases the data spans.
+
+§3.5 (TEST 3) regressed weekly weight delta on weekly training kcal, within phase, controlling for intake. All four phases (182 of 182 weeks) returned no surviving slope from training kcal to weight loss once intake was partialled out — the only phase whose M1 direct slope reached significance (P1, n=110) had its sign pointing the wrong way and died completely under M2. The intermediate-variable analysis (surplus, in §3.3) had a clean two-channel result; the outcome analysis (weight, in §3.5) was a universal null. Both are true. Both matter. Stopping at the intermediate would have been the third-most-common quantified-self error in the literature I have read.
+
+### §6.6 Guardrail 6 — Pre-registered rescue tests
+
+If the outcome regression nulls the headline, the temptation is to invent a physiological story that rescues the original claim post-hoc. Compensation got delayed by 24 hours. The weight gain was muscle. The body cratered NEAT. *These are real candidate mechanisms* — the failure mode is hand-waving them in conversation without testing them. The discipline is to pre-register each rescue narrative as a falsifiable model with a locked verdict tree and a falsification threshold, run them in a pre-declared order, and accept whatever each one returns.
+
+§3.6 (TEST 4) ran the three obvious P4-and-Silent-Creep rescues — T+1 hunger rebound (4A), recomposition (4B), NEAT crater (4C) — with locked verdict logic and Bonferroni α. All three returned null in the same single execution. The §4 synthesis is structurally stronger because the rescues were tested, not because the narrative was tighter.
+
+### §6.7 The audit checklist
+
+I wish someone had handed me this before I drafted the first §2. It runs in five minutes.
+
+1. Did the headline coefficient survive a walk-forward split?
+2. Did it survive computation within each phase the data spans?
+3. Did it survive adding the most plausible third variable as a covariate?
+4. Does the aggregation level that matches the operational rule still show the effect?
+5. Has the regression been run on the actual outcome variable, not the intermediate?
+6. If the outcome regression nulls, have the obvious rescue narratives been pre-registered and run before claiming a finding either way?
+
+If any answer is "no," do not publish the headline. Do the missing test. The cost is hours; the alternative is correcting yourself in public a year later.
+
+This is a checklist for the next quantified-self analyst — and for the next analysis I run on myself.
+
+## §7 — Limits and what comes next
+
+This section names the places the paper is most fragile. The findings I would defend hardest live above these caveats; the findings I would defer to a future replication live underneath them.
+
+### §7.1 What the data does not see
+
+**Logged intake undercounts at restaurants and work.** I weigh food at home; outside the home I log by photo, voice memo, or estimation. Triangulation against scale-weight kinetics puts the average undercount at about 450 kcal/day. The §3.3 β_activity = +0.33 number is robust to this — it is a slope estimated within-subject, and a constant under-log shifts every day's surplus by the same amount, leaving slopes intact. The §3.5 +387 kcal/day cross-phase intake creep is also robust as long as the under-log fraction is roughly stable across phases, which is plausible. Any *absolute kcal* claim ("I ate 2,600 kcal yesterday") is not safe; the deficit math runs against a logged intake known to be biased low.
+
+**MacroFactor's Trend Weight is an EMA, and it lags.** The lag was about 0.4 kg at the end of the Ramadan cut versus raw scale. The phase × weight regression in §3.5 uses the raw scale series as the outcome, so the EMA lag does not propagate; the figures show the trend for legibility, with raw scatter underneath.
+
+**Modelled TDEE stops Mar 5, 2026.** MacroFactor's daily expenditure model goes silent after that date. Surplus calculations after Mar 5 use a forward-extrapolated TDEE anchored on the last 30 days of model output. Anything I claim about *post-Mar-5 surplus* therefore inherits a heuristic. Within-phase comparisons across the post-Mar-5 window are still valid (the heuristic shifts every day equally), but the absolute surplus magnitude is less trustworthy in P4's tail than earlier in the dataset.
+
+**Body-fat percentage is BIA, with a ±2-3 pp error band.** TEST 4B (§3.6) survives because the Δfat = +2.24 kg P4 change is roughly 3× the 0.76 kg noise floor. A subtler recomposition claim — a Δfat between 0.5 and 1.5 kg — would not be resolvable on this device. No DEXA series exists for this dataset.
+
+**No exercise-vs-non-exercise step decomposition.** TEST 4C (§3.6) used total Garmin daily steps and tested for a P4 NEAT crater. The result moved against the prediction (gap *widened*, +774 steps), so the contamination cuts the wrong way for the rescue narrative and the test still falsifies. A cleaner re-test would subtract step-cadenced training segments and recompute the rest-day gap on residual NEAT only. I expect the same null, but the cleaner instrument is owed.
+
+**Power-instrumented training data is partial.** Of 166 cycling-era cycling and multisport rides, 155 carry Garmin's server-side TSS. The remaining 11 use HR-derived TRIMP. The robustness check substituting `power_tss_garmin` into TEST 4A moved β_yesterday-load from +0.0080 to +0.0081 — the null hardens — so the §3.3 / §3.6 numbers are not a measurement-quality artifact. Future cycling-era findings should run on power TSS as the primary load metric and treat HR-TRIMP as a fallback only.
+
+### §7.2 What single-subject means
+
+This is N = 1. Every numerical finding in §3 — the +0.33 compensation slope, the +18-20 kcal stress channel, the +387 kcal/day intake creep — is a property of *this subject across these 1,300 days under these training protocols*. None of the numbers transfer. The reader who gets the most out of the paper is not someone who copies my coefficients but someone who runs the §6 framework on their own log and finds out what their own numbers are.
+
+The methodology contribution (§6) is what is actually portable.
+
+### §7.3 What the next round tests
+
+Three things I would fund first.
+
+**A formal lean-mass series across a phase.** A DEXA at the start of the next two phases (Controlled Cut → Steady State) would let TEST 4B run with a measurement floor below the BIA noise band, and would catch a recomposition signal a third the size of the P4 one if one existed. The hypothesis I am most uncertain about — that a deliberately structured phase under a fixed kcal anchor produces a different fat-vs-lean partition than the 88%-fat P4 result — does not get resolved until DEXA exists.
+
+**Multi-month rolling-window stability of the intake-creep slope.** §3.5 reports a phase-mean intake creep of +387 kcal/day P1 → P4. The protocol's response is a 2,500 kcal anchor with a 2,700 kcal ceiling on the 14-day rolling median. The next 90 days under that ceiling are an in-vivo test of whether the creep is a multi-year drift that has now plateaued or whether it has momentum. The rolling-median time series, plotted weekly, will say.
+
+**A second subject.** Anyone with 1,000+ days of MacroFactor + Garmin coverage who is willing to run the §6 framework on their own data and publish the six panels alongside mine. The interesting question is not whether their +0.33 matches mine — I expect it will not — but whether the *shape* of their result (which guardrail strips what off the original claim) replicates the ordering. The single most testable prediction this paper makes is that another endurance athlete's headline single-window correlation will be regime-bound and will collapse on Guardrail 1 the same way mine did.
+
+### §7.4 What this paper does not claim
+
+It does not claim that exercise is futile. The 67% efficiency number is positive, not zero. It does not claim that intake creep is universal across endurance athletes — only that it is the surviving mechanism here. It does not claim a stress-overeating link in the general population — only a residual within-subject one in this dataset, smaller after partialling out training. It does not predict any future race time or weight outcome. And it does not claim that "you can't outrun a bad diet" is true for everyone, only that the popular short-form version of the aphorism captures the correct intuition for a wrong reason in this subject's data.
+
+The reason I want to read other people's six-panel responses is that I do not know which of those caveats is the most fragile.

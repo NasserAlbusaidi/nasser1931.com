@@ -28,13 +28,13 @@ const PAGES_PAPER = join(REPO_ROOT, 'src/pages/paper');
 
 const V2_FRONTMATTER = `---
 layout: ../../layouts/Paper.astro
-title: "Becoming a Cyclist on Camera"
-subtitle: "Field report from a four-year self-experiment, written for a reader."
-byline: "Nasser Al Busaidi — Muscat, Oman — drafted April 2026"
-description: "Four years of daily body composition, sleep, HRV, and cycling performance data, audited against a six-check guardrail. Three findings survived. Two were retracted on the page."
+title: "The Silent Creep"
+subtitle: "How a +387 kcal/day drift erased a 67%-efficient training block."
+byline: "Nasser Al Busaidi · Muscat · April 2026"
+description: "1,300 days of training, eating, and weight data, walked through six guardrails. Headline: training works at 67% efficiency, but baseline intake quietly drifted +387 kcal/day across four phases."
 eyebrow: "field report"
 ogType: "article"
-image: "/paper/figures/fig01_longitudinal_multipanel.png"
+image: "/paper/figures/fig1_hero_landscape.png"
 ---
 
 `;
@@ -129,12 +129,12 @@ function stripLeadingH1(markdown) {
 }
 
 function stripV2DuplicateHead(markdown) {
-	// v2 starts with: # Title \n\n ### Subtitle \n\n *Byline* \n\n
-	// All three mirror the frontmatter exactly — strip them.
-	let out = stripLeadingH1(markdown);
-	out = out.replace(/^###\s+[^\n]+\n+/, '');
-	out = out.replace(/^\*[^\n*][^\n]*\*\n+/, '');
-	return out;
+	// The Paper layout already renders title/subtitle/byline from frontmatter.
+	// Drop everything before the first `## ` section heading so the head
+	// (title, italic subtitle, byline, leading horizontal rule) doesn't
+	// double-print regardless of which source paper we're syncing.
+	const idx = markdown.search(/^##\s/m);
+	return idx > 0 ? markdown.slice(idx) : markdown;
 }
 
 // v2 uses standalone markdown images: ![Figure N. caption](/paper/figures/figXX.png)
@@ -142,7 +142,13 @@ function stripV2DuplicateHead(markdown) {
 // does not target — so figures stay column-width. Convert each standalone-paragraph
 // image into a <figure>/<figcaption> block so the breakout layout applies and the
 // caption renders alongside the image.
-const V2_FIGURE_RE = /^!\[Figure (\d+)\. ([\s\S]+?)\]\((\/paper\/figures\/fig[0-9_a-z]+\.png)\)\s*$/;
+// Match standalone-paragraph markdown images for figures. Allows either
+// `Figure N.` or `Figure N —` separators and any png filename under
+// /paper/figures/ (newer paper uses fig1_*, test1_*, etc.).
+const V2_FIGURE_RE = /^!\[Figure (\d+)\s*[.—–-]\s*([\s\S]+?)\]\((\/paper\/figures\/[A-Za-z0-9_]+\.png)\)\s*$/;
+// Italic-line caption duplicate that follows each figure in the new paper:
+// `*Figure N — caption.*` — strip these once the <figure> block is in place.
+const V2_FIGURE_CAPTION_DUPE_RE = /^\*Figure \d+\s*[.—–-][\s\S]+?\*\s*$/;
 
 function mdItalicsToEm(text) {
 	// *foo* -> <em>foo</em>, ignoring ** (bold) and unmatched single asterisks.
@@ -154,16 +160,25 @@ function escapeAttr(text) {
 }
 
 function convertMarkdownImagesToFigures(markdown) {
-	return markdown
-		.split(/\n\n+/)
-		.map((para) => {
-			const match = para.trim().match(V2_FIGURE_RE);
-			if (!match) return para;
-			const [, num, caption, src] = match;
-			const altText = `Figure ${num}. ${caption}`.replace(/\s+/g, ' ');
-			return `<figure>\n  <img src="${src}" alt="${escapeAttr(altText)}" loading="lazy" />\n  <figcaption><strong>Figure ${num}.</strong> ${mdItalicsToEm(caption)}</figcaption>\n</figure>`;
-		})
-		.join('\n\n');
+	const paragraphs = markdown.split(/\n\n+/);
+	const out = [];
+	for (let i = 0; i < paragraphs.length; i++) {
+		const para = paragraphs[i];
+		const match = para.trim().match(V2_FIGURE_RE);
+		if (!match) {
+			out.push(para);
+			continue;
+		}
+		const [, num, caption, src] = match;
+		const altText = `Figure ${num}. ${caption}`.replace(/\s+/g, ' ');
+		out.push(
+			`<figure>\n  <img src="${src}" alt="${escapeAttr(altText)}" loading="lazy" />\n  <figcaption><strong>Figure ${num}.</strong> ${mdItalicsToEm(caption)}</figcaption>\n</figure>`,
+		);
+		// Skip the next paragraph if it's the duplicate italic caption line.
+		const next = paragraphs[i + 1];
+		if (next && V2_FIGURE_CAPTION_DUPE_RE.test(next.trim())) i++;
+	}
+	return out.join('\n\n');
 }
 
 // Replace `protocol.json` (the internal phase-config filename) with a more
@@ -199,9 +214,9 @@ function absolutizeFigurePaths(markdown) {
 }
 
 async function syncV2() {
-	const src = join(SOURCE, 'study-v3.md');
+	const src = join(SOURCE, 'endurance-license/study.md');
 	if (!existsSync(src)) {
-		console.warn(`[sync-paper] study-v3.md not found at ${src} — skipping /paper sync`);
+		console.warn(`[sync-paper] endurance-license/study.md not found at ${src} — skipping /paper sync`);
 		return false;
 	}
 	const body = convertMarkdownImagesToFigures(
@@ -209,7 +224,7 @@ async function syncV2() {
 	);
 	const dest = join(PAGES_PAPER, 'index.md');
 	const updated = await writeIfChanged(dest, V2_FRONTMATTER + body);
-	console.log(`[sync-paper] study-v3.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
+	console.log(`[sync-paper] endurance-license/study.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
 	return updated;
 }
 
@@ -249,8 +264,10 @@ async function main() {
 	await syncV2();
 	await syncV1Page();
 	await syncV1Raw();
-	const figs = await syncFigures(join(SOURCE, 'figures'), PUBLIC_FIGURES);
-	console.log(`[sync-paper] figures: ${figs.copied}/${figs.total} updated`);
+	const oldFigs = await syncFigures(join(SOURCE, 'figures'), PUBLIC_FIGURES);
+	console.log(`[sync-paper] figures (legacy): ${oldFigs.copied}/${oldFigs.total} updated`);
+	const newFigs = await syncFigures(join(SOURCE, 'endurance-license/figures'), PUBLIC_FIGURES);
+	console.log(`[sync-paper] figures (endurance-license): ${newFigs.copied}/${newFigs.total} updated`);
 }
 
 main().catch((err) => {
