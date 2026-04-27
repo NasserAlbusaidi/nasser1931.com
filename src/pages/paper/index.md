@@ -21,22 +21,22 @@ This paper is what happened when I pointed three and a half years of my own data
 
 ### 1.2 Who is doing this and why
 
-I am 28. I live in Oman. In late 2024 I bought a road bike and rearranged my life around it. By autumn 2025 I had registered for an Ironman 70.3 — that was the Muscat 70.3 on February 14, 2026 — and somewhere between those two points the question of what I weigh became a question I could no longer wave away. A triathlon is a long uncomfortable conversation about kilograms. A bike going up a hill does not care how strong you feel. It cares what is on top of it.
+I am 28. I live in Oman. In late 2024 I bought a road bike and rearranged my life around it. By autumn 2025 I had registered for the Muscat 70.3 on February 14, 2026, and somewhere between those two points the question of what I weigh became a question I could no longer wave away. A triathlon is a long uncomfortable conversation about kilograms. A bike going up a hill does not care how strong you feel. It cares what is on top of it.
 
-So for the last three and a half years I have been logging. Every meal goes into MacroFactor. Every workout goes into Garmin. Body weight, body fat, sleep, HRV, daily stress score, all of it persisted, day after day, 1,300 days deep, with the kind of completeness that only a lonely person with too many devices can achieve. None of this was collected for a study. It was collected because I am the kind of person who collects.
+So for the last three and a half years I have been logging. Every meal into MacroFactor. Every workout into Garmin. Body weight, body fat, sleep, HRV, daily stress score, all of it, day after day, 1,300 days deep. None of this was collected for a study. I just log.
 
-The question I am pointing the data at, the one this paper will and will not answer:
+The question I am pointing the data at:
 
 > Across 1,300 days of training and eating, did the training do what I told myself it was doing — earn me caloric license — or did the eating around the training quietly grow until it ate the deficit?
 
-This is not a study about other people. It is N=1. The findings are mine and only mine. But the *machinery* — the six guardrails I had to walk the original claim through to keep myself honest. Most quantified-self analyses skip three of these six guardrails. That is, I think, why most of them confidently report effects that the underlying data does not actually support.
+This is N=1. The findings are mine and only mine. What travels is the machinery — the six guardrails I had to walk the original claim through to keep myself honest.
 
 ### 1.3 The data
 
 - **Coverage:** Oct 5, 2022 → Apr 26, 2026. 1,300 daily observations.
 - **Stress:** Garmin daily average stress score (0–100, autonomic load proxy). 1,300 days.
 - **Caloric intake:** MacroFactor logged kcal. 1,268 days. Estimated under-log of about 450 kcal/day (triangulated from energy-balance reconciliation against scale weight; see §6).
-- **Training:** Every Garmin-logged activity from Sep 2022 forward. 2,124 sessions. Twenty-two activity types — outdoor and indoor cycling, road and trail running, treadmill, lap and open-water swimming, strength sessions, multi-sport (brick) workouts, walking, hiking, soccer, elliptical. Per-session calories 100% covered by Garmin in the cycling era.
+- **Training:** Every Garmin-logged activity from Sep 2022 forward. 2,124 sessions. Twenty-two activity types: outdoor and indoor cycling, road and trail running, treadmill, lap and open-water swimming, strength sessions, multi-sport (brick) workouts, walking, hiking, soccer, elliptical. Per-session calories 100% covered by Garmin in the cycling era.
 - **Weight:** MacroFactor "Trend Weight" — an exponentially-smoothed daily series — supplemented with the raw scale series. 1,278 days from MF, extended through April 2026 with my own scale logs.
 - **Expenditure (TDEE):** MacroFactor's modelled daily expenditure, available through Mar 5, 2026.
 - **Sleep:** Garmin nightly summary (hours, deep%, REM%, score). 1,300 nights, with caveats (see §3.3).
@@ -54,7 +54,7 @@ The phase boundaries matter. A pooled correlation across these four very differe
 
 ### 1.4 The question, restated more precisely
 
-I want to know two things, and I want them in this order, because the first one is what the popular argument is *actually* about and the second one is what most n=1 self-experimentation papers accidentally study instead.
+Two questions, in this order. The first is what the aphorism is actually about. The second is what most n=1 papers accidentally study instead.
 
 **Q1 (what the aphorism is actually claiming): Does increasing training volume buy weight loss?**
 Concretely: across weeks where I trained more than my baseline, did I lose more weight than weeks where I trained less? Within phase, controlling for what I ate? This is the load-bearing question. If training volume predicts weight loss, you can outrun a bad diet at least partially. If it does not, you cannot, and that is the paper's headline.
@@ -81,7 +81,7 @@ I will give you both answers. They do not contradict. They sit on top of each ot
 - **§6** is the methodology contribution: the six-guardrail framework, written in a form portable to anyone running a quantified-self analysis on their own logs. The headline number every quantified-self post leads with is almost always one of these six guardrails away from the truth. I include the audit checklist I wish I had been forced to use before writing up Experiment 16 the first time.
 - **§7** lists what this paper does not claim, where the data is weakest, and what the next round of self-experimentation should test.
 
-A note on tone. This is not a clinical write-up and I am not pretending to be a researcher writing in the third person. I am the subject and the analyst. When I say "I gained 2.42 kg in P4," I mean that I, Nasser, gained 2.42 kg between November 2025 and April 2026 while training for an Ironman 70.3. The paper is more useful if I do not hide behind the passive voice when reporting results that are personal.
+A note on tone. This is not a clinical write-up. I am the subject and the analyst. When I say "I gained 2.42 kg in P4," I mean I gained 2.42 kg between November 2025 and April 2026 while training for the Muscat 70.3. Hiding behind the passive voice on personal results would be silly.
 
 ---
 
@@ -98,9 +98,9 @@ A note on tone. This is not a clinical write-up and I am not pretending to be a 
 
 This is the paper Experiment 16 would have been if I had stopped at the first surprising number.
 
-In the first half of April 2026, while running a routine cross-domain pull on the YTD-2026 daily logs, I noticed something. Plotting Garmin's daily stress score against caloric surplus (logged kcal − MacroFactor TDEE) for Jan 1 → Apr 15, n = 105 days, the cloud was not a cloud. It tilted. The slope ran the right way around — stress up, surplus up — and the OLS fit returned **Pearson r = +0.43, p < 0.001**. A correlation that strong on a hundred-day daily series is the kind of thing a self-tracker writes up the same evening.
+In the first half of April 2026, running a routine cross-domain pull on the YTD-2026 daily logs, I noticed something. Plotting Garmin's daily stress score against caloric surplus (logged kcal − MacroFactor TDEE) for Jan 1 → Apr 15, n = 105 days, the cloud was not a cloud. It tilted. Stress up, surplus up. OLS returned **Pearson r = +0.43, p < 0.001**.
 
-The story almost wrote itself. *Garmin's autonomic-load proxy is a leading indicator of same-day caloric breach. On any day my morning stress score reads above the 75th-percentile threshold of about 28, I am at elevated risk of over-eating, regardless of how I "feel." A measurable cause of overeating, captured by a wearable I am wearing anyway, converts directly into a coaching rule — "stress > 28, watch the dinner table."* The kind of finding a self-tracker drops into a Notion page and posts. r = +0.43, p < 0.001, n = 105 — those numbers pass any peer-reviewed quantified-self filter on Twitter or a Substack.
+The story almost wrote itself. *Garmin's autonomic-load proxy is a leading indicator of same-day caloric breach. On any day my morning stress score reads above the 75th-percentile threshold of about 28, I am at elevated risk of over-eating, regardless of how I "feel." A measurable cause of overeating, captured by a wearable I am wearing anyway, converts directly into a coaching rule — "stress > 28, watch the dinner table."*
 
 I drafted that exact post. It sat in `drafts/` for two days. Then I started thinking about the window.
 
@@ -114,7 +114,7 @@ This section is the spine of the paper. Six tests, run in order, each one agains
 
 ### §3.1 Pooled vs walk-forward
 
-The original Experiment 16 finding was a Pearson r = +0.43 between Garmin daily stress (the autonomic-load proxy) and intake surplus (logged kcal − modelled TDEE), p < 0.001, n = 105 days, restricted to YTD 2026. A correlation that strong on a hundred-day window is the kind of thing a self-tracker writes up immediately. I almost did.
+The original Experiment 16 finding was a Pearson r = +0.43 between Garmin daily stress and intake surplus (logged kcal − modelled TDEE), p < 0.001, n = 105 days, restricted to YTD 2026.
 
 The first guardrail is to extend the window. Pull the same regression across the full 1,263 days of cycling-era + pre-cycling-era data and the pooled coefficient collapses. The relationship is not absent across the whole record — it is concentrated in a slice. A YTD-only window is a walk-forward training set with no test set, and the published r value is being driven by *whichever phase of life the subject is in this year*, not by a stable subject-wide property. The right discipline is to refuse to claim anything until the signal survives the held-out half.
 
@@ -132,13 +132,13 @@ This is also the moment the analytical disposition flips. Up to here, the questi
 
 This is the first guardrail with a pre-registered model spec, and the first that produces a number this paper claims. The cohort is the cycling era — Dec 2, 2024 → Apr 22, 2026, n = 503 days. The naïve Model M1 regresses caloric surplus on stress alone and gives β_stress = +34.5 kcal per stress-pt (p < 0.0001). Add the full activity-kcal stack as a covariate (M2: cycling + running + swim + strength + multi-sport + indoor + soccer + everything except walking, after a v2 fix that originally excluded swim and strength) and β_stress drops to +20.0 kcal per stress-pt — a **41.9% drop**. Add walking kcal as a separate term (M3) and stress drops further to +18.5 (p = 0.0003). VIF stays clean (≤ 2.1) across all M3 covariates.
 
-The two coefficients that survive M3 deserve to be named in plain English.
+Three coefficients matter in M3.
 
-The β on activity kcal is **+0.33** (p < 0.0001). Read it directly: every kcal of training generates +0.33 kcal of compensatory eating. The complement, **0.67**, is what gets retained as actual deficit. *A 1,000 kcal session yields ~670 kcal of net deficit, not 1,000.* The folk "endurance license" exists — eating after a hard ride is real — but it claws back about a third of the burn, not all of it. Per session, the training works, at two-thirds efficiency.
+The β on activity kcal is **+0.33** (p < 0.0001). Every kcal of training generates +0.33 kcal of compensatory eating. The complement, **0.67**, is what gets retained as actual deficit. *A 1,000 kcal session yields ~670 kcal of net deficit, not 1,000.* The folk "endurance license" exists — eating after a hard ride is real — but it claws back about a third of the burn, not all of it. Per session, training works at two-thirds efficiency.
 
-The residual β on stress is **+18-20 kcal per stress-pt** (p < 0.001 across M2/M3/M4). A +20-pt elevation in Garmin's daily stress score, *independent of how much I trained that day*, predicts about +360-400 kcal of extra intake. This is the clean stress channel, after activity is partialed out. It is real, smaller than v1 reported, and survives p < 0.001.
+The residual β on stress is **+18-20 kcal per stress-pt** (p < 0.001 across M2/M3/M4). A +20-pt elevation in Garmin's daily stress, *independent of how much I trained that day*, predicts about +360-400 kcal of extra intake. The clean stress channel, after activity is partialled out — real, smaller than v1 reported, and surviving p < 0.001.
 
-The β on walking kcal is **+0.78** (M3) — almost double the per-kcal effect of training. This almost certainly reflects walking's correlation with eating contexts (errand walks, post-meal strolls, social walks, the after-dinner promenade) more than a true biological compensation rate. The reason walking is broken out as its own term is exactly to keep that contamination out of the training estimate.
+The β on walking kcal is **+0.78** (M3), almost double the per-kcal effect of training. This almost certainly reflects walking's correlation with eating contexts (errand walks, post-meal strolls, social walks) more than a true biological compensation rate. Walking is broken out as its own term to keep that contamination out of the training estimate.
 
 **Verdict:** two channels, both real, both partial. Per-session training delivers ~67% of its theoretical kcal benefit. A residual stress channel adds ~+18-20 kcal per stress-pt independent of training. The 67% number is the one the paper title will eventually anchor on.
 
@@ -190,9 +190,9 @@ Read the table column by column. The M1 direct slope on training kcal alone is s
   <figcaption><strong>Figure 6.</strong> Test 3 phase panels: weekly weight Δ vs weekly training kcal, by phase. Universal null on the training side.</figcaption>
 </figure>
 
-Two facts in the table do the load-bearing work for the rest of the paper.
+Two facts in the table matter most.
 
-The first is **P4: 25 weeks of the heaviest training in the dataset (3,330 kcal/wk avg, ~475 kcal/day of training kcal — 2.3× the P1 baseline), and the scale rose +2.42 kg total**. The "I am a machine" instinct is contradicted by the strongest training phase showing the second-largest weight gain.
+The first is **P4: 25 weeks of the heaviest training in the dataset (3,330 kcal/wk avg, ~475 kcal/day — 2.3× the P1 baseline), and the scale rose +2.42 kg total**. The "I am a machine" instinct is contradicted by the strongest training phase showing the second-largest weight gain.
 
 The second is the silent column — the mean weekly intake. Across phases, **intake climbs from 15,399 (P1) → 18,108 (P4). That is +387 kcal/day of baseline intake creep**, a multi-year drift in the size of the meals around the training. +387 kcal/day for seven days is +2,700 kcal/wk. An extra +1,500 kcal/wk of training, retained at the 67% efficiency TEST 1 measured, produces ~1,000 kcal/wk of net deficit. The intake creep is bigger than the deficit the additional training was supposed to deliver. The training works; the eating around it grew enough to eat its product.
 
@@ -207,7 +207,7 @@ The second is the silent column — the mean weekly intake. Across phases, **int
 
 ### §3.6 Physiological rescue narratives — TEST 4
 
-A null on Q1 invites three obvious comebacks. Each is the kind of thing a sympathetic reader would want to believe. Each was pre-registered with a locked verdict tree and a falsification threshold before the script ran. All three came back null. Run order: 4A → 4B → 4C, single execution, no peeking.
+A null on Q1 invites three obvious comebacks. Each was pre-registered with a locked verdict tree and a falsification threshold before the script ran. All three came back null. Run order: 4A → 4B → 4C, single execution, no peeking.
 
 **Model 4A — the T+1 hunger rebound.** Hypothesis: yesterday's hard session suppresses appetite same-day but triggers compensatory overeating ~24 h later. Spec: surplus_t ~ unified_load_t + unified_load_(t-1) + is_lift_yesterday + is_leg_day_yesterday + stress_t. Pre-registered effect floor: β on yesterday-load ≥ +0.15 kcal per load-pt. Pre-registered guardrails: walk-forward train/test, phase-stratified must hold in P1 OR P3, Bonferroni α = 0.0125. The result on the yesterday-load coefficient is **β = +0.008 (95% CI [-0.032, +0.048], p = 0.69, n = 1,263)**. Twenty times smaller than the floor and statistically indistinguishable from zero. All four guardrails fail. *The compensation that exists is same-day (TEST 1's β_activity = +0.33). There is no detectable next-day rebound.*
 
@@ -251,15 +251,15 @@ The synthesis lands here.
 
 The aphorism *"you can't outrun a bad diet"* is closer to confirmed than refuted for this subject — but the explanation is not the textbook one. Per session, the training is two-thirds efficient; you do retain about 670 kcal of net deficit out of every 1,000 kcal you burn. That number is not zero. The compensation that exists is same-day appetite (TEST 1), not a delayed rebound (TEST 4A null). The body does not sit down to compensate (TEST 4C null). The P4 weight gain was not redirected into muscle (TEST 4B ADIPOSE).
 
-What the training fails to outrun is **a +387 kcal/day baseline intake drift across phases** — a slow, multi-year, day-by-day inflation of the meals around the bigger training. +387 kcal/day for seven days is +2,700 kcal/wk. An extra +1,500 kcal/wk of training, retained at 67% efficiency, produces ~1,000 kcal/wk of net deficit. The drift is bigger than the deficit. The training works; the eating culture grew enough to eat its product. This is not a thermodynamic finding — the calories balance — it is a *behavioural* finding about how lifestyle scales with athletic ambition.
+What the training fails to outrun is **a +387 kcal/day baseline intake drift across phases** — a slow, multi-year, day-by-day inflation of the meals around the bigger training. +387 kcal/day for seven days is +2,700 kcal/wk. An extra +1,500 kcal/wk of training, retained at 67% efficiency, produces ~1,000 kcal/wk of net deficit. The drift is bigger than the deficit. The training works; the eating around it grew enough to eat its product. This is not a thermodynamic finding — the calories balance — it is a behavioural finding about how lifestyle scales with training volume.
 
 The 67% number and the +387 number are the two anchors of the title. The first one is what the workouts buy you. The second one is what gets between the workouts and the scale.
 
-The methodology contribution is structural. Each guardrail in the chain — pooled vs walk-forward, era stratification, training-load control, weekly aggregation, phase × weight regression, physiological rescue tests — looks at the same daily data through a different aperture, and each one reveals a different facet of the phenomenon. Stopping at any one of them produces a different paper, most of them wrong. *Most quantified-self analyses I have read stop at one or two of the first three.* That, I think, is why most of them confidently report effects that the underlying data does not actually support. §6 generalises the framework.
+The methodology is the structural contribution. Each guardrail — pooled vs walk-forward, era stratification, training-load control, weekly aggregation, phase × weight regression, physiological rescue tests — looks at the same daily data through a different aperture, and each one reveals a different facet. Stopping at any one of them produces a different paper, most of them wrong. §6 generalises the framework.
 
 ## §5 — Operational rules — what survives and what gets retired
 
-Six guardrails on a single dataset produces some operational rules and breaks others. This is the inventory: what I will and will not do differently after the analysis than before it.
+Six guardrails on a single dataset produces some operational rules and breaks others. The inventory: what I will and will not do differently after the analysis than before it.
 
 ### §5.1 Rules that survive
 
@@ -335,7 +335,7 @@ If the outcome regression nulls the headline, the temptation is to invent a phys
 
 ### §6.7 The audit checklist
 
-I wish someone had handed me this before I drafted the first §2. It runs in five minutes.
+Five minutes. Run it before you publish.
 
 1. Did the headline coefficient survive a walk-forward split?
 2. Did it survive computation within each phase the data spans?
@@ -345,8 +345,6 @@ I wish someone had handed me this before I drafted the first §2. It runs in fiv
 6. If the outcome regression nulls, have the obvious rescue narratives been pre-registered and run before claiming a finding either way?
 
 If any answer is "no," do not publish the headline. Do the missing test. The cost is hours; the alternative is correcting yourself in public a year later.
-
-This is a checklist for the next quantified-self analyst — and for the next analysis I run on myself.
 
 ## §7 — Limits and what comes next
 
