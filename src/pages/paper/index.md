@@ -86,7 +86,9 @@ A note on tone. This is not a clinical write-up and I am not pretending to be a 
 ---
 
 <figure>
-  <img src="/paper/figures/fig1_hero_landscape.png" alt="Figure 1. Longitudinal hero: body weight, ride speed, HRV, and weekly training volume across the four phases of the 1,300-day record." loading="lazy" />
+  <a href="/paper/figures/fig1_hero_landscape.png" target="_blank" rel="noopener" aria-label="Open Figure 1 in full resolution">
+    <img src="/paper/figures/fig1_hero_landscape.png" alt="Figure 1. Longitudinal hero: body weight, ride speed, HRV, and weekly training volume across the four phases of the 1,300-day record." loading="lazy" />
+  </a>
   <figcaption><strong>Figure 1.</strong> Longitudinal hero: body weight, ride speed, HRV, and weekly training volume across the four phases of the 1,300-day record.</figcaption>
 </figure>
 
@@ -141,7 +143,9 @@ The β on walking kcal is **+0.78** (M3) — almost double the per-kcal effect o
 **Verdict:** two channels, both real, both partial. Per-session training delivers ~67% of its theoretical kcal benefit. A residual stress channel adds ~+18-20 kcal per stress-pt independent of training. The 67% number is the one the paper title will eventually anchor on.
 
 <figure>
-  <img src="/paper/figures/test1_partial_residual.png" alt="Figure 4. Test 1 partial residual: stress → surplus after activity_kcal is partialled out. The slope is the residual stress channel." loading="lazy" />
+  <a href="/paper/figures/test1_partial_residual.png" target="_blank" rel="noopener" aria-label="Open Figure 4 in full resolution">
+    <img src="/paper/figures/test1_partial_residual.png" alt="Figure 4. Test 1 partial residual: stress → surplus after activity_kcal is partialled out. The slope is the residual stress channel." loading="lazy" />
+  </a>
   <figcaption><strong>Figure 4.</strong> Test 1 partial residual: stress → surplus after activity_kcal is partialled out. The slope is the residual stress channel.</figcaption>
 </figure>
 
@@ -158,7 +162,9 @@ The +665 kcal mean delta is being driven by a handful of outlier weeks in the Q4
 **Verdict:** the Garmin daily stress > 28 rule does not produce a weekly footprint. Local +600 kcal Q4-day overshoots are absorbed by compensation days in the same week. The body self-regulates the weekly accounting; the daily threshold rule is theatre. Experiment 16's flagship operational rule does not survive its own multi-week test.
 
 <figure>
-  <img src="/paper/figures/test2_weekly_distributions.png" alt="Figure 5. Test 2 weekly distributions: weekly net surplus by Q4-day presence, with the dose-response slope." loading="lazy" />
+  <a href="/paper/figures/test2_weekly_distributions.png" target="_blank" rel="noopener" aria-label="Open Figure 5 in full resolution">
+    <img src="/paper/figures/test2_weekly_distributions.png" alt="Figure 5. Test 2 weekly distributions: weekly net surplus by Q4-day presence, with the dose-response slope." loading="lazy" />
+  </a>
   <figcaption><strong>Figure 5.</strong> Test 2 weekly distributions: weekly net surplus by Q4-day presence, with the dose-response slope.</figcaption>
 </figure>
 
@@ -178,7 +184,9 @@ The per-phase weight slopes on weekly training kcal are these:
 Read the table column by column. The M1 direct slope on training kcal alone is statistically null in three of four phases. The fourth (P1) is significant in M1 but points in the *wrong* direction — more training, more weight gain — which is exactly what a confound with intake would look like across a 110-week phase where both crept upward together. And indeed, partialling intake out in M2 kills it (p = 0.46). Across all 182 weeks, **no phase shows a training→weight-loss slope that survives the joint regression**. P2 is the only one whose sign is even physiologically right, and it does not clear p < 0.05 in either model on its 12-week sample.
 
 <figure>
-  <img src="/paper/figures/test3_phase_panels.png" alt="Figure 6. Test 3 phase panels: weekly weight Δ vs weekly training kcal, by phase. Universal null on the training side." loading="lazy" />
+  <a href="/paper/figures/test3_phase_panels.png" target="_blank" rel="noopener" aria-label="Open Figure 6 in full resolution">
+    <img src="/paper/figures/test3_phase_panels.png" alt="Figure 6. Test 3 phase panels: weekly weight Δ vs weekly training kcal, by phase. Universal null on the training side." loading="lazy" />
+  </a>
   <figcaption><strong>Figure 6.</strong> Test 3 phase panels: weekly weight Δ vs weekly training kcal, by phase. Universal null on the training side.</figcaption>
 </figure>
 
@@ -189,7 +197,9 @@ The first is **P4: 25 weeks of the heaviest training in the dataset (3,330 kcal/
 The second is the silent column — the mean weekly intake. Across phases, **intake climbs from 15,399 (P1) → 18,108 (P4). That is +387 kcal/day of baseline intake creep**, a multi-year drift in the size of the meals around the training. +387 kcal/day for seven days is +2,700 kcal/wk. An extra +1,500 kcal/wk of training, retained at the 67% efficiency TEST 1 measured, produces ~1,000 kcal/wk of net deficit. The intake creep is bigger than the deficit the additional training was supposed to deliver. The training works; the eating around it grew enough to eat its product.
 
 <figure>
-  <img src="/paper/figures/fig2_silent_creep.png" alt="Figure 2. The silent creep: 30-day rolling mean of logged caloric intake, with phase-mean dashed segments. Drift P1 → P4 is +387 kcal/day." loading="lazy" />
+  <a href="/paper/figures/fig2_silent_creep.png" target="_blank" rel="noopener" aria-label="Open Figure 2 in full resolution">
+    <img src="/paper/figures/fig2_silent_creep.png" alt="Figure 2. The silent creep: 30-day rolling mean of logged caloric intake, with phase-mean dashed segments. Drift P1 → P4 is +387 kcal/day." loading="lazy" />
+  </a>
   <figcaption><strong>Figure 2.</strong> The silent creep: 30-day rolling mean of logged caloric intake, with phase-mean dashed segments. Drift P1 → P4 is +387 kcal/day.</figcaption>
 </figure>
 
@@ -214,7 +224,9 @@ A null on Q1 invites three obvious comebacks. Each is the kind of thing a sympat
 **Verdict:** all three rescues fail. The combined effect on the §4 synthesis is structural: the Silent Creep thesis gains strength precisely because the obvious physiological alternatives have now been tested and falsified. Only the boring answer survives the elimination procedure — *you ate more, slowly, across years.* Figure 3 (Test 4 panels) is the visual of all three nulls in one frame.
 
 <figure>
-  <img src="/paper/figures/fig3_test4_panels.png" alt="Figure 3. Test 4 panels: three rescue narratives, three pre-registered nulls (T+1 hunger rebound, P4 recomposition, NEAT step gap)." loading="lazy" />
+  <a href="/paper/figures/fig3_test4_panels.png" target="_blank" rel="noopener" aria-label="Open Figure 3 in full resolution">
+    <img src="/paper/figures/fig3_test4_panels.png" alt="Figure 3. Test 4 panels: three rescue narratives, three pre-registered nulls (T+1 hunger rebound, P4 recomposition, NEAT step gap)." loading="lazy" />
+  </a>
   <figcaption><strong>Figure 3.</strong> Test 4 panels: three rescue narratives, three pre-registered nulls (T+1 hunger rebound, P4 recomposition, NEAT step gap).</figcaption>
 </figure>
 

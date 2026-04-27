@@ -2,10 +2,8 @@
 // Sync the paper from ProjecrFurnance into the site.
 //
 // Targets:
-//   - study-v2.md  ->  src/pages/paper/index.md   (canonical /paper, frontmatter prepended)
-//   - study-v1.md  ->  src/pages/paper/v1.md      (/paper/v1, figures auto-embedded)
-//   - study-v1.md  ->  public/paper/study-v1.md   (raw download, served as-is)
-//   - figures/*    ->  public/paper/figures/*
+//   - endurance-license/study.md     ->  src/pages/paper/index.md (frontmatter prepended)
+//   - endurance-license/figures/*    ->  public/paper/figures/*
 //
 // Override the source dir with PAPER_SOURCE env var.
 
@@ -38,43 +36,6 @@ image: "/paper/figures/fig1_hero_landscape.png"
 ---
 
 `;
-
-const V1_FRONTMATTER = `---
-layout: ../../layouts/Paper.astro
-title: "Becoming a Cyclist on Camera — data-doc"
-subtitle: "Data-doc: receipts, appendices, retracted findings, and the audits that caught them."
-byline: "Nasser Al Busaidi — Muscat, Oman — drafted April 2026"
-description: "Full receipts version of the field report. Per-section reproduction scripts, data dictionary, retracted findings, and the audits that caught them."
-eyebrow: "data-doc / receipts"
-ogType: "article"
-image: "/paper/figures/fig01_longitudinal_multipanel.png"
-share: false
----
-
-`;
-
-const FIGURE_REF_RE = /\*\*Figure (\d+)\*\* \(`paper\/figures\/(fig[0-9_a-z]+\.png)`\)/;
-
-// Append a <figure> block after each paragraph that mentions a figure.
-// v1 uses inline references like: **Figure 3** (`paper/figures/fig06_strength_regression.png`).
-// We inject the actual image directly below that paragraph so a web reader
-// sees the figure alongside the prose.
-function embedFigures(markdown) {
-	const paragraphs = markdown.split(/\n\n+/);
-	const out = [];
-	for (const para of paragraphs) {
-		out.push(para);
-		const match = para.match(FIGURE_REF_RE);
-		if (match) {
-			const num = match[1];
-			const file = match[2];
-			out.push(
-				`<figure>\n  <img src="/paper/figures/${file}" alt="Figure ${num}" loading="lazy" />\n  <figcaption><strong>Figure ${num}.</strong> See paragraph above for full caption; the image is produced by <code>paper/scripts/build_figures.py</code>.</figcaption>\n</figure>`,
-			);
-		}
-	}
-	return out.join('\n\n');
-}
 
 async function ensureDir(dir) {
 	await mkdir(dir, { recursive: true });
@@ -172,35 +133,13 @@ function convertMarkdownImagesToFigures(markdown) {
 		const [, num, caption, src] = match;
 		const altText = `Figure ${num}. ${caption}`.replace(/\s+/g, ' ');
 		out.push(
-			`<figure>\n  <img src="${src}" alt="${escapeAttr(altText)}" loading="lazy" />\n  <figcaption><strong>Figure ${num}.</strong> ${mdItalicsToEm(caption)}</figcaption>\n</figure>`,
+			`<figure>\n  <a href="${src}" target="_blank" rel="noopener" aria-label="Open Figure ${num} in full resolution">\n    <img src="${src}" alt="${escapeAttr(altText)}" loading="lazy" />\n  </a>\n  <figcaption><strong>Figure ${num}.</strong> ${mdItalicsToEm(caption)}</figcaption>\n</figure>`,
 		);
 		// Skip the next paragraph if it's the duplicate italic caption line.
 		const next = paragraphs[i + 1];
 		if (next && V2_FIGURE_CAPTION_DUPE_RE.test(next.trim())) i++;
 	}
 	return out.join('\n\n');
-}
-
-// Replace `protocol.json` (the internal phase-config filename) with a more
-// readable term for the published paper. Order matters: more specific patterns
-// run first so they don't get clobbered by the catch-all replacement.
-function renameProtocolJson(markdown) {
-	return markdown
-		.replace(/`protocol\.json\.phases`/g, 'the phase manifest')
-		.replace(/`protocol\.json` phase boundaries/g, 'the phase manifest')
-		.replace(/`protocol\.json`/g, 'the phase manifest')
-		.replace(/\bprotocol\.json\b/g, 'phase manifest');
-}
-
-// Rewrite the internal source-file names (`study-v1.md`, `study-v2.md`) to the
-// reader-facing labels. The on-disk artifacts get a clean public name without
-// the .md extension as well — see syncV1Raw().
-function renameSourceFiles(markdown) {
-	return markdown
-		.replace(/`study-v1\.md`/g, 'the data-doc')
-		.replace(/`study-v2\.md`/g, 'the field report')
-		.replace(/\bstudy-v1\.md\b/g, 'the data-doc')
-		.replace(/\bstudy-v2\.md\b/g, 'the field report');
 }
 
 // Rewrite relative figure paths to absolute /paper/figures/... so Astro/Vite
@@ -213,42 +152,18 @@ function absolutizeFigurePaths(markdown) {
 		.replace(/(src=["'])figures\//g, '$1/paper/figures/');
 }
 
-async function syncV2() {
+async function syncPaper() {
 	const src = join(SOURCE, 'endurance-license/study.md');
 	if (!existsSync(src)) {
 		console.warn(`[sync-paper] endurance-license/study.md not found at ${src} — skipping /paper sync`);
 		return false;
 	}
 	const body = convertMarkdownImagesToFigures(
-		stripV2DuplicateHead(renameSourceFiles(renameProtocolJson(absolutizeFigurePaths(await readFile(src, 'utf8'))))),
+		stripV2DuplicateHead(absolutizeFigurePaths(await readFile(src, 'utf8'))),
 	);
 	const dest = join(PAGES_PAPER, 'index.md');
 	const updated = await writeIfChanged(dest, V2_FRONTMATTER + body);
 	console.log(`[sync-paper] endurance-license/study.md -> src/pages/paper/index.md: ${updated ? 'updated' : 'unchanged'}`);
-	return updated;
-}
-
-async function syncV1Page() {
-	const src = join(SOURCE, 'study-v1.md');
-	if (!existsSync(src)) {
-		console.warn(`[sync-paper] study-v1.md not found at ${src} — skipping /paper/v1 sync`);
-		return false;
-	}
-	const body = stripLeadingH1(renameSourceFiles(renameProtocolJson(absolutizeFigurePaths(await readFile(src, 'utf8')))));
-	const transformed = embedFigures(body);
-	const dest = join(PAGES_PAPER, 'v1.md');
-	const updated = await writeIfChanged(dest, V1_FRONTMATTER + transformed);
-	console.log(`[sync-paper] study-v1.md -> src/pages/paper/v1.md: ${updated ? 'updated' : 'unchanged'}`);
-	return updated;
-}
-
-async function syncV1Raw() {
-	const src = join(SOURCE, 'study-v1.md');
-	if (!existsSync(src)) return false;
-	const body = renameSourceFiles(renameProtocolJson(await readFile(src, 'utf8')));
-	const dest = join(PUBLIC_PAPER, 'data-doc');
-	const updated = await writeIfChanged(dest, body);
-	console.log(`[sync-paper] study-v1.md -> public/paper/data-doc: ${updated ? 'updated' : 'unchanged'}`);
 	return updated;
 }
 
@@ -261,13 +176,9 @@ async function main() {
 
 	console.log(`[sync-paper] source: ${SOURCE}`);
 
-	await syncV2();
-	await syncV1Page();
-	await syncV1Raw();
-	const oldFigs = await syncFigures(join(SOURCE, 'figures'), PUBLIC_FIGURES);
-	console.log(`[sync-paper] figures (legacy): ${oldFigs.copied}/${oldFigs.total} updated`);
-	const newFigs = await syncFigures(join(SOURCE, 'endurance-license/figures'), PUBLIC_FIGURES);
-	console.log(`[sync-paper] figures (endurance-license): ${newFigs.copied}/${newFigs.total} updated`);
+	await syncPaper();
+	const figs = await syncFigures(join(SOURCE, 'endurance-license/figures'), PUBLIC_FIGURES);
+	console.log(`[sync-paper] figures: ${figs.copied}/${figs.total} updated`);
 }
 
 main().catch((err) => {

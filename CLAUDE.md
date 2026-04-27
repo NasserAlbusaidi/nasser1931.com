@@ -30,8 +30,8 @@ The Firebase project ID is **`nasser-portfolio`**, not `nasser1931`. A 2026-04-2
 
 ```bash
 npm run dev                                          # local dev server, http://localhost:4321
-npm run dev:paper                                    # dev + chokidar watcher syncing v1/figures from ProjecrFurnance
-npm run sync-paper                                   # one-shot mirror of v1 + figures from ProjecrFurnance
+npm run dev:paper                                    # dev + chokidar watcher syncing the paper + figures from ProjecrFurnance
+npm run sync-paper                                   # one-shot mirror of the paper + figures from ProjecrFurnance
 npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
@@ -57,8 +57,7 @@ src/
 │   ├── index.astro            ← home page, features the paper
 │   ├── about.astro
 │   ├── paper/
-│   │   ├── index.md           ← /paper — readable cut (synced from study-v2.md)
-│   │   └── v1.md              ← /paper/v1 — receipts (synced from study-v1.md, figures auto-embedded)
+│   │   └── index.md           ← /paper (synced from endurance-license/study.md)
 │   ├── field/                 ← /field index + dynamic [...slug] route
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
 │   ├── reading/               ← /reading stub
@@ -71,7 +70,7 @@ src/
 ├── layouts/
 │   ├── BlogPost.astro
 │   ├── Entry.astro            ← shared layout for /field + /stupidshit entries
-│   └── Paper.astro            ← long-form layout for /paper + /paper/v1
+│   └── Paper.astro            ← long-form layout for /paper
 ├── components/
 │   ├── Header.astro           ← nav: paper / blog / field / stupidshit / reading / about + theme toggle
 │   ├── Footer.astro
@@ -81,31 +80,27 @@ src/
 │   └── FormattedDate.astro
 public/
 └── paper/
-    ├── data-doc               ← raw markdown download (synced from study-v1.md, no extension)
-    └── figures/               ← 8 PNG figures
+    └── figures/               ← PNG figures (synced from endurance-license/figures/)
 ```
 
 ## The paper
 
-Two-layer paper, both rendered on the site:
+Single-source paper rendered at `/paper`.
 
-- **`/paper`** — readable cut. Source: `~/Desktop/Personal/ProjecrFurnance/paper/study-v2.md`. `npm run sync-paper` mirrors it into `src/pages/paper/index.md` (with frontmatter prepended; relative figure paths rewritten to absolute `/paper/figures/...`).
-- **`/paper/v1`** — data-doc / receipts. Source: `~/Desktop/Personal/ProjecrFurnance/paper/study-v1.md`. Same sync; mirrored into `src/pages/paper/v1.md` with the figure-embedding pass — every `**Figure N** (\`paper/figures/figXX.png\`)` reference gets a real `<figure>` block injected after the paragraph it appears in.
-- **Raw download** — `public/paper/data-doc` is the v1 markdown source after the in-flight prose renames (`protocol.json` → "the phase manifest", `study-v1.md` / `study-v2.md` → reader-facing labels). Served at https://nasser1931.com/paper/data-doc with `Content-Type: text/markdown` (set in `firebase.json`). The file is intentionally extension-less so the URL doesn't leak `.md`.
+- **Source:** `~/Desktop/Personal/ProjecrFurnance/paper/endurance-license/study.md` plus its sibling `figures/` directory.
+- **Sync:** `npm run sync-paper` mirrors the markdown into `src/pages/paper/index.md` (frontmatter prepended; relative figure paths rewritten to absolute `/paper/figures/...`; standalone markdown images converted to `<figure>` blocks; duplicate italic captions stripped) and copies all PNGs into `public/paper/figures/`.
 
-Source of truth lives in ProjecrFurnance. **Edit prose in `~/Desktop/Personal/ProjecrFurnance/paper/study-v{1,2}.md`, then run `npm run sync-paper` from this repo to publish.** The `src/pages/paper/{index,v1}.md` files are generated artifacts — don't hand-edit them; the next sync will overwrite. Frontmatter for both is hard-coded in `scripts/sync-paper.mjs` (title, subtitle, byline, eyebrow, companion link).
+Source of truth lives in ProjecrFurnance. **Edit prose in `~/Desktop/Personal/ProjecrFurnance/paper/endurance-license/study.md`, then run `npm run sync-paper` from this repo to publish.** The `src/pages/paper/index.md` file is a generated artifact — don't hand-edit it; the next sync will overwrite. Frontmatter (title, subtitle, byline, eyebrow, OG image) is hard-coded in `scripts/sync-paper.mjs`.
 
 Workflow:
 
 ```bash
 npm run dev:paper        # astro dev + watcher; figure changes in ProjecrFurnance auto-sync and HMR-reload
-npm run sync-paper       # one-shot sync of v1 + v2 + figures
+npm run sync-paper       # one-shot sync of the paper + figures
 PAPER_SOURCE=/some/other/path npm run sync-paper  # override the source dir
 ```
 
-The synced files (`src/pages/paper/index.md`, `src/pages/paper/v1.md`, `public/paper/data-doc`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if v1 or v2 prose or a figure changed in ProjecrFurnance.
-
-The figure-numbering quirk from `ProjecrFurnance/paper/CLAUDE.md` carries over: filenames are in v1 build-artifact order, displayed in v2 reading order. e.g., **Figure 3** in the rendered paper is `fig06_strength_regression.png`. Don't rename the files.
+The synced files (`src/pages/paper/index.md`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if the prose or a figure changed in ProjecrFurnance.
 
 ## Layout details
 

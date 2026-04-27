@@ -374,6 +374,18 @@ const ogImage = image ? { src: image } : undefined;
 				border-top: 1px solid var(--rule);
 			}
 
+			.prose :global(figure a) {
+				display: block;
+				text-decoration: none;
+				border-radius: var(--radius-md);
+				cursor: zoom-in;
+			}
+
+			.prose :global(figure a:focus-visible) {
+				outline: 2px solid var(--accent);
+				outline-offset: 4px;
+			}
+
 			.prose :global(figure img) {
 				width: 100%;
 				height: auto;
@@ -415,12 +427,36 @@ const ogImage = image ? { src: image } : undefined;
 				margin-right: 0.25em;
 			}
 
-			/* Tables */
+			/* Tables — block-scrollable so wide grids (8+ cols of regression
+			   numbers, etc.) survive narrow viewports. Scroll shadows on the
+			   left/right edges signal that the table extends beyond view. */
 			.prose :global(table) {
+				display: block;
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
 				border-collapse: collapse;
 				width: 100%;
 				margin: 1.5em 0;
 				font-size: 15px;
+				background:
+					linear-gradient(to right, var(--paper) 30%, transparent),
+					linear-gradient(to right, transparent, var(--paper) 70%) 100% 0,
+					radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), transparent),
+					radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), transparent) 100% 0;
+				background-repeat: no-repeat;
+				background-size: 36px 100%, 36px 100%, 12px 100%, 12px 100%;
+				background-attachment: local, local, scroll, scroll;
+			}
+
+			:global(html.dark) .prose :global(table) {
+				background:
+					linear-gradient(to right, var(--paper) 30%, transparent),
+					linear-gradient(to right, transparent, var(--paper) 70%) 100% 0,
+					radial-gradient(farthest-side at 0 50%, rgba(255, 255, 255, 0.12), transparent),
+					radial-gradient(farthest-side at 100% 50%, rgba(255, 255, 255, 0.12), transparent) 100% 0;
+				background-repeat: no-repeat;
+				background-size: 36px 100%, 36px 100%, 12px 100%, 12px 100%;
+				background-attachment: local, local, scroll, scroll;
 			}
 
 			.prose :global(th) {
@@ -433,6 +469,7 @@ const ogImage = image ? { src: image } : undefined;
 				text-align: left;
 				padding: 0.6em 0.8em;
 				border-bottom: 1px solid var(--rule);
+				white-space: nowrap;
 			}
 
 			.prose :global(td) {
@@ -441,28 +478,71 @@ const ogImage = image ? { src: image } : undefined;
 				vertical-align: top;
 			}
 
+			/* Numeric / short-token cells stay on one line; long-prose cells
+			   (the rare ones) can still wrap by overriding via inline class. */
+			.prose :global(td) {
+				white-space: nowrap;
+			}
+			.prose :global(td:last-child) {
+				white-space: normal;
+				min-width: 12em;
+			}
+
 			@media (max-width: 720px) {
 				.prose {
 					font-size: 16px;
+					line-height: 1.6;
 					padding: 0.5rem 1.25rem 3rem;
 				}
 				.prose :global(h2) {
-					font-size: 26px;
-					margin-top: 2em;
+					font-size: 24px;
+					margin-top: 1.8em;
+					letter-spacing: -0.005em;
 				}
 				.prose :global(h3) {
-					font-size: 19px;
+					font-size: 18px;
+					margin-top: 1.6em;
 				}
+				/* Edge-to-edge figure bleed on small screens — full viewport
+				   width minus a hair of breathing room. The breakout still
+				   centers via the 50% / -50% trick. */
 				.prose :global(figure) {
-					margin: 2em auto;
+					margin: 1.75em auto;
 					margin-left: 50%;
 					transform: translateX(-50%);
-					width: calc(100vw - 2rem);
-					padding-top: 1em;
+					width: 100vw;
+					max-width: 100vw;
+					padding: 0.85em 0 0;
+					border-top-color: var(--rule);
+				}
+				.prose :global(figure a),
+				.prose :global(figure img) {
+					border-radius: 0;
 				}
 				.prose :global(figcaption) {
 					font-size: 13px;
-					padding: 0.85em 0.25rem 0;
+					padding: 0.85em 1.25rem 0;
+					margin: 0.85em auto 0;
+					max-width: calc(100vw - 2rem);
+				}
+				/* Tables: full-bleed on mobile so the scroll axis is the
+				   viewport, not a card. Slightly smaller text packs more
+				   columns into the visible area. */
+				.prose :global(table) {
+					font-size: 13px;
+					margin-left: -1.25rem;
+					margin-right: -1.25rem;
+					padding: 0 1.25rem;
+					width: calc(100% + 2.5rem);
+					max-width: none;
+					background-size: 28px 100%, 28px 100%, 10px 100%, 10px 100%;
+				}
+				.prose :global(th),
+				.prose :global(td) {
+					padding: 0.5em 0.7em;
+				}
+				.prose :global(td:last-child) {
+					min-width: 14em;
 				}
 				.prose :global(pre) {
 					font-size: 13px;
@@ -474,10 +554,9 @@ const ogImage = image ? { src: image } : undefined;
 					border-left: 0;
 					border-right: 0;
 				}
-				.prose :global(table) {
-					display: block;
-					overflow-x: auto;
-					-webkit-overflow-scrolling: touch;
+				.prose :global(blockquote) {
+					padding: 0 1em;
+					margin: 1.4em 0;
 				}
 			}
 		</style>
