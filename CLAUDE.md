@@ -145,5 +145,4 @@ The home page renders a "currently training" section above the paper card, sourc
 
 ## Outstanding cleanups
 
-- `Footer.astro` likely has Astro template copy.
-- Template OG fallback still imports `src/assets/blog-placeholder-1.jpg` (other `blog-placeholder-*.jpg` and `blog-placeholder-about.jpg` are unused — safe to delete and rename the fallback).
+- `www.nasser1931.com` is not configured. Add a redirect in Firebase or a Route 53 record (covered above in DNS records).
