@@ -11,6 +11,8 @@
     "sync-paper": "node scripts/sync-paper.mjs",
     "refresh-pulse": "node scripts/refresh-pulse.mjs",
     "refresh-paper-log": "node scripts/refresh-paper-log.mjs",
+    "refresh-reading": "node scripts/refresh-reading.mjs",
+    "generate-og": "node scripts/generate-og-fallback.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

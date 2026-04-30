@@ -33,8 +33,11 @@ npm run dev                                          # local dev server, http://
 npm run dev:paper                                    # dev + chokidar watcher syncing the paper + figures from ProjecrFurnance
 npm run sync-paper                                   # one-shot mirror of the paper + figures from ProjecrFurnance
 npm run refresh-pulse                                # fetch latest training data from intervals.icu, write src/data/training.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
+npm run refresh-reading                              # fetch reading list from Notion, write src/data/reading.json (needs NOTION_TOKEN env var)
+npm run generate-og                                  # regenerate src/assets/og-fallback.jpg (one-shot; re-run when the OG look changes)
 gh workflow run refresh-pulse.yml                    # easier: run the same refresh on CI; commits + pushes only on diff
-gh workflow run sync-paper.yml                       # manually trigger the project-furnace → /paper sync (also runs every 30min)
+gh workflow run sync-paper.yml                       # manually trigger the project-furnace → /paper sync (also runs every 30min, plus instant via webhook from project-furnace)
+gh workflow run sync-reading.yml                     # manually trigger the Notion → /reading sync (also runs every 6h)
 npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
@@ -89,7 +92,8 @@ Single-source paper rendered at `/paper`.
 - **Auto-sync:** `.github/workflows/sync-paper.yml` runs every 30 minutes (cron `*/30 * * * *`), plus `workflow_dispatch` and `repository_dispatch[paper-update]` (left wired for a future webhook from project-furnace if 30min lag is too slow). It checks out project-furnace via the `PAPER_REPO_SSH_KEY` deploy key, runs `sync-paper` + `refresh-paper-log`, then commits + builds + deploys *only when the diff is non-empty*. Frontmatter (title, subtitle, byline, eyebrow, OG image) is hard-coded in `scripts/sync-paper.mjs`.
 - **Editing log:** Visible at the foot of `/paper`. The 8 most recent commits to `paper/**` in project-furnace, sourced from `src/data/paper-log.json` (written by `scripts/refresh-paper-log.mjs`). The byline gets a "last edited Xh ago · N commits this week" stamp; the homepage paper card gets a "· edited Xh ago" suffix. All relative timestamps recompute in the browser from `data-iso` so static HTML doesn't show a stale build-time value.
 - **Local fallback (offline editing):** `npm run sync-paper` still works against `~/Desktop/Personal/ProjecrFurnance` (which is a local clone of project-furnace). Use this for previewing changes before pushing — but the canonical publish path is push-to-project-furnace, not local sync + commit-here.
-- **Concurrency:** sync-paper and refresh-pulse share `concurrency.group: bot-pushes-main` so they never race to push to main. Each also `git pull --rebase origin main` before push as belt-and-suspenders.
+- **Concurrency:** sync-paper, refresh-pulse, and sync-reading all share `concurrency.group: bot-pushes-main` so the three bots never race to push to main. Each also `git pull --rebase origin main` before push as belt-and-suspenders.
+- **Webhook from project-furnace:** `.github/workflows/notify-site.yml` lives in project-furnace and fires `repository_dispatch[paper-update]` to this repo on every push that touches `paper/**`. That cuts sync latency from up-to-30min to ~10s. Auth is via `SITE_DISPATCH_TOKEN` secret in project-furnace, currently set to a copy of the user's gh CLI token (full repo+workflow scope). For a tighter security posture, swap for a fine-grained PAT scoped to nasser1931.com only with Actions:write — but for a solo private repo this is fine.
 
 Workflow (local, mostly for offline editing):
 
@@ -134,6 +138,15 @@ The home page renders a "currently training" section above the paper card, sourc
 - **Secrets (GitHub Actions):** `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID`. Local credential mirror lives in `~/Desktop/Personal/Portfolio/.env` under the `VITE_INTERVALS_*` names — the script reads either prefix.
 - **Manual refresh:** `gh workflow run refresh-pulse.yml` is the simplest path. Locally you can also `bash -c 'set -a; source ~/Desktop/Personal/Portfolio/.env; set +a; npm run refresh-pulse'`.
 - **The pulse-bot commit author** (`pulse-bot <bot@nasser1931.com>`) is harmless — these commits are auto-generated and only ever touch `src/data/training.json`.
+
+## The reading list
+
+`/reading` is driven by `src/data/reading.json`, synced from a Notion database (Reading List, db id `cc065a07385442afacf12561c8d7d425`).
+
+- **Source schema (Notion):** Title (title), Author (text), Status (select: Reading | Want to Read | Finished | Dropped), Rating (select: 1–5 stars), Format (select: Audiobook | Physical | Kindle | PDF), Genre (multi_select), Started (date), Finished (date).
+- **Sync:** `.github/workflows/sync-reading.yml` runs cron `0 */6 * * *` plus `workflow_dispatch`. It calls the Notion query API with `NOTION_TOKEN`, transforms each page into a flat `Book` record, sorts Finished by `Finished` date desc, and writes the snapshot. Idempotent — only commits + deploys when the snapshot diff is non-empty.
+- **Page render:** `src/pages/reading/index.astro` reads the JSON, splits into Currently / Finished / Want to Read sections, and groups Finished by year. Stars are emoji `⭐` × N for visual continuity with how Notion displays the rating select.
+- **Setup (one-time):** create an internal integration at notion.so/my-integrations, share the Reading List page with the integration, set `NOTION_TOKEN` as a GitHub secret on this repo. The script reads `NOTION_READING_DB` env var to override the database id if it ever changes; default is the known id.
 
 ## firebase.json
 
