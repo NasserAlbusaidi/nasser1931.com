@@ -1,0 +1,144 @@
+---
+import data from '../data/training.json';
+
+const formatDistance = (km) => (km == null ? null : `${km.toFixed(1)}km`);
+
+const formatDuration = (min) => {
+	if (min == null) return null;
+	if (min < 60) return `${min}min`;
+	const h = Math.floor(min / 60);
+	const m = min % 60;
+	return m === 0 ? `${h}h` : `${h}h${m}m`;
+};
+
+const formatRelative = (iso) => {
+	if (!iso) return null;
+	const then = new Date(iso).getTime();
+	const now = Date.now();
+	const diffMin = Math.max(0, Math.round((now - then) / 60000));
+	if (diffMin < 60) return `${diffMin}m ago`;
+	const diffH = Math.round(diffMin / 60);
+	if (diffH < 48) return `${diffH}h ago`;
+	const diffD = Math.round(diffH / 24);
+	return `${diffD}d ago`;
+};
+
+const recent = data.recent ?? [];
+const updatedRel = formatRelative(data.updated);
+const showWeeklyTss = typeof data.weekly_tss === 'number' && data.weekly_tss > 0;
+const showForm = data.form != null;
+---
+
+<section class="entries-block">
+	<h2 class="section-head">currently training</h2>
+
+	{recent.length === 0 ? (
+		<ul class="entries placeholder">
+			<li><span class="muted-row">No recent training logged.</span></li>
+		</ul>
+	) : (
+		<ul class="entries pulse-list">
+			{recent.map((r) => (
+				<li>
+					<time datetime={r.date}>{r.date}</time>
+					<span class="pulse-name">
+						{r.name}
+						{r.distance_km != null && (
+							<><span class="dot">·</span><span class="num">{formatDistance(r.distance_km)}</span></>
+						)}
+						{r.duration_min != null && (
+							<><span class="dot">·</span><span class="num">{formatDuration(r.duration_min)}</span></>
+						)}
+					</span>
+				</li>
+			))}
+		</ul>
+	)}
+
+	<p class="pulse-summary">
+		<span class="num">{data.weekly_hours ?? 0}h</span>
+		<span class="lbl">last 7 days</span>
+		{showWeeklyTss && (<><span class="dot">·</span><span class="num">TSS {data.weekly_tss}</span></>)}
+		{showForm && (
+			<>
+				<span class="dot">·</span>
+				<span class="lbl">form:</span>
+				<span class={`form form-${data.form}`}>{data.form}</span>
+			</>
+		)}
+		{updatedRel && (
+			<>
+				<span class="dot">·</span>
+				<span class="lbl">updated {updatedRel}</span>
+			</>
+		)}
+	</p>
+</section>
+
+<style>
+	.pulse-list li {
+		color: var(--ink);
+	}
+
+	.pulse-name {
+		flex: 1;
+		display: inline-flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.4em;
+	}
+
+	.pulse-name .num {
+		font-family: var(--font-mono);
+		font-feature-settings: "tnum" 1;
+		font-size: 13px;
+		color: var(--muted);
+	}
+
+	.pulse-name .dot {
+		color: var(--rule);
+	}
+
+	.pulse-summary {
+		margin: 0.75rem 0 0;
+		font-family: var(--font-mono);
+		font-feature-settings: "tnum" 1;
+		font-size: 12px;
+		line-height: 1.5;
+		color: var(--muted);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4em;
+		align-items: baseline;
+	}
+
+	.pulse-summary .num {
+		color: var(--ink);
+	}
+
+	.pulse-summary .lbl {
+		color: var(--muted);
+	}
+
+	.pulse-summary .dot {
+		color: var(--rule);
+	}
+
+	.pulse-summary .form {
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-weight: 500;
+	}
+
+	.pulse-summary .form-fresh {
+		color: var(--success);
+	}
+
+	.pulse-summary .form-neutral {
+		color: var(--ink);
+	}
+
+	.pulse-summary .form-fatigued {
+		color: var(--warning);
+	}
+</style>

@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "dev:paper": "concurrently -n astro,paper -c blue,magenta \"npm:dev\" \"node scripts/watch-paper.mjs\"",
     "sync-paper": "node scripts/sync-paper.mjs",
+    "refresh-pulse": "node scripts/refresh-pulse.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
