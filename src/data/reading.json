@@ -1,8 +1,8 @@
 {
-  "updated": "2026-04-30T15:34:58.693Z",
+  "updated": "2026-04-30T19:17:40.688Z",
   "stats": {
     "finished_total": 11,
-    "finished_this_year": 1
+    "finished_this_year": 2
   },
   "currently_reading": [
     {
@@ -10,7 +10,7 @@
       "author": "Dennis E. Taylor",
       "status": "Reading",
       "rating": null,
-      "format": null,
+      "format": "Audiobook",
       "genres": [
         "Sci-Fi"
       ],
@@ -19,6 +19,18 @@
     }
   ],
   "finished": [
+    {
+      "title": "All These Worlds — Bobiverse #3",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": "2026-04-16"
+    },
     {
       "title": "We Are Legion (We Are Bob)",
       "author": "Dennis E. Taylor",
@@ -32,10 +44,10 @@
       "finished": "2026-03-01"
     },
     {
-      "title": "For We Are Many",
+      "title": "For We Are Many — Bobiverse #1",
       "author": "Dennis E. Taylor",
       "status": "Finished",
-      "rating": null,
+      "rating": 5,
       "format": "Audiobook",
       "genres": [
         "Sci-Fi"
@@ -44,23 +56,11 @@
       "finished": null
     },
     {
-      "title": "All These Worlds — Bobiverse #3",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
       "title": "For We Are Many — Bobiverse #2",
       "author": "Dennis E. Taylor",
       "status": "Finished",
       "rating": 5,
-      "format": null,
+      "format": "Audiobook",
       "genres": [
         "Sci-Fi"
       ],
@@ -72,7 +72,7 @@
       "author": "Andy Weir",
       "status": "Finished",
       "rating": 5,
-      "format": null,
+      "format": "Audiobook",
       "genres": [
         "Sci-Fi"
       ],
@@ -80,7 +80,7 @@
       "finished": null
     },
     {
-      "title": "We Are Legion (We Are Bob) — Bobiverse #1",
+      "title": "We Are Legion (We Are Bob)",
       "author": "Dennis E. Taylor",
       "status": "Finished",
       "rating": 5,
