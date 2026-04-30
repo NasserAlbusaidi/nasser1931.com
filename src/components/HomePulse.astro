@@ -69,11 +69,30 @@ const showForm = data.form != null;
 		{updatedRel && (
 			<>
 				<span class="dot">·</span>
-				<span class="lbl">updated {updatedRel}</span>
+				<span class="lbl">updated <span class="pulse-updated" data-iso={data.updated}>{updatedRel}</span></span>
 			</>
 		)}
 	</p>
 </section>
+
+<script is:inline>
+	(function () {
+		const fmt = (iso) => {
+			const then = new Date(iso).getTime();
+			if (Number.isNaN(then)) return null;
+			const diffMin = Math.max(0, Math.round((Date.now() - then) / 60000));
+			if (diffMin < 60) return diffMin + 'm ago';
+			const diffH = Math.round(diffMin / 60);
+			if (diffH < 48) return diffH + 'h ago';
+			return Math.round(diffH / 24) + 'd ago';
+		};
+		const el = document.querySelector('.pulse-updated');
+		if (el) {
+			const out = fmt(el.dataset.iso);
+			if (out) el.textContent = out;
+		}
+	})();
+</script>
 
 <style>
 	.pulse-list li {
