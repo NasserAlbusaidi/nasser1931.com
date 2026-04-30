@@ -14,16 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      committed: ${{ steps.commit.outputs.committed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
 
       - name: Refresh pulse
         env:
@@ -32,13 +36,31 @@ jobs:
         run: node scripts/refresh-pulse.mjs
 
       - name: Commit if changed
+        id: commit
         run: |
           git config user.name "pulse-bot"
           git config user.email "bot@nasser1931.com"
           git add src/data/training.json
           if git diff --cached --quiet; then
-            echo "No changes — skipping commit."
+            echo "No changes — skipping commit and deploy."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git commit -m "chore: refresh training pulse"
           git push
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # Deploy inline — pushes from GITHUB_TOKEN do not trigger
+      # firebase-hosting-merge.yml, so we run the same steps here.
+      - name: Build
+        if: steps.commit.outputs.committed == 'true'
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting
+        if: steps.commit.outputs.committed == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NASSER_PORTFOLIO }}
+          channelId: live
+          projectId: nasser-portfolio
