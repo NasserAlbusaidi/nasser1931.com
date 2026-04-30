@@ -55,24 +55,19 @@ src/
 ├── consts.ts                  ← SITE_TITLE, SITE_DESCRIPTION
 ├── pages/
 │   ├── index.astro            ← home page, features the paper
-│   ├── about.astro
 │   ├── paper/
 │   │   └── index.md           ← /paper (synced from endurance-license/study.md)
 │   ├── field/                 ← /field index + dynamic [...slug] route
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
-│   ├── reading/               ← /reading stub
-│   ├── blog/                  ← blog index + dynamic [...slug] route
-│   └── rss.xml.js
+│   └── reading/               ← /reading stub
 ├── content/
-│   ├── blog/                  ← markdown blog posts (empty — template demos removed)
 │   ├── field/                 ← /field entries
 │   └── stupidshit/            ← /stupidshit entries
 ├── layouts/
-│   ├── BlogPost.astro
 │   ├── Entry.astro            ← shared layout for /field + /stupidshit entries
 │   └── Paper.astro            ← long-form layout for /paper
 ├── components/
-│   ├── Header.astro           ← nav: paper / blog / field / stupidshit / reading / about + theme toggle
+│   ├── Header.astro           ← nav: paper / field / stupidshit / reading + theme toggle
 │   ├── Footer.astro
 │   ├── BaseHead.astro
 │   ├── HeaderLink.astro
@@ -134,7 +129,5 @@ Both records must be at the apex. In Route 53, **leave the Name field empty** to
 
 ## Outstanding cleanups
 
-- `/blog` still serves Astro template demo posts (`src/content/blog/{first,second,third,markdown-style-guide,using-mdx}.{md,mdx}`).
-- `/about` is template boilerplate.
 - `Footer.astro` likely has Astro template copy.
-- No `www` redirect.
+- Template OG fallback still imports `src/assets/blog-placeholder-1.jpg` (other `blog-placeholder-*.jpg` and `blog-placeholder-about.jpg` are unused — safe to delete and rename the fallback).
