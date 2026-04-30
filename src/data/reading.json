@@ -1,10 +1,181 @@
 {
-  "updated": "2026-04-30T00:00:00.000Z",
+  "updated": "2026-04-30T15:34:58.693Z",
   "stats": {
-    "finished_total": 0,
-    "finished_this_year": 0
+    "finished_total": 11,
+    "finished_this_year": 1
   },
-  "currently_reading": [],
-  "finished": [],
-  "want_to_read": []
+  "currently_reading": [
+    {
+      "title": "Heaven's River — Bobiverse #4",
+      "author": "Dennis E. Taylor",
+      "status": "Reading",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    }
+  ],
+  "finished": [
+    {
+      "title": "We Are Legion (We Are Bob)",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": 4,
+      "format": "Audiobook",
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": "2026-02-20",
+      "finished": "2026-03-01"
+    },
+    {
+      "title": "For We Are Many",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": "2026-03-09",
+      "finished": null
+    },
+    {
+      "title": "All These Worlds — Bobiverse #3",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "For We Are Many — Bobiverse #2",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Project Hail Mary",
+      "author": "Andy Weir",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "We Are Legion (We Are Bob) — Bobiverse #1",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Feast for Crows",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Storm of Swords",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Clash of Kings",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Dance with Dragons",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Game of Thrones",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    }
+  ],
+  "want_to_read": [
+    {
+      "title": "Not Till We Are Lost — Bobiverse #5",
+      "author": "Dennis E. Taylor",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "The Martian",
+      "author": "Andy Weir",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    }
+  ]
 }
