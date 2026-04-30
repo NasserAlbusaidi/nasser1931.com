@@ -1,26 +1,34 @@
-name: Refresh training pulse
+name: Sync paper from project-furnace
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
+  repository_dispatch:
+    types: [paper-update]
 
-# Serialize with sync-paper so two bots never race to push to main.
+# Serialize with refresh-pulse so two bots never race to push to main.
 concurrency:
   group: bot-pushes-main
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      committed: ${{ steps.commit.outputs.committed }}
     steps:
-      - name: Checkout
+      - name: Checkout site
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
+
+      - name: Checkout project-furnace
+        uses: actions/checkout@v4
+        with:
+          repository: NasserAlbusaidi/project-furnace
+          ssh-key: ${{ secrets.PAPER_REPO_SSH_KEY }}
+          path: project-furnace
           fetch-depth: 0
 
       - name: Setup Node
@@ -32,24 +40,30 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Refresh pulse
+      - name: Sync paper prose + figures
         env:
-          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
-          INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
-        run: node scripts/refresh-pulse.mjs
+          PAPER_SOURCE: ${{ github.workspace }}/project-furnace/paper
+        run: npm run sync-paper
+
+      - name: Refresh paper log
+        env:
+          PAPER_REPO: ${{ github.workspace }}/project-furnace
+        run: npm run refresh-paper-log
 
       - name: Commit if changed
         id: commit
         run: |
-          git config user.name "pulse-bot"
+          git config user.name "paper-sync-bot"
           git config user.email "bot@nasser1931.com"
-          git add src/data/training.json
+          git add src/pages/paper/index.md public/paper/figures src/data/paper-log.json
           if git diff --cached --quiet; then
             echo "No changes — skipping commit and deploy."
             echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "chore: refresh training pulse"
+          git commit -m "chore: sync paper from project-furnace"
+          # Belt-and-suspenders: rebase against origin in case another bot pushed
+          # while we were running. Concurrency group should already prevent this.
           git pull --rebase origin main
           git push
           echo "committed=true" >> "$GITHUB_OUTPUT"

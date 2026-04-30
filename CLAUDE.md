@@ -34,6 +34,7 @@ npm run dev:paper                                    # dev + chokidar watcher sy
 npm run sync-paper                                   # one-shot mirror of the paper + figures from ProjecrFurnance
 npm run refresh-pulse                                # fetch latest training data from intervals.icu, write src/data/training.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
 gh workflow run refresh-pulse.yml                    # easier: run the same refresh on CI; commits + pushes only on diff
+gh workflow run sync-paper.yml                       # manually trigger the project-furnace → /paper sync (also runs every 30min)
 npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
@@ -84,20 +85,21 @@ public/
 
 Single-source paper rendered at `/paper`.
 
-- **Source:** `~/Desktop/Personal/ProjecrFurnance/paper/endurance-license/study.md` plus its sibling `figures/` directory.
-- **Sync:** `npm run sync-paper` mirrors the markdown into `src/pages/paper/index.md` (frontmatter prepended; relative figure paths rewritten to absolute `/paper/figures/...`; standalone markdown images converted to `<figure>` blocks; duplicate italic captions stripped) and copies all PNGs into `public/paper/figures/`.
+- **Source of truth:** `NasserAlbusaidi/project-furnace` (private repo) at `paper/endurance-license/study.md` plus its sibling `figures/` directory. **Canonical edit flow: commit + push to project-furnace; CI auto-syncs to this repo.** Do NOT hand-edit `src/pages/paper/index.md` — it's a generated artifact and will be overwritten by the next sync.
+- **Auto-sync:** `.github/workflows/sync-paper.yml` runs every 30 minutes (cron `*/30 * * * *`), plus `workflow_dispatch` and `repository_dispatch[paper-update]` (left wired for a future webhook from project-furnace if 30min lag is too slow). It checks out project-furnace via the `PAPER_REPO_SSH_KEY` deploy key, runs `sync-paper` + `refresh-paper-log`, then commits + builds + deploys *only when the diff is non-empty*. Frontmatter (title, subtitle, byline, eyebrow, OG image) is hard-coded in `scripts/sync-paper.mjs`.
+- **Editing log:** Visible at the foot of `/paper`. The 8 most recent commits to `paper/**` in project-furnace, sourced from `src/data/paper-log.json` (written by `scripts/refresh-paper-log.mjs`). The byline gets a "last edited Xh ago · N commits this week" stamp; the homepage paper card gets a "· edited Xh ago" suffix. All relative timestamps recompute in the browser from `data-iso` so static HTML doesn't show a stale build-time value.
+- **Local fallback (offline editing):** `npm run sync-paper` still works against `~/Desktop/Personal/ProjecrFurnance` (which is a local clone of project-furnace). Use this for previewing changes before pushing — but the canonical publish path is push-to-project-furnace, not local sync + commit-here.
+- **Concurrency:** sync-paper and refresh-pulse share `concurrency.group: bot-pushes-main` so they never race to push to main. Each also `git pull --rebase origin main` before push as belt-and-suspenders.
 
-Source of truth lives in ProjecrFurnance. **Edit prose in `~/Desktop/Personal/ProjecrFurnance/paper/endurance-license/study.md`, then run `npm run sync-paper` from this repo to publish.** The `src/pages/paper/index.md` file is a generated artifact — don't hand-edit it; the next sync will overwrite. Frontmatter (title, subtitle, byline, eyebrow, OG image) is hard-coded in `scripts/sync-paper.mjs`.
-
-Workflow:
+Workflow (local, mostly for offline editing):
 
 ```bash
-npm run dev:paper        # astro dev + watcher; figure changes in ProjecrFurnance auto-sync and HMR-reload
-npm run sync-paper       # one-shot sync of the paper + figures
+npm run dev:paper        # astro dev + watcher; figure changes in local ProjecrFurnance auto-sync and HMR-reload
+npm run sync-paper       # one-shot sync of the paper + figures from local ProjecrFurnance
+npm run refresh-paper-log  # rebuild src/data/paper-log.json from local ProjecrFurnance git log
 PAPER_SOURCE=/some/other/path npm run sync-paper  # override the source dir
+gh workflow run sync-paper.yml  # easier: run the same sync on CI; commits + pushes only on diff
 ```
-
-The synced files (`src/pages/paper/index.md`, `public/paper/figures/*.png`) are committed to the repo — CI does NOT run sync-paper. Run sync locally before committing if the prose or a figure changed in ProjecrFurnance.
 
 ## Layout details
 

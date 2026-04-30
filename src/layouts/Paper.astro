@@ -2,6 +2,8 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import PaperLog from '../components/PaperLog.astro';
+import paperLog from '../data/paper-log.json';
 
 interface Frontmatter {
 	title: string;
@@ -57,6 +59,13 @@ const ogImage = image ? { src: image } : undefined;
 							<a href={companion.href}>{companion.label}</a>
 						</p>
 					)}
+					{paperLog?.last_edit && (
+						<p class="paper-edited">
+							last edited <span class="paper-edited-rel" data-iso={paperLog.last_edit}>recently</span>
+							<span class="paper-edited-sep">·</span>
+							<span class="paper-edited-count">{paperLog.commits_7d}</span> commits this week
+						</p>
+					)}
 				</header>
 				<div class="prose">
 					<slot />
@@ -70,6 +79,7 @@ const ogImage = image ? { src: image } : undefined;
 						<p class="share-status" data-share-status aria-live="polite"></p>
 					</aside>
 				)}
+				<PaperLog />
 			</article>
 		</main>
 		<Footer />
@@ -103,6 +113,24 @@ const ogImage = image ? { src: image } : undefined;
 					} catch (_) {
 						if (status) status.textContent = url;
 					}
+				});
+			})();
+		</script>
+
+		<script is:inline>
+			(function () {
+				const fmt = (iso) => {
+					const then = new Date(iso).getTime();
+					if (Number.isNaN(then)) return null;
+					const diffMin = Math.max(0, Math.round((Date.now() - then) / 60000));
+					if (diffMin < 60) return diffMin + 'm ago';
+					const diffH = Math.round(diffMin / 60);
+					if (diffH < 48) return diffH + 'h ago';
+					return Math.round(diffH / 24) + 'd ago';
+				};
+				document.querySelectorAll('[data-iso]').forEach((el) => {
+					const out = fmt(el.dataset.iso);
+					if (out) el.textContent = out;
 				});
 			})();
 		</script>
@@ -194,6 +222,29 @@ const ogImage = image ? { src: image } : undefined;
 				text-decoration: underline;
 				text-decoration-thickness: 1px;
 				text-underline-offset: 3px;
+			}
+
+			.paper-edited {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 11px;
+				letter-spacing: 0.04em;
+				line-height: 1.5;
+				color: var(--muted);
+				margin: 1.25rem 0 0;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4em;
+				align-items: baseline;
+			}
+
+			.paper-edited-rel,
+			.paper-edited-count {
+				color: var(--ink);
+			}
+
+			.paper-edited-sep {
+				color: var(--rule);
 			}
 
 			.paper-share {

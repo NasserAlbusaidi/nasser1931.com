@@ -1,0 +1,95 @@
+---
+import data from '../data/paper-log.json';
+
+const REPO = 'https://github.com/NasserAlbusaidi/project-furnace';
+
+const recent = data.recent ?? [];
+const isoDate = (s) => (s ? s.split('T')[0] : '');
+---
+
+{recent.length > 0 && (
+	<aside class="paper-log">
+		<h2 class="section-head">editing log</h2>
+		<ul class="entries paper-log-list">
+			{recent.map((c) => (
+				<li>
+					<time datetime={isoDate(c.date)}>{isoDate(c.date)}</time>
+					<span class="paper-log-msg">{c.message}</span>
+					<a class="paper-log-sha" href={`${REPO}/commit/${c.sha}`} aria-label={`View commit ${c.sha} on GitHub`}>{c.sha}</a>
+				</li>
+			))}
+		</ul>
+		<p class="paper-log-summary">
+			<span class="num">{data.commits_7d}</span>
+			<span class="lbl">commits in last 7 days</span>
+			<span class="dot">·</span>
+			<span class="lbl">total tracked</span>
+			<span class="num">{data.commits_total}</span>
+			<span class="dot">·</span>
+			<span class="lbl">source</span>
+			<a class="repo-link" href={REPO}>project-furnace</a>
+		</p>
+	</aside>
+)}
+
+<style>
+	.paper-log {
+		max-width: var(--col-prose, 720px);
+		margin: 4rem auto 2rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.paper-log-list li {
+		gap: 1em;
+	}
+
+	.paper-log-msg {
+		flex: 1;
+		color: var(--ink);
+		font-family: var(--font-body);
+		font-size: 15px;
+	}
+
+	.paper-log-sha {
+		font-family: var(--font-mono);
+		font-feature-settings: "tnum" 1;
+		font-size: 12px;
+		color: var(--muted);
+		text-decoration: none;
+		flex-shrink: 0;
+	}
+
+	.paper-log-sha:hover {
+		color: var(--accent);
+	}
+
+	.paper-log-summary {
+		margin: 0.75rem 0 0;
+		font-family: var(--font-mono);
+		font-feature-settings: "tnum" 1;
+		font-size: 12px;
+		line-height: 1.5;
+		color: var(--muted);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4em;
+		align-items: baseline;
+	}
+
+	.paper-log-summary .num {
+		color: var(--ink);
+	}
+
+	.paper-log-summary .dot {
+		color: var(--rule);
+	}
+
+	.paper-log-summary .repo-link {
+		color: var(--muted);
+	}
+
+	.paper-log-summary .repo-link:hover {
+		color: var(--accent);
+	}
+</style>

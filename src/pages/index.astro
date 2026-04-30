@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HomePulse from '../components/HomePulse.astro';
+import paperLog from '../data/paper-log.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 ---
 
@@ -33,6 +34,12 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 						<time datetime="2026-04">2026-04</time>
 						<a href="/paper">Becoming a Cyclist on Camera</a>
 						<span class="summary">— four-year N=1 field report, with the retractions still in.</span>
+						{paperLog?.last_edit && (
+							<span class="entry-edited">
+								<span class="dot">·</span>
+								edited <span data-iso={paperLog.last_edit}>recently</span>
+							</span>
+						)}
 					</li>
 				</ul>
 			</section>
@@ -137,6 +144,19 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 				color: var(--muted);
 				font-size: 15px;
 				font-style: italic;
+			}
+
+			.entry-edited {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--muted);
+				margin-left: 0.4em;
+			}
+
+			.entry-edited .dot {
+				color: var(--rule);
+				margin-right: 0.4em;
 			}
 		</style>
 	</body>

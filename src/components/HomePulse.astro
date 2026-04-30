@@ -86,11 +86,10 @@ const showForm = data.form != null;
 			if (diffH < 48) return diffH + 'h ago';
 			return Math.round(diffH / 24) + 'd ago';
 		};
-		const el = document.querySelector('.pulse-updated');
-		if (el) {
+		document.querySelectorAll('[data-iso]').forEach((el) => {
 			const out = fmt(el.dataset.iso);
 			if (out) el.textContent = out;
-		}
+		});
 	})();
 </script>
 
