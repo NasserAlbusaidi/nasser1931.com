@@ -32,6 +32,8 @@ The Firebase project ID is **`nasser-portfolio`**, not `nasser1931`. A 2026-04-2
 npm run dev                                          # local dev server, http://localhost:4321
 npm run dev:paper                                    # dev + chokidar watcher syncing the paper + figures from ProjecrFurnance
 npm run sync-paper                                   # one-shot mirror of the paper + figures from ProjecrFurnance
+npm run refresh-pulse                                # fetch latest training data from intervals.icu, write src/data/training.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
+gh workflow run refresh-pulse.yml                    # easier: run the same refresh on CI; commits + pushes only on diff
 npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
@@ -118,6 +120,18 @@ The synced files (`src/pages/paper/index.md`, `public/paper/figures/*.png`) are 
 Both records must be at the apex. In Route 53, **leave the Name field empty** to mean apex — typing `nasser1931.com` causes Route 53 to append the zone, producing `nasser1931.com.nasser1931.com`.
 
 `www.nasser1931.com` is **not configured**. Visitors typing `www` will fail. To add: re-add the custom domain in Firebase with the "redirect www → apex" option, or add a manual record in Route 53.
+
+## The training pulse
+
+The home page renders a "currently training" section above the paper card, sourced from `src/data/training.json`. The JSON is a committed snapshot — visitors get whatever was last pushed.
+
+- **Source:** intervals.icu API (which is fed by Garmin → intervals.icu sync).
+- **Refresh:** `.github/workflows/refresh-pulse.yml` runs on cron `0 */6 * * *` plus `workflow_dispatch`. The script (`scripts/refresh-pulse.mjs`) fetches the last 14 days of activities + wellness, writes `src/data/training.json`, and the workflow commits + pushes **only if the snapshot diff is non-empty** — so quiet days don't trigger a redeploy.
+- **Form translation:** TSB = CTL − ATL. `> +5` → `fresh`, `−10..+5` → `neutral`, `< −10` → `fatigued`. Standard TrainingPeaks bands.
+- **Component:** `src/components/HomePulse.astro` reads the JSON at build, renders a 3-row date-right list of recent sessions plus a summary line (weekly hours · TSS · form · "updated X ago"). The `updated X ago` text is recomputed in the browser from `data-iso` so it stays accurate between refreshes.
+- **Secrets (GitHub Actions):** `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID`. Local credential mirror lives in `~/Desktop/Personal/Portfolio/.env` under the `VITE_INTERVALS_*` names — the script reads either prefix.
+- **Manual refresh:** `gh workflow run refresh-pulse.yml` is the simplest path. Locally you can also `bash -c 'set -a; source ~/Desktop/Personal/Portfolio/.env; set +a; npm run refresh-pulse'`.
+- **The pulse-bot commit author** (`pulse-bot <bot@nasser1931.com>`) is harmless — these commits are auto-generated and only ever touch `src/data/training.json`.
 
 ## firebase.json
 
