@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-01T05:58:46.687Z",
+  "updated": "2026-05-01T13:14:48.374Z",
   "stats": {
     "finished_total": 19,
     "finished_this_year": 2
@@ -60,7 +60,7 @@
       "author": "Frank Herbert",
       "status": "Finished",
       "rating": 5,
-      "format": null,
+      "format": "Audiobook",
       "genres": [
         "Sci-Fi"
       ],
@@ -72,7 +72,7 @@
       "author": "Michael Crichton",
       "status": "Finished",
       "rating": 5,
-      "format": null,
+      "format": "Physical",
       "genres": [
         "Sci-Fi"
       ],
@@ -84,7 +84,7 @@
       "author": "George Orwell",
       "status": "Finished",
       "rating": 5,
-      "format": null,
+      "format": "Physical",
       "genres": [
         "Sci-Fi"
       ],
@@ -120,7 +120,7 @@
       "author": "Stanisław Lem",
       "status": "Finished",
       "rating": 4,
-      "format": null,
+      "format": "Physical",
       "genres": [
         "Sci-Fi"
       ],
@@ -131,8 +131,8 @@
       "title": "Dune Messiah",
       "author": "Frank Herbert",
       "status": "Finished",
-      "rating": 5,
-      "format": null,
+      "rating": 4,
+      "format": "Audiobook",
       "genres": [
         "Sci-Fi"
       ],
@@ -144,7 +144,7 @@
       "author": "Michael Crichton",
       "status": "Finished",
       "rating": 5,
-      "format": null,
+      "format": "Physical",
       "genres": [
         "Sci-Fi"
       ],
