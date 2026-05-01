@@ -1,7 +1,7 @@
 {
-  "updated": "2026-04-30T19:17:40.688Z",
+  "updated": "2026-05-01T05:58:46.687Z",
   "stats": {
-    "finished_total": 11,
+    "finished_total": 19,
     "finished_this_year": 2
   },
   "currently_reading": [
@@ -53,6 +53,102 @@
         "Sci-Fi"
       ],
       "started": "2026-03-09",
+      "finished": null
+    },
+    {
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "The Lost World",
+      "author": "Michael Crichton",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "1984",
+      "author": "George Orwell",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Fire and Blood",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 4,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "The World of Ice and Fire",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 4,
+      "format": "Physical",
+      "genres": [
+        "Fantasy"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Solaris",
+      "author": "Stanisław Lem",
+      "status": "Finished",
+      "rating": 4,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Dune Messiah",
+      "author": "Frank Herbert",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Jurassic Park",
+      "author": "Michael Crichton",
+      "status": "Finished",
+      "rating": 5,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
       "finished": null
     },
     {
@@ -153,6 +249,102 @@
     }
   ],
   "want_to_read": [
+    {
+      "title": "Revelation Space",
+      "author": "Alastair Reynolds",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "The Algebraist",
+      "author": "Iain M. Banks",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Aurora",
+      "author": "Kim Stanley Robinson",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "House of Suns",
+      "author": "Alastair Reynolds",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Children of Time",
+      "author": "Adrian Tchaikovsky",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "Blindsight",
+      "author": "Peter Watts",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "The Mote in God's Eye",
+      "author": "Larry Niven & Jerry Pournelle",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Fire Upon the Deep",
+      "author": "Vernor Vinge",
+      "status": "Want to Read",
+      "rating": null,
+      "format": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": null
+    },
     {
       "title": "Not Till We Are Lost — Bobiverse #5",
       "author": "Dennis E. Taylor",
