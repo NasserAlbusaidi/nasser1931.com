@@ -1,10 +1,17 @@
 {
-  "updated": "2026-05-02T03:38:14.850Z",
+  "updated": "2026-05-02T07:55:13.994Z",
   "form": "neutral",
-  "form_tsb": 1.2,
-  "weekly_hours": 7.4,
-  "weekly_tss": 263,
+  "form_tsb": 0.1,
+  "weekly_hours": 6.7,
+  "weekly_tss": 175,
   "recent": [
+    {
+      "date": "2026-05-02",
+      "type": "workout",
+      "name": "Morning Weight Training",
+      "distance_km": null,
+      "duration_min": 51
+    },
     {
       "date": "2026-05-01",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 72
-    },
-    {
-      "date": "2026-04-28",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 51
     }
   ]
 }
