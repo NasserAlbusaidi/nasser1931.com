@@ -1,10 +1,17 @@
 {
-  "updated": "2026-05-04T19:51:07.970Z",
+  "updated": "2026-05-05T03:38:15.265Z",
   "form": "neutral",
-  "form_tsb": -1,
-  "weekly_hours": 7,
-  "weekly_tss": 223,
+  "form_tsb": 1.6,
+  "weekly_hours": 8.1,
+  "weekly_tss": 230,
   "recent": [
+    {
+      "date": "2026-05-05",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 62
+    },
     {
       "date": "2026-05-04",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "As Seeb - Drill Workout",
       "distance_km": 1.7,
       "duration_min": 11
-    },
-    {
-      "date": "2026-05-03",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 48
     }
   ]
 }
