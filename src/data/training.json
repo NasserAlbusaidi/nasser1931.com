@@ -1,10 +1,17 @@
 {
-  "updated": "2026-05-12T20:04:03.237Z",
+  "updated": "2026-05-13T04:05:22.212Z",
   "form": "neutral",
-  "form_tsb": 3.9,
-  "weekly_hours": 6.9,
-  "weekly_tss": 241,
+  "form_tsb": 2.9,
+  "weekly_hours": 7.9,
+  "weekly_tss": 249,
   "recent": [
+    {
+      "date": "2026-05-13",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 61
+    },
     {
       "date": "2026-05-12",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 52
-    },
-    {
-      "date": "2026-05-09",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 42
     }
   ]
 }
