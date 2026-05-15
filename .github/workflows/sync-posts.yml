@@ -1,0 +1,67 @@
+name: Sync posts from Notion
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [post-update]
+
+concurrency:
+  group: bot-pushes-main
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Sync posts
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: node scripts/sync-posts.mjs
+
+      - name: Commit if changed
+        id: commit
+        run: |
+          git config user.name "posts-bot"
+          git config user.email "bot@nasser1931.com"
+          mkdir -p public/posts src/content/stupidshit src/content/field
+          git add src/content/stupidshit src/content/field public/posts
+          if git diff --cached --quiet; then
+            echo "No changes — skipping commit and deploy."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore: sync posts from Notion"
+          git pull --rebase origin main
+          git push
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        if: steps.commit.outputs.committed == 'true'
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting
+        if: steps.commit.outputs.committed == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NASSER_PORTFOLIO }}
+          channelId: live
+          projectId: nasser-portfolio

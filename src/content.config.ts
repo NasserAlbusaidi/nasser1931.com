@@ -19,6 +19,7 @@ const field = defineCollection({
 				distance: z.string().optional(),
 			})
 			.optional(),
+		notion_id: z.string().optional(),
 	}),
 });
 
@@ -29,6 +30,7 @@ const stupidshit = defineCollection({
 		summary: z.string(),
 		date: z.coerce.date(),
 		tags: z.array(z.string()).optional(),
+		notion_id: z.string().optional(),
 	}),
 });
 
