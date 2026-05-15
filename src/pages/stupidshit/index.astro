@@ -29,11 +29,9 @@ const entries = (await getCollection('stupidshit')).sort(
 			<ul class="entries">
 				{entries.map((entry) => (
 					<li>
-						<time datetime={entry.data.date.toISOString()}>
-							<FormattedDate date={entry.data.date} />
-						</time>
+						<FormattedDate date={entry.data.date} />
 						<a href={`/stupidshit/${entry.id}`}>{entry.data.title}</a>
-						<span class="summary">— {entry.data.summary}</span>
+						{entry.data.summary && <span class="summary">— {entry.data.summary}</span>}
 					</li>
 				))}
 			</ul>

@@ -1,10 +1,25 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HomePulse from '../components/HomePulse.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import paperLog from '../data/paper-log.json';
+import reading from '../data/reading.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const fieldEntries = (await getCollection('field'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 3);
+
+const stupidshitEntries = (await getCollection('stupidshit'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 3);
+
+const finishedBooks = (reading.finished ?? []).slice(0, 3);
+
+const stars = (n) => (n == null ? '' : '⭐'.repeat(n));
 ---
 
 <!doctype html>
@@ -46,20 +61,68 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 			<section class="entries-block">
 				<h2 class="section-head">field</h2>
-				<ul class="entries placeholder">
-					<li>
-						<span class="muted-row">First field entries land soon — race results, training milestones, hinge moments.</span>
-					</li>
-				</ul>
+				{fieldEntries.length === 0 ? (
+					<ul class="entries placeholder">
+						<li><span class="muted-row">First field entries land soon — race results, training milestones, hinge moments.</span></li>
+					</ul>
+				) : (
+					<ul class="entries">
+						{fieldEntries.map((entry) => (
+							<li>
+								<FormattedDate date={entry.data.date} />
+								<a href={`/field/${entry.id}`}>{entry.data.title}</a>
+								{entry.data.summary && <span class="summary">— {entry.data.summary}</span>}
+							</li>
+						))}
+					</ul>
+				)}
 			</section>
 
 			<section class="entries-block">
 				<h2 class="section-head">stupidshit</h2>
-				<ul class="entries placeholder">
-					<li>
-						<span class="muted-row">A folder for one-off oddities and weird hacks that warrant a permanent URL.</span>
-					</li>
-				</ul>
+				{stupidshitEntries.length === 0 ? (
+					<ul class="entries placeholder">
+						<li><span class="muted-row">A folder for one-off oddities and weird hacks that warrant a permanent URL.</span></li>
+					</ul>
+				) : (
+					<ul class="entries">
+						{stupidshitEntries.map((entry) => (
+							<li>
+								<FormattedDate date={entry.data.date} />
+								<a href={`/stupidshit/${entry.id}`}>{entry.data.title}</a>
+								{entry.data.summary && <span class="summary">— {entry.data.summary}</span>}
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
+
+			<section class="entries-block">
+				<h2 class="section-head">reading</h2>
+				{finishedBooks.length === 0 ? (
+					<ul class="entries placeholder">
+						<li><span class="muted-row">Recently finished books will show up here.</span></li>
+					</ul>
+				) : (
+					<ul class="entries">
+						{finishedBooks.map((b) => (
+							<li>
+								{b.finished ? (
+									<time datetime={b.finished}>{b.finished}</time>
+								) : (
+									<time>—</time>
+								)}
+								<a href="/reading" class="book-title">{b.title}</a>
+								<span class="summary">
+									{b.author && <span class="book-author">{b.author}</span>}
+									{b.rating != null && (
+										<span class="book-rating" aria-label={`${b.rating} of 5 stars`}>{stars(b.rating)}</span>
+									)}
+								</span>
+							</li>
+						))}
+					</ul>
+				)}
 			</section>
 
 		</main>
@@ -157,6 +220,20 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 			.entry-edited .dot {
 				color: var(--rule);
 				margin-right: 0.4em;
+			}
+
+			.book-title {
+				flex: 1;
+			}
+
+			.book-author {
+				font-style: italic;
+			}
+
+			.book-rating {
+				font-size: 11px;
+				letter-spacing: 0.05em;
+				margin-left: 0.4em;
 			}
 		</style>
 	</body>
