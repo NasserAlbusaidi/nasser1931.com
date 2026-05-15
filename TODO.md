@@ -55,7 +55,7 @@ P1 Field Journal rebuild **shipped 2026-04-26**. Build clean, 9 pages, all route
 - [ ] Add `www → apex` redirect (re-add custom domain in Firebase with the redirect option, OR add a manual record in Route 53). Currently `www.nasser1931.com` fails to resolve.
 - [ ] Decide whether to bring `study-v2.md` in ProjecrFurnance into line with the canonical `index.md`, or delete it.
 - [ ] Self-host the four Google Fonts if/when LCP starts mattering.
-- [ ] Remove unused `src/assets/fonts/atkinson-*.woff` files (no longer referenced after `astro.config.mjs` cleanup).
+- [x] Remove unused `src/assets/fonts/atkinson-*.woff` files (no longer referenced after `astro.config.mjs` cleanup).
 
 ## Useful pointers
 
