@@ -40,6 +40,61 @@ const pushCmd = `python3 tools/intervalsicu/pick_workout.py --push --time 05:30`
 
 const wellnessDateISO: string | null = wellness?.date ?? null;
 const wellnessFresh = wellnessDateISO === todayISO;
+
+// 4-day forecast (today + next 3). Today uses real state + v2; future days
+// assume AMBER and run v1 only — v2 overrides depend on today's signals.
+function dayLabel(d: Date): string {
+	return d.toLocaleDateString('en-GB', {
+		weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC',
+	}).toUpperCase();
+}
+
+function buildEntry(offset: number) {
+	const date = offset === 0 ? today : new Date(today.getTime() + offset * 86400000);
+	const entryCtx = offset === 0 ? ctx : getScheduleContext(date);
+	const entryState: string = offset === 0 ? cls.state : 'amber';
+	const entryV1 = offset === 0 ? v1 : pickWorkoutV1(entryState, entryCtx, bank);
+	const entryPick = offset === 0 ? pick : { ...entryV1, warnings: [] as string[] };
+
+	let slotTag: string;
+	if (offset === 0) slotTag = 'today';
+	else if (entryCtx.slot === 'group_ride') slotTag = 'group';
+	else if (entryCtx.slot) slotTag = entryCtx.slot;
+	else slotTag = 'rest';
+
+	let workoutName: string;
+	let numerics: string | null = null;
+	if (!entryPick.workoutKey) {
+		workoutName = entryCtx.slot === 'group_ride' ? 'Group ride day' : 'Rest day';
+	} else {
+		const wk = entryPick.workout;
+		workoutName = wk?.name ?? 'Unknown';
+		const dur = wk?.duration_min;
+		const tif = wk?.target_if;
+		if (dur != null && tif != null) numerics = `${dur}m / ${Number(tif).toFixed(2)}`;
+		else if (dur != null) numerics = `${dur}m`;
+	}
+
+	return {
+		offset,
+		dateISO: date.toISOString().slice(0, 10),
+		dayLabel: dayLabel(date),
+		slotTag,
+		workoutName,
+		numerics,
+		state: entryState,
+		pickPayload: {
+			workoutKey: entryPick.workoutKey,
+			workout: entryPick.workout,
+			reasoning: entryPick.reasoning,
+			warnings: entryPick.warnings ?? [],
+			slot: entryCtx.slot,
+			macroWeek: entryCtx.macroWeek,
+		},
+	};
+}
+
+const forecast = [0, 1, 2, 3].map(buildEntry);
 ---
 
 <!doctype html>
@@ -53,10 +108,44 @@ const wellnessFresh = wellnessDateISO === todayISO;
 	<body>
 		<Header variant="compact" />
 		<main>
+			<section class="forecast" aria-label="Four-day forecast">
+				<h2 class="forecast-head">This week</h2>
+				<div class="forecast-rows">
+					{forecast.map((f) => (
+						<button
+							type="button"
+							class={`forecast-row${f.offset === 0 ? ' active' : ''}`}
+							data-idx={f.offset}
+							data-date={f.dateISO}
+							aria-current={f.offset === 0 ? 'true' : undefined}
+						>
+							<span class="forecast-when">
+								<span class="forecast-day">{f.dayLabel}</span>
+								<span class="forecast-dot">·</span>
+								<span class="forecast-slot">{f.slotTag}</span>
+							</span>
+							<span class="forecast-title">{f.workoutName}</span>
+							<span class="forecast-num">{f.numerics ?? '—'}</span>
+						</button>
+					))}
+				</div>
+				<p class="forecast-footnote">
+					Projections assume <em class="amber-em">AMBER</em> recovery for +1 to +3.
+				</p>
+			</section>
+
+			<aside class="projection-banner" id="projection-banner" hidden>
+				<strong>Projection</strong> ·
+				viewing <span class="num" id="proj-date-label">—</span>,
+				<span class="num" id="proj-offset-label">+0</span> from today.
+				Recovery assumed AMBER; v1 only.
+				<button type="button" id="back-to-today">← back to today</button>
+			</aside>
+
 			<header class="toc-header">
 				<div>
-					<span class="eyebrow eyebrow-accent">Morning briefing · {longDate}</span>
-					<h1 class="display-feature">{stateLabel}.</h1>
+					<span class="eyebrow eyebrow-accent" id="eyebrow-date">Morning briefing · {longDate}</span>
+					<h1 class="display-feature" id="header-title">{stateLabel}.</h1>
 					<p class="subtitle" id="header-subtitle">{subtitle}</p>
 				</div>
 				<div class="toc-meta">
@@ -246,28 +335,58 @@ const wellnessFresh = wellnessDateISO === todayISO;
 
 			const $ = (id) => document.getElementById(id);
 			const oState = $('o-state'), oSlot = $('o-slot'), oWeek = $('o-week'), oNoV2 = $('o-nov2');
+			const mainEl = document.querySelector('main');
+			const banner = $('projection-banner');
+			const forecastRows = Array.from(document.querySelectorAll('.forecast-row'));
+
+			let activeIndex = 0;
+
+			const longDateFmt = (d) => d.toLocaleDateString('en-GB', {
+				weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+			});
+			const shortDateFmt = (d) => d.toLocaleDateString('en-GB', {
+				weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC',
+			}).toUpperCase();
+
+			function activeDate() {
+				return new Date(today.getTime() + activeIndex * 86400000);
+			}
 
 			function recompute() {
+				const isToday = activeIndex === 0;
+				const date = activeDate();
 				const cls = classifyState(coach.wellness ?? {});
-				const state = oState.value || cls.state;
-				const ctx = getScheduleContext(today);
+				const baselineState = isToday ? cls.state : 'amber';
+				const state = oState.value || baselineState;
+				const ctx = getScheduleContext(date);
 				if (oSlot.value) ctx.slot = oSlot.value;
 				if (oWeek.value) ctx.macroWeek = parseInt(oWeek.value, 10);
 
 				const v1 = pickWorkoutV1(state, ctx, bank);
-				const pick = oNoV2.checked
+				const skipV2 = oNoV2.checked || !isToday;
+				const pick = skipV2
 					? { ...v1, warnings: [] }
 					: applyV2Overrides(v1, coach.computed ?? {}, bank);
 
-				render(pick, state, ctx);
+				render(pick, state, ctx, isToday, date);
 			}
 
-			function render(pick, state, ctx) {
+			function render(pick, state, ctx, isToday, date) {
 				const pillEl = $('state-pill');
 				pillEl.className = 'state-pill state-' + state;
-				pillEl.textContent = state;
+				pillEl.textContent = isToday ? state : (state + ' · proj');
 				$('meta-week').textContent = 'W' + ctx.macroWeek;
 				$('meta-slot').textContent = ctx.slot ?? 'rest';
+
+				const eyebrow = $('eyebrow-date');
+				const headerTitle = $('header-title');
+				const headerLabel = !pick.workoutKey
+					? (ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day')
+					: (pick.workout?.name ?? 'Unknown');
+				if (eyebrow) {
+					eyebrow.textContent = (isToday ? 'Morning briefing · ' : 'Projection · ') + longDateFmt(date);
+				}
+				if (headerTitle) headerTitle.textContent = headerLabel + '.';
 
 				const title = $('pick-title');
 				const sub = $('pick-sub');
@@ -276,11 +395,10 @@ const wellnessFresh = wellnessDateISO === todayISO;
 				const dslCode = $('dsl-code');
 
 				if (!pick.workoutKey) {
-					const label = ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day';
-					title.textContent = label;
+					title.textContent = headerLabel;
 					sub.textContent = ctx.slot === 'group_ride'
 						? 'Friday is the group ride — ride what falls.'
-						: 'No cycling slot scheduled today.';
+						: 'No cycling slot scheduled.';
 					stats.style.display = 'none';
 					dsl.style.display = 'none';
 				} else {
@@ -295,6 +413,9 @@ const wellnessFresh = wellnessDateISO === todayISO;
 					dsl.style.display = '';
 					dslCode.textContent = w.dsl ?? '';
 				}
+
+				const subtitleEl = $('header-subtitle');
+				if (subtitleEl) subtitleEl.textContent = sub.textContent;
 
 				const listEl = $('reasoning-list');
 				while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
@@ -314,6 +435,22 @@ const wellnessFresh = wellnessDateISO === todayISO;
 					div.textContent = w;
 					warns.appendChild(div);
 				}
+
+				// Projection chrome — forecast active row, banner, body mode
+				forecastRows.forEach((row, i) => {
+					const on = i === activeIndex;
+					row.classList.toggle('active', on);
+					if (on) row.setAttribute('aria-current', 'true');
+					else row.removeAttribute('aria-current');
+				});
+				if (mainEl) mainEl.classList.toggle('projecting', !isToday);
+				if (banner) {
+					banner.hidden = isToday;
+					if (!isToday) {
+						$('proj-date-label').textContent = shortDateFmt(date);
+						$('proj-offset-label').textContent = '+' + activeIndex + 'd';
+					}
+				}
 			}
 
 			[oState, oSlot, oWeek, oNoV2].forEach((el) => el.addEventListener('input', recompute));
@@ -324,6 +461,24 @@ const wellnessFresh = wellnessDateISO === todayISO;
 				oNoV2.checked = false;
 				recompute();
 			});
+
+			forecastRows.forEach((row) => {
+				row.addEventListener('click', () => {
+					const idx = parseInt(row.dataset.idx ?? '0', 10);
+					if (idx === activeIndex) return;
+					activeIndex = idx;
+					recompute();
+				});
+			});
+
+			const backBtn = $('back-to-today');
+			if (backBtn) {
+				backBtn.addEventListener('click', () => {
+					if (activeIndex === 0) return;
+					activeIndex = 0;
+					recompute();
+				});
+			}
 
 			const copyBtn = $('copy-btn');
 			if (copyBtn) {
@@ -364,6 +519,159 @@ const wellnessFresh = wellnessDateISO === todayISO;
 				margin: 0 auto;
 				padding: 2.5rem 1.5rem 4rem;
 			}
+
+			/* ---- 4-day forecast strip ---- */
+			.forecast {
+				margin: 0 0 1.75rem;
+				border-top: 1px solid var(--rule);
+			}
+			.forecast-head {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--muted);
+				margin: 0;
+				padding: 0.75rem 0 0.5rem;
+			}
+			.forecast-rows {
+				display: flex;
+				flex-direction: column;
+				border-top: 1px solid var(--rule);
+			}
+			.forecast-row {
+				display: grid;
+				grid-template-columns: minmax(150px, auto) 1fr auto;
+				gap: 0.875rem;
+				align-items: baseline;
+				padding: 0.55rem 0.75rem 0.55rem 0.625rem;
+				border: 0;
+				border-bottom: 1px solid var(--rule);
+				border-left: 2px solid transparent;
+				background: transparent;
+				color: var(--ink);
+				text-align: left;
+				cursor: pointer;
+				font-family: inherit;
+				transition: background 100ms ease-out, color 100ms ease-out, border-color 100ms ease-out;
+			}
+			.forecast-row:last-child { border-bottom: none; }
+			.forecast-row:hover:not(.active) { background: var(--surface); }
+			.forecast-row:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: -2px;
+			}
+			.forecast-row.active {
+				border-left-color: var(--accent);
+				cursor: default;
+			}
+			.forecast-when {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				font-weight: 500;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--muted);
+				display: inline-flex;
+				gap: 0.4em;
+				align-items: baseline;
+				white-space: nowrap;
+			}
+			.forecast-row.active .forecast-day { color: var(--ink); }
+			.forecast-row.active .forecast-slot { color: var(--accent); font-weight: 600; }
+			.forecast-dot { color: var(--rule); }
+			.forecast-title {
+				font-family: var(--font-ui);
+				font-size: 14.5px;
+				color: var(--ink);
+				font-weight: 500;
+			}
+			.forecast-row:not(.active) .forecast-title { color: var(--muted); font-weight: 400; }
+			.forecast-row:not(.active):hover .forecast-title { color: var(--ink); }
+			.forecast-num {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--ink);
+				letter-spacing: 0.02em;
+				white-space: nowrap;
+			}
+			.forecast-row:not(.active) .forecast-num { color: var(--muted); }
+			.forecast-footnote {
+				font-family: var(--font-prose);
+				font-style: italic;
+				font-size: 13px;
+				color: var(--muted);
+				margin: 0.75rem 0 0;
+				padding-left: 0.625rem;
+			}
+			.amber-em {
+				font-style: normal;
+				font-family: var(--font-mono);
+				font-size: 11px;
+				color: var(--warning);
+				letter-spacing: 0.14em;
+				padding: 1px 5px;
+				background: color-mix(in oklab, var(--warning) 14%, transparent);
+				border-radius: var(--radius-sm);
+			}
+
+			/* ---- projection banner (visible when activeIndex > 0) ---- */
+			.projection-banner {
+				background: color-mix(in oklab, var(--accent) 6%, var(--bg));
+				border-left: 2px solid var(--accent);
+				padding: 0.6rem 0.875rem;
+				margin: 0 0 1.5rem;
+				font-family: var(--font-prose);
+				font-size: 14px;
+				color: var(--ink);
+				border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.4em;
+			}
+			.projection-banner[hidden] { display: none; }
+			.projection-banner strong {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				color: var(--accent);
+				font-weight: 600;
+			}
+			.projection-banner .num {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--ink);
+				letter-spacing: 0.04em;
+			}
+			#back-to-today {
+				margin-left: auto;
+				font-family: var(--font-mono);
+				font-size: 11px;
+				text-transform: uppercase;
+				letter-spacing: 0.12em;
+				padding: 4px 10px;
+				background: var(--bg);
+				color: var(--ink);
+				border: 1px solid var(--rule);
+				border-radius: var(--radius-sm);
+				cursor: pointer;
+			}
+			#back-to-today:hover { border-color: var(--accent); color: var(--accent); }
+
+			/* Projection mode mutes today-only sections (signals, computed, push) */
+			main.projecting .signals,
+			main.projecting .computed {
+				opacity: 0.42;
+				pointer-events: none;
+				transition: opacity 200ms ease-out;
+			}
+			main.projecting .push-hint { display: none; }
 
 			.toc-header {
 				display: grid;
@@ -729,6 +1037,16 @@ const wellnessFresh = wellnessDateISO === todayISO;
 				.control-row { grid-template-columns: 1fr; gap: 0.25rem; }
 				.toc-header { grid-template-columns: 1fr; align-items: start; }
 				.toc-meta { padding-bottom: 0; }
+				.forecast-row {
+					grid-template-columns: 1fr auto;
+					grid-template-rows: auto auto;
+					row-gap: 0.15rem;
+					column-gap: 0.5rem;
+				}
+				.forecast-when { grid-row: 1; grid-column: 1 / -1; font-size: 11px; }
+				.forecast-title { grid-row: 2; grid-column: 1; font-size: 14px; }
+				.forecast-num { grid-row: 2; grid-column: 2; align-self: baseline; }
+				#back-to-today { margin-left: 0; margin-top: 0.25rem; }
 			}
 		</style>
 	</body>
