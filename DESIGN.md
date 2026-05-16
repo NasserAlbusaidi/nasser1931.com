@@ -164,6 +164,7 @@ The site is organized by *what kind of thing* each entry is, not by chronology:
 - **field** — training milestones, race results, hinge moments. Dense TOC index, dated, mono-heavy stat blocks.
 - **stupidshit** — one-off oddities. Same TOC index pattern as field, lighter tags.
 - **reading** — books, with star rating + date. Currently / Finished (by year) / Want to Read shelves.
+- **coach** — daily cycling-coach briefing (read-only). Single column, eyebrow + display title for today's pick, signal chips (HRV / sleep / body battery / readiness / RHR) colored by GREEN/AMBER/RED state, mono code block for the workout DSL.
 
 (*blog* and *about* are retired — they were never built and don't fit the print-zine metaphor. /paper is the lead, /field is the front matter, /stupidshit is the back of the book.)
 
@@ -220,3 +221,4 @@ Banned across the site:
 | 2026-05-15 | `/blog` and `/about` retired from the IA. | Never built; don't fit the print-zine metaphor. Field + stupidshit cover the "blog" use case. |
 | 2026-05-15 | Considered alternates: Bodoni Moda + General Sans + IBM Plex Mono (Vogue); EB Garamond (Penguin Classics); Boska + Synonym (brutalist art-zine); Instrument Serif (soft modern). | All declined in favor of "Fraunces pushed" — lowest switching cost, same print-zine confidence. |
 | 2026-05-15 | Considered alternates: Ultramarine blue accent; alpine green accent. | Declined in favor of signal red as the higher-commitment editorial choice. |
+| 2026-05-16 | `/coach` added as a fifth section (read-only daily cycling-coach briefing). | Renders a snapshot pulled from project-furnace's intervals.icu pipeline. State color: GREEN→`--success`, AMBER→`--warning`, RED→`--error`. Workout DSL renders in the existing `pre` block (JetBrains Mono on `--surface`). No new design tokens. |

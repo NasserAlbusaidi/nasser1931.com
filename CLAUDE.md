@@ -48,6 +48,7 @@ gh workflow run refresh-pulse.yml                    # easier: run the same refr
 gh workflow run sync-paper.yml                       # manually trigger the project-furnace → /paper sync (also runs every 30min, plus instant via webhook from project-furnace)
 gh workflow run sync-reading.yml                     # manually trigger the Notion → /reading sync (also runs every 6h)
 gh workflow run sync-posts.yml                       # manually trigger the Notion → posts sync (also runs every 30min)
+gh workflow run refresh-coach.yml                    # manually trigger the project-furnace → /coach sync (also runs every 6h)
 npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
@@ -187,6 +188,20 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
   Hand-authored markdown files without a `notion_id` are left alone — the two authoring modes coexist safely.
 - **Concurrency:** shares the `bot-pushes-main` concurrency group with the other sync workflows; commit author is `posts-bot <bot@nasser1931.com>`.
 - **Setup:** done once on 2026-05-15 — db created, integration access inherited from "🎯 Personal" parent, default db id baked into the script, `NOTION_TOKEN` already a GH secret. Day-to-day: open the Posts db in Notion, write a row, set Status=Published, then either wait ≤30min for cron or run `gh workflow run sync-posts.yml` to ship now.
+
+## The coach briefing
+
+`/coach` is a read-only daily cycling-coach dashboard, driven by `src/data/coach.json` (state + signals snapshot) and `src/data/workout-bank.json` (the 22-workout bank). The page renders the canonical pick at build time and re-runs the engine in the browser when sliders change.
+
+- **Source of truth:** `NasserAlbusaidi/project-furnace` (private) at `tools/intervalsicu/` — `pull_state.py` writes the state snapshot, `workout_bank.py` is the bank module. The engine itself originates as the `<script>` block inside `tools/intervalsicu/cycling_coach_artifact.html`; the v1 site duplicates it as `src/scripts/cycling-engine.mjs` (TODO: extract to a shared module synced like the paper).
+- **Auto-sync:** `.github/workflows/refresh-coach.yml` runs cron `0 */6 * * *` plus `workflow_dispatch` plus `repository_dispatch[coach-update,bank-update]`. Sparse-clones project-furnace via `PAPER_REPO_SSH_KEY`, runs `pull_state.py` with `INTERVALS_API_KEY` + `INTERVALS_ATHLETE_ID`, dumps `workout_bank.py` → JSON, commits + builds + deploys *only when the diff is non-empty*.
+- **Concurrency:** shares `bot-pushes-main` with sync-paper, refresh-pulse, sync-reading, sync-posts. Commit author is `coach-bot <bot@nasser1931.com>`.
+- **Secrets (GitHub Actions):** `PAPER_REPO_SSH_KEY` (deploy key, shared with sync-paper), `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID` — all already configured for the existing workflows.
+- **Manual refresh:** `gh workflow run refresh-coach.yml`.
+- **v1 caveats / deferred work:**
+  - **Push-to-calendar is a copy block, not a button.** The page renders the exact `python3 tools/intervalsicu/pick_workout.py --push --time 05:30` command in a JetBrains Mono `<pre>` with a copy-to-clipboard button. The real button needs a Firebase Function proxy + single-user auth (open question: Firebase Auth magic link vs. passphrase) — deferred.
+  - **Engine duplication.** v1 ports the artifact's `<script>` into `src/scripts/cycling-engine.mjs`. Keep the function names + return shapes aligned with the artifact so the v1→v2 reasoning trail matches. Long-term: extract `cycling_engine.mjs` *in* project-furnace and sync it the same way the paper syncs.
+  - **Workout-bank webhook.** The workflow already accepts `repository_dispatch[bank-update]`; the project-furnace-side fire (mirroring `notify-site.yml`'s `paper-update`) is the remaining piece for sub-minute bank-edit propagation.
 
 ## firebase.json
 
