@@ -1,133 +1,154 @@
 ---
 import HeaderLink from './HeaderLink.astro';
 import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+	variant?: 'cover' | 'compact';
+}
+
+const { variant = 'cover' } = Astro.props;
+
+// Colophon — kept inline; bump issue/month/year as Press goes through editions.
+const issue = 'Nº 1';
+const periodLine = 'May 2026 · Muscat';
+const volumeLine = 'Vol. 1 · A quarterly';
 ---
 
-<header class="site-header">
-	<nav>
-		<a href="/" class="brand" aria-label="nasser1931.com — home">
-			<span class="brand-text">nasser1931<span class="brand-dot">.</span>com</span>
+<header class:list={['masthead-wrap', variant]}>
+	<div class="masthead">
+		<a href="/" class="nameplate" aria-label="nasser1931.com — home">
+			<span class="line-1">NASSER</span>
+			<span class="line-2 second-line">ALBUSAIDI</span>
 		</a>
-		<div class="links">
-			<HeaderLink href="/paper">paper</HeaderLink>
-			<HeaderLink href="/field">field</HeaderLink>
-			<HeaderLink href="/stupidshit">stupidshit</HeaderLink>
-			<HeaderLink href="/reading">reading</HeaderLink>
+		<div class="masthead-right">
+			<div class="colophon">
+				<div><strong>{issue}</strong></div>
+				<div>{periodLine}</div>
+				<div>{volumeLine}</div>
+			</div>
+			<ThemeToggle />
 		</div>
-		<ThemeToggle />
+	</div>
+	<nav class="section-nav" aria-label="Sections">
+		<HeaderLink href="/paper">paper</HeaderLink>
+		<HeaderLink href="/field">field</HeaderLink>
+		<HeaderLink href="/stupidshit">stupidshit</HeaderLink>
+		<HeaderLink href="/reading">reading</HeaderLink>
 	</nav>
 </header>
 
 <style>
-	.site-header {
-		position: sticky;
-		top: 0;
-		z-index: 50;
-		backdrop-filter: saturate(140%) blur(8px);
-		-webkit-backdrop-filter: saturate(140%) blur(8px);
-		background: color-mix(in srgb, var(--bg) 82%, transparent);
-		border-bottom: 1px solid var(--rule);
-	}
-
-	nav {
+	.masthead-wrap {
 		max-width: var(--container-wide);
 		margin: 0 auto;
-		padding: 0.85rem 1.25rem;
-		display: flex;
-		align-items: center;
-		gap: 1.25rem;
+		padding: 1.5rem 1.5rem 0;
 	}
 
-	.brand {
+	.masthead-wrap.compact {
+		max-width: var(--container-prose);
+		padding: 1.25rem 1.5rem 0;
+	}
+
+	.masthead {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 1.5rem;
+		border-top: 4px solid var(--ink);
+		border-bottom: 2px solid var(--ink);
+		padding: 18px 0 14px;
+	}
+
+	.nameplate {
 		font-family: var(--font-display);
-		font-weight: 600;
-		font-size: 17px;
-		font-variation-settings: "opsz" 36;
-		letter-spacing: -0.01em;
+		font-weight: 900;
+		font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+		font-size: clamp(48px, 9vw, 108px);
+		line-height: 0.85;
+		letter-spacing: -0.04em;
 		color: var(--ink);
 		text-decoration: none;
-		transition: color 100ms ease-out;
+		display: block;
 	}
 
-	.brand:hover {
+	.nameplate:hover {
+		text-decoration: none;
 		color: var(--ink);
 	}
 
-	.brand-text {
-		display: inline-block;
+	.nameplate .line-1,
+	.nameplate .line-2 {
+		display: block;
 	}
 
-	.brand-dot {
+	.nameplate .second-line {
 		color: var(--accent);
 	}
 
-	.links {
-		display: flex;
-		gap: 0.25rem;
-		flex: 1;
-		flex-wrap: wrap;
+	.compact .nameplate {
+		font-size: clamp(36px, 6vw, 64px);
 	}
 
-	.links :global(a) {
-		font-family: var(--font-ui);
-		font-size: 14px;
-		font-weight: 400;
+	.masthead-right {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		padding-top: 4px;
+		flex-shrink: 0;
+	}
+
+	.colophon {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--muted);
+		line-height: 1.6;
+		text-align: right;
+	}
+
+	.colophon strong {
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	.section-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 0.75rem;
+		padding: 14px 0 0;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+	}
+
+	.section-nav :global(a) {
 		color: var(--muted);
 		text-decoration: none;
-		padding: 0.35rem 0.55rem;
-		border-radius: var(--radius-md);
-		transition: color 100ms ease-out, background-color 100ms ease-out;
+		padding: 4px 2px;
+		transition: color 100ms ease-out;
 	}
 
-	.links :global(a:hover) {
+	.section-nav :global(a:hover) {
 		color: var(--ink);
-		background: var(--surface);
+		text-decoration: none;
 	}
 
-	.links :global(a.active) {
-		color: var(--ink);
-		font-weight: 500;
-	}
-
-	.links :global(a.active::before) {
-		content: "";
-		display: inline-block;
-		width: 4px;
-		height: 4px;
-		border-radius: var(--radius-full);
-		background: var(--accent);
-		margin-right: 0.4em;
-		vertical-align: 2px;
+	.section-nav :global(a.active) {
+		color: var(--accent);
 	}
 
 	@media (max-width: 720px) {
-		nav {
-			flex-wrap: wrap;
-			column-gap: 0.5rem;
-			row-gap: 0.4rem;
-			padding: 0.65rem 1rem;
-		}
-		.brand {
-			font-size: 16px;
-		}
-		.links {
-			order: 3;
-			flex: 0 0 100%;
-			flex-wrap: nowrap;
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
-			scrollbar-width: none;
-			margin: 0 -1rem;
-			padding: 0 1rem;
-		}
-		.links::-webkit-scrollbar {
-			display: none;
-		}
-		.links :global(a) {
-			flex: 0 0 auto;
-			white-space: nowrap;
-			padding: 0.3rem 0.5rem;
-			font-size: 13px;
-		}
+		.masthead-wrap { padding: 1rem 1rem 0; }
+		.colophon { font-size: 10px; }
+		.nameplate { font-size: clamp(40px, 14vw, 72px); }
+		.compact .nameplate { font-size: clamp(28px, 9vw, 48px); }
+	}
+
+	@media (max-width: 480px) {
+		.colophon { display: none; }
+		.section-nav { gap: 0.25rem 0.5rem; font-size: 10px; }
 	}
 </style>
