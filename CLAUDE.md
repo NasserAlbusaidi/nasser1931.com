@@ -8,13 +8,12 @@ Personal site. Astro static build, deployed to Firebase Hosting. Centerpiece is 
 
 ## Design System
 
-Always read **DESIGN.md** before making any visual or UI decision. All font choices, colors, spacing, type scale, layout widths, motion durations, category names, and component patterns are defined there. Do not deviate without explicit user approval. The system is named "Field Journal" — editorial-personal, cream-on-ink with rust accent, Fraunces / Source Serif 4 / Geist / Geist Mono. Anti-patterns (purple gradients, icon-in-circle grids, etc.) are listed explicitly.
+Always read **DESIGN.md** before making any visual or UI decision. All font choices, colors, spacing, type scale, layout widths, motion durations, category names, and component patterns are defined there. Do not deviate without explicit user approval. The system is named **"Press" (v0.2, drafted 2026-05-15)** — a print-magazine-quarterly identity. *Loud on the masthead, disciplined in the prose.* Newsprint cream `#F8F5EE` + warm carbon `#15110D` + signal red `#C8311C`. Fraunces (pushed to wght 900 / opsz 9 / SOFT 0 — the chunky / industrial mode, not refined Didone) / Switzer (Fontshare) / Source Serif 4 (retained for the paper) / JetBrains Mono. The previous Field Journal v0.1 (rust accent, Geist, refined Fraunces) is retired — see DESIGN.md's Decisions Log for what was retained and what was retired. Anti-patterns are listed explicitly.
 
 When QA-ing a UI change, flag any code that doesn't match DESIGN.md.
 
 ## Stale sibling docs — don't trust as source of truth
 
-- `README.md` still lists `/blog` and `/about` routes that were removed. Use it only as a brief project intro; this file is canonical.
 - `TODO.md` is a session-handoff from 2026-04-26. All P0/P1 items in it have long since shipped. Ignore unless cleaning it up.
 
 ## Stack
