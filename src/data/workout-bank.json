@@ -1,0 +1,350 @@
+{
+  "easy_z2_60": {
+    "category": "recovery",
+    "dsl": "Aerobic base, low cost. HR cap 138 bpm.\n\nWarmup\n- 5m 50-65% 85rpm\n\nMain\n- 50m 65% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 60,
+    "min_state": "red",
+    "name": "Easy Z2 60min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.65,
+    "target_tss": 50
+  },
+  "ftp_20": {
+    "category": "test",
+    "dsl": "20-min best-effort. FTP ~ 95% of 20-min avg. Negative split \u2014 first 5min slightly below target.\n\nWarmup\n- 15m 50-70% 90rpm\n- 5m 80% 95rpm\n- 5m 50% 88rpm\n- 3m 105% 95rpm\n- 5m 50% 88rpm\n\nMain\n- 20m 100% 95rpm\n\nCooldown\n- 10m 55-45% 85rpm",
+    "duration_min": 50,
+    "min_state": "green",
+    "name": "FTP 20-min Test",
+    "next_day_ok": [
+      "rest"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "test",
+    "target_if": 1.0,
+    "target_tss": 75
+  },
+  "long_push_180": {
+    "category": "endurance",
+    "dsl": "W4 eFTP-mover. Apr 18 2025 shape. Mon DL is DELOAD this week \u2014 no PRs.\nHR cap 150 bpm. Fuel 90-100g carbs/hr from min 30. Low VI, steady push.\n\nWarmup\n- 15m 50-70% 88rpm\n\nMain\n- 30m 72% 88rpm\n- 120m 82% 90rpm\n- 10m 70% 88rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 180,
+    "min_state": "green",
+    "name": "Long Push 180min @ IF 0.82 (eFTP-mover)",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "long",
+    "target_if": 0.82,
+    "target_tss": 200
+  },
+  "long_tempo_120": {
+    "category": "endurance",
+    "dsl": "Sustained Z2-Tempo. HR cap 145 bpm. Low VI \u2014 steady, no surges.\n\nWarmup\n- 10m 50-65% 85rpm\n\nMain\n- 30m 70% 88rpm\n- 60m 75% 90rpm\n- 15m 70% 88rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 120,
+    "min_state": "green",
+    "name": "Long Tempo 120min (Z2-Tempo blend)",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "long",
+    "target_if": 0.78,
+    "target_tss": 130
+  },
+  "long_tempo_150": {
+    "category": "endurance",
+    "dsl": "Long sub-threshold endurance. HR cap 148 bpm. Fuel 80-90g carbs/hr.\n\nWarmup\n- 10m 50-65% 85rpm\n\nMain\n- 30m 70% 88rpm\n- 95m 78% 90rpm\n- 10m 70% 88rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 150,
+    "min_state": "green",
+    "name": "Long Tempo 150min",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "long",
+    "target_if": 0.8,
+    "target_tss": 160
+  },
+  "long_z2_120": {
+    "category": "endurance",
+    "dsl": "Aerobic base extended. HR cap 142 bpm. Fuel 60-80g carbs/hr non-negotiable.\n\nWarmup\n- 10m 50-65% 85rpm\n\nMain\n- 105m 65-70% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 120,
+    "min_state": "amber",
+    "name": "Long Z2 120min",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "long",
+    "target_if": 0.73,
+    "target_tss": 110
+  },
+  "long_z2_90": {
+    "category": "endurance",
+    "dsl": "Aerobic base anchor. HR cap 140 bpm. Fuel 60g carbs/hr from min 60.\n\nWarmup\n- 10m 50-65% 85rpm\n\nMain\n- 75m 65% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 90,
+    "min_state": "amber",
+    "name": "Long Z2 90min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "long",
+    "target_if": 0.72,
+    "target_tss": 80
+  },
+  "ou_3x8": {
+    "category": "over_under",
+    "dsl": "Lactate clearance work. RPE 8 on overs, RPE 7 on unders. No coast.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 3x\n- 2m 90% 90rpm\n- 2m 105% 95rpm\n- 2m 90% 90rpm\n- 2m 105% 95rpm\n- 4m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 70,
+    "min_state": "green",
+    "name": "Over-Unders 3x(4x2min) 90/105% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "target_if": 0.91,
+    "target_tss": 75
+  },
+  "ou_4x6": {
+    "category": "over_under",
+    "dsl": "Race-pace lactate work. RPE 8-9. Punchy.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 4x\n- 2m 88% 90rpm\n- 2m 108% 95rpm\n- 2m 88% 90rpm\n- 3m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 75,
+    "min_state": "green",
+    "name": "Over-Unders 4x(3x2min) 88/108% FTP",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "quality",
+    "target_if": 0.92,
+    "target_tss": 85
+  },
+  "ramp_test": {
+    "category": "test",
+    "dsl": "eFTP = 75% of best 1-min power. Pace yourself early; commit past 100%.\n\nWarmup\n- 5m 40-60% 90rpm\n\nRamp\n- 1m 50% 90rpm\n- 1m 60% 90rpm\n- 1m 70% 90rpm\n- 1m 80% 90rpm\n- 1m 90% 90rpm\n- 1m 100% 95rpm\n- 1m 105% 95rpm\n- 1m 110% 95rpm\n- 1m 115% 95rpm\n- 1m 120% 95rpm\n- 1m 125% 95rpm\n- 1m 130% 95rpm\n- 1m 135% 95rpm\n- 1m 140% 95rpm\n\nCooldown\n- 5m 50-40% 85rpm",
+    "duration_min": 30,
+    "min_state": "green",
+    "name": "Ramp Test (eFTP)",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "test",
+    "target_if": 1.0,
+    "target_tss": 60
+  },
+  "recovery_45": {
+    "category": "recovery",
+    "dsl": "Active recovery. HR cap 130 bpm. High cadence, low resistance.\n\nWarmup\n- 5m 45-55% 90rpm\n\nMain\n- 35m 55% 95rpm\n\nCooldown\n- 5m 55-45% 90rpm",
+    "duration_min": 45,
+    "min_state": "red",
+    "name": "Recovery Spin 45min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.55,
+    "target_tss": 25
+  },
+  "sprint_10x20s": {
+    "category": "sprint",
+    "dsl": "Short sprint cluster. RPE 10. Tabata feel.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 10x\n- 20s 220% 100rpm\n- 40s 50% 90rpm\n\nRecovery between clusters\n- 5m 55% 88rpm\n\nMain Set 10x\n- 20s 220% 100rpm\n- 40s 50% 90rpm\n\nCooldown\n- 10m 55-45% 85rpm",
+    "duration_min": 50,
+    "min_state": "green",
+    "name": "Sprint 10x20s with 40s recovery",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "target_if": 0.75,
+    "target_tss": 45
+  },
+  "sprint_8x30s": {
+    "category": "sprint",
+    "dsl": "Neuromuscular power. RPE 10. Out of the saddle, 30s seated recovery.\n\nWarmup\n- 15m 50-70% 90rpm\n- 3m 80% 95rpm\n- 2m 60% 90rpm\n\nMain Set 8x\n- 30s 200% 100rpm\n- 4m30s 50% 90rpm\n\nCooldown\n- 10m 55-45% 85rpm",
+    "duration_min": 55,
+    "min_state": "green",
+    "name": "Sprint 8x30s all-out",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "target_if": 0.78,
+    "target_tss": 50
+  },
+  "sweetspot_2x20": {
+    "category": "sweetspot",
+    "dsl": "Mosley bread-and-butter. RPE 7. Sustainable burn, breathing controlled.\n\nWarmup\n- 12m 50-70% 88rpm\n\nMain Set 2x\n- 20m 90% 90rpm\n- 5m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
+    "duration_min": 75,
+    "min_state": "amber",
+    "name": "Sweetspot 2x20min @ 90% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "target_if": 0.87,
+    "target_tss": 70
+  },
+  "sweetspot_3x15": {
+    "category": "sweetspot",
+    "dsl": "Volume variant of sweetspot. RPE 7. Steady, controlled.\n\nWarmup\n- 12m 50-70% 88rpm\n\nMain Set 3x\n- 15m 88% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
+    "duration_min": 80,
+    "min_state": "amber",
+    "name": "Sweetspot 3x15min @ 88% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "target_if": 0.86,
+    "target_tss": 75
+  },
+  "sweetspot_4x10": {
+    "category": "sweetspot",
+    "dsl": "Shorter reps for AMBER days. RPE 7-8. Get the work without the long sustained burn.\n\nWarmup\n- 10m 50-70% 88rpm\n\nMain Set 4x\n- 10m 92% 90rpm\n- 3m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
+    "duration_min": 65,
+    "min_state": "amber",
+    "name": "Sweetspot 4x10min @ 92% FTP (AMBER variant)",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "target_if": 0.85,
+    "target_tss": 60
+  },
+  "threshold_2x15": {
+    "category": "threshold",
+    "dsl": "Sustained threshold/sweetspot. RPE 7-8.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 2x\n- 15m 93% 90rpm\n- 5m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 75,
+    "min_state": "green",
+    "name": "Threshold 2x15min @ 93% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "target_if": 0.89,
+    "target_tss": 80
+  },
+  "threshold_3x10": {
+    "category": "threshold",
+    "dsl": "The bigger threshold variant. RPE 8. Mosley shape \u2014 Speed Workout Bike on steroids.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 3x\n- 10m 95% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 75,
+    "min_state": "green",
+    "name": "Threshold 3x10min @ 95% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "target_if": 0.92,
+    "target_tss": 85
+  },
+  "threshold_3x8": {
+    "category": "threshold",
+    "dsl": "RPE 8 on intervals. Hold prescribed wattage \u2014 don't drift.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 3x\n- 8m 95% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 70,
+    "min_state": "green",
+    "name": "Threshold 3x8min @ 95% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "target_if": 0.9,
+    "target_tss": 75
+  },
+  "threshold_4x10": {
+    "category": "threshold",
+    "dsl": "Big threshold day. RPE 8-9. Last quality before ramp tests.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 4x\n- 10m 95% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 85,
+    "min_state": "green",
+    "name": "Threshold 4x10min @ 95% FTP",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "quality",
+    "target_if": 0.93,
+    "target_tss": 95
+  },
+  "vo2_5x4": {
+    "category": "vo2",
+    "dsl": "Aerobic ceiling work. RPE 9. Breathing maxed by min 2.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 5x\n- 4m 110% 95rpm\n- 4m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 70,
+    "min_state": "green",
+    "name": "VO2 5x4min @ 110% FTP",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "quality",
+    "target_if": 0.95,
+    "target_tss": 80
+  },
+  "vo2_6x3": {
+    "category": "vo2",
+    "dsl": "Sharper VO2 reps. RPE 9-10. Race-attack power.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 6x\n- 3m 115% 95rpm\n- 3m 50% 85rpm\n\nCooldown\n- 10m 60-45% 85rpm",
+    "duration_min": 65,
+    "min_state": "green",
+    "name": "VO2 6x3min @ 115% FTP",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "quality",
+    "target_if": 0.96,
+    "target_tss": 75
+  }
+}
