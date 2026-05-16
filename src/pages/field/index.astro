@@ -3,11 +3,27 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 
 const entries = (await getCollection('field')).sort(
 	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
+
+const total = entries.length;
+const years = entries.map((e) => e.data.date.getUTCFullYear());
+const range = years.length === 0
+	? '—'
+	: years[years.length - 1] === years[0]
+		? `${years[0]}`
+		: `${years[years.length - 1]}—${years[0]}`;
+
+const numFor = (i: number) => String(total - i).padStart(3, '0');
+
+const fmtDate = (d: Date) => {
+	const y = d.getUTCFullYear();
+	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+	const day = String(d.getUTCDate()).padStart(2, '0');
+	return `${y} · ${m} · ${day}`;
+};
 ---
 
 <!doctype html>
@@ -18,67 +34,89 @@ const entries = (await getCollection('field')).sort(
 	<body>
 		<Header />
 		<main>
-			<header class="page-head">
-				<p class="eyebrow">field</p>
-				<h1>Things that happened.</h1>
-				<p class="lede">
-					<em>Training milestones, race results, hinge moments. Short, dated, mono-heavy.</em>
-				</p>
+			<header class="toc-header">
+				<div>
+					<span class="eyebrow eyebrow-accent">Section · the dated log</span>
+					<h1>Field.</h1>
+				</div>
+				<div class="toc-meta">
+					{total} {total === 1 ? 'entry' : 'entries'} · {range}
+				</div>
 			</header>
 
-			<ul class="entries">
-				{entries.map((entry) => (
-					<li>
-						<time datetime={entry.data.date.toISOString()}>
-							<FormattedDate date={entry.data.date} />
-						</time>
-						<a href={`/field/${entry.id}`}>{entry.data.title}</a>
-						<span class="summary">— {entry.data.summary}</span>
-					</li>
-				))}
-			</ul>
+			{entries.length === 0 ? (
+				<p class="empty">First field entries land soon — race results, training milestones, hinge moments.</p>
+			) : (
+				<ol class="toc-list">
+					{entries.map((entry, i) => (
+						<li>
+							<span class="toc-num">№ {numFor(i)}</span>
+							<div class="toc-body">
+								<a class="toc-title" href={`/field/${entry.id}`}>{entry.data.title}</a>
+								<span class="toc-summary">{entry.data.summary}</span>
+							</div>
+							<time class="toc-date" datetime={entry.data.date.toISOString()}>
+								{fmtDate(entry.data.date)}
+							</time>
+						</li>
+					))}
+				</ol>
+			)}
 		</main>
 		<Footer />
 
 		<style>
 			main {
-				max-width: var(--container-prose);
+				max-width: var(--container-wide);
 				margin: 0 auto;
-				padding: 4rem 1.25rem 2rem;
+				padding: 2.5rem 1.5rem 4rem;
 			}
 
-			.page-head {
-				margin: 0 0 2.5rem;
-				padding-bottom: 1.5rem;
-				border-bottom: 1px solid var(--rule);
+			.toc-header {
+				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
+				gap: 1.5rem;
+				padding-bottom: 1rem;
+				border-bottom: 2px solid var(--ink);
+				margin-bottom: 1.5rem;
+			}
+
+			.toc-header h1 {
+				font-family: var(--font-display);
+				font-weight: 900;
+				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+				font-size: clamp(40px, 7vw, 88px);
+				line-height: 0.9;
+				letter-spacing: -0.03em;
+				margin: 0.5rem 0 0;
 			}
 
 			.eyebrow {
+				display: block;
+			}
+
+			.toc-meta {
 				font-family: var(--font-mono);
 				font-size: 11px;
-				font-weight: 500;
 				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--accent);
-				margin: 0 0 1rem;
-			}
-
-			h1 {
-				font-family: var(--font-display);
-				font-weight: 600;
-				font-size: 44px;
-				line-height: 1.05;
-				letter-spacing: -0.02em;
-				font-variation-settings: "opsz" 96;
-				margin: 0 0 0.75rem;
-			}
-
-			.lede {
-				font-family: var(--font-body);
-				font-size: 17px;
-				line-height: 1.55;
+				letter-spacing: 0.14em;
 				color: var(--muted);
-				margin: 0;
+				white-space: nowrap;
+				padding-bottom: 0.5rem;
+			}
+
+			.empty {
+				font-family: var(--font-prose);
+				font-style: italic;
+				font-size: 17px;
+				color: var(--muted);
+				margin: 2rem 0;
+			}
+
+			@media (max-width: 540px) {
+				.toc-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+				.toc-meta { padding-bottom: 0; }
 			}
 		</style>
 	</body>
