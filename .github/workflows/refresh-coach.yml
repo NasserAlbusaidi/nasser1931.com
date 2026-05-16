@@ -1,9 +1,8 @@
 name: Refresh coach state + workout bank
 
-# v1 scaffolding. The /coach page lands in a follow-up PR; until then this
-# workflow only produces src/data/coach.json + src/data/workout-bank.json
-# (and a no-op rebuild). Safe to leave running, or disable in the GH Actions
-# UI to keep CI quiet until the page is live.
+# Pulls intervals.icu wellness + activities through project-furnace's
+# pull_state.py, dumps the canonical workout bank, commits + deploys only
+# when the snapshot diff is non-empty. Drives /coach.
 
 on:
   schedule:
@@ -45,37 +44,34 @@ jobs:
           python-version: '3.12'
 
       - name: Install Python deps
-        working-directory: project-furnace
-        run: |
-          if [ -f tools/intervalsicu/requirements.txt ]; then
-            pip install -r tools/intervalsicu/requirements.txt
-          else
-            pip install requests
-          fi
+        run: pip install requests intervalsicu
 
-      - name: Pull state from intervals.icu → coach.json
-        working-directory: project-furnace
+      - name: Write intervals.icu creds for pull_state.py
         env:
           INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
           INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
-        # Confirm pull_state.py's CLI surface during port. If it accepts --out,
-        # this works as-is. If it prints to stdout, swap for:
-        #   python3 tools/intervalsicu/pull_state.py > "$GITHUB_WORKSPACE/src/data/coach.json"
-        run: python3 tools/intervalsicu/pull_state.py --out "$GITHUB_WORKSPACE/src/data/coach.json"
+        run: |
+          umask 077
+          printf '{"athlete_id":"%s","api_key":"%s"}\n' "$INTERVALS_ATHLETE_ID" "$INTERVALS_API_KEY" > "$HOME/.intervalsicu_credentials"
+
+      - name: Pull state from intervals.icu → coach.json
+        working-directory: project-furnace
+        run: python3 tools/intervalsicu/pull_state.py --out "$GITHUB_WORKSPACE/src/data/coach.json" --pretty
 
       - name: Dump workout bank → workout-bank.json
         working-directory: project-furnace
-        # workout_bank.py is expected to expose the bank as a module attribute
-        # (BANK / WORKOUTS) or a bank() function. Adjust the one-liner if the
-        # actual surface differs.
         run: |
-          python3 -c "
-          import json, sys
+          python3 - <<'PY'
+          import json, os, sys
           sys.path.insert(0, 'tools/intervalsicu')
-          import workout_bank as wb
-          bank = getattr(wb, 'BANK', None) or getattr(wb, 'WORKOUTS', None) or wb.bank()
-          json.dump(bank, open('$GITHUB_WORKSPACE/src/data/workout-bank.json', 'w'), indent=2)
-          "
+          from workout_bank import WORKOUT_LIBRARY
+          def default(o):
+              if isinstance(o, set): return sorted(o)
+              raise TypeError(f"unhandled: {type(o)}")
+          out = os.path.join(os.environ["GITHUB_WORKSPACE"], "src/data/workout-bank.json")
+          with open(out, "w") as f:
+              json.dump(WORKOUT_LIBRARY, f, indent=2, default=default, sort_keys=True)
+          PY
 
       - name: Commit if changed
         id: commit

@@ -1,0 +1,735 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import coach from '../data/coach.json';
+import bank from '../data/workout-bank.json';
+import {
+	classifyState,
+	getScheduleContext,
+	pickWorkoutV1,
+	applyV2Overrides,
+} from '../scripts/cycling-engine.mjs';
+
+const wellness = coach.wellness ?? {};
+const computed = coach.computed ?? {};
+const todayISO: string = coach._today ?? new Date().toISOString().slice(0, 10);
+const fetchedAt: string | null = coach._fetched_at ?? null;
+
+const today = new Date(todayISO + 'T00:00:00Z');
+const longDate = today.toLocaleDateString('en-GB', {
+	weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+});
+
+const cls = classifyState(wellness);
+const ctx = getScheduleContext(today);
+const v1 = pickWorkoutV1(cls.state, ctx, bank);
+const pick = applyV2Overrides(v1, computed, bank);
+
+const stateLabel = pick.workoutKey === null
+	? (ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day')
+	: pick.workout?.name ?? 'Unknown';
+
+const subtitle = pick.workoutKey === null
+	? (ctx.slot === 'group_ride'
+		? 'Friday is the group ride — ride what falls. No structured workout to push.'
+		: 'No cycling slot scheduled today.')
+	: `${pick.workout?.category ?? ''} · key ${pick.workoutKey}`;
+
+const pushCmd = `python3 tools/intervalsicu/pick_workout.py --push --time 05:30`;
+
+const wellnessDateISO: string | null = wellness?.date ?? null;
+const wellnessFresh = wellnessDateISO === todayISO;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title="Coach — Nasser Al Busaidi"
+			description="A daily cycling briefing — recovery signals, today's pick, and the reasoning. Driven by intervals.icu."
+		/>
+	</head>
+	<body>
+		<Header variant="compact" />
+		<main>
+			<header class="toc-header">
+				<div>
+					<span class="eyebrow eyebrow-accent">Morning briefing · {longDate}</span>
+					<h1 class="display-feature">{stateLabel}.</h1>
+					<p class="subtitle" id="header-subtitle">{subtitle}</p>
+				</div>
+				<div class="toc-meta">
+					<span class={`state-pill state-${cls.state}`} id="state-pill">{cls.state}</span>
+					<span class="bullet">·</span>
+					<span class="num" id="meta-week">W{ctx.macroWeek}</span>
+					<span class="bullet">·</span>
+					<span class="num" id="meta-slot">{ctx.slot ?? 'rest'}</span>
+					{fetchedAt && (
+						<>
+							<span class="bullet">·</span>
+							updated <span class="num" data-iso={fetchedAt}>recently</span>
+						</>
+					)}
+				</div>
+			</header>
+
+			{!wellnessFresh && wellnessDateISO && (
+				<aside class="staleness">
+					<strong>Note:</strong> wellness snapshot is from <span class="num">{wellnessDateISO}</span>,
+					not today ({todayISO}). intervals.icu's Garmin sync is usually 1–3h behind — refresh later.
+				</aside>
+			)}
+
+			<section class="block">
+				<h2 class="block-head">Recovery signals</h2>
+				<div class="signals">
+					{cls.classifications.map((c) => (
+						<div class={`signal signal-${c.class}`} data-key={c.key}>
+							<div class="signal-label">{c.label}</div>
+							<div class="signal-value">
+								{c.value == null
+									? <span class="missing">—</span>
+									: <>
+										<span class="signal-num">{Number.isInteger(c.value) ? c.value : (c.value as number).toFixed(1)}</span>
+										<span class="unit">{c.unit}</span>
+									</>
+								}
+							</div>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<section class="block">
+				<h2 class="block-head">Computed signals</h2>
+				<div class="computed">
+					<div class="comp">
+						<div class="comp-label">TSB · form</div>
+						<div class="comp-value">
+							<span>{computed.tsb ?? '—'}</span>
+							{computed.tsb_category && <span class="comp-tag">{computed.tsb_category}</span>}
+						</div>
+					</div>
+					<div class="comp">
+						<div class="comp-label">Ramp rate</div>
+						<div class="comp-value">
+							<span>{wellness.ramp_rate != null ? Number(wellness.ramp_rate).toFixed(1) : '—'}</span>
+							{computed.ramp_rate_category && <span class="comp-tag">{computed.ramp_rate_category}</span>}
+						</div>
+					</div>
+					<div class="comp">
+						<div class="comp-label">Days since hard</div>
+						<div class="comp-value">{computed.days_since_hard ?? '—'}</div>
+					</div>
+					<div class="comp">
+						<div class="comp-label">eFTP 14d</div>
+						<div class="comp-value">
+							<span>{computed.eftp_14d_ago ?? '—'} → {computed.eftp_current ?? '—'}</span>
+							{computed.eftp_trend_status && <span class="comp-tag">{computed.eftp_trend_status}</span>}
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="block">
+				<h2 class="block-head">Today's pick</h2>
+				<div id="pick-title" class="pick-title">{stateLabel}</div>
+				<div id="pick-sub" class="pick-sub">{subtitle}</div>
+
+				<div id="pick-stats" class="pick-stats" style={pick.workoutKey ? '' : 'display:none'}>
+					<div>
+						<div class="comp-label">Duration</div>
+						<div class="stat-big">
+							<span class="stat-num" id="stat-duration">{pick.workout?.duration_min ?? '—'}</span><span class="unit">min</span>
+						</div>
+					</div>
+					<div>
+						<div class="comp-label">Target IF</div>
+						<div class="stat-big">
+							<span class="stat-num" id="stat-if">{pick.workout?.target_if?.toFixed(2) ?? '—'}</span>
+						</div>
+					</div>
+					<div>
+						<div class="comp-label">Target TSS</div>
+						<div class="stat-big">
+							<span class="stat-num" id="stat-tss">{pick.workout?.target_tss ?? '—'}</span>
+						</div>
+					</div>
+					<div>
+						<div class="comp-label">Cost</div>
+						<div class="stat-big-text" id="stat-cost">{pick.workout?.recovery_cost ?? '—'}</div>
+					</div>
+				</div>
+
+				<details class="reasoning-details" open>
+					<summary>Reasoning</summary>
+					<ol id="reasoning-list" class="reasoning">
+						{pick.reasoning.map((r) => <li>{r}</li>)}
+					</ol>
+				</details>
+
+				<div id="warnings" class="warnings" style={(pick.warnings ?? []).length ? '' : 'display:none'}>
+					{(pick.warnings ?? []).map((w) => <div class="warning">{w}</div>)}
+				</div>
+
+				<pre id="dsl-block" class="dsl" style={pick.workoutKey ? '' : 'display:none'}><code id="dsl-code">{pick.workout?.dsl ?? ''}</code></pre>
+			</section>
+
+			<details class="block overrides">
+				<summary><span class="block-head">Override engine inputs</span></summary>
+				<div class="control-row">
+					<label for="o-state">Force state</label>
+					<select id="o-state">
+						<option value="">auto ({cls.state})</option>
+						<option value="green">GREEN</option>
+						<option value="amber">AMBER</option>
+						<option value="red">RED</option>
+					</select>
+				</div>
+				<div class="control-row">
+					<label for="o-slot">Override slot</label>
+					<select id="o-slot">
+						<option value="">auto ({ctx.slot ?? 'none'})</option>
+						<option value="long">long (Sun)</option>
+						<option value="quality">quality (Wed)</option>
+						<option value="group_ride">group_ride (Fri)</option>
+						<option value="recovery">recovery</option>
+					</select>
+				</div>
+				<div class="control-row">
+					<label for="o-week">Override macro week</label>
+					<select id="o-week">
+						<option value="">auto (W{ctx.macroWeek})</option>
+						<option value="1">W1</option>
+						<option value="2">W2</option>
+						<option value="3">W3</option>
+						<option value="4">W4 (eFTP push)</option>
+						<option value="5">W5 (recovery)</option>
+					</select>
+				</div>
+				<div class="control-row">
+					<label for="o-nov2">Disable v2 overrides</label>
+					<input id="o-nov2" type="checkbox" />
+				</div>
+				<button type="button" id="o-reset" class="reset-btn">Reset</button>
+			</details>
+
+			<details class="block push-hint">
+				<summary><span class="block-head">Ship to calendar (manual)</span></summary>
+				<p class="hint-prose">
+					Push hasn't been wired into the browser yet. Run this from the project root and the
+					workout lands on intervals.icu, which Garmin Calendar Sync forwards to the watch.
+				</p>
+				<div class="copy-row">
+					<pre class="cmd"><code id="push-cmd">{pushCmd}</code></pre>
+					<button type="button" id="copy-btn" aria-live="polite">Copy</button>
+				</div>
+			</details>
+		</main>
+		<Footer />
+
+		<script type="application/json" id="coach-data" set:html={JSON.stringify(coach)}></script>
+		<script type="application/json" id="bank-data" set:html={JSON.stringify(bank)}></script>
+
+		<script>
+			import {
+				classifyState,
+				getScheduleContext,
+				pickWorkoutV1,
+				applyV2Overrides,
+			} from '../scripts/cycling-engine.mjs';
+
+			const coach = JSON.parse(document.getElementById('coach-data').textContent);
+			const bank  = JSON.parse(document.getElementById('bank-data').textContent);
+			const today = new Date(coach._today + 'T00:00:00Z');
+
+			const $ = (id) => document.getElementById(id);
+			const oState = $('o-state'), oSlot = $('o-slot'), oWeek = $('o-week'), oNoV2 = $('o-nov2');
+
+			function recompute() {
+				const cls = classifyState(coach.wellness ?? {});
+				const state = oState.value || cls.state;
+				const ctx = getScheduleContext(today);
+				if (oSlot.value) ctx.slot = oSlot.value;
+				if (oWeek.value) ctx.macroWeek = parseInt(oWeek.value, 10);
+
+				const v1 = pickWorkoutV1(state, ctx, bank);
+				const pick = oNoV2.checked
+					? { ...v1, warnings: [] }
+					: applyV2Overrides(v1, coach.computed ?? {}, bank);
+
+				render(pick, state, ctx);
+			}
+
+			function render(pick, state, ctx) {
+				const pillEl = $('state-pill');
+				pillEl.className = 'state-pill state-' + state;
+				pillEl.textContent = state;
+				$('meta-week').textContent = 'W' + ctx.macroWeek;
+				$('meta-slot').textContent = ctx.slot ?? 'rest';
+
+				const title = $('pick-title');
+				const sub = $('pick-sub');
+				const stats = $('pick-stats');
+				const dsl = $('dsl-block');
+				const dslCode = $('dsl-code');
+
+				if (!pick.workoutKey) {
+					const label = ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day';
+					title.textContent = label;
+					sub.textContent = ctx.slot === 'group_ride'
+						? 'Friday is the group ride — ride what falls.'
+						: 'No cycling slot scheduled today.';
+					stats.style.display = 'none';
+					dsl.style.display = 'none';
+				} else {
+					const w = pick.workout;
+					title.textContent = w.name;
+					sub.textContent = `${w.category} · key ${pick.workoutKey}`;
+					stats.style.display = '';
+					$('stat-duration').textContent = String(w.duration_min ?? '—');
+					$('stat-if').textContent = typeof w.target_if === 'number' ? w.target_if.toFixed(2) : '—';
+					$('stat-tss').textContent = String(w.target_tss ?? '—');
+					$('stat-cost').textContent = w.recovery_cost ?? '—';
+					dsl.style.display = '';
+					dslCode.textContent = w.dsl ?? '';
+				}
+
+				const listEl = $('reasoning-list');
+				while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+				for (const r of pick.reasoning) {
+					const li = document.createElement('li');
+					li.textContent = r;
+					listEl.appendChild(li);
+				}
+
+				const warns = $('warnings');
+				while (warns.firstChild) warns.removeChild(warns.firstChild);
+				const warningsArr = pick.warnings ?? [];
+				warns.style.display = warningsArr.length ? '' : 'none';
+				for (const w of warningsArr) {
+					const div = document.createElement('div');
+					div.className = 'warning';
+					div.textContent = w;
+					warns.appendChild(div);
+				}
+			}
+
+			[oState, oSlot, oWeek, oNoV2].forEach((el) => el.addEventListener('input', recompute));
+			$('o-reset').addEventListener('click', () => {
+				oState.value = '';
+				oSlot.value = '';
+				oWeek.value = '';
+				oNoV2.checked = false;
+				recompute();
+			});
+
+			const copyBtn = $('copy-btn');
+			if (copyBtn) {
+				copyBtn.addEventListener('click', async () => {
+					const cmd = $('push-cmd').textContent;
+					try {
+						await navigator.clipboard.writeText(cmd);
+						copyBtn.textContent = 'copied';
+						setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+					} catch {
+						copyBtn.textContent = 'copy failed';
+					}
+				});
+			}
+		</script>
+
+		<script is:inline>
+			(function () {
+				const fmt = (iso) => {
+					const then = new Date(iso).getTime();
+					if (Number.isNaN(then)) return null;
+					const diffMin = Math.max(0, Math.round((Date.now() - then) / 60000));
+					if (diffMin < 60) return diffMin + 'm ago';
+					const diffH = Math.round(diffMin / 60);
+					if (diffH < 48) return diffH + 'h ago';
+					return Math.round(diffH / 24) + 'd ago';
+				};
+				document.querySelectorAll('[data-iso]').forEach((el) => {
+					const out = fmt(el.dataset.iso);
+					if (out) el.textContent = out;
+				});
+			})();
+		</script>
+
+		<style>
+			main {
+				max-width: var(--container-prose);
+				margin: 0 auto;
+				padding: 2.5rem 1.5rem 4rem;
+			}
+
+			.toc-header {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 1.5rem;
+				align-items: end;
+				padding-bottom: 1rem;
+				border-bottom: 2px solid var(--ink);
+				margin-bottom: 1.75rem;
+			}
+
+			.toc-header h1 {
+				margin: 0.4rem 0 0;
+				font-size: clamp(40px, 7vw, 72px);
+				line-height: 0.95;
+			}
+
+			.subtitle {
+				margin: 0.5rem 0 0;
+				font-family: var(--font-prose);
+				font-style: italic;
+				color: var(--muted);
+				font-size: 17px;
+			}
+
+			.toc-meta {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 11px;
+				text-transform: uppercase;
+				letter-spacing: 0.12em;
+				color: var(--muted);
+				display: flex;
+				gap: 0.4em;
+				align-items: baseline;
+				flex-wrap: wrap;
+				padding-bottom: 0.25rem;
+			}
+			.toc-meta .num { color: var(--ink); }
+			.toc-meta .bullet { color: var(--rule); }
+
+			.state-pill {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 600;
+				letter-spacing: 0.18em;
+				padding: 3px 10px;
+				border-radius: var(--radius-sm);
+				text-transform: uppercase;
+			}
+			.state-pill.state-green { background: color-mix(in oklab, var(--success) 14%, transparent); color: var(--success); }
+			.state-pill.state-amber { background: color-mix(in oklab, var(--warning) 14%, transparent); color: var(--warning); }
+			.state-pill.state-red   { background: color-mix(in oklab, var(--error) 14%, transparent);   color: var(--error); }
+
+			.staleness {
+				background: var(--surface);
+				border-left: 2px solid var(--warning);
+				padding: 0.75rem 1rem;
+				margin: 0 0 1.5rem;
+				font-family: var(--font-prose);
+				font-size: 14px;
+				color: var(--muted);
+				border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+			}
+			.staleness strong { color: var(--ink); font-weight: 600; }
+			.staleness .num { color: var(--ink); font-family: var(--font-mono); font-size: 0.92em; }
+
+			.block { margin: 2rem 0 0; }
+
+			.block-head {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--muted);
+				margin: 0 0 0.875rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid var(--rule);
+				display: block;
+			}
+
+			.signals {
+				display: grid;
+				grid-template-columns: repeat(5, 1fr);
+				gap: 0.5rem;
+			}
+
+			.signal {
+				border: 1px solid var(--rule);
+				border-radius: var(--radius-sm);
+				padding: 0.5rem 0.625rem;
+				background: var(--bg);
+			}
+			.signal-green { border-color: color-mix(in oklab, var(--success) 50%, var(--rule)); background: color-mix(in oklab, var(--success) 8%, var(--bg)); }
+			.signal-amber { border-color: color-mix(in oklab, var(--warning) 50%, var(--rule)); background: color-mix(in oklab, var(--warning) 8%, var(--bg)); }
+			.signal-red   { border-color: color-mix(in oklab, var(--error) 50%, var(--rule));   background: color-mix(in oklab, var(--error) 8%, var(--bg)); }
+			.signal-missing, .signal-neutral { opacity: 0.55; }
+
+			.signal-label {
+				font-family: var(--font-mono);
+				font-size: 10px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.14em;
+				color: var(--muted);
+				margin-bottom: 0.125rem;
+			}
+			.signal-value {
+				font-family: var(--font-display);
+				font-weight: 900;
+				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+				font-size: 22px;
+				line-height: 1;
+				color: var(--ink);
+			}
+			.signal-green .signal-value { color: var(--success); }
+			.signal-amber .signal-value { color: var(--warning); }
+			.signal-red   .signal-value { color: var(--error); }
+			.signal-value .unit {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				margin-left: 0.2em;
+				letter-spacing: 0.06em;
+				color: var(--muted);
+			}
+			.signal-value .missing { font-family: var(--font-mono); font-size: 18px; color: var(--muted); }
+
+			.computed {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 0.5rem;
+			}
+
+			.comp {
+				border-left: 2px solid var(--rule);
+				padding: 0.125rem 0.75rem;
+			}
+
+			.comp-label {
+				font-family: var(--font-mono);
+				font-size: 10px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.14em;
+				color: var(--muted);
+				margin-bottom: 0.2rem;
+			}
+
+			.comp-value {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 15px;
+				color: var(--ink);
+			}
+
+			.comp-tag {
+				margin-left: 0.4em;
+				font-size: 10px;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+			}
+
+			.pick-title {
+				font-family: var(--font-display);
+				font-weight: 900;
+				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+				font-size: clamp(28px, 4vw, 38px);
+				line-height: 1.05;
+				letter-spacing: -0.01em;
+				color: var(--ink);
+				margin: 0 0 0.25rem;
+			}
+
+			.pick-sub {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				color: var(--muted);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				margin-bottom: 1rem;
+			}
+
+			.pick-stats {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 0.75rem;
+				margin: 1rem 0;
+			}
+
+			.pick-stats .stat-big {
+				font-family: var(--font-display);
+				font-weight: 900;
+				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+				font-size: clamp(22px, 3vw, 34px);
+				color: var(--ink);
+				line-height: 1;
+			}
+
+			.pick-stats .stat-big .unit {
+				font-family: var(--font-mono);
+				font-size: 0.45em;
+				margin-left: 0.2em;
+				color: var(--muted);
+				font-weight: 500;
+				letter-spacing: 0.06em;
+				vertical-align: middle;
+			}
+
+			.stat-big-text {
+				font-family: var(--font-mono);
+				font-size: 14px;
+				color: var(--ink);
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				padding-top: 0.5rem;
+			}
+
+			.reasoning-details { margin: 1rem 0 0; }
+			.reasoning-details > summary {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 500;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.14em;
+				cursor: pointer;
+				padding: 0.25rem 0;
+			}
+			.reasoning {
+				font-family: var(--font-prose);
+				font-size: 14px;
+				color: var(--ink);
+				line-height: 1.55;
+				margin: 0.5rem 0;
+				padding-left: 1.5rem;
+			}
+			.reasoning li { margin: 0.2rem 0; }
+
+			.warnings { margin: 1rem 0; }
+			.warning {
+				border-left: 2px solid var(--error);
+				background: color-mix(in oklab, var(--error) 8%, var(--bg));
+				padding: 0.6rem 0.875rem;
+				font-family: var(--font-prose);
+				font-size: 14px;
+				color: var(--ink);
+				margin: 0.5rem 0;
+				border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+			}
+
+			.dsl {
+				margin: 1.25rem 0 0;
+				font-size: 13px;
+				max-height: 360px;
+				overflow-y: auto;
+				white-space: pre;
+			}
+			.dsl code { white-space: pre; }
+
+			.overrides > summary,
+			.push-hint > summary {
+				cursor: pointer;
+				padding: 0.25rem 0;
+				list-style: revert;
+			}
+			.overrides .block-head,
+			.push-hint .block-head {
+				display: inline-block;
+				border: none;
+				padding: 0;
+				margin: 0;
+			}
+
+			.control-row {
+				display: grid;
+				grid-template-columns: 200px 1fr;
+				gap: 0.75rem;
+				align-items: center;
+				padding: 0.4rem 0;
+				font-family: var(--font-mono);
+				font-size: 12px;
+			}
+			.control-row label {
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				font-size: 11px;
+			}
+			.control-row select {
+				font-family: var(--font-mono);
+				font-size: 12px;
+				padding: 4px 8px;
+				background: var(--bg);
+				color: var(--ink);
+				border: 1px solid var(--rule);
+				border-radius: var(--radius-sm);
+				min-width: 180px;
+			}
+			.control-row input[type="checkbox"] {
+				justify-self: start;
+				width: 16px; height: 16px;
+				accent-color: var(--accent);
+			}
+
+			.reset-btn {
+				margin-top: 0.75rem;
+				font-family: var(--font-mono);
+				font-size: 11px;
+				text-transform: uppercase;
+				letter-spacing: 0.14em;
+				padding: 6px 14px;
+				background: var(--bg);
+				color: var(--ink);
+				border: 1px solid var(--rule);
+				border-radius: var(--radius-sm);
+				cursor: pointer;
+			}
+			.reset-btn:hover { border-color: var(--ink); }
+
+			.hint-prose {
+				margin: 0.75rem 0;
+				font-family: var(--font-prose);
+				font-size: 15px;
+				color: var(--muted);
+			}
+
+			.copy-row {
+				display: flex;
+				align-items: stretch;
+				gap: 0.5rem;
+			}
+			.copy-row .cmd {
+				flex: 1;
+				margin: 0;
+				font-size: 12.5px;
+				background: var(--ink);
+				color: var(--bg);
+				border: none;
+			}
+			.copy-row .cmd code { color: inherit; background: transparent; }
+
+			#copy-btn {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				text-transform: uppercase;
+				letter-spacing: 0.12em;
+				padding: 0 14px;
+				background: var(--bg);
+				color: var(--ink);
+				border: 1px solid var(--rule);
+				border-radius: var(--radius-sm);
+				cursor: pointer;
+			}
+			#copy-btn:hover { border-color: var(--ink); }
+
+			@media (max-width: 640px) {
+				.signals { grid-template-columns: repeat(2, 1fr); }
+				.computed { grid-template-columns: repeat(2, 1fr); }
+				.pick-stats { grid-template-columns: repeat(2, 1fr); }
+				.control-row { grid-template-columns: 1fr; gap: 0.25rem; }
+				.toc-header { grid-template-columns: 1fr; align-items: start; }
+				.toc-meta { padding-bottom: 0; }
+			}
+		</style>
+	</body>
+</html>
