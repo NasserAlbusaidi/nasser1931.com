@@ -20,7 +20,7 @@ const { title, summary, date, eyebrow } = Astro.props;
 		<BaseHead title={`${title} — ${eyebrow}`} description={summary} />
 	</head>
 	<body>
-		<Header />
+		<Header variant="compact" />
 		<main>
 			<article>
 				<header class="entry-head">
@@ -63,11 +63,11 @@ const { title, summary, date, eyebrow } = Astro.props;
 
 			h1 {
 				font-family: var(--font-display);
-				font-weight: 600;
-				font-size: 36px;
-				line-height: 1.1;
-				letter-spacing: -0.02em;
-				font-variation-settings: "opsz" 72;
+				font-weight: 900;
+				font-size: clamp(36px, 5vw, 56px);
+				line-height: 0.95;
+				letter-spacing: -0.03em;
+				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
 				margin: 0 0 0.75rem;
 			}
 
@@ -80,18 +80,20 @@ const { title, summary, date, eyebrow } = Astro.props;
 			}
 
 			.summary {
-				font-family: var(--font-body);
-				font-size: 17px;
-				line-height: 1.55;
+				font-family: var(--font-prose);
+				font-style: italic;
+				font-size: 18px;
+				line-height: 1.5;
 				color: var(--muted);
 				margin: 0;
 			}
 
 			.prose {
-				font-family: var(--font-body);
+				font-family: var(--font-prose);
 				font-size: 17px;
 				line-height: 1.65;
 				color: var(--ink);
+				font-feature-settings: "onum" 1;
 			}
 
 			.prose :global(p) {
@@ -100,9 +102,10 @@ const { title, summary, date, eyebrow } = Astro.props;
 
 			.prose :global(h2) {
 				font-family: var(--font-display);
-				font-weight: 600;
+				font-weight: 800;
 				font-size: 24px;
-				font-variation-settings: "opsz" 36;
+				letter-spacing: -0.005em;
+				font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
 				margin: 2em 0 0.5em;
 			}
 

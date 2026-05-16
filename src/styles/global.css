@@ -1,23 +1,24 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Field Journal — Design Tokens
-   Source of truth: DESIGN.md (v0.1, locked 2026-04-26)
+   Press — Design Tokens
+   Source of truth: DESIGN.md (v0.2, drafted 2026-05-15)
+   Loud on the masthead, disciplined in the prose.
    ============================================================ */
 
 @theme {
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
-  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --font-ui: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-prose: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-ui: "Switzer", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --color-bg: #FAF7F2;
-  --color-surface: #F4F0E8;
-  --color-ink: #1A1714;
-  --color-muted: #6B655C;
-  --color-rule: #E5DED2;
-  --color-accent: #B85C1F;
-  --color-accent-soft: #F2DDC9;
+  --color-bg: #F8F5EE;
+  --color-surface: #EFEAE0;
+  --color-ink: #15110D;
+  --color-muted: #6F6A60;
+  --color-rule: #DDD5C6;
+  --color-accent: #C8311C;
+  --color-accent-soft: #F3DCD6;
 
   --color-success: #5A7A3F;
   --color-warning: #A87515;
@@ -37,11 +38,9 @@
 
   --radius-sm: 2px;
   --radius-md: 4px;
-  --radius-lg: 6px;
-  --radius-full: 9999px;
 
-  --container-prose: 680px;
-  --container-wide: 1040px;
+  --container-prose: 720px;
+  --container-wide: 1240px;
   --container-figure: 1100px;
 }
 
@@ -50,13 +49,13 @@
    ============================================================ */
 
 :root {
-  --bg: #FAF7F2;
-  --surface: #F4F0E8;
-  --ink: #1A1714;
-  --muted: #6B655C;
-  --rule: #E5DED2;
-  --accent: #B85C1F;
-  --accent-soft: #F2DDC9;
+  --bg: #F8F5EE;
+  --surface: #EFEAE0;
+  --ink: #15110D;
+  --muted: #6F6A60;
+  --rule: #DDD5C6;
+  --accent: #C8311C;
+  --accent-soft: #F3DCD6;
   --success: #5A7A3F;
   --warning: #A87515;
   --error: #A93724;
@@ -66,13 +65,13 @@
 }
 
 html.dark {
-  --bg: #1A1610;
-  --surface: #221E17;
-  --ink: #E8E0D2;
-  --muted: #968D7E;
-  --rule: #2E2920;
-  --accent: #C97442;
-  --accent-soft: #3A2A1C;
+  --bg: #14110C;
+  --surface: #1C1812;
+  --ink: #ECE5D6;
+  --muted: #948C7E;
+  --rule: #2A251D;
+  --accent: #E0533F;
+  --accent-soft: #3A1E17;
   --success: #9DBE7F;
   --warning: #D9A862;
   --error: #D8624D;
@@ -94,13 +93,12 @@ html.dark {
 html {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 17px;
-  line-height: 1.65;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "onum" 1; /* old-style figures in prose */
 }
 
 body {
@@ -117,35 +115,70 @@ body {
 }
 
 /* ============================================================
-   Typography defaults
+   Display typography — Fraunces in chunky / industrial mode
+   Always explicit SOFT 0, WONK 0 on display.
    ============================================================ */
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: -0.01em;
   margin: 0;
+  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
 }
 
 h1 {
-  font-size: 44px;
-  line-height: 1.05;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1;
   letter-spacing: -0.02em;
-  font-variation-settings: "opsz" 96;
+  font-weight: 900;
+  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
 }
 
 h2 {
   font-size: 32px;
   line-height: 1.2;
-  font-variation-settings: "opsz" 48;
+  font-weight: 800;
+  font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
 }
 
 h3 {
   font-size: 22px;
-  line-height: 1.3;
-  font-variation-settings: "opsz" 36;
-  letter-spacing: 0;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
+}
+
+/* display-hero — for home + paper title only */
+.display-hero {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(56px, 9vw, 108px);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+}
+
+/* display-feature — for big feature titles */
+.display-feature {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(48px, 6.5vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+}
+
+/* stat-big — for pulse + stat callouts */
+.stat-big {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
 }
 
 p {
@@ -194,12 +227,12 @@ hr {
 
 code {
   font-family: var(--font-mono);
-  font-size: 0.92em;
+  font-size: 0.88em;
   font-feature-settings: "tnum" 1;
   background: var(--accent-soft);
   color: var(--accent);
   padding: 0.1em 0.4em;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
 }
 
 pre {
@@ -208,7 +241,7 @@ pre {
   line-height: 1.55;
   background: var(--surface);
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   padding: 1em 1.2em;
   overflow-x: auto;
   margin: 1.5em 0;
@@ -221,7 +254,7 @@ pre code {
   border-radius: 0;
 }
 
-/* numbers in prose use mono — wrap with .num span in markdown */
+/* numbers in prose use mono — wrap with .num span */
 .num,
 .mono {
   font-family: var(--font-mono);
@@ -229,7 +262,7 @@ pre code {
   font-size: 0.95em;
 }
 
-/* eyebrow label — mono uppercase tracked-out */
+/* eyebrow — mono uppercase tracked-out */
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -238,6 +271,25 @@ pre code {
   letter-spacing: 0.18em;
   color: var(--muted);
   line-height: 1.4;
+}
+
+.eyebrow-accent {
+  color: var(--accent);
+}
+
+/* colophon — for the masthead right block */
+.colophon {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.colophon strong {
+  color: var(--ink);
+  font-weight: 600;
 }
 
 /* ============================================================
@@ -256,7 +308,7 @@ th {
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.16em;
   color: var(--muted);
   text-align: left;
   padding: 0.6em 0.8em;
@@ -279,46 +331,173 @@ th[align="right"] {
 }
 
 /* ============================================================
-   Date-right list — used on home + section indexes
+   TOC pattern — used on section indexes (field, stupidshit, reading)
    ============================================================ */
 
-.entries {
+.toc-list {
   list-style: none;
   padding: 0;
-  margin: 1.5em 0;
+  margin: 0;
 }
 
-.entries li {
-  display: flex;
+.toc-list li {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 1.25em;
   align-items: baseline;
-  gap: 1.5em;
-  padding: 0.55em 0;
+  padding: 0.9em 0;
   border-bottom: 1px solid var(--rule);
 }
 
-.entries li time {
+.toc-list .toc-num {
   font-family: var(--font-mono);
   font-feature-settings: "tnum" 1;
   font-size: 13px;
   color: var(--muted);
-  flex-shrink: 0;
-  min-width: 5.5em;
+  letter-spacing: 0.04em;
 }
 
-.entries li a {
+.toc-list .toc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  min-width: 0;
+}
+
+.toc-list .toc-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
   color: var(--ink);
   text-decoration: none;
-  flex: 1;
 }
 
-.entries li a:hover {
+.toc-list .toc-title:hover {
   color: var(--accent);
 }
 
-.entries li .summary {
+.toc-list .toc-summary {
+  font-family: var(--font-ui);
+  font-size: 14px;
   color: var(--muted);
-  font-size: 15px;
-  margin-left: 0.5em;
+  line-height: 1.4;
+}
+
+.toc-list .toc-date {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .toc-list li {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+  .toc-list .toc-num { grid-row: 1; grid-column: 1; }
+  .toc-list .toc-date { grid-row: 1; grid-column: 2; justify-self: end; }
+  .toc-list .toc-body { grid-row: 2; grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   Magazine masthead lockup — home + every section index
+   ============================================================ */
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5em;
+  border-top: 4px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  padding: 18px 0 14px;
+  margin-bottom: 28px;
+}
+
+.masthead .nameplate {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+  font-size: clamp(48px, 9vw, 108px);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  margin: 0;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.masthead .nameplate:hover {
+  text-decoration: none;
+}
+
+.masthead .nameplate .second-line {
+  display: block;
+  color: var(--accent);
+}
+
+.masthead .masthead-right {
+  text-align: right;
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 540px) {
+  .masthead .nameplate {
+    font-size: 44px;
+  }
+  .masthead .masthead-right {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+.btn {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 80ms ease-out;
+}
+
+.btn:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: transparent;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.btn-ghost:hover {
+  background: var(--accent-soft);
+  opacity: 1;
 }
 
 /* ============================================================

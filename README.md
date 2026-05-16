@@ -1,13 +1,13 @@
 # nasser1931.com
 
-Personal site of [Nasser Al Busaidi](https://nasser1931.com). Astro static build, deployed to Firebase Hosting. Field Journal design system — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
+Personal site of [Nasser Al Busaidi](https://nasser1931.com). Astro static build, deployed to Firebase Hosting. **Press** design system (v0.2) — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
 
 The flagship is the field-report paper at [`/paper`](https://nasser1931.com/paper). The rest of the site is scaffolding.
 
 ## Stack
 
 - Astro 6 + React 19 + Tailwind 4
-- Fonts: Fraunces, Source Serif 4, Geist, Geist Mono (Google Fonts)
+- Fonts: Fraunces, Source Serif 4, JetBrains Mono (Google Fonts) + Switzer (Fontshare)
 - Firebase Hosting (project: `nasser-portfolio`, see CLAUDE.md gotcha)
 - DNS: Route 53; cert auto-issued by Google Trust Services
 
@@ -26,13 +26,11 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship
 ## Site map
 
 ```
-/             home
+/             home (magazine cover)
 /paper        field report — long-form
-/blog         essays + notes
 /field        training milestones, race results
 /stupidshit   one-off oddities
-/reading      books finished (placeholder)
-/about        about + contact
+/reading      books, by year
 ```
 
 ## Files of interest

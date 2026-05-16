@@ -4,22 +4,28 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HomePulse from '../components/HomePulse.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 import paperLog from '../data/paper-log.json';
 import reading from '../data/reading.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const fieldEntries = (await getCollection('field'))
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-	.slice(0, 3);
+// Pull recent field + stupidshit entries, merged & sorted by date desc.
+const fieldEntries = await getCollection('field');
+const stupidEntries = await getCollection('stupidshit');
+const frontMatter = [
+	...fieldEntries.map((e) => ({ ...e, section: 'field' })),
+	...stupidEntries.map((e) => ({ ...e, section: 'stupidshit' })),
+]
+	.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+	.slice(0, 6);
 
-const stupidshitEntries = (await getCollection('stupidshit'))
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-	.slice(0, 3);
+const formatMonth = (d: Date) =>
+	d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).toUpperCase();
 
-const finishedBooks = (reading.finished ?? []).slice(0, 3);
-
-const stars = (n) => (n == null ? '' : '⭐'.repeat(n));
+// Fall back to recently finished if nothing is in-progress.
+const readingShelf =
+	reading.currently_reading?.length > 0
+		? reading.currently_reading.slice(0, 3).map((b) => ({ ...b, state: 'in_progress' }))
+		: reading.finished.slice(0, 3).map((b) => ({ ...b, state: 'finished' }));
 ---
 
 <!doctype html>
@@ -29,212 +35,334 @@ const stars = (n) => (n == null ? '' : '⭐'.repeat(n));
 	</head>
 	<body>
 		<Header />
-		<main>
-			<section class="hero">
-				<h1 class="display">Nasser <span class="family">Al Busaidi</span></h1>
-				<p class="tagline">
-					<em>Engineer in Muscat. Triathlete on the side. Writes long things, occasionally retracts them on the page.</em>
-				</p>
-				<p class="meta">
-					<span>Muscat, Oman</span>
-				</p>
-			</section>
-
-			<HomePulse />
-
-			<section class="entries-block">
-				<h2 class="section-head">paper</h2>
-				<ul class="entries">
-					<li>
-						<time datetime="2026-04">2026-04</time>
-						<a href="/paper">The Silent Creep</a>
-						<span class="summary">— 1,300 days, six guardrails, one quiet caloric drift.</span>
+		<main class="cover">
+			<div class="cover-grid">
+				<article class="lead-feature">
+					<span class="eyebrow eyebrow-accent">This issue's feature · The paper</span>
+					<h1 class="feature-title display-feature">
+						The <em>Silent</em> Creep.
+					</h1>
+					<p class="dek">
+						How a +387 kcal/day drift erased a 67%-efficient training block —
+						walked through six guardrails over 1,300 days of training, eating, and weight data.
+					</p>
+					<p class="byline">
+						By <strong>Nasser Al Busaidi</strong>
 						{paperLog?.last_edit && (
-							<span class="entry-edited">
-								<span class="dot">·</span>
+							<>
+								<span class="bullet">·</span>
 								edited <span data-iso={paperLog.last_edit}>recently</span>
-							</span>
+							</>
 						)}
-					</li>
-				</ul>
-			</section>
+						{paperLog?.commits_7d > 0 && (
+							<>
+								<span class="bullet">·</span>
+								<span class="mono">{paperLog.commits_7d}</span>{' '}
+								{paperLog.commits_7d === 1 ? 'commit' : 'commits'} this week
+							</>
+						)}
+					</p>
+					<a href="/paper" class="btn btn-secondary feature-cta">Read the paper →</a>
+				</article>
 
-			<section class="entries-block">
-				<h2 class="section-head">field</h2>
-				{fieldEntries.length === 0 ? (
-					<ul class="entries placeholder">
-						<li><span class="muted-row">First field entries land soon — race results, training milestones, hinge moments.</span></li>
-					</ul>
-				) : (
-					<ul class="entries">
-						{fieldEntries.map((entry) => (
-							<li>
-								<FormattedDate date={entry.data.date} />
-								<a href={`/field/${entry.id}`}>{entry.data.title}</a>
-								{entry.data.summary && <span class="summary">— {entry.data.summary}</span>}
-							</li>
-						))}
-					</ul>
-				)}
-			</section>
+				<aside class="cover-aside">
+					<section class="aside-block">
+						<h2 class="block-title">Front matter</h2>
+						{frontMatter.length === 0 ? (
+							<p class="aside-empty">
+								First dispatches land soon — field notes, stupidshit, all of it.
+							</p>
+						) : (
+							<ul class="aside-list">
+								{frontMatter.map((entry) => (
+									<li>
+										<a href={`/${entry.section}/${entry.id}`} class="aside-title">
+											{entry.data.title}
+										</a>
+										<span class="aside-meta">
+											{entry.section} · {formatMonth(new Date(entry.data.date))}
+										</span>
+									</li>
+								))}
+							</ul>
+						)}
+					</section>
 
-			<section class="entries-block">
-				<h2 class="section-head">stupidshit</h2>
-				{stupidshitEntries.length === 0 ? (
-					<ul class="entries placeholder">
-						<li><span class="muted-row">A folder for one-off oddities and weird hacks that warrant a permanent URL.</span></li>
-					</ul>
-				) : (
-					<ul class="entries">
-						{stupidshitEntries.map((entry) => (
-							<li>
-								<FormattedDate date={entry.data.date} />
-								<a href={`/stupidshit/${entry.id}`}>{entry.data.title}</a>
-								{entry.data.summary && <span class="summary">— {entry.data.summary}</span>}
-							</li>
-						))}
-					</ul>
-				)}
-			</section>
+					<section class="aside-block">
+						<h2 class="block-title">
+							{readingShelf[0]?.state === 'in_progress' ? 'Currently reading' : 'Recently finished'}
+						</h2>
+						{readingShelf.length === 0 ? (
+							<p class="aside-empty">Shelf is empty between books.</p>
+						) : (
+							<ul class="aside-list">
+								{readingShelf.map((book) => (
+									<li>
+										<span class="aside-title">
+											<em>{book.title}</em>
+											{book.author && (
+												<>
+													{' '}<span class="aside-author">· {book.author}</span>
+												</>
+											)}
+										</span>
+										<span class="aside-meta stars">
+											{book.state === 'in_progress'
+												? 'in progress'
+												: book.rating
+													? '★'.repeat(book.rating)
+													: '—'}
+										</span>
+									</li>
+								))}
+							</ul>
+						)}
+						<a href="/reading" class="aside-more">All reading →</a>
+					</section>
 
-			<section class="entries-block">
-				<h2 class="section-head">reading</h2>
-				{finishedBooks.length === 0 ? (
-					<ul class="entries placeholder">
-						<li><span class="muted-row">Recently finished books will show up here.</span></li>
-					</ul>
-				) : (
-					<ul class="entries">
-						{finishedBooks.map((b) => (
-							<li>
-								{b.finished ? (
-									<time datetime={b.finished}>{b.finished}</time>
-								) : (
-									<time>—</time>
-								)}
-								<a href="/reading" class="book-title">{b.title}</a>
-								<span class="summary">
-									{b.author && <span class="book-author">{b.author}</span>}
-									{b.rating != null && (
-										<span class="book-rating" aria-label={`${b.rating} of 5 stars`}>{stars(b.rating)}</span>
-									)}
-								</span>
-							</li>
-						))}
-					</ul>
-				)}
-			</section>
-
+					<section class="aside-block pulse-wrap">
+						<HomePulse />
+					</section>
+				</aside>
+			</div>
 		</main>
 		<Footer />
 
 		<style>
-			main {
+			.cover {
 				max-width: var(--container-wide);
 				margin: 0 auto;
-				padding: 4rem 1.25rem 2rem;
+				padding: 3rem 1.5rem 4rem;
 			}
 
-			.hero {
-				margin: 1rem 0 4rem;
+			.cover-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+				gap: 3.5rem;
 			}
 
-			.display {
-				font-family: var(--font-display);
-				font-weight: 600;
-				font-size: clamp(56px, 8vw, 96px);
-				line-height: 0.95;
-				letter-spacing: -0.025em;
-				font-variation-settings: "opsz" 144;
-				margin: 0 0 0.5rem;
+			@media (max-width: 880px) {
+				.cover { padding: 2rem 1rem 3rem; }
+				.cover-grid { grid-template-columns: 1fr; gap: 2.5rem; }
 			}
 
-			.family {
-				color: var(--accent);
+			/* ============================================================
+			   Lead feature (paper as the cover story)
+			   ============================================================ */
+			.lead-feature {
+				padding-top: 1rem;
 			}
 
-			.tagline {
-				font-family: var(--font-body);
-				font-size: 19px;
-				line-height: 1.55;
-				color: var(--ink);
-				max-width: 38ch;
-				margin: 0 0 1rem;
+			.lead-feature .eyebrow {
+				display: block;
+				margin-bottom: 1.25rem;
 			}
 
-			.tagline em {
+			.feature-title {
+				margin: 0 0 1.25rem;
+			}
+
+			.feature-title em {
 				font-style: italic;
+				font-weight: 500;
+				color: var(--accent);
+				font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
 			}
 
-			.meta {
+			.dek {
+				font-family: var(--font-prose);
+				font-size: 22px;
+				line-height: 1.4;
+				font-weight: 400;
+				color: var(--ink);
+				max-width: 36ch;
+				margin: 0 0 1.5rem;
+			}
+
+			.byline {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				line-height: 1.5;
+				font-size: 11px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
 				color: var(--muted);
+				margin: 0 0 1.75rem;
+				line-height: 1.7;
+			}
+
+			.byline strong {
+				color: var(--ink);
+				font-weight: 600;
+			}
+
+			.byline .bullet {
+				margin: 0 0.5em;
+				color: var(--rule);
+			}
+
+			.byline .mono {
+				font-family: inherit;
+				font-size: inherit;
+			}
+
+			.feature-cta {
+				font-family: var(--font-mono);
+				font-size: 12px;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			/* ============================================================
+			   Aside (front matter + reading + pulse)
+			   ============================================================ */
+			.cover-aside {
 				display: flex;
-				flex-wrap: wrap;
-				gap: 0.5em;
+				flex-direction: column;
+				gap: 2.25rem;
+				padding-top: 1rem;
+				border-left: 1px solid var(--rule);
+				padding-left: 2rem;
+			}
+
+			@media (max-width: 880px) {
+				.cover-aside {
+					border-left: 0;
+					border-top: 2px solid var(--ink);
+					padding-left: 0;
+					padding-top: 1.5rem;
+				}
+			}
+
+			.aside-block {
+				min-width: 0;
+			}
+
+			.block-title {
+				font-family: var(--font-mono);
+				font-size: 11px;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.18em;
+				color: var(--ink);
+				margin: 0 0 0.875rem;
+				padding-bottom: 0.625rem;
+				border-bottom: 1px solid var(--rule);
+				line-height: 1.4;
+				font-variation-settings: normal;
+			}
+
+			.aside-list {
+				list-style: none;
+				padding: 0;
 				margin: 0;
 			}
 
-			.meta .dot {
-				color: var(--rule);
+			.aside-list li {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 1rem;
+				align-items: baseline;
+				padding: 0.625rem 0;
+				border-bottom: 1px dotted var(--rule);
 			}
 
-			.entries-block {
-				margin: 2.5rem 0;
+			.aside-list li:last-child {
+				border-bottom: 0;
 			}
 
-			.section-head {
+			.aside-title {
+				font-family: var(--font-ui);
+				font-size: 14px;
+				line-height: 1.35;
+				color: var(--ink);
+				text-decoration: none;
+			}
+
+			a.aside-title:hover {
+				color: var(--accent);
+			}
+
+			.aside-title em {
+				font-family: var(--font-prose);
+				font-style: italic;
+				font-weight: 400;
+			}
+
+			.aside-author {
+				color: var(--muted);
+				font-style: normal;
+			}
+
+			.aside-meta {
 				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
+				font-size: 10px;
+				color: var(--muted);
 				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--muted);
-				margin: 0 0 0.5rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid var(--rule);
+				letter-spacing: 0.08em;
+				white-space: nowrap;
 			}
 
-			.entries.placeholder li {
-				border-bottom: none;
-				padding: 0.5em 0;
-			}
-
-			.muted-row {
-				color: var(--muted);
-				font-size: 15px;
-				font-style: italic;
-			}
-
-			.entry-edited {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-				margin-left: 0.4em;
-			}
-
-			.entry-edited .dot {
-				color: var(--rule);
-				margin-right: 0.4em;
-			}
-
-			.book-title {
-				flex: 1;
-			}
-
-			.book-author {
-				font-style: italic;
-			}
-
-			.book-rating {
-				font-size: 11px;
+			.aside-meta.stars {
+				color: var(--accent);
 				letter-spacing: 0.05em;
-				margin-left: 0.4em;
+			}
+
+			.aside-empty {
+				font-family: var(--font-prose);
+				font-style: italic;
+				font-size: 14px;
+				color: var(--muted);
+				margin: 0;
+			}
+
+			.aside-more {
+				display: inline-block;
+				margin-top: 0.75rem;
+				font-family: var(--font-mono);
+				font-size: 11px;
+				text-transform: uppercase;
+				letter-spacing: 0.16em;
+				color: var(--accent);
+				text-decoration: none;
+			}
+
+			.aside-more:hover {
+				text-decoration: underline;
+				text-decoration-thickness: 1px;
+				text-underline-offset: 3px;
+			}
+
+			.pulse-wrap {
+				/* HomePulse will be restyled in Phase 4 to match this block */
 			}
 		</style>
+
+		<!-- Compute "edited X ago" client-side so the static HTML doesn't show a stale build-time value. -->
+		<script is:inline>
+			(function () {
+				function format(iso) {
+					if (!iso) return '';
+					var now = Date.now();
+					var then = Date.parse(iso);
+					if (isNaN(then)) return '';
+					var diff = Math.max(0, now - then);
+					var min = 60 * 1000,
+						hr = 60 * min,
+						day = 24 * hr,
+						week = 7 * day,
+						month = 30 * day;
+					if (diff < hr) return Math.max(1, Math.round(diff / min)) + 'm ago';
+					if (diff < day) return Math.round(diff / hr) + 'h ago';
+					if (diff < week) return Math.round(diff / day) + 'd ago';
+					if (diff < month) return Math.round(diff / week) + 'w ago';
+					return Math.round(diff / month) + 'mo ago';
+				}
+				document.querySelectorAll('[data-iso]').forEach(function (el) {
+					var iso = el.getAttribute('data-iso');
+					var label = format(iso);
+					if (label) el.textContent = label;
+				});
+			})();
+		</script>
 	</body>
 </html>

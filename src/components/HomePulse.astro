@@ -23,57 +23,78 @@ const formatRelative = (iso) => {
 	return `${diffD}d ago`;
 };
 
-const recent = data.recent ?? [];
+const recent = (data.recent ?? []).slice(0, 3);
 const updatedRel = formatRelative(data.updated);
-const showWeeklyTss = typeof data.weekly_tss === 'number' && data.weekly_tss > 0;
-const showForm = data.form != null;
+const form = data.form ?? 'neutral';
+const formTsb = data.form_tsb;
+const tsbDisplay = formTsb == null ? '—' : (formTsb > 0 ? `+${Math.round(formTsb)}` : Math.round(formTsb).toString());
+const weeklyHours = data.weekly_hours ?? 0;
+const weeklyTss = data.weekly_tss ?? 0;
 ---
 
-<section class="entries-block">
-	<h2 class="section-head">currently training</h2>
+<div class="pulse">
+	<div class="pulse-header">
+		<span class="eyebrow">Training pulse</span>
+		{updatedRel && (
+			<span class="pulse-updated-line">
+				updated <span class="mono" data-iso={data.updated}>{updatedRel}</span>
+			</span>
+		)}
+	</div>
 
-	{recent.length === 0 ? (
-		<ul class="entries placeholder">
-			<li><span class="muted-row">No recent training logged.</span></li>
-		</ul>
-	) : (
-		<ul class="entries pulse-list">
+	<div class="pulse-stats">
+		<div class="pulse-stat">
+			<div class="num">
+				{Number.isInteger(weeklyHours) ? weeklyHours : weeklyHours.toFixed(1)}<span class="unit">h</span>
+			</div>
+			<div class="sub">this week</div>
+		</div>
+		<div class="pulse-stat">
+			<div class="num">{weeklyTss}</div>
+			<div class="sub">TSS</div>
+		</div>
+		<div class="pulse-stat">
+			<div class="num">{tsbDisplay}</div>
+			<div class="sub">form (TSB)</div>
+		</div>
+	</div>
+
+	<div class="form-line">
+		<span class="lbl">form</span>
+		<span class={`form-tag form-${form}`}>{form}</span>
+		{recent.length > 0 && (
+			<>
+				<span class="bullet">·</span>
+				<span class="lbl">{recent.length} recent sessions</span>
+			</>
+		)}
+	</div>
+
+	{recent.length > 0 && (
+		<ul class="pulse-list">
 			{recent.map((r) => (
 				<li>
-					<time datetime={r.date}>{r.date}</time>
+					<time class="mono" datetime={r.date}>{r.date.slice(5).replace('-', ' / ')}</time>
 					<span class="pulse-name">
 						{r.name}
 						{r.distance_km != null && (
-							<><span class="dot">·</span><span class="num">{formatDistance(r.distance_km)}</span></>
+							<>
+								<span class="bullet">·</span>
+								<span class="mono">{formatDistance(r.distance_km)}</span>
+							</>
 						)}
 						{r.duration_min != null && (
-							<><span class="dot">·</span><span class="num">{formatDuration(r.duration_min)}</span></>
+							<>
+								<span class="bullet">·</span>
+								<span class="mono">{formatDuration(r.duration_min)}</span>
+							</>
 						)}
 					</span>
 				</li>
 			))}
 		</ul>
 	)}
-
-	<p class="pulse-summary">
-		<span class="num">{data.weekly_hours ?? 0}h</span>
-		<span class="lbl">last 7 days</span>
-		{showWeeklyTss && (<><span class="dot">·</span><span class="num">TSS {data.weekly_tss}</span></>)}
-		{showForm && (
-			<>
-				<span class="dot">·</span>
-				<span class="lbl">form:</span>
-				<span class={`form form-${data.form}`}>{data.form}</span>
-			</>
-		)}
-		{updatedRel && (
-			<>
-				<span class="dot">·</span>
-				<span class="lbl">updated <span class="pulse-updated" data-iso={data.updated}>{updatedRel}</span></span>
-			</>
-		)}
-	</p>
-</section>
+</div>
 
 <script is:inline>
 	(function () {
@@ -86,7 +107,7 @@ const showForm = data.form != null;
 			if (diffH < 48) return diffH + 'h ago';
 			return Math.round(diffH / 24) + 'd ago';
 		};
-		document.querySelectorAll('[data-iso]').forEach((el) => {
+		document.querySelectorAll('.pulse [data-iso]').forEach((el) => {
 			const out = fmt(el.dataset.iso);
 			if (out) el.textContent = out;
 		});
@@ -94,69 +115,166 @@ const showForm = data.form != null;
 </script>
 
 <style>
-	.pulse-list li {
+	.pulse {
+		background: var(--surface);
+		border: 1px solid var(--rule);
+		padding: 1rem 1.125rem 1.125rem;
+		font-family: var(--font-mono);
+	}
+
+	.pulse-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 0.5rem;
+		padding-bottom: 0.625rem;
+		border-bottom: 1px solid var(--rule);
+		margin-bottom: 0.875rem;
+	}
+
+	.pulse-header .eyebrow {
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	.pulse-updated-line {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--muted);
+	}
+
+	.pulse-updated-line .mono {
 		color: var(--ink);
 	}
 
+	.pulse-stats {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.875rem;
+		margin-bottom: 0.875rem;
+	}
+
+	.pulse-stat .num {
+		font-family: var(--font-display);
+		font-weight: 900;
+		font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+		font-size: 28px;
+		line-height: 1;
+		color: var(--ink);
+		letter-spacing: -0.01em;
+	}
+
+	.pulse-stat .num .unit {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 14px;
+		color: var(--muted);
+		margin-left: 2px;
+	}
+
+	.pulse-stat .sub {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+		color: var(--muted);
+		margin-top: 0.4rem;
+	}
+
+	.form-line {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4em;
+		align-items: baseline;
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--muted);
+		padding: 0.5rem 0;
+		border-top: 1px dotted var(--rule);
+	}
+
+	.form-line .lbl {
+		color: var(--muted);
+	}
+
+	.form-line .bullet {
+		color: var(--rule);
+	}
+
+	.form-tag {
+		font-weight: 600;
+		font-size: 10px;
+		letter-spacing: 0.18em;
+		padding: 1px 5px;
+		border-radius: var(--radius-sm);
+	}
+
+	.form-tag.form-fresh {
+		color: var(--accent);
+		background: var(--accent-soft);
+	}
+
+	.form-tag.form-neutral {
+		color: var(--ink);
+		background: transparent;
+		border: 1px solid var(--rule);
+		padding: 0 4px;
+	}
+
+	.form-tag.form-fatigued {
+		color: var(--warning);
+		background: color-mix(in oklab, var(--warning) 14%, transparent);
+	}
+
+	.pulse-list {
+		list-style: none;
+		padding: 0;
+		margin: 0.625rem 0 0;
+		border-top: 1px dotted var(--rule);
+	}
+
+	.pulse-list li {
+		display: grid;
+		grid-template-columns: 4em 1fr;
+		gap: 0.75rem;
+		align-items: baseline;
+		padding: 0.5rem 0;
+		border-bottom: 1px dotted var(--rule);
+		font-size: 11px;
+		color: var(--ink);
+	}
+
+	.pulse-list li:last-child {
+		border-bottom: 0;
+	}
+
+	.pulse-list time {
+		font-family: var(--font-mono);
+		font-feature-settings: "tnum" 1;
+		font-size: 11px;
+		letter-spacing: 0.04em;
+		color: var(--muted);
+		text-transform: uppercase;
+	}
+
 	.pulse-name {
-		flex: 1;
 		display: inline-flex;
 		flex-wrap: wrap;
 		align-items: baseline;
 		gap: 0.4em;
 	}
 
-	.pulse-name .num {
-		font-family: var(--font-mono);
-		font-feature-settings: "tnum" 1;
-		font-size: 13px;
-		color: var(--muted);
-	}
-
-	.pulse-name .dot {
+	.pulse-name .bullet {
 		color: var(--rule);
 	}
 
-	.pulse-summary {
-		margin: 0.75rem 0 0;
+	.pulse-name .mono {
 		font-family: var(--font-mono);
 		font-feature-settings: "tnum" 1;
-		font-size: 12px;
-		line-height: 1.5;
+		font-size: 11px;
 		color: var(--muted);
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4em;
-		align-items: baseline;
-	}
-
-	.pulse-summary .num {
-		color: var(--ink);
-	}
-
-	.pulse-summary .lbl {
-		color: var(--muted);
-	}
-
-	.pulse-summary .dot {
-		color: var(--rule);
-	}
-
-	.pulse-summary .form {
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		font-weight: 500;
-	}
-
-	.pulse-summary .form-fresh {
-		color: var(--success);
-	}
-
-	.pulse-summary .form-neutral {
-		color: var(--ink);
-	}
-
-	.pulse-summary .form-fatigued {
-		color: var(--warning);
 	}
 </style>
