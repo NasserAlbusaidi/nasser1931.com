@@ -1,0 +1,118 @@
+name: Refresh coach state + workout bank
+
+# v1 scaffolding. The /coach page lands in a follow-up PR; until then this
+# workflow only produces src/data/coach.json + src/data/workout-bank.json
+# (and a no-op rebuild). Safe to leave running, or disable in the GH Actions
+# UI to keep CI quiet until the page is live.
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [coach-update, bank-update]
+
+# Serialize with sync-paper + refresh-pulse + sync-reading + sync-posts so two
+# bots never race to push to main.
+concurrency:
+  group: bot-pushes-main
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout project-furnace (sparse)
+        uses: actions/checkout@v4
+        with:
+          repository: NasserAlbusaidi/project-furnace
+          ssh-key: ${{ secrets.PAPER_REPO_SSH_KEY }}
+          path: project-furnace
+          fetch-depth: 1
+          sparse-checkout: |
+            tools/intervalsicu
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python deps
+        working-directory: project-furnace
+        run: |
+          if [ -f tools/intervalsicu/requirements.txt ]; then
+            pip install -r tools/intervalsicu/requirements.txt
+          else
+            pip install requests
+          fi
+
+      - name: Pull state from intervals.icu → coach.json
+        working-directory: project-furnace
+        env:
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
+        # Confirm pull_state.py's CLI surface during port. If it accepts --out,
+        # this works as-is. If it prints to stdout, swap for:
+        #   python3 tools/intervalsicu/pull_state.py > "$GITHUB_WORKSPACE/src/data/coach.json"
+        run: python3 tools/intervalsicu/pull_state.py --out "$GITHUB_WORKSPACE/src/data/coach.json"
+
+      - name: Dump workout bank → workout-bank.json
+        working-directory: project-furnace
+        # workout_bank.py is expected to expose the bank as a module attribute
+        # (BANK / WORKOUTS) or a bank() function. Adjust the one-liner if the
+        # actual surface differs.
+        run: |
+          python3 -c "
+          import json, sys
+          sys.path.insert(0, 'tools/intervalsicu')
+          import workout_bank as wb
+          bank = getattr(wb, 'BANK', None) or getattr(wb, 'WORKOUTS', None) or wb.bank()
+          json.dump(bank, open('$GITHUB_WORKSPACE/src/data/workout-bank.json', 'w'), indent=2)
+          "
+
+      - name: Commit if changed
+        id: commit
+        run: |
+          git config user.name "coach-bot"
+          git config user.email "bot@nasser1931.com"
+          git add src/data/coach.json src/data/workout-bank.json
+          if git diff --cached --quiet; then
+            echo "No changes — skipping commit and deploy."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore: refresh coach state"
+          git pull --rebase origin main
+          git push
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        if: steps.commit.outputs.committed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install deps
+        if: steps.commit.outputs.committed == 'true'
+        run: npm ci
+
+      - name: Build
+        if: steps.commit.outputs.committed == 'true'
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting
+        if: steps.commit.outputs.committed == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NASSER_PORTFOLIO }}
+          channelId: live
+          projectId: nasser-portfolio
