@@ -1,9 +1,9 @@
 {
-  "updated": "2026-05-19T10:00:33.151Z",
-  "form": "fresh",
-  "form_tsb": 6,
-  "weekly_hours": 5.3,
-  "weekly_tss": 95,
+  "updated": "2026-05-19T15:42:51.090Z",
+  "form": "neutral",
+  "form_tsb": 5,
+  "weekly_hours": 6.3,
+  "weekly_tss": 103,
   "recent": [
     {
       "date": "2026-05-19",
@@ -13,18 +13,18 @@
       "duration_min": 67
     },
     {
+      "date": "2026-05-18",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 63
+    },
+    {
       "date": "2026-05-17",
       "type": "bike",
       "name": "Long Tempo 120min",
       "distance_km": 40.9,
       "duration_min": 78
-    },
-    {
-      "date": "2026-05-16",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 69
     }
   ]
 }
