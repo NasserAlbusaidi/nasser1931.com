@@ -1,10 +1,17 @@
 {
-  "updated": "2026-05-22T04:21:09.864Z",
+  "updated": "2026-05-22T14:56:21.038Z",
   "form": "neutral",
-  "form_tsb": -8.5,
+  "form_tsb": -9.4,
   "weekly_hours": 8.1,
   "weekly_tss": 285,
   "recent": [
+    {
+      "date": "2026-05-22",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 44
+    },
     {
       "date": "2026-05-22",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "Bawshar Road Cycling",
       "distance_km": 27.8,
       "duration_min": 47
-    },
-    {
-      "date": "2026-05-19",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 67
     }
   ]
 }
