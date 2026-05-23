@@ -28,15 +28,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout project-furnace (sparse)
+      - name: Checkout project-furnace
         uses: actions/checkout@v4
         with:
           repository: NasserAlbusaidi/project-furnace
           ssh-key: ${{ secrets.PAPER_REPO_SSH_KEY }}
           path: project-furnace
           fetch-depth: 1
-          sparse-checkout: |
-            tools/intervalsicu
 
       - name: Setup Python
         uses: actions/setup-python@v5
