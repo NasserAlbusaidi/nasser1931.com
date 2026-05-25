@@ -1,11 +1,23 @@
 {
-  "updated": "2026-05-15T12:09:13.478Z",
+  "updated": "2026-05-25T10:00:41.138Z",
   "stats": {
-    "finished_total": 20,
-    "finished_this_year": 3
+    "finished_total": 21,
+    "finished_this_year": 4
   },
   "currently_reading": [],
   "finished": [
+    {
+      "title": "Not Till We Are Lost — Bobiverse #5",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Audiobook",
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": "2026-05-25"
+    },
     {
       "title": "Heaven's River — Bobiverse #4",
       "author": "Dennis E. Taylor",
@@ -335,18 +347,6 @@
     {
       "title": "A Fire Upon the Deep",
       "author": "Vernor Vinge",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "Not Till We Are Lost — Bobiverse #5",
-      "author": "Dennis E. Taylor",
       "status": "Want to Read",
       "rating": null,
       "format": null,
