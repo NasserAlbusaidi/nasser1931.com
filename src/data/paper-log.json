@@ -1,9 +1,14 @@
 {
-  "updated": "2026-05-23T04:53:26.110Z",
-  "last_edit": "2026-05-23T08:50:45+04:00",
-  "commits_7d": 1,
-  "commits_total": 2,
+  "updated": "2026-05-27T02:07:16.013Z",
+  "last_edit": "2026-05-27T02:06:44Z",
+  "commits_7d": 2,
+  "commits_total": 3,
   "recent": [
+    {
+      "sha": "a493e0d",
+      "date": "2026-05-27T02:06:44Z",
+      "message": "chore: normalize CRLF→LF in paper/data CSV blobs"
+    },
     {
       "sha": "67b1f6a",
       "date": "2026-05-23T08:50:45+04:00",
