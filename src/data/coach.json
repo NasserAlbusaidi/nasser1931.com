@@ -14,7 +14,7 @@
     "ramp_rate": -1.4488049,
     "ctl_load": 94.0,
     "atl_load": 94.0,
-    "weight": null,
+    "weight": 78.349,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -39,7 +39,7 @@
     {
       "date": "2026-05-29",
       "type": "Ride",
-      "name": "Bawshar Road Cycling",
+      "name": "Long Z2 90min",
       "if": 0.7434782400000001,
       "tss": 94,
       "duration_min": 102.5,
@@ -117,7 +117,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-05-29T03:49:19",
+  "_fetched_at": "2026-05-29T09:56:20",
   "_today": "2026-05-29",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
