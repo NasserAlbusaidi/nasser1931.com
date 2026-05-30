@@ -1,10 +1,17 @@
 {
-  "updated": "2026-05-29T20:35:45.760Z",
+  "updated": "2026-05-30T08:37:22.345Z",
   "form": "neutral",
-  "form_tsb": 0.1,
+  "form_tsb": -0.8,
   "weekly_hours": 4.8,
-  "weekly_tss": 157,
+  "weekly_tss": 130,
   "recent": [
+    {
+      "date": "2026-05-30",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 74
+    },
     {
       "date": "2026-05-29",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "As Seeb - Recovery",
       "distance_km": 2.3,
       "duration_min": 15
-    },
-    {
-      "date": "2026-05-26",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 48
     }
   ]
 }
