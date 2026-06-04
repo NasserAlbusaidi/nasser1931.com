@@ -1,19 +1,19 @@
 {
   "wellness": {
-    "date": "2026-06-03",
-    "hrv": 55.0,
-    "sleep_hours": 5.32,
-    "sleep_score": 54.0,
-    "sleep_quality": 4,
+    "date": "2026-06-04",
+    "hrv": 61.0,
+    "sleep_hours": 6.69,
+    "sleep_score": 73.0,
+    "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 47,
+    "rhr": 51,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 25.48247,
-    "atl": 19.521208,
-    "ramp_rate": -1.5666676,
-    "ctl_load": 0.0,
-    "atl_load": 10.0,
+    "ctl": 25.824043,
+    "atl": 22.247387,
+    "ramp_rate": -0.9886551,
+    "ctl_load": 40.0,
+    "atl_load": 40.0,
     "weight": 79.75,
     "fatigue": null,
     "stress": null,
@@ -22,18 +22,18 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": 6.0,
+    "tsb": 3.6,
     "tsb_category": "fresh",
     "ramp_rate_category": "low",
-    "days_since_hard": 12,
+    "days_since_hard": 13,
     "days_since_long": null,
     "days_since_vo2": null,
     "eftp_current": 211,
     "eftp_oldest_ride_in_window": 212,
-    "eftp_oldest_ride_date": "2026-05-20",
+    "eftp_oldest_ride_date": "2026-05-22",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 4
+    "ride_count_14d": 3
   },
   "recent_activities": [
     {
@@ -83,26 +83,10 @@
       "vi": 1.3724138,
       "eftp": 212,
       "device_watts": true
-    },
-    {
-      "date": "2026-05-20",
-      "type": "Ride",
-      "name": "Bawshar Road Cycling",
-      "if": 0.7521739,
-      "tss": 44,
-      "duration_min": 47.1,
-      "distance_km": 27.8,
-      "avg_w": 148,
-      "np": 173,
-      "avg_hr": 154,
-      "ef": 1.1233766,
-      "vi": 1.168919,
-      "eftp": 212,
-      "device_watts": true
     }
   ],
-  "_fetched_at": "2026-06-03T20:57:40",
-  "_today": "2026-06-03",
+  "_fetched_at": "2026-06-04T04:12:42",
+  "_today": "2026-06-04",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
