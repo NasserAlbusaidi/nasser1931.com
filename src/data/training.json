@@ -1,10 +1,17 @@
 {
-  "updated": "2026-06-05T04:38:14.437Z",
-  "form": "fresh",
-  "form_tsb": 9.6,
-  "weekly_hours": 5.2,
-  "weekly_tss": 131,
+  "updated": "2026-06-05T10:06:05.577Z",
+  "form": "neutral",
+  "form_tsb": -4.3,
+  "weekly_hours": 6,
+  "weekly_tss": 164,
   "recent": [
+    {
+      "date": "2026-06-05",
+      "type": "bike",
+      "name": "Long Z2 90min",
+      "distance_km": 76.4,
+      "duration_min": 152
+    },
     {
       "date": "2026-06-03",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Bawshar - Recovery",
       "distance_km": 1.6,
       "duration_min": 11
-    },
-    {
-      "date": "2026-05-31",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 64
     }
   ]
 }
