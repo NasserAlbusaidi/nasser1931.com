@@ -1,11 +1,23 @@
 {
-  "updated": "2026-05-25T10:00:41.138Z",
+  "updated": "2026-06-07T19:18:50.191Z",
   "stats": {
-    "finished_total": 21,
-    "finished_this_year": 4
+    "finished_total": 22,
+    "finished_this_year": 5
   },
   "currently_reading": [],
   "finished": [
+    {
+      "title": "The Martian",
+      "author": "Andy Weir",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Audiobook",
+      "genres": [
+        "Sci-Fi"
+      ],
+      "started": null,
+      "finished": "2026-06-07"
+    },
     {
       "title": "Not Till We Are Lost — Bobiverse #5",
       "author": "Dennis E. Taylor",
@@ -347,18 +359,6 @@
     {
       "title": "A Fire Upon the Deep",
       "author": "Vernor Vinge",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "The Martian",
-      "author": "Andy Weir",
       "status": "Want to Read",
       "rating": null,
       "format": null,
