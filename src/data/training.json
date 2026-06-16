@@ -1,14 +1,14 @@
 {
-  "updated": "2026-06-16T17:12:42.488Z",
+  "updated": "2026-06-16T21:13:20.332Z",
   "form": "neutral",
-  "form_tsb": -2.1,
+  "form_tsb": 0.9,
   "weekly_hours": 6.5,
   "weekly_tss": 167,
   "recent": [
     {
       "date": "2026-06-16",
       "type": "bike",
-      "name": "Threshold 2x15min @ 93% FTP",
+      "name": "Easy Z2 60min",
       "distance_km": 30.1,
       "duration_min": 61
     },
