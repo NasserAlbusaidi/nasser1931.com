@@ -39,7 +39,7 @@
     {
       "date": "2026-06-16",
       "type": "Ride",
-      "name": "Threshold 2x15min @ 93% FTP",
+      "name": "Easy Z2 60min",
       "if": 0.6652173600000001,
       "tss": 45,
       "duration_min": 60.8,
@@ -117,7 +117,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-06-16T16:55:24",
+  "_fetched_at": "2026-06-16T20:53:40",
   "_today": "2026-06-16",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
