@@ -1,14 +1,14 @@
 {
-  "updated": "2026-06-18T04:50:15.772Z",
+  "updated": "2026-06-18T10:42:01.932Z",
   "form": "fatigued",
-  "form_tsb": -18.5,
-  "weekly_hours": 8.8,
-  "weekly_tss": 288,
+  "form_tsb": -11,
+  "weekly_hours": 8,
+  "weekly_tss": 240,
   "recent": [
     {
       "date": "2026-06-18",
       "type": "bike",
-      "name": "Bawshar Road Cycling",
+      "name": "Long Tempo 120min (Z2-Tempo blend)",
       "distance_km": 71.3,
       "duration_min": 137
     },
