@@ -1,10 +1,17 @@
 {
-  "updated": "2026-06-22T21:09:17.632Z",
+  "updated": "2026-06-23T04:12:31.081Z",
   "form": "neutral",
-  "form_tsb": -4.4,
-  "weekly_hours": 7.9,
-  "weekly_tss": 202,
+  "form_tsb": -6,
+  "weekly_hours": 9,
+  "weekly_tss": 214,
   "recent": [
+    {
+      "date": "2026-06-23",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 63
+    },
     {
       "date": "2026-06-21",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 67
-    },
-    {
-      "date": "2026-06-18",
-      "type": "bike",
-      "name": "Long Tempo 120min (Z2-Tempo blend)",
-      "distance_km": 71.3,
-      "duration_min": 137
     }
   ]
 }
