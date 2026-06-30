@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-06-29",
-    "hrv": 54.0,
-    "sleep_hours": 5.28,
-    "sleep_score": 61.0,
+    "date": "2026-06-30",
+    "hrv": 64.0,
+    "sleep_hours": 5.43,
+    "sleep_score": 69.0,
     "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 53,
+    "rhr": 50,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 24.129198,
-    "atl": 28.525625,
-    "ramp_rate": 0.33519936,
-    "ctl_load": 0.0,
-    "atl_load": 0.0,
-    "weight": 80.339,
+    "ctl": 24.502611,
+    "atl": 30.85185,
+    "ramp_rate": 1.268446,
+    "ctl_load": 40.0,
+    "atl_load": 46.0,
+    "weight": 79.099,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,18 +22,18 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -4.4,
+    "tsb": -6.3,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
     "days_since_hard": null,
-    "days_since_long": 11,
+    "days_since_long": 12,
     "days_since_vo2": null,
     "eftp_current": 206,
     "eftp_oldest_ride_in_window": 208,
-    "eftp_oldest_ride_date": "2026-06-15",
+    "eftp_oldest_ride_date": "2026-06-16",
     "eftp_trend_window_delta": -2,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 5
+    "ride_count_14d": 4
   },
   "recent_activities": [
     {
@@ -99,26 +99,10 @@
       "vi": 1.0479453,
       "eftp": 208,
       "device_watts": true
-    },
-    {
-      "date": "2026-06-15",
-      "type": "Ride",
-      "name": "Threshold 3x8min @ 95% FTP",
-      "if": 0.8043478399999999,
-      "tss": 35,
-      "duration_min": 32.5,
-      "distance_km": 18.7,
-      "avg_w": 167,
-      "np": 185,
-      "avg_hr": 160,
-      "ef": 1.15625,
-      "vi": 1.1077844,
-      "eftp": 208,
-      "device_watts": true
     }
   ],
-  "_fetched_at": "2026-06-29T19:59:51",
-  "_today": "2026-06-29",
+  "_fetched_at": "2026-06-30T03:49:21",
+  "_today": "2026-06-30",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
