@@ -1,10 +1,17 @@
 {
-  "updated": "2026-06-30T20:08:41.482Z",
+  "updated": "2026-07-01T04:45:18.832Z",
   "form": "neutral",
-  "form_tsb": -5.2,
-  "weekly_hours": 6.7,
-  "weekly_tss": 215,
+  "form_tsb": -3,
+  "weekly_hours": 8,
+  "weekly_tss": 226,
   "recent": [
+    {
+      "date": "2026-07-01",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 80
+    },
     {
       "date": "2026-06-30",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Long Z2 90min",
       "distance_km": 20.6,
       "duration_min": 42
-    },
-    {
-      "date": "2026-06-28",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 49
     }
   ]
 }
