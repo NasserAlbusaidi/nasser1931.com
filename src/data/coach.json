@@ -9,11 +9,11 @@
     "rhr": 49,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 23.607727,
-    "atl": 27.18135,
-    "ramp_rate": -1.2716465,
-    "ctl_load": 71.0,
-    "atl_load": 71.0,
+    "ctl": 24.219463,
+    "atl": 30.642527,
+    "ramp_rate": -0.6599102,
+    "ctl_load": 97.0,
+    "atl_load": 97.0,
     "weight": 79.569,
     "fatigue": null,
     "stress": null,
@@ -22,20 +22,36 @@
     "vo2max": 51.0
   },
   "computed": {
-    "tsb": -3.6,
+    "tsb": -6.4,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": null,
+    "days_since_hard": 0,
     "days_since_long": null,
-    "days_since_vo2": null,
+    "days_since_vo2": 0,
     "eftp_current": 206,
     "eftp_oldest_ride_in_window": 206,
     "eftp_oldest_ride_date": "2026-06-26",
     "eftp_trend_window_delta": 0,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 2
+    "ride_count_14d": 3
   },
   "recent_activities": [
+    {
+      "date": "2026-07-03",
+      "type": "VirtualRide",
+      "name": "FTP Test - Ramp Test (No FTP)",
+      "if": 0.9758454000000001,
+      "tss": 26,
+      "duration_min": 16.6,
+      "distance_km": 8.1,
+      "avg_w": 186,
+      "np": 202,
+      "avg_hr": 156,
+      "ef": 1.2948718,
+      "vi": 1.0860215,
+      "eftp": 206,
+      "device_watts": true
+    },
     {
       "date": "2026-06-28",
       "type": "Ride",
@@ -69,7 +85,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-03T14:08:18",
+  "_fetched_at": "2026-07-03T19:24:51",
   "_today": "2026-07-03",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
