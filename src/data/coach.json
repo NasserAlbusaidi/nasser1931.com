@@ -9,20 +9,20 @@
     "rhr": 56,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 22.959547,
-    "atl": 25.55848,
-    "ramp_rate": -1.3344574,
-    "ctl_load": 40.0,
-    "atl_load": 54.0,
+    "ctl": 23.147774,
+    "atl": 26.623455,
+    "ramp_rate": -1.1462307,
+    "ctl_load": 48.0,
+    "atl_load": 62.0,
     "weight": 80.75,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 51.0
   },
   "computed": {
-    "tsb": -2.6,
+    "tsb": -3.5,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
     "days_since_hard": 1,
@@ -33,9 +33,25 @@
     "eftp_oldest_ride_date": "2026-06-26",
     "eftp_trend_window_delta": 0,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 3
+    "ride_count_14d": 4
   },
   "recent_activities": [
+    {
+      "date": "2026-07-04",
+      "type": "Ride",
+      "name": "Easy Z2 60min",
+      "if": 0.6908212,
+      "tss": 48,
+      "duration_min": 60.0,
+      "distance_km": 29.3,
+      "avg_w": 136,
+      "np": 143,
+      "avg_hr": 150,
+      "ef": 0.9533333,
+      "vi": 1.0514706,
+      "eftp": 206,
+      "device_watts": true
+    },
     {
       "date": "2026-07-03",
       "type": "VirtualRide",
@@ -85,7 +101,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-04T13:36:21",
+  "_fetched_at": "2026-07-04T19:15:57",
   "_today": "2026-07-04",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
