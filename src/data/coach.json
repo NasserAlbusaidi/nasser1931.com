@@ -14,7 +14,7 @@
     "ramp_rate": -1.3344574,
     "ctl_load": 40.0,
     "atl_load": 54.0,
-    "weight": null,
+    "weight": 80.75,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -39,7 +39,7 @@
     {
       "date": "2026-07-03",
       "type": "VirtualRide",
-      "name": "FTP Test - Ramp Test (No FTP)",
+      "name": "FTP 20-min Test",
       "if": 0.9758454000000001,
       "tss": 26,
       "duration_min": 16.6,
@@ -85,7 +85,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-04T08:38:54",
+  "_fetched_at": "2026-07-04T13:36:21",
   "_today": "2026-07-04",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
