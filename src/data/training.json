@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-07T09:55:58.065Z",
+  "updated": "2026-07-07T20:06:48.084Z",
   "form": "neutral",
-  "form_tsb": -5.5,
-  "weekly_hours": 5.4,
-  "weekly_tss": 93,
+  "form_tsb": -1.6,
+  "weekly_hours": 6.4,
+  "weekly_tss": 154,
   "recent": [
+    {
+      "date": "2026-07-07",
+      "type": "bike",
+      "name": "Threshold 2x15min @ 93% FTP",
+      "distance_km": 30.6,
+      "duration_min": 59
+    },
     {
       "date": "2026-07-07",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 63
-    },
-    {
-      "date": "2026-07-04",
-      "type": "bike",
-      "name": "Easy Z2 60min",
-      "distance_km": 29.3,
-      "duration_min": 60
     }
   ]
 }
