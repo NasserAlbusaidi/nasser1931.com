@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-10T04:02:04.107Z",
+  "updated": "2026-07-10T14:45:03.330Z",
   "form": "neutral",
-  "form_tsb": 2.6,
-  "weekly_hours": 6,
-  "weekly_tss": 150,
+  "form_tsb": -0.2,
+  "weekly_hours": 7,
+  "weekly_tss": 162,
   "recent": [
+    {
+      "date": "2026-07-10",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 58
+    },
     {
       "date": "2026-07-08",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Threshold 2x15min @ 93% FTP",
       "distance_km": 30.6,
       "duration_min": 59
-    },
-    {
-      "date": "2026-07-07",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 56
     }
   ]
 }
