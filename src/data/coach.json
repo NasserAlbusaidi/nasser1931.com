@@ -9,33 +9,49 @@
     "rhr": 55,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 21.692886,
-    "atl": 22.914244,
-    "ramp_rate": -1.4548874,
-    "ctl_load": 23.0,
-    "atl_load": 30.0,
+    "ctl": 21.92817,
+    "atl": 24.245464,
+    "ramp_rate": -1.2196045,
+    "ctl_load": 33.0,
+    "atl_load": 40.0,
     "weight": 80.639,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 50.0
   },
   "computed": {
-    "tsb": -1.2,
+    "tsb": -2.3,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
     "days_since_hard": 8,
     "days_since_long": null,
     "days_since_vo2": 8,
-    "eftp_current": 205,
+    "eftp_current": 204,
     "eftp_oldest_ride_in_window": 206,
     "eftp_oldest_ride_date": "2026-06-28",
-    "eftp_trend_window_delta": -1,
+    "eftp_trend_window_delta": -2,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 4
+    "ride_count_14d": 5
   },
   "recent_activities": [
+    {
+      "date": "2026-07-11",
+      "type": "Ride",
+      "name": "Recovery Spin 30min",
+      "if": 0.68115944,
+      "tss": 23,
+      "duration_min": 30.3,
+      "distance_km": 15.2,
+      "avg_w": 139,
+      "np": 141,
+      "avg_hr": 145,
+      "ef": 0.9724138,
+      "vi": 1.0143884,
+      "eftp": 204,
+      "device_watts": true
+    },
     {
       "date": "2026-07-07",
       "type": "Ride",
@@ -101,7 +117,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-11T13:21:56",
+  "_fetched_at": "2026-07-11T19:05:13",
   "_today": "2026-07-11",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
