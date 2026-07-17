@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-17T03:27:17.751Z",
-  "form": "neutral",
-  "form_tsb": 4,
-  "weekly_hours": 5.1,
-  "weekly_tss": 123,
+  "updated": "2026-07-17T08:22:03.715Z",
+  "form": "fatigued",
+  "form_tsb": -13.6,
+  "weekly_hours": 7.5,
+  "weekly_tss": 284,
   "recent": [
+    {
+      "date": "2026-07-17",
+      "type": "bike",
+      "name": "Bawshar Road Cycling",
+      "distance_km": 72.1,
+      "duration_min": 147
+    },
     {
       "date": "2026-07-15",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 49
-    },
-    {
-      "date": "2026-07-13",
-      "type": "bike",
-      "name": "Sweetspot 3x8min @ 88% FTP",
-      "distance_km": 30.7,
-      "duration_min": 55
     }
   ]
 }
