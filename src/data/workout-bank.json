@@ -1,4 +1,138 @@
 {
+  "brick_run_w1_10": {
+    "category": "run",
+    "dsl": "Straight off the Sunday spin, transition fast. Minutes never pace. Any shin/Achilles/knee whisper -> stop, flag it.\n\nWarmup\n- 2m Z1 HR\n\nMain\n- 8m Z2 HR",
+    "duration_min": 10,
+    "min_state": "amber",
+    "name": "Brick Run 10min (easy)",
+    "next_day_ok": [
+      "rest",
+      "swim"
+    ],
+    "recovery_cost": "low",
+    "slot": "brick",
+    "target_if": 0.7,
+    "target_tss": 10,
+    "type": "Run"
+  },
+  "brick_run_w2_12": {
+    "category": "run",
+    "dsl": "Straight off the Sunday spin, transition fast. Minutes never pace. Any shin/Achilles/knee whisper -> stop, flag it.\n\nWarmup\n- 2m Z1 HR\n\nMain\n- 10m Z2 HR",
+    "duration_min": 12,
+    "min_state": "amber",
+    "name": "Brick Run 12min (easy)",
+    "next_day_ok": [
+      "rest",
+      "swim"
+    ],
+    "recovery_cost": "low",
+    "slot": "brick",
+    "target_if": 0.7,
+    "target_tss": 12,
+    "type": "Run"
+  },
+  "brick_run_w3_15": {
+    "category": "run",
+    "dsl": "Straight off the Sunday spin, transition fast. Minutes never pace. Any shin/Achilles/knee whisper -> stop, flag it.\n\nWarmup\n- 3m Z1 HR\n\nMain\n- 12m Z2 HR",
+    "duration_min": 15,
+    "min_state": "amber",
+    "name": "Brick Run 15min (easy)",
+    "next_day_ok": [
+      "rest",
+      "swim"
+    ],
+    "recovery_cost": "low",
+    "slot": "brick",
+    "target_if": 0.7,
+    "target_tss": 15,
+    "type": "Run"
+  },
+  "brick_run_w4_18": {
+    "category": "run",
+    "dsl": "Straight off the Sunday spin, transition fast. Minutes never pace. Any shin/Achilles/knee whisper -> stop, flag it. Strides = tall, quick, relaxed \u2014 not sprints.\n\nWarmup\n- 3m Z1 HR\n\nMain\n- 12m Z2 HR\n\nMain Set 3x\n- 20s Z4 HR\n- 40s Z1 HR",
+    "duration_min": 18,
+    "min_state": "amber",
+    "name": "Brick Run 18min (easy + strides)",
+    "next_day_ok": [
+      "rest",
+      "swim"
+    ],
+    "recovery_cost": "low",
+    "slot": "brick",
+    "target_if": 0.7,
+    "target_tss": 18,
+    "type": "Run"
+  },
+  "brick_run_w5_20": {
+    "category": "run",
+    "dsl": "Straight off the Sunday spin, transition fast. Minutes never pace. Any shin/Achilles/knee whisper -> stop, flag it. Race sim: the last block at 5k race effort off the hard ride.\n\nWarmup\n- 2m Z1 HR\n\nMain\n- 10m Z2 HR\n\nMain\n- 8m Z4 HR",
+    "duration_min": 20,
+    "min_state": "amber",
+    "name": "Brick Run 20min (race sim)",
+    "next_day_ok": [
+      "rest",
+      "swim"
+    ],
+    "recovery_cost": "low",
+    "slot": "brick",
+    "target_if": 0.7,
+    "target_tss": 20,
+    "type": "Run"
+  },
+  "easy_run_10": {
+    "category": "run",
+    "dsl": "Tissue builder, never fitness. Treadmill or pre-dawn. Deleted ONLY on a calf/Achilles/shin complaint \u2014 never for sleep (the hard bike goes first).\n\nWarmup\n- 2m Z1 HR\n\nMain\n- 8m Z2 HR",
+    "duration_min": 10,
+    "min_state": "red",
+    "name": "Easy Run 10min",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "run",
+    "target_if": 0.65,
+    "target_tss": 10,
+    "type": "Run"
+  },
+  "easy_run_12": {
+    "category": "run",
+    "dsl": "Tissue builder, never fitness. Treadmill or pre-dawn. Deleted ONLY on a calf/Achilles/shin complaint \u2014 never for sleep (the hard bike goes first).\n\nWarmup\n- 2m Z1 HR\n\nMain\n- 10m Z2 HR",
+    "duration_min": 12,
+    "min_state": "red",
+    "name": "Easy Run 12min",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "run",
+    "target_if": 0.65,
+    "target_tss": 12,
+    "type": "Run"
+  },
+  "easy_run_15": {
+    "category": "run",
+    "dsl": "Tissue builder, never fitness. Treadmill or pre-dawn. Deleted ONLY on a calf/Achilles/shin complaint \u2014 never for sleep (the hard bike goes first).\n\nWarmup\n- 3m Z1 HR\n\nMain\n- 12m Z2 HR",
+    "duration_min": 15,
+    "min_state": "red",
+    "name": "Easy Run 15min",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "run",
+    "target_if": 0.65,
+    "target_tss": 15,
+    "type": "Run"
+  },
   "easy_z2_60": {
     "category": "recovery",
     "dsl": "Aerobic base, low cost. HR cap 138 bpm.\n\nWarmup\n- 5m 50-65% 85rpm\n\nMain\n- 50m 65% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
@@ -141,6 +275,54 @@
     "target_if": 0.92,
     "target_tss": 85
   },
+  "race_openers_30": {
+    "category": "race",
+    "dsl": "Race-week openers \u2014 wake the legs, zero fatigue. NOT intervals.\n\nWarmup\n- 10m 50-65% 90rpm\n\nMain Set 3x\n- 1m 105% 95rpm\n- 3m 50% 85rpm\n\nCooldown\n- 8m 55-45% 90rpm",
+    "duration_min": 30,
+    "min_state": "amber",
+    "name": "Race Openers 30min",
+    "next_day_ok": [
+      "race",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "openers",
+    "target_if": 0.65,
+    "target_tss": 20
+  },
+  "race_power_2x10": {
+    "category": "race",
+    "dsl": "Post-swim sprint-leg power (~175-185 W), RPE cap 7. This is a FEEL session,\nnot a fitness probe \u2014 10 days out, nothing is gained by going harder.\n\nWarmup\n- 12m 50-70% 90rpm\n\nMain Set 2x\n- 10m 87% 90rpm\n- 5m 50% 85rpm\n\nCooldown\n- 8m 55-45% 85rpm",
+    "duration_min": 55,
+    "min_state": "amber",
+    "name": "Race Power 2x10min @ 87% FTP (NOT a test)",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "target_if": 0.8,
+    "target_tss": 45
+  },
+  "race_sim_bike_40": {
+    "category": "race",
+    "dsl": "Middle leg of the Aug 9 rehearsal \u2014 straight off the swim, transition fast.\nControlled race effort ~85-90% (175-185 W), aero position, drink once. Rehearse, don't race.\n\nWarmup\n- 5m 55-70% 90rpm\n\nMain\n- 30m 87% 90rpm\n\nCooldown\n- 5m 55-45% 85rpm",
+    "duration_min": 40,
+    "min_state": "amber",
+    "name": "Race Sim Bike 40min @ race effort",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "target_if": 0.83,
+    "target_tss": 45
+  },
   "ramp_test": {
     "category": "test",
     "dsl": "eFTP = 75% of best 1-min power. Pace yourself early; commit past 100%.\n\nWarmup\n- 5m 40-60% 90rpm\n\nRamp\n- 1m 50% 90rpm\n- 1m 60% 90rpm\n- 1m 70% 90rpm\n- 1m 80% 90rpm\n- 1m 90% 90rpm\n- 1m 100% 95rpm\n- 1m 105% 95rpm\n- 1m 110% 95rpm\n- 1m 115% 95rpm\n- 1m 120% 95rpm\n- 1m 125% 95rpm\n- 1m 130% 95rpm\n- 1m 135% 95rpm\n- 1m 140% 95rpm\n\nCooldown\n- 5m 50-40% 85rpm",
@@ -155,6 +337,23 @@
     "slot": "test",
     "target_if": 1.0,
     "target_tss": 60
+  },
+  "recovery_30": {
+    "category": "recovery",
+    "dsl": "Active recovery, feeds the brick run. HR cap 130 bpm. High cadence, low resistance.\n\nWarmup\n- 5m 45-55% 90rpm\n\nMain\n- 20m 55% 95rpm\n\nCooldown\n- 5m 55-45% 90rpm",
+    "duration_min": 30,
+    "min_state": "red",
+    "name": "Recovery Spin 30min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.55,
+    "target_tss": 15
   },
   "recovery_45": {
     "category": "recovery",
@@ -237,6 +436,23 @@
     "target_if": 0.86,
     "target_tss": 75
   },
+  "sweetspot_3x8": {
+    "category": "sweetspot",
+    "dsl": "Re-entry sweetspot \u2014 the LOW-readiness quality session. RPE 6-7, controlled.\n\nWarmup\n- 12m 50-70% 88rpm\n\nMain Set 3x\n- 8m 88% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
+    "duration_min": 55,
+    "min_state": "amber",
+    "name": "Sweetspot 3x8min @ 88% FTP",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "target_if": 0.82,
+    "target_tss": 50
+  },
   "sweetspot_4x10": {
     "category": "sweetspot",
     "dsl": "Shorter reps for AMBER days. RPE 7-8. Get the work without the long sustained burn.\n\nWarmup\n- 10m 50-70% 88rpm\n\nMain Set 4x\n- 10m 92% 90rpm\n- 3m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
@@ -253,6 +469,132 @@
     "slot": "quality",
     "target_if": 0.85,
     "target_tss": 60
+  },
+  "swim_recovery_15": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time. Post-rehearsal flush. All easy, feel for the water, nothing hard.\n\nWarmup\n- 3m Z1\n\nMain\n- 10m Z2\n\nCooldown\n- 2m Z1",
+    "duration_min": 15,
+    "min_state": "amber",
+    "name": "Swim \u2014 15min easy recovery",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
+  },
+  "swim_w1_6x2": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time. Ugly is fine this week \u2014 shoulders die at 200m, normal, it comes back.\n\nWarmup\n- 3m Z1\n\nMain Set 6x\n- 2m Z2\n- 1m Z1\n\nCooldown\n- 3m Z1",
+    "duration_min": 25,
+    "min_state": "amber",
+    "name": "Swim W1 \u2014 6x2min easy (rust removal)",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
+  },
+  "swim_w2_8x2": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time.\n\nWarmup\n- 3m Z1\n\nMain Set 8x\n- 2m Z2\n- 45s Z1\n\nCooldown\n- 3m Z1",
+    "duration_min": 30,
+    "min_state": "amber",
+    "name": "Swim W2 \u2014 8x2min steady",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
+  },
+  "swim_w3_3x6": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time. Longer reps now \u2014 settle into a sustainable rhythm.\n\nWarmup\n- 4m Z1\n\nMain Set 3x\n- 6m Z2\n- 90s Z1\n\nCooldown\n- 3m Z1",
+    "duration_min": 30,
+    "min_state": "amber",
+    "name": "Swim W3 \u2014 3x6min steady",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
+  },
+  "swim_w4_20cont": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time. First continuous swim \u2014 race-day duration, easy effort. Full race kit (tri suit) at least once this week.\n\nWarmup\n- 4m Z1\n\nMain\n- 20m Z2\n\nCooldown\n- 3m Z1",
+    "duration_min": 30,
+    "min_state": "amber",
+    "name": "Swim W4 \u2014 20min continuous",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
+  },
+  "swim_w5_race_sim": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time. Race sim: continuous at controlled race effort (~750m), then sharpen. Nothing new after this week.\n\nWarmup\n- 5m Z1\n\nMain\n- 15m Z3\n\nMain Set 3x\n- 2m Z4\n- 1m Z1\n\nCooldown\n- 4m Z1",
+    "duration_min": 35,
+    "min_state": "amber",
+    "name": "Swim W5 \u2014 750m race effort + race pace reps",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
+  },
+  "swim_w6_openers": {
+    "category": "swim",
+    "dsl": "Sea: dawn, tow float, NEVER alone (partner/group/shore observer), shore-parallel between fixed points, sight every 6-8 strokes. Pool (SQ Complex, ~Aug): same set by time. Race week: easy, crisp, short. Kit check, goggles decided, nothing new.\n\nWarmup\n- 4m Z1\n\nMain\n- 8m Z2\n\nMain Set 4x\n- 20s Z4\n- 40s Z1",
+    "duration_min": 15,
+    "min_state": "amber",
+    "name": "Swim W6 \u2014 15min easy openers",
+    "next_day_ok": [
+      "lower",
+      "quality",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "swim",
+    "target_if": 0.6,
+    "target_tss": 20,
+    "type": "Swim"
   },
   "threshold_2x15": {
     "category": "threshold",
