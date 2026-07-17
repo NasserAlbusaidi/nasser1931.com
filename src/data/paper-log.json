@@ -1,13 +1,33 @@
 {
-  "updated": "2026-06-03T05:23:27.655Z",
-  "last_edit": "2026-05-27T05:04:51Z",
-  "commits_7d": 0,
-  "commits_total": 3,
+  "updated": "2026-07-17T12:36:06.280Z",
+  "last_edit": "2026-07-17T16:14:20+04:00",
+  "commits_7d": 1,
+  "commits_total": 7,
   "recent": [
     {
-      "sha": "824527e",
-      "date": "2026-05-27T05:04:51Z",
-      "message": "chore: normalize CRLF→LF in data/ and paper/data CSV blobs"
+      "sha": "958b098",
+      "date": "2026-07-17T16:14:20+04:00",
+      "message": "data: check-ins #15-#21 (Jun 3 - Jul 17) + race-prep phase reconciliation"
+    },
+    {
+      "sha": "ae258d0",
+      "date": "2026-05-27T19:43:24+04:00",
+      "message": "docs: §7 sunset firing + end-of-Eid audit results in paper, watchlist"
+    },
+    {
+      "sha": "3ce352c",
+      "date": "2026-05-27T19:43:17+04:00",
+      "message": "audit: HRV phase-internal walk-forward at end-of-Eid"
+    },
+    {
+      "sha": "818ed2f",
+      "date": "2026-05-27T19:43:10+04:00",
+      "message": "audit: under-log PyMC re-audit at end-of-Eid (n=10 windows)"
+    },
+    {
+      "sha": "7c767f3",
+      "date": "2026-05-27T19:43:06+04:00",
+      "message": "data: refresh HRV cache + pairs through 2026-05-27"
     },
     {
       "sha": "67b1f6a",
