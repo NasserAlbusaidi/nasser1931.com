@@ -4,11 +4,57 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HomePulse from '../components/HomePulse.astro';
-import paperLog from '../data/paper-log.json';
 import reading from '../data/reading.json';
+import training from '../data/training.json';
+import builds from '../data/builds.json';
+import coach from '../data/coach.json';
+import bank from '../data/workout-bank.json';
+import { classifyState, getScheduleContext, pickWorkout } from '../scripts/cycling-engine.mjs';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-// Recent field + stupidshit entries, merged & sorted by date desc.
+// ---- Live proof: today's canonical coach pick (server-side, UTC-anchored) ----
+// Guarded — a missing/unparseable snapshot degrades to a bare "coach →" link,
+// never a build error.
+let todaysPick = null;
+try {
+	const today = new Date((coach._today ?? new Date().toISOString().slice(0, 10)) + 'T00:00:00Z');
+	const cls = classifyState(coach.wellness ?? {});
+	const ctx = getScheduleContext(today);
+	const pick = pickWorkout(cls.state, ctx, bank, coach.computed ?? {});
+	const workoutName = pick.workoutKey === null
+		? (ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day')
+		: (pick.workout?.name ?? 'Unknown');
+	todaysPick = {
+		workoutName,
+		durationMin: pick.workout?.duration_min ?? null,
+		intensity: pick.workout?.target_if ?? null,
+		state: cls.state,
+	};
+} catch {
+	todaysPick = null;
+}
+
+const pickNumerics = todaysPick && todaysPick.durationMin != null
+	? `${todaysPick.durationMin}min${todaysPick.intensity != null ? ` · ${todaysPick.intensity.toFixed(2)}` : ''}`
+	: null;
+
+// ---- Live proof: training form (read the pre-baked word, don't derive it) ----
+const form = training.form ?? 'neutral';
+const formTsb = training.form_tsb;
+const tsbDisplay = formTsb == null
+	? '—'
+	: (formTsb > 0 ? `+${Math.round(formTsb)}` : Math.round(formTsb).toString());
+const formFlag = form === 'fresh' ? 'flag-green' : form === 'fatigued' ? 'flag-amber' : 'flag-off';
+
+// ---- Live proof: build timestamp, rendered relative client-side ----
+const buildISO = new Date().toISOString();
+
+// ---- Selected builds (featured, source order) ----
+const featuredBuilds = (builds.builds ?? []).filter((b) => b.featured);
+const buildHref = (b) => b.url ?? b.repo ?? null;
+const isExternal = (href) => typeof href === 'string' && /^https?:/.test(href);
+
+// ---- Recent field + stupidshit entries, merged & sorted by date desc ----
 const fieldEntries = await getCollection('field');
 const stupidEntries = await getCollection('stupidshit');
 const log = [
@@ -18,7 +64,7 @@ const log = [
 	.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
 	.slice(0, 6);
 
-const fmtDate = (d: Date) => {
+const fmtDate = (d) => {
 	const y = d.getUTCFullYear();
 	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
 	const day = String(d.getUTCDate()).padStart(2, '0');
@@ -40,32 +86,78 @@ const readingShelf =
 	<body>
 		<Header />
 		<main class="board">
-			<HomePulse />
-
-			<section class="lead">
-				<div class="lead-top">
-					<span class="label">The paper</span>
-					<span class="lead-meta">
-						{paperLog?.last_edit && (
-							<>edited <span data-iso={paperLog.last_edit}>recently</span></>
-						)}
-						{paperLog?.commits_7d > 0 && (
-							<> · {paperLog.commits_7d} {paperLog.commits_7d === 1 ? 'commit' : 'commits'} this week</>
-						)}
-					</span>
-				</div>
-				<h1 class="lead-title title-hero">
-					<a href="/paper">The <span class="hl">silent</span> creep</a>
+			<section class="hero" aria-label="Introduction">
+				<h1 class="hero-title title-hero">
+					I build the <span class="hl">software</span> that trains me.
 				</h1>
-				<p class="lead-dek">
-					A +387 kcal/day drift erased a 67%-efficient training block. 1,300 days of
-					training, eating, and weight data, walked through six guardrails.
+				<p class="hero-dek">
+					Developer and triathlete in Muscat. Everything on this page is live data from
+					systems I built.
 				</p>
-				<p class="lead-byline">Nasser Al Busaidi · Muscat · N=1</p>
-				<a href="/paper" class="btn">Read the paper</a>
+
+				<div class="proof-strip" role="group" aria-label="Live signals">
+					<div class="proof-cell">
+						<span class="proof-key label">Form</span>
+						<span class="proof-val">
+							{form} <span class={`flag ${formFlag}`}>{tsbDisplay}</span>
+						</span>
+					</div>
+
+					<a class="proof-cell proof-link" href="/coach">
+						<span class="proof-key label">Today's pick</span>
+						{todaysPick ? (
+							<span class="proof-val">
+								{todaysPick.workoutName}
+								{pickNumerics && <span class="proof-sub">{pickNumerics}</span>}
+							</span>
+						) : (
+							<span class="proof-val">coach →</span>
+						)}
+					</a>
+
+					<div class="proof-cell">
+						<span class="proof-key label">Last deploy</span>
+						<span class="proof-val">
+							<span data-iso={buildISO}>just now</span>
+						</span>
+					</div>
+				</div>
 			</section>
 
-			<section class="log">
+			<section class="builds" aria-label="Selected builds">
+				<div class="section-top">
+					<span class="label">Builds</span>
+					<span class="section-links"><a href="/builds">all builds →</a></span>
+				</div>
+				{featuredBuilds.length === 0 ? (
+					<p class="empty">Nothing to show yet.</p>
+				) : (
+					<ul class="results">
+						{featuredBuilds.map((b) => {
+							const href = buildHref(b);
+							const ext = isExternal(href);
+							return (
+								<li>
+									<a
+										class="row"
+										href={href ?? '/builds'}
+										{...(ext ? { target: '_blank', rel: 'noopener' } : {})}
+									>
+										<span class="row-date">{b.year}</span>
+										<span class="row-body">
+											<span class="row-title">{b.name}</span>
+											{b.summary && <span class="row-summary">{b.summary}</span>}
+										</span>
+										<span class="row-meta">{b.status}</span>
+									</a>
+								</li>
+							);
+						})}
+					</ul>
+				)}
+			</section>
+
+			<section class="log" aria-label="Log">
 				<div class="section-top">
 					<span class="label">Log</span>
 					<span class="section-links">
@@ -94,7 +186,9 @@ const readingShelf =
 				)}
 			</section>
 
-			<section class="shelf">
+			<HomePulse />
+
+			<section class="shelf" aria-label="Reading">
 				<div class="section-top">
 					<span class="label">
 						{readingShelf[0]?.state === 'in_progress' ? 'Currently reading' : 'Recently finished'}
@@ -123,6 +217,30 @@ const readingShelf =
 					</ul>
 				)}
 			</section>
+
+			<section class="contact" aria-label="Contact">
+				<div class="section-top">
+					<span class="label">Contact</span>
+				</div>
+				<dl class="contact-list">
+					<div class="contact-row">
+						<dt class="label">Email</dt>
+						<dd><a href="mailto:nasserbusaidi@gmail.com">nasserbusaidi@gmail.com</a></dd>
+					</div>
+					<div class="contact-row">
+						<dt class="label">GitHub</dt>
+						<dd>
+							<a href="https://github.com/NasserAlbusaidi" target="_blank" rel="noopener"
+								>github.com/NasserAlbusaidi</a
+							>
+						</dd>
+					</div>
+					<div class="contact-row">
+						<dt class="label">Location</dt>
+						<dd>Muscat, Oman</dd>
+					</div>
+				</dl>
+			</section>
 		</main>
 		<Footer />
 
@@ -140,65 +258,19 @@ const readingShelf =
 				.board { padding: 1rem 1rem 3rem; gap: 2.5rem; }
 			}
 
-			/* ---- lead: the paper ---- */
-			.lead-top,
-			.section-top {
-				display: flex;
-				justify-content: space-between;
-				align-items: baseline;
-				gap: 1rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid var(--ink);
-				margin-bottom: 1rem;
-			}
-
-			.lead-top .label,
-			.section-top .label {
-				color: var(--ink);
-			}
-
-			.lead-meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-			}
-
-			.section-links {
-				font-family: var(--font-display);
-				font-size: 14px;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.04em;
-			}
-
-			.section-links a {
-				color: var(--muted);
-				text-decoration: none;
-				padding: 1px 4px;
-			}
-
-			.section-links a:hover {
-				color: var(--on-mark);
-				background: var(--mark);
-			}
-
-			.lead-title {
+			/* ---- hero ---- */
+			.hero-title {
 				margin: 0 0 1rem;
-				max-width: 14ch;
+				max-width: 16ch;
 			}
 
-			.lead-title a {
+			.hero-dek {
+				font-family: var(--font-ui);
+				font-size: 17px;
+				line-height: 1.55;
 				color: var(--ink);
-				text-decoration: none;
-			}
-
-			.lead-title a:hover {
-				background: transparent;
-				color: var(--ink);
-				text-decoration: underline;
-				text-decoration-thickness: 4px;
-				text-underline-offset: 6px;
+				max-width: 52ch;
+				margin: 0 0 2rem;
 			}
 
 			/* The one entrance moment: the marker wipes in behind the word.
@@ -233,21 +305,81 @@ const readingShelf =
 				to { color: var(--on-mark); }
 			}
 
-			.lead-dek {
-				font-family: var(--font-ui);
-				font-size: 17px;
-				line-height: 1.55;
-				color: var(--ink);
-				max-width: 52ch;
-				margin: 0 0 0.75rem;
+			/* ---- live proof strip: a timing-sheet row ---- */
+			.proof-strip {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				border-top: 1px solid var(--ink);
+				border-bottom: 1px solid var(--ink);
 			}
 
-			.lead-byline {
+			.proof-cell {
+				display: flex;
+				flex-direction: column;
+				gap: 0.4rem;
+				padding: 0.9rem 1.5rem 0.9rem 0;
+				border-right: 1px solid var(--rule);
+			}
+
+			.proof-cell:last-child {
+				border-right: 0;
+			}
+
+			.proof-key {
+				color: var(--muted);
+			}
+
+			.proof-val {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 15px;
+				color: var(--ink);
+				display: flex;
+				align-items: baseline;
+				gap: 0.5em;
+				flex-wrap: wrap;
+			}
+
+			.proof-sub {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
 				font-size: 12px;
 				color: var(--muted);
-				margin: 0 0 1.5rem;
+			}
+
+			a.proof-link {
+				text-decoration: none;
+				color: var(--ink);
+				transition: background-color 70ms ease-out;
+			}
+
+			a.proof-link:hover {
+				background: var(--mark);
+				color: var(--on-mark);
+			}
+
+			a.proof-link:hover .proof-key,
+			a.proof-link:hover .proof-val,
+			a.proof-link:hover .proof-sub {
+				color: var(--on-mark);
+			}
+
+			@media (max-width: 720px) {
+				.proof-strip {
+					grid-template-columns: 1fr;
+				}
+				.proof-cell {
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: baseline;
+					gap: 1rem;
+					border-right: 0;
+					border-bottom: 1px solid var(--rule);
+					padding: 0.75rem 0;
+				}
+				.proof-cell:last-child {
+					border-bottom: 0;
+				}
 			}
 
 			/* ---- reading shelf ---- */
@@ -288,6 +420,40 @@ const readingShelf =
 				white-space: nowrap;
 			}
 
+			/* ---- contact ---- */
+			.contact-list {
+				margin: 0;
+				padding: 0;
+			}
+
+			.contact-row {
+				display: grid;
+				grid-template-columns: 7.5em 1fr;
+				gap: 1.25em;
+				align-items: baseline;
+				padding: 0.55em 0.5em;
+				border-bottom: 1px solid var(--rule);
+			}
+
+			.contact-row dt {
+				color: var(--muted);
+			}
+
+			.contact-row dd {
+				margin: 0;
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 14px;
+				color: var(--ink);
+			}
+
+			@media (max-width: 560px) {
+				.contact-row {
+					grid-template-columns: 1fr;
+					gap: 0.2em;
+				}
+			}
+
 			.empty {
 				font-family: var(--font-ui);
 				font-size: 15px;
@@ -296,7 +462,7 @@ const readingShelf =
 			}
 		</style>
 
-		<!-- Compute "edited X ago" client-side so static HTML doesn't go stale. -->
+		<!-- Compute "deploy X ago" client-side so static HTML doesn't go stale. -->
 		<script is:inline>
 			(function () {
 				function format(iso) {
@@ -310,13 +476,14 @@ const readingShelf =
 						day = 24 * hr,
 						week = 7 * day,
 						month = 30 * day;
+					if (diff < min) return 'just now';
 					if (diff < hr) return Math.max(1, Math.round(diff / min)) + 'm ago';
 					if (diff < day) return Math.round(diff / hr) + 'h ago';
 					if (diff < week) return Math.round(diff / day) + 'd ago';
 					if (diff < month) return Math.round(diff / week) + 'w ago';
 					return Math.round(diff / month) + 'mo ago';
 				}
-				document.querySelectorAll('.lead [data-iso]').forEach(function (el) {
+				document.querySelectorAll('.proof-strip [data-iso]').forEach(function (el) {
 					var label = format(el.getAttribute('data-iso'));
 					if (label) el.textContent = label;
 				});
