@@ -46,7 +46,7 @@ const wellnessFresh = wellnessDateISO === todayISO;
 function dayLabel(d: Date): string {
 	return d.toLocaleDateString('en-GB', {
 		weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC',
-	}).toUpperCase();
+	});
 }
 
 function buildEntry(offset: number) {
@@ -341,7 +341,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			});
 			const shortDateFmt = (d) => d.toLocaleDateString('en-GB', {
 				weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC',
-			}).toUpperCase();
+			});
 
 			function activeDate() {
 				return new Date(today.getTime() + activeIndex * 86400000);
@@ -552,6 +552,10 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				outline: 2px solid var(--ink);
 				outline-offset: -2px;
 			}
+			/* The active row is ink-filled — an ink outline would vanish into it. */
+			.forecast-row.active:focus-visible {
+				outline-color: var(--bg);
+			}
 			.forecast-row.active {
 				background: var(--ink);
 				color: var(--bg);
@@ -733,7 +737,11 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			.signal-green { border-top-color: var(--flag-green); }
 			.signal-amber { border-top-color: var(--flag-amber); }
 			.signal-red   { border-top-color: var(--flag-red); }
-			.signal-missing, .signal-neutral { opacity: 0.55; }
+			/* Mute only the value — dimming the whole tile drops the 12px label
+			   below AA contrast, and the label is what says which signal is absent. */
+			.signal-missing .signal-value,
+			.signal-neutral .signal-value { color: var(--muted); }
+			.signal-missing, .signal-neutral { border-top-color: var(--rule); }
 
 			.signal-label {
 				font-size: 12px;
@@ -853,10 +861,12 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				margin: 0.5rem 0;
 				padding-left: 1.5rem;
 			}
-			.reasoning li { margin: 0.2rem 0; }
+			/* :global — recompute() rebuilds these nodes with createElement, which
+			   never carries the Astro scope attribute, so scoped rules can't match. */
+			.reasoning :global(li) { margin: 0.2rem 0; }
 
 			.warnings { margin: 1rem 0; }
-			.warning {
+			.warnings :global(.warning) {
 				border: 1px solid var(--rule);
 				border-left: 4px solid var(--flag-red);
 				padding: 0.6rem 0.875rem;

@@ -29,6 +29,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^6.1.9",
+    "fontkit": "^2.0.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "sharp": "^0.34.3",

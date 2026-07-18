@@ -201,12 +201,16 @@ const readingShelf =
 				text-underline-offset: 6px;
 			}
 
-			/* The one entrance moment: the marker wipes in behind the word. */
+			/* The one entrance moment: the marker wipes in behind the word.
+			   The text starts at --ink and crossfades to --on-mark mid-wipe —
+			   in dark mode a static --on-mark (#111) would be invisible on the
+			   near-black page during the animation delay. */
 			.hl {
 				position: relative;
 				z-index: 0;
 				padding: 0 0.06em;
-				color: var(--on-mark);
+				color: var(--ink);
+				animation: hl-ink 200ms 300ms ease-out both;
 			}
 
 			.hl::before {
@@ -222,6 +226,11 @@ const readingShelf =
 			@keyframes hl-wipe {
 				from { transform: scaleX(0); }
 				to { transform: scaleX(1); }
+			}
+
+			@keyframes hl-ink {
+				from { color: var(--ink); }
+				to { color: var(--on-mark); }
 			}
 
 			.lead-dek {
