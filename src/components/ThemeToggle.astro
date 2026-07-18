@@ -1,7 +1,6 @@
 ---
-// Field Journal theme toggle — light <-> dark.
-// Boot script in BaseHead applies html.dark before paint to avoid FOUC.
-// Persists to localStorage key "np-theme".
+// Light <-> dark toggle. Boot script in BaseHead applies html.dark before
+// paint to avoid FOUC. Persists to localStorage key "np-theme".
 ---
 
 <button
@@ -10,51 +9,40 @@
 	aria-label="Toggle color theme"
 	title="Toggle theme"
 >
-	<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-		<circle cx="12" cy="12" r="4"></circle>
-		<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
-	</svg>
-	<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-		<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-	</svg>
+	<span class="toggle-word toggle-dark">dark</span>
+	<span class="toggle-word toggle-light">light</span>
 </button>
 
 <style>
 	#theme-toggle {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		padding: 0;
+		font-family: var(--font-display);
+		font-size: 15px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 		background: transparent;
-		border: 1px solid var(--rule);
-		border-radius: var(--radius-md);
-		color: var(--ink);
+		border: 0;
+		padding: 1px 4px;
+		color: var(--muted);
 		cursor: pointer;
-		transition: background-color 100ms ease-out, border-color 100ms ease-out, color 100ms ease-out;
+		transition: color 70ms ease-out, background-color 70ms ease-out;
 	}
 
 	#theme-toggle:hover {
-		background: var(--surface);
-		border-color: var(--muted);
+		color: var(--on-mark);
+		background: var(--mark);
 	}
 
 	#theme-toggle:focus-visible {
-		outline: 2px solid var(--accent);
+		outline: 2px solid var(--ink);
 		outline-offset: 2px;
 	}
 
-	#theme-toggle svg {
-		width: 16px;
-		height: 16px;
-	}
-
-	/* In light mode show moon (click to go dark); in dark mode show sun. */
-	.icon-sun { display: none; }
-	.icon-moon { display: block; }
-	:global(html.dark) .icon-sun { display: block; }
-	:global(html.dark) .icon-moon { display: none; }
+	/* Show the mode you'd switch to. */
+	.toggle-dark { display: inline; }
+	.toggle-light { display: none; }
+	:global(html.dark) .toggle-dark { display: none; }
+	:global(html.dark) .toggle-light { display: inline; }
 </style>
 
 <script is:inline>

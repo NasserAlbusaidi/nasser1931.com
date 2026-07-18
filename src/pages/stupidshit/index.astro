@@ -14,15 +14,13 @@ const range = years.length === 0
 	? '—'
 	: years[years.length - 1] === years[0]
 		? `${years[0]}`
-		: `${years[years.length - 1]}—${years[0]}`;
-
-const numFor = (i: number) => String(total - i).padStart(3, '0');
+		: `${years[years.length - 1]}–${years[0]}`;
 
 const fmtDate = (d: Date) => {
 	const y = d.getUTCFullYear();
 	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
 	const day = String(d.getUTCDate()).padStart(2, '0');
-	return `${y} · ${m} · ${day}`;
+	return `${y}-${m}-${day}`;
 };
 ---
 
@@ -34,40 +32,39 @@ const fmtDate = (d: Date) => {
 	<body>
 		<Header />
 		<main>
-			<header class="toc-header">
-				<div>
-					<span class="eyebrow eyebrow-accent">Section · the back of the book</span>
-					<h1>Stupidshit.</h1>
-				</div>
-				<div class="toc-meta">
-					{total} {total === 1 ? 'entry' : 'entries'} · {range}
-				</div>
+			<header class="page-head">
+				<h1>Stupidshit</h1>
+				<p class="page-meta">{total} {total === 1 ? 'entry' : 'entries'} · {range}</p>
 			</header>
 
 			{entries.length === 0 ? (
 				<p class="empty">Folder is empty between odd ideas.</p>
 			) : (
-				<ol class="toc-list">
-					{entries.map((entry, i) => (
-						<li>
-							<span class="toc-num">№ {numFor(i)}</span>
-							<div class="toc-body">
-								<a class="toc-title" href={`/stupidshit/${entry.id}`}>{entry.data.title}</a>
-								{entry.data.summary && (
-									<span class="toc-summary">{entry.data.summary}</span>
-								)}
-								{entry.data.tags && entry.data.tags.length > 0 && (
-									<span class="toc-tags">
-										{entry.data.tags.map((t) => (<span class="tag">{t}</span>))}
+				<>
+					<div class="results-head">
+						<span class="label">Date</span>
+						<span class="label">Entry</span>
+						<span></span>
+					</div>
+					<ul class="results">
+						{entries.map((entry) => (
+							<li>
+								<a class="row" href={`/stupidshit/${entry.id}`}>
+									<time class="row-date" datetime={entry.data.date.toISOString()}>
+										{fmtDate(entry.data.date)}
+									</time>
+									<span class="row-body">
+										<span class="row-title">{entry.data.title}</span>
+										{entry.data.summary && <span class="row-summary">{entry.data.summary}</span>}
 									</span>
-								)}
-							</div>
-							<time class="toc-date" datetime={entry.data.date.toISOString()}>
-								{fmtDate(entry.data.date)}
-							</time>
-						</li>
-					))}
-				</ol>
+									<span class="row-meta">
+										{entry.data.tags && entry.data.tags.length > 0 ? entry.data.tags.join(' · ') : ''}
+									</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				</>
 			)}
 		</main>
 		<Footer />
@@ -76,72 +73,35 @@ const fmtDate = (d: Date) => {
 			main {
 				max-width: var(--container-wide);
 				margin: 0 auto;
-				padding: 2.5rem 1.5rem 4rem;
+				padding: 2rem 1.5rem 4rem;
 			}
 
-			.toc-header {
+			.page-head {
 				display: flex;
-				align-items: flex-end;
+				align-items: baseline;
 				justify-content: space-between;
 				gap: 1.5rem;
-				padding-bottom: 1rem;
-				border-bottom: 2px solid var(--ink);
 				margin-bottom: 1.5rem;
 			}
 
-			.toc-header h1 {
-				font-family: var(--font-display);
-				font-weight: 900;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				font-size: clamp(40px, 7vw, 88px);
-				line-height: 0.9;
-				letter-spacing: -0.03em;
-				margin: 0.5rem 0 0;
-			}
-
-			.eyebrow {
-				display: block;
-			}
-
-			.toc-meta {
+			.page-meta {
 				font-family: var(--font-mono);
-				font-size: 11px;
-				text-transform: uppercase;
-				letter-spacing: 0.14em;
+				font-feature-settings: "tnum" 1;
+				font-size: 13px;
 				color: var(--muted);
+				margin: 0;
 				white-space: nowrap;
-				padding-bottom: 0.5rem;
-			}
-
-			.toc-tags {
-				display: inline-flex;
-				flex-wrap: wrap;
-				gap: 0.4em;
-				margin-top: 0.25em;
-			}
-
-			.toc-tags .tag {
-				font-family: var(--font-mono);
-				font-size: 10px;
-				text-transform: uppercase;
-				letter-spacing: 0.14em;
-				color: var(--muted);
-				background: var(--surface);
-				padding: 1px 6px;
-				border-radius: var(--radius-sm);
 			}
 
 			.empty {
-				font-family: var(--font-prose);
-				font-style: italic;
-				font-size: 17px;
+				font-family: var(--font-ui);
+				font-size: 15px;
 				color: var(--muted);
 				margin: 2rem 0;
 			}
 
 			@media (max-width: 540px) {
-				.toc-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-				.toc-meta { padding-bottom: 0; }
+				.page-head { flex-direction: column; gap: 0.25rem; }
 			}
 		</style>
 	</body>

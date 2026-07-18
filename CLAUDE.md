@@ -8,7 +8,7 @@ Personal site. Astro static build, deployed to Firebase Hosting. Centerpiece is 
 
 ## Design System
 
-Always read **DESIGN.md** before making any visual or UI decision. All font choices, colors, spacing, type scale, layout widths, motion durations, category names, and component patterns are defined there. Do not deviate without explicit user approval. The system is named **"Press" (v0.2, drafted 2026-05-15)** — a print-magazine-quarterly identity. *Loud on the masthead, disciplined in the prose.* Newsprint cream `#F8F5EE` + warm carbon `#15110D` + signal red `#C8311C`. Fraunces (pushed to wght 900 / opsz 9 / SOFT 0 — the chunky / industrial mode, not refined Didone) / Switzer (Fontshare) / Source Serif 4 (retained for the paper) / JetBrains Mono. The previous Field Journal v0.1 (rust accent, Geist, refined Fraunces) is retired — see DESIGN.md's Decisions Log for what was retained and what was retired. Anti-patterns are listed explicitly.
+Always read **DESIGN.md** before making any visual or UI decision. All font choices, colors, spacing, type scale, layout widths, motion durations, category names, and component patterns are defined there. Do not deviate without explicit user approval. The system is named **"Splits" (v1.0, drafted 2026-07-18)** — a race-timing-sheet identity built to kill the recognizable AI-designed aesthetic. Pure white `#FFFFFF` / near-black `#111111` + one marker yellow `#FFE81C`; links are ink + underline (color only ever appears as highlight or flag). Barlow Condensed (display, caps) / Literata (long-form prose) / system-ui (UI) / system mono (data) — the two webfonts are self-hosted via Fontsource, no font CDNs. Border radius 0 everywhere; tables over cards; hover floods rows with the marker. Press v0.2 (Fraunces masthead, newsprint cream, signal red, mono eyebrows) is retired — its tells are the explicit anti-pattern blacklist in DESIGN.md.
 
 When QA-ing a UI change, flag any code that doesn't match DESIGN.md.
 
@@ -120,7 +120,7 @@ gh workflow run sync-paper.yml  # easier: run the same sync on CI; commits + pus
 
 `src/layouts/Paper.astro`:
 - Reading column: 720px max-width, 1.05rem / 1.7 line-height (long-form prose).
-- Figures break out wider via `figure { margin-left: 50%; transform: translateX(-50%); width: min(1100px, calc(100vw - 2em)); }`.
+- Figures break out wider via `figure { margin-left: 50%; transform: translateX(-50%); width: min(var(--container-figure), calc(100vw - 2.5rem)); }` (`--container-figure` is 1080px).
 - Captions render via `<figcaption>` styled italic gray; the `Figure N.` prefix is bolded.
 - All section H2s have `margin-top: 2.4em` for clear section breaks.
 
@@ -162,7 +162,7 @@ The home page renders a "currently training" section above the paper card, sourc
 
 - **Source schema (Notion):** Title (title), Author (text), Status (select: Reading | Want to Read | Finished | Dropped), Rating (select: 1–5 stars), Format (select: Audiobook | Physical | Kindle | PDF), Genre (multi_select), Started (date), Finished (date).
 - **Sync:** `.github/workflows/sync-reading.yml` runs cron `0 */6 * * *` plus `workflow_dispatch`. It calls the Notion query API with `NOTION_TOKEN`, transforms each page into a flat `Book` record, sorts Finished by `Finished` date desc, and writes the snapshot. Idempotent — only commits + deploys when the snapshot diff is non-empty.
-- **Page render:** `src/pages/reading/index.astro` reads the JSON, splits into Currently / Finished / Want to Read sections, and groups Finished by year. Stars are emoji `⭐` × N for visual continuity with how Notion displays the rating select.
+- **Page render:** `src/pages/reading/index.astro` reads the JSON, splits into Currently / Finished / Want to Read sections, and groups Finished by year. Ratings render as mono `N/5` (star emoji are a banned pattern under Splits — see DESIGN.md).
 - **Setup (one-time):** create an internal integration at notion.so/my-integrations, share the Reading List page with the integration, set `NOTION_TOKEN` as a GitHub secret on this repo. The script reads `NOTION_READING_DB` env var to override the database id if it ever changes; default is the known id.
 
 ## Writing posts from Notion (no-code authoring)
@@ -200,7 +200,7 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
 - **Manual refresh:** `gh workflow run refresh-coach.yml`.
 - **4-day forecast strip:** Above the masthead, `/coach` renders a TOC-style strip (today + next 3 days). Each row is `DATE · slot-tag    workout-name   ·   duration / IF`. Today uses the real classified state + v2 overrides; future days assume AMBER and run v1 only (v2 overrides depend on today's signals — TSB, ramp, days-since-hard — which aren't projectable). Tiles are clickable: clicking a future tile reprojects the hero (eyebrow flips to `Projection · DATE`, state pill suffixed `· proj`, masthead title + Today's-pick block + DSL all swap), the projection banner appears with a `← back to today` button, recovery + computed signals mute via `main.projecting` (`opacity: 0.42`), and the push-block hides. Override panel (force state / override slot / override macro week) still applies to the active selection. Click today's tile or the banner button to return to live state. Mobile reflows each row into 2 lines (date+slot top, name + numerics bottom). All forecast picks render server-side from `getScheduleContext(date)` + `pickWorkoutV1` so the strip is correct on first paint.
 - **v1 caveats / deferred work:**
-  - **Push-to-calendar is a copy block, not a button.** The page renders the exact `python3 tools/intervalsicu/pick_workout.py --push --time 05:30` command in a JetBrains Mono `<pre>` with a copy-to-clipboard button. The real button needs a Firebase Function proxy + single-user auth (open question: Firebase Auth magic link vs. passphrase) — deferred. The push block also hides on future-day projections, because `pick_workout.py` has no `--date` flag and showing today's command while previewing Tuesday would be a lie.
+  - **Push-to-calendar is a copy block, not a button.** The page renders the exact `python3 tools/intervalsicu/pick_workout.py --push --time 05:30` command in a system-mono `<pre>` with a copy-to-clipboard button. The real button needs a Firebase Function proxy + single-user auth (open question: Firebase Auth magic link vs. passphrase) — deferred. The push block also hides on future-day projections, because `pick_workout.py` has no `--date` flag and showing today's command while previewing Tuesday would be a lie.
   - **Engine duplication.** `src/scripts/cycling-engine.mjs` mirrors `pick_workout.py`. When the Python rules change (thresholds, override rules, slot logic), update the JS module too. Long-term: extract a shared `cycling_engine.mjs` in project-furnace and sync it down via the paper pattern, so there's one canonical engine.
   - **Workout-bank webhook.** The workflow already accepts `repository_dispatch[bank-update]`; the project-furnace-side fire (mirroring `notify-site.yml`'s `paper-update`) is the remaining piece for sub-minute bank-edit propagation.
 

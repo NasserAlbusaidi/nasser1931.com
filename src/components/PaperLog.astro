@@ -9,8 +9,8 @@ const isoDate = (s) => (s ? s.split('T')[0] : '');
 
 {recent.length > 0 && (
 	<aside class="paper-log">
-		<h2 class="section-head">editing log</h2>
-		<ul class="entries paper-log-list">
+		<h2 class="log-head label">Editing log</h2>
+		<ul class="paper-log-list">
 			{recent.map((c) => (
 				<li>
 					<time datetime={isoDate(c.date)}>{isoDate(c.date)}</time>
@@ -33,30 +33,24 @@ const isoDate = (s) => (s ? s.split('T')[0] : '');
 )}
 
 <style>
-	.section-head {
-		font-family: var(--font-mono);
-		font-size: 11px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		color: var(--ink);
-		margin: 0 0 0.75rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 1px solid var(--rule);
-		line-height: 1.4;
+	.paper-log {
+		max-width: var(--container-prose);
+		margin: 3rem auto 2rem;
+		padding: 1.5rem 1.25rem 0;
+		border-top: 1px solid var(--rule);
 	}
 
-	.paper-log {
-		max-width: var(--col-prose, 720px);
-		margin: 4rem auto 2rem;
-		padding-top: 2rem;
-		border-top: 1px solid var(--rule);
+	.log-head {
+		color: var(--ink);
+		margin: 0 0 0.75rem;
+		padding-bottom: 0.4rem;
+		border-bottom: 1px solid var(--ink);
 	}
 
 	.paper-log-list {
 		list-style: none;
 		padding: 0;
-		margin: 1.25rem 0 0;
+		margin: 0;
 	}
 
 	.paper-log-list li {
@@ -93,7 +87,8 @@ const isoDate = (s) => (s ? s.split('T')[0] : '');
 	}
 
 	.paper-log-sha:hover {
-		color: var(--accent);
+		background: var(--mark);
+		color: var(--on-mark);
 	}
 
 	.paper-log-summary {
@@ -122,6 +117,7 @@ const isoDate = (s) => (s ? s.split('T')[0] : '');
 	}
 
 	.paper-log-summary .repo-link:hover {
-		color: var(--accent);
+		background: var(--mark);
+		color: var(--on-mark);
 	}
 </style>

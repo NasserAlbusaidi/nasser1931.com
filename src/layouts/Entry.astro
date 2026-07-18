@@ -24,12 +24,12 @@ const { title, summary, date, eyebrow } = Astro.props;
 		<main>
 			<article>
 				<header class="entry-head">
-					<p class="eyebrow">{eyebrow}</p>
+					<p class="entry-kind label">{eyebrow}</p>
 					<h1>{title}</h1>
 					<p class="meta">
 						<FormattedDate date={date} />
 					</p>
-					<p class="summary"><em>{summary}</em></p>
+					<p class="summary">{summary}</p>
 				</header>
 				<div class="prose">
 					<slot />
@@ -42,58 +42,46 @@ const { title, summary, date, eyebrow } = Astro.props;
 			main {
 				max-width: var(--container-prose);
 				margin: 0 auto;
-				padding: 4rem 1.25rem 2rem;
+				padding: 3rem 1.25rem 2rem;
 			}
 
 			.entry-head {
 				margin: 0 0 2.5rem;
-				padding-bottom: 1.5rem;
-				border-bottom: 1px solid var(--rule);
+				padding-bottom: 1.25rem;
+				border-bottom: 1px solid var(--ink);
 			}
 
-			.eyebrow {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--accent);
+			.entry-kind {
 				margin: 0 0 1rem;
 			}
 
 			h1 {
-				font-family: var(--font-display);
-				font-weight: 900;
-				font-size: clamp(36px, 5vw, 56px);
-				line-height: 0.95;
-				letter-spacing: -0.03em;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+				font-size: clamp(36px, 5.5vw, 64px);
 				margin: 0 0 0.75rem;
 			}
 
 			.meta {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
-				font-size: 12px;
+				font-size: 13px;
 				color: var(--muted);
 				margin: 0 0 0.75rem;
 			}
 
 			.summary {
-				font-family: var(--font-prose);
-				font-style: italic;
-				font-size: 18px;
+				font-family: var(--font-ui);
+				font-size: 16px;
 				line-height: 1.5;
 				color: var(--muted);
 				margin: 0;
+				max-width: 56ch;
 			}
 
 			.prose {
 				font-family: var(--font-prose);
 				font-size: 17px;
-				line-height: 1.65;
+				line-height: 1.7;
 				color: var(--ink);
-				font-feature-settings: "onum" 1;
 			}
 
 			.prose :global(p) {
@@ -102,27 +90,31 @@ const { title, summary, date, eyebrow } = Astro.props;
 
 			.prose :global(h2) {
 				font-family: var(--font-display);
-				font-weight: 800;
-				font-size: 24px;
-				letter-spacing: -0.005em;
-				font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+				font-weight: 700;
+				font-size: 26px;
+				text-transform: uppercase;
+				letter-spacing: 0;
 				margin: 2em 0 0.5em;
 			}
 
 			.prose :global(a) {
-				color: var(--accent);
+				color: var(--ink);
 				text-decoration: underline;
-				text-decoration-thickness: 1px;
+				text-decoration-thickness: 1.5px;
 				text-underline-offset: 3px;
+			}
+
+			.prose :global(a:hover) {
+				background: var(--mark);
+				color: var(--on-mark);
 			}
 
 			.prose :global(code) {
 				font-family: var(--font-mono);
 				font-size: 0.9em;
-				background: var(--accent-soft);
-				color: var(--accent);
+				background: var(--surface);
+				color: var(--ink);
 				padding: 0.1em 0.4em;
-				border-radius: var(--radius-md);
 			}
 
 			.prose :global(.stats) {
@@ -132,7 +124,6 @@ const { title, summary, date, eyebrow } = Astro.props;
 				color: var(--muted);
 				background: var(--surface);
 				border: 1px solid var(--rule);
-				border-radius: var(--radius-md);
 				padding: 1em 1.2em;
 				margin: 1.5em 0;
 			}

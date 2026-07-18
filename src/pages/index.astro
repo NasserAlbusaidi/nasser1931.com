@@ -8,18 +8,22 @@ import paperLog from '../data/paper-log.json';
 import reading from '../data/reading.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-// Pull recent field + stupidshit entries, merged & sorted by date desc.
+// Recent field + stupidshit entries, merged & sorted by date desc.
 const fieldEntries = await getCollection('field');
 const stupidEntries = await getCollection('stupidshit');
-const frontMatter = [
+const log = [
 	...fieldEntries.map((e) => ({ ...e, section: 'field' })),
 	...stupidEntries.map((e) => ({ ...e, section: 'stupidshit' })),
 ]
 	.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
 	.slice(0, 6);
 
-const formatMonth = (d: Date) =>
-	d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).toUpperCase();
+const fmtDate = (d: Date) => {
+	const y = d.getUTCFullYear();
+	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+	const day = String(d.getUTCDate()).padStart(2, '0');
+	return `${y}-${m}-${day}`;
+};
 
 // Fall back to recently finished if nothing is in-progress.
 const readingShelf =
@@ -35,309 +39,264 @@ const readingShelf =
 	</head>
 	<body>
 		<Header />
-		<main class="cover">
-			<div class="cover-grid">
-				<article class="lead-feature">
-					<span class="eyebrow eyebrow-accent">This issue's feature · The paper</span>
-					<h1 class="feature-title display-feature">
-						The <em>Silent</em> Creep.
-					</h1>
-					<p class="dek">
-						How a +387 kcal/day drift erased a 67%-efficient training block —
-						walked through six guardrails over 1,300 days of training, eating, and weight data.
-					</p>
-					<p class="byline">
-						By <strong>Nasser Al Busaidi</strong>
+		<main class="board">
+			<HomePulse />
+
+			<section class="lead">
+				<div class="lead-top">
+					<span class="label">The paper</span>
+					<span class="lead-meta">
 						{paperLog?.last_edit && (
-							<>
-								<span class="bullet">·</span>
-								edited <span data-iso={paperLog.last_edit}>recently</span>
-							</>
+							<>edited <span data-iso={paperLog.last_edit}>recently</span></>
 						)}
 						{paperLog?.commits_7d > 0 && (
-							<>
-								<span class="bullet">·</span>
-								<span class="mono">{paperLog.commits_7d}</span>{' '}
-								{paperLog.commits_7d === 1 ? 'commit' : 'commits'} this week
-							</>
+							<> · {paperLog.commits_7d} {paperLog.commits_7d === 1 ? 'commit' : 'commits'} this week</>
 						)}
-					</p>
-					<a href="/paper" class="btn btn-secondary feature-cta">Read the paper →</a>
-				</article>
+					</span>
+				</div>
+				<h1 class="lead-title title-hero">
+					<a href="/paper">The <span class="hl">silent</span> creep</a>
+				</h1>
+				<p class="lead-dek">
+					A +387 kcal/day drift erased a 67%-efficient training block. 1,300 days of
+					training, eating, and weight data, walked through six guardrails.
+				</p>
+				<p class="lead-byline">Nasser Al Busaidi · Muscat · N=1</p>
+				<a href="/paper" class="btn">Read the paper</a>
+			</section>
 
-				<aside class="cover-aside">
-					<section class="aside-block">
-						<h2 class="block-title">Front matter</h2>
-						{frontMatter.length === 0 ? (
-							<p class="aside-empty">
-								First dispatches land soon — field notes, stupidshit, all of it.
-							</p>
-						) : (
-							<ul class="aside-list">
-								{frontMatter.map((entry) => (
-									<li>
-										<a href={`/${entry.section}/${entry.id}`} class="aside-title">
-											{entry.data.title}
-										</a>
-										<span class="aside-meta">
-											{entry.section} · {formatMonth(new Date(entry.data.date))}
-										</span>
-									</li>
-								))}
-							</ul>
-						)}
-					</section>
+			<section class="log">
+				<div class="section-top">
+					<span class="label">Log</span>
+					<span class="section-links">
+						<a href="/field">field</a> · <a href="/stupidshit">stupidshit</a>
+					</span>
+				</div>
+				{log.length === 0 ? (
+					<p class="empty">Nothing logged yet.</p>
+				) : (
+					<ul class="results">
+						{log.map((entry) => (
+							<li>
+								<a class="row" href={`/${entry.section}/${entry.id}`}>
+									<time class="row-date" datetime={new Date(entry.data.date).toISOString()}>
+										{fmtDate(new Date(entry.data.date))}
+									</time>
+									<span class="row-body">
+										<span class="row-title">{entry.data.title}</span>
+										{entry.data.summary && <span class="row-summary">{entry.data.summary}</span>}
+									</span>
+									<span class="row-meta">{entry.section}</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
 
-					<section class="aside-block">
-						<h2 class="block-title">
-							{readingShelf[0]?.state === 'in_progress' ? 'Currently reading' : 'Recently finished'}
-						</h2>
-						{readingShelf.length === 0 ? (
-							<p class="aside-empty">Shelf is empty between books.</p>
-						) : (
-							<ul class="aside-list">
-								{readingShelf.map((book) => (
-									<li>
-										<span class="aside-title">
-											<em>{book.title}</em>
-											{book.author && (
-												<>
-													{' '}<span class="aside-author">· {book.author}</span>
-												</>
-											)}
-										</span>
-										<span class="aside-meta stars">
-											{book.state === 'in_progress'
-												? 'in progress'
-												: book.rating
-													? '★'.repeat(book.rating)
-													: '—'}
-										</span>
-									</li>
-								))}
-							</ul>
-						)}
-						<a href="/reading" class="aside-more">All reading →</a>
-					</section>
-
-					<section class="aside-block pulse-wrap">
-						<HomePulse />
-					</section>
-				</aside>
-			</div>
+			<section class="shelf">
+				<div class="section-top">
+					<span class="label">
+						{readingShelf[0]?.state === 'in_progress' ? 'Currently reading' : 'Recently finished'}
+					</span>
+					<span class="section-links"><a href="/reading">all reading</a></span>
+				</div>
+				{readingShelf.length === 0 ? (
+					<p class="empty">Shelf is empty between books.</p>
+				) : (
+					<ul class="shelf-list">
+						{readingShelf.map((book) => (
+							<li>
+								<span class="book">
+									<em>{book.title}</em>
+									{book.author && <span class="book-author"> — {book.author}</span>}
+								</span>
+								<span class="book-meta">
+									{book.state === 'in_progress'
+										? 'in progress'
+										: book.rating
+											? `${book.rating}/5`
+											: '—'}
+								</span>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
 		</main>
 		<Footer />
 
 		<style>
-			.cover {
+			.board {
 				max-width: var(--container-wide);
 				margin: 0 auto;
-				padding: 3rem 1.5rem 4rem;
-			}
-
-			.cover-grid {
-				display: grid;
-				grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+				padding: 1.5rem 1.5rem 4rem;
+				display: flex;
+				flex-direction: column;
 				gap: 3.5rem;
 			}
 
-			@media (max-width: 880px) {
-				.cover { padding: 2rem 1rem 3rem; }
-				.cover-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+			@media (max-width: 720px) {
+				.board { padding: 1rem 1rem 3rem; gap: 2.5rem; }
 			}
 
-			/* ============================================================
-			   Lead feature (paper as the cover story)
-			   ============================================================ */
-			.lead-feature {
-				padding-top: 1rem;
+			/* ---- lead: the paper ---- */
+			.lead-top,
+			.section-top {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				gap: 1rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid var(--ink);
+				margin-bottom: 1rem;
 			}
 
-			.lead-feature .eyebrow {
-				display: block;
-				margin-bottom: 1.25rem;
-			}
-
-			.feature-title {
-				margin: 0 0 1.25rem;
-			}
-
-			.feature-title em {
-				font-style: italic;
-				font-weight: 500;
-				color: var(--accent);
-				font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
-			}
-
-			.dek {
-				font-family: var(--font-prose);
-				font-size: 22px;
-				line-height: 1.4;
-				font-weight: 400;
+			.lead-top .label,
+			.section-top .label {
 				color: var(--ink);
-				max-width: 36ch;
+			}
+
+			.lead-meta {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--muted);
+			}
+
+			.section-links {
+				font-family: var(--font-display);
+				font-size: 14px;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+			}
+
+			.section-links a {
+				color: var(--muted);
+				text-decoration: none;
+				padding: 1px 4px;
+			}
+
+			.section-links a:hover {
+				color: var(--on-mark);
+				background: var(--mark);
+			}
+
+			.lead-title {
+				margin: 0 0 1rem;
+				max-width: 14ch;
+			}
+
+			.lead-title a {
+				color: var(--ink);
+				text-decoration: none;
+			}
+
+			.lead-title a:hover {
+				background: transparent;
+				color: var(--ink);
+				text-decoration: underline;
+				text-decoration-thickness: 4px;
+				text-underline-offset: 6px;
+			}
+
+			/* The one entrance moment: the marker wipes in behind the word.
+			   The text starts at --ink and crossfades to --on-mark mid-wipe —
+			   in dark mode a static --on-mark (#111) would be invisible on the
+			   near-black page during the animation delay. */
+			.hl {
+				position: relative;
+				z-index: 0;
+				padding: 0 0.06em;
+				color: var(--ink);
+				animation: hl-ink 200ms 300ms ease-out both;
+			}
+
+			.hl::before {
+				content: '';
+				position: absolute;
+				inset: 0;
+				background: var(--mark);
+				z-index: -1;
+				transform-origin: left;
+				animation: hl-wipe 400ms 150ms ease-out both;
+			}
+
+			@keyframes hl-wipe {
+				from { transform: scaleX(0); }
+				to { transform: scaleX(1); }
+			}
+
+			@keyframes hl-ink {
+				from { color: var(--ink); }
+				to { color: var(--on-mark); }
+			}
+
+			.lead-dek {
+				font-family: var(--font-ui);
+				font-size: 17px;
+				line-height: 1.55;
+				color: var(--ink);
+				max-width: 52ch;
+				margin: 0 0 0.75rem;
+			}
+
+			.lead-byline {
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--muted);
 				margin: 0 0 1.5rem;
 			}
 
-			.byline {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 11px;
-				letter-spacing: 0.14em;
-				text-transform: uppercase;
-				color: var(--muted);
-				margin: 0 0 1.75rem;
-				line-height: 1.7;
-			}
-
-			.byline strong {
-				color: var(--ink);
-				font-weight: 600;
-			}
-
-			.byline .bullet {
-				margin: 0 0.5em;
-				color: var(--rule);
-			}
-
-			.byline .mono {
-				font-family: inherit;
-				font-size: inherit;
-			}
-
-			.feature-cta {
-				font-family: var(--font-mono);
-				font-size: 12px;
-				letter-spacing: 0.12em;
-				text-transform: uppercase;
-			}
-
-			/* ============================================================
-			   Aside (front matter + reading + pulse)
-			   ============================================================ */
-			.cover-aside {
-				display: flex;
-				flex-direction: column;
-				gap: 2.25rem;
-				padding-top: 1rem;
-				border-left: 1px solid var(--rule);
-				padding-left: 2rem;
-			}
-
-			@media (max-width: 880px) {
-				.cover-aside {
-					border-left: 0;
-					border-top: 2px solid var(--ink);
-					padding-left: 0;
-					padding-top: 1.5rem;
-				}
-			}
-
-			.aside-block {
-				min-width: 0;
-			}
-
-			.block-title {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--ink);
-				margin: 0 0 0.875rem;
-				padding-bottom: 0.625rem;
-				border-bottom: 1px solid var(--rule);
-				line-height: 1.4;
-				font-variation-settings: normal;
-			}
-
-			.aside-list {
+			/* ---- reading shelf ---- */
+			.shelf-list {
 				list-style: none;
 				padding: 0;
 				margin: 0;
 			}
 
-			.aside-list li {
-				display: grid;
-				grid-template-columns: 1fr auto;
-				gap: 1rem;
+			.shelf-list li {
+				display: flex;
+				justify-content: space-between;
 				align-items: baseline;
-				padding: 0.625rem 0;
-				border-bottom: 1px dotted var(--rule);
+				gap: 1rem;
+				padding: 0.55em 0.5em;
+				border-bottom: 1px solid var(--rule);
 			}
 
-			.aside-list li:last-child {
-				border-bottom: 0;
-			}
-
-			.aside-title {
-				font-family: var(--font-ui);
-				font-size: 14px;
-				line-height: 1.35;
-				color: var(--ink);
-				text-decoration: none;
-			}
-
-			a.aside-title:hover {
-				color: var(--accent);
-			}
-
-			.aside-title em {
+			.book {
 				font-family: var(--font-prose);
+				font-size: 16px;
+				color: var(--ink);
+			}
+
+			.book em {
 				font-style: italic;
-				font-weight: 400;
 			}
 
-			.aside-author {
+			.book-author {
 				color: var(--muted);
-				font-style: normal;
 			}
 
-			.aside-meta {
+			.book-meta {
 				font-family: var(--font-mono);
-				font-size: 10px;
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
 				color: var(--muted);
-				text-transform: uppercase;
-				letter-spacing: 0.08em;
 				white-space: nowrap;
 			}
 
-			.aside-meta.stars {
-				color: var(--accent);
-				letter-spacing: 0.05em;
-			}
-
-			.aside-empty {
-				font-family: var(--font-prose);
-				font-style: italic;
-				font-size: 14px;
+			.empty {
+				font-family: var(--font-ui);
+				font-size: 15px;
 				color: var(--muted);
-				margin: 0;
-			}
-
-			.aside-more {
-				display: inline-block;
-				margin-top: 0.75rem;
-				font-family: var(--font-mono);
-				font-size: 11px;
-				text-transform: uppercase;
-				letter-spacing: 0.16em;
-				color: var(--accent);
-				text-decoration: none;
-			}
-
-			.aside-more:hover {
-				text-decoration: underline;
-				text-decoration-thickness: 1px;
-				text-underline-offset: 3px;
-			}
-
-			.pulse-wrap {
-				/* HomePulse will be restyled in Phase 4 to match this block */
+				margin: 1rem 0;
 			}
 		</style>
 
-		<!-- Compute "edited X ago" client-side so the static HTML doesn't show a stale build-time value. -->
+		<!-- Compute "edited X ago" client-side so static HTML doesn't go stale. -->
 		<script is:inline>
 			(function () {
 				function format(iso) {
@@ -357,9 +316,8 @@ const readingShelf =
 					if (diff < month) return Math.round(diff / week) + 'w ago';
 					return Math.round(diff / month) + 'mo ago';
 				}
-				document.querySelectorAll('[data-iso]').forEach(function (el) {
-					var iso = el.getAttribute('data-iso');
-					var label = format(iso);
+				document.querySelectorAll('.lead [data-iso]').forEach(function (el) {
+					var label = format(el.getAttribute('data-iso'));
 					if (label) el.textContent = label;
 				});
 			})();

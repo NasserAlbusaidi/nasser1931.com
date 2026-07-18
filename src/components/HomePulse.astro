@@ -30,71 +30,48 @@ const formTsb = data.form_tsb;
 const tsbDisplay = formTsb == null ? '—' : (formTsb > 0 ? `+${Math.round(formTsb)}` : Math.round(formTsb).toString());
 const weeklyHours = data.weekly_hours ?? 0;
 const weeklyTss = data.weekly_tss ?? 0;
+const hoursDisplay = Number.isInteger(weeklyHours) ? weeklyHours : weeklyHours.toFixed(1);
+const formFlag = form === 'fresh' ? 'flag-green' : form === 'fatigued' ? 'flag-amber' : 'flag-off';
 ---
 
-<div class="pulse">
-	<div class="pulse-header">
-		<span class="eyebrow">Training pulse</span>
+<section class="pulse" aria-label="Training pulse">
+	<div class="pulse-top">
+		<span class="label">Training pulse</span>
 		{updatedRel && (
-			<span class="pulse-updated-line">
-				updated <span class="mono" data-iso={data.updated}>{updatedRel}</span>
-			</span>
+			<span class="pulse-updated">updated <span data-iso={data.updated}>{updatedRel}</span></span>
 		)}
 	</div>
 
-	<div class="pulse-stats">
-		<div class="pulse-stat">
-			<div class="num">
-				{Number.isInteger(weeklyHours) ? weeklyHours : weeklyHours.toFixed(1)}<span class="unit">h</span>
-			</div>
-			<div class="sub">this week</div>
+	<div class="pulse-board">
+		<div class="cell">
+			<div class="cell-num stat-big">{hoursDisplay}<span class="cell-unit">h</span></div>
+			<div class="cell-label label">this week</div>
 		</div>
-		<div class="pulse-stat">
-			<div class="num">{weeklyTss}</div>
-			<div class="sub">TSS</div>
+		<div class="cell">
+			<div class="cell-num stat-big">{weeklyTss}</div>
+			<div class="cell-label label">TSS</div>
 		</div>
-		<div class="pulse-stat">
-			<div class="num">{tsbDisplay}</div>
-			<div class="sub">form (TSB)</div>
+		<div class="cell">
+			<div class="cell-num stat-big">{tsbDisplay}</div>
+			<div class="cell-label label">form (TSB) <span class={`flag ${formFlag}`}>{form}</span></div>
 		</div>
-	</div>
-
-	<div class="form-line">
-		<span class="lbl">form</span>
-		<span class={`form-tag form-${form}`}>{form}</span>
 		{recent.length > 0 && (
-			<>
-				<span class="bullet">·</span>
-				<span class="lbl">{recent.length} recent sessions</span>
-			</>
+			<div class="cell cell-sessions">
+				<ul class="sessions">
+					{recent.map((r) => (
+						<li>
+							<time class="s-date" datetime={r.date}>{r.date.slice(5)}</time>
+							<span class="s-name">{r.name}</span>
+							<span class="s-num">
+								{[formatDistance(r.distance_km), formatDuration(r.duration_min)].filter(Boolean).join(' · ')}
+							</span>
+						</li>
+					))}
+				</ul>
+			</div>
 		)}
 	</div>
-
-	{recent.length > 0 && (
-		<ul class="pulse-list">
-			{recent.map((r) => (
-				<li>
-					<time class="mono" datetime={r.date}>{r.date.slice(5).replace('-', ' / ')}</time>
-					<span class="pulse-name">
-						{r.name}
-						{r.distance_km != null && (
-							<>
-								<span class="bullet">·</span>
-								<span class="mono">{formatDistance(r.distance_km)}</span>
-							</>
-						)}
-						{r.duration_min != null && (
-							<>
-								<span class="bullet">·</span>
-								<span class="mono">{formatDuration(r.duration_min)}</span>
-							</>
-						)}
-					</span>
-				</li>
-			))}
-		</ul>
-	)}
-</div>
+</section>
 
 <script is:inline>
 	(function () {
@@ -116,165 +93,131 @@ const weeklyTss = data.weekly_tss ?? 0;
 
 <style>
 	.pulse {
-		background: var(--surface);
-		border: 1px solid var(--rule);
-		padding: 1rem 1.125rem 1.125rem;
-		font-family: var(--font-mono);
+		border-top: 1px solid var(--ink);
+		border-bottom: 1px solid var(--rule);
 	}
 
-	.pulse-header {
+	.pulse-top {
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
-		gap: 0.5rem;
-		padding-bottom: 0.625rem;
+		gap: 1rem;
+		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--rule);
-		margin-bottom: 0.875rem;
 	}
 
-	.pulse-header .eyebrow {
+	.pulse-top .label {
 		color: var(--ink);
-		font-weight: 600;
 	}
 
-	.pulse-updated-line {
+	.pulse-updated {
 		font-family: var(--font-mono);
-		font-size: 10px;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
+		font-feature-settings: "tnum" 1;
+		font-size: 12px;
 		color: var(--muted);
 	}
 
-	.pulse-updated-line .mono {
-		color: var(--ink);
-	}
-
-	.pulse-stats {
+	.pulse-board {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.875rem;
-		margin-bottom: 0.875rem;
+		grid-template-columns: auto auto auto 1fr;
+		gap: 0;
 	}
 
-	.pulse-stat .num {
-		font-family: var(--font-display);
-		font-weight: 900;
-		font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-		font-size: 28px;
-		line-height: 1;
+	.cell {
+		padding: 0.875rem 1.75rem 0.875rem 0;
+		margin-right: 1.75rem;
+		border-right: 1px solid var(--rule);
+	}
+
+	.cell-sessions {
+		border-right: 0;
+		margin-right: 0;
+		padding-right: 0;
+		min-width: 0;
+	}
+
+	.cell-num {
 		color: var(--ink);
-		letter-spacing: -0.01em;
 	}
 
-	.pulse-stat .num .unit {
-		font-family: var(--font-mono);
-		font-weight: 500;
-		font-size: 14px;
+	.cell-unit {
+		font-size: 0.45em;
+		font-weight: 600;
 		color: var(--muted);
 		margin-left: 2px;
 	}
 
-	.pulse-stat .sub {
-		font-family: var(--font-mono);
-		font-size: 10px;
-		text-transform: uppercase;
-		letter-spacing: 0.16em;
-		color: var(--muted);
-		margin-top: 0.4rem;
-	}
-
-	.form-line {
+	.cell-label {
+		margin-top: 0.3rem;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4em;
+		gap: 0.5em;
 		align-items: baseline;
-		font-size: 10px;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		color: var(--muted);
-		padding: 0.5rem 0;
-		border-top: 1px dotted var(--rule);
+		white-space: nowrap;
 	}
 
-	.form-line .lbl {
-		color: var(--muted);
-	}
-
-	.form-line .bullet {
-		color: var(--rule);
-	}
-
-	.form-tag {
-		font-weight: 600;
-		font-size: 10px;
-		letter-spacing: 0.18em;
-		padding: 1px 5px;
-		border-radius: var(--radius-sm);
-	}
-
-	.form-tag.form-fresh {
-		color: var(--accent);
-		background: var(--accent-soft);
-	}
-
-	.form-tag.form-neutral {
-		color: var(--ink);
-		background: transparent;
-		border: 1px solid var(--rule);
-		padding: 0 4px;
-	}
-
-	.form-tag.form-fatigued {
-		color: var(--warning);
-		background: color-mix(in oklab, var(--warning) 14%, transparent);
-	}
-
-	.pulse-list {
+	.sessions {
 		list-style: none;
 		padding: 0;
-		margin: 0.625rem 0 0;
-		border-top: 1px dotted var(--rule);
+		margin: 0;
 	}
 
-	.pulse-list li {
+	.sessions li {
 		display: grid;
-		grid-template-columns: 4em 1fr;
+		grid-template-columns: 3.5em 1fr auto;
 		gap: 0.75rem;
 		align-items: baseline;
-		padding: 0.5rem 0;
-		border-bottom: 1px dotted var(--rule);
-		font-size: 11px;
-		color: var(--ink);
+		padding: 0.28rem 0;
+		border-bottom: 1px solid var(--rule);
+		font-size: 13px;
+		min-width: 0;
 	}
 
-	.pulse-list li:last-child {
+	.sessions li:last-child {
 		border-bottom: 0;
 	}
 
-	.pulse-list time {
+	.s-date {
 		font-family: var(--font-mono);
 		font-feature-settings: "tnum" 1;
-		font-size: 11px;
-		letter-spacing: 0.04em;
+		font-size: 12px;
 		color: var(--muted);
-		text-transform: uppercase;
 	}
 
-	.pulse-name {
-		display: inline-flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0.4em;
+	.s-name {
+		font-family: var(--font-ui);
+		color: var(--ink);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
 	}
 
-	.pulse-name .bullet {
-		color: var(--rule);
-	}
-
-	.pulse-name .mono {
+	.s-num {
 		font-family: var(--font-mono);
 		font-feature-settings: "tnum" 1;
-		font-size: 11px;
+		font-size: 12px;
 		color: var(--muted);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 880px) {
+		.pulse-board {
+			grid-template-columns: repeat(3, auto);
+		}
+		.cell-sessions {
+			grid-column: 1 / -1;
+			border-top: 1px solid var(--rule);
+			padding-top: 0.5rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.cell {
+			padding-right: 1rem;
+			margin-right: 1rem;
+		}
+		.s-name { white-space: normal; }
+		.sessions li { grid-template-columns: 3.5em 1fr; }
+		.s-num { grid-column: 2; }
 	}
 </style>

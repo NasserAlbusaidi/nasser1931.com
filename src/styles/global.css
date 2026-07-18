@@ -1,29 +1,23 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Press — Design Tokens
-   Source of truth: DESIGN.md (v0.2, drafted 2026-05-15)
-   Loud on the masthead, disciplined in the prose.
+   Splits — Design Tokens
+   Source of truth: DESIGN.md (v1.0, drafted 2026-07-18)
+   A race timing sheet: black figures, white paper, marker yellow.
    ============================================================ */
 
 @theme {
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
-  --font-prose: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --font-ui: "Switzer", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-prose: "Literata Variable", Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --color-bg: #F8F5EE;
-  --color-surface: #EFEAE0;
-  --color-ink: #15110D;
-  --color-muted: #6F6A60;
-  --color-rule: #DDD5C6;
-  --color-accent: #C8311C;
-  --color-accent-soft: #F3DCD6;
-
-  --color-success: #5A7A3F;
-  --color-warning: #A87515;
-  --color-error: #A93724;
-  --color-info: #3F6B7A;
+  --color-bg: #FFFFFF;
+  --color-surface: #F4F4F1;
+  --color-ink: #111111;
+  --color-muted: #6B6B6B;
+  --color-rule: #E4E4E1;
+  --color-mark: #FFE81C;
 
   --spacing-2xs: 0.125rem;
   --spacing-xs: 0.25rem;
@@ -34,14 +28,10 @@
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
   --spacing-4xl: 6rem;
-  --spacing-5xl: 8rem;
-
-  --radius-sm: 2px;
-  --radius-md: 4px;
 
   --container-prose: 720px;
-  --container-wide: 1240px;
-  --container-figure: 1100px;
+  --container-wide: 1200px;
+  --container-figure: 1080px;
 }
 
 /* ============================================================
@@ -49,33 +39,31 @@
    ============================================================ */
 
 :root {
-  --bg: #F8F5EE;
-  --surface: #EFEAE0;
-  --ink: #15110D;
-  --muted: #6F6A60;
-  --rule: #DDD5C6;
-  --accent: #C8311C;
-  --accent-soft: #F3DCD6;
-  --success: #5A7A3F;
-  --warning: #A87515;
-  --error: #A93724;
-  --info: #3F6B7A;
+  --bg: #FFFFFF;
+  --surface: #F4F4F1;
+  --ink: #111111;
+  --muted: #6B6B6B;
+  --rule: #E4E4E1;
+  --mark: #FFE81C;
+  --on-mark: #111111;
+  --flag-green: #2FBE56;
+  --flag-amber: #FFC933;
+  --flag-red: #FF5A45;
 
   color-scheme: light;
 }
 
 html.dark {
-  --bg: #14110C;
-  --surface: #1C1812;
-  --ink: #ECE5D6;
-  --muted: #948C7E;
-  --rule: #2A251D;
-  --accent: #E0533F;
-  --accent-soft: #3A1E17;
-  --success: #9DBE7F;
-  --warning: #D9A862;
-  --error: #D8624D;
-  --info: #7FB3C5;
+  --bg: #0F0F0E;
+  --surface: #191917;
+  --ink: #F1F1ED;
+  --muted: #98988F;
+  --rule: #2A2A27;
+  --mark: #F5DF1E;
+  --on-mark: #111111;
+  --flag-green: #2FBE56;
+  --flag-amber: #FFC933;
+  --flag-red: #FF5A45;
 
   color-scheme: dark;
 }
@@ -106,79 +94,69 @@ body {
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
-  transition: background-color 250ms ease-in-out, color 250ms ease-in-out;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 ::selection {
-  background: var(--accent-soft);
-  color: var(--ink);
+  background: var(--mark);
+  color: var(--on-mark);
 }
 
 /* ============================================================
-   Display typography — Fraunces in chunky / industrial mode
-   Always explicit SOFT 0, WONK 0 on display.
+   Display typography — Barlow Condensed, caps
    ============================================================ */
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   color: var(--ink);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
   margin: 0;
-  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
 }
 
 h1 {
-  font-size: clamp(40px, 5vw, 64px);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-weight: 900;
-  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+  font-size: clamp(40px, 6.5vw, 84px);
+  line-height: 0.9;
+  text-transform: uppercase;
 }
 
 h2 {
-  font-size: 32px;
-  line-height: 1.2;
-  font-weight: 800;
-  font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+  font-size: 30px;
+  line-height: 1.05;
+  text-transform: uppercase;
 }
 
 h3 {
   font-size: 22px;
-  line-height: 1.15;
+  line-height: 1.1;
+  font-weight: 600;
+}
+
+.title-hero {
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.005em;
-  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
+  font-size: clamp(48px, 8vw, 110px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
 }
 
-/* display-hero — for home + paper title only */
-.display-hero {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(56px, 9vw, 108px);
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-}
-
-/* display-feature — for big feature titles */
-.display-feature {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(48px, 6.5vw, 88px);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-}
-
-/* stat-big — for pulse + stat callouts */
 .stat-big {
   font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 700;
+  font-size: clamp(30px, 4vw, 52px);
   line-height: 1;
-  letter-spacing: -0.01em;
-  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
+}
+
+/* label — replaces the old eyebrow. Condensed caps, restrained tracking. */
+.label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  line-height: 1.3;
 }
 
 p {
@@ -186,21 +164,21 @@ p {
 }
 
 a {
-  color: var(--accent);
+  color: var(--ink);
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
-  transition: text-decoration-thickness 80ms ease-out;
+  transition: background-color 70ms ease-out;
 }
 
 a:hover {
-  text-decoration-thickness: 2px;
+  background: var(--mark);
+  color: var(--on-mark);
 }
 
 a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 em, i {
@@ -212,11 +190,9 @@ strong, b {
 }
 
 blockquote {
-  border-left: 2px solid var(--accent);
+  border-left: 3px solid var(--ink);
   padding-left: 1.25em;
   margin: 1.5em 0;
-  font-style: italic;
-  color: var(--muted);
 }
 
 hr {
@@ -229,19 +205,17 @@ code {
   font-family: var(--font-mono);
   font-size: 0.88em;
   font-feature-settings: "tnum" 1;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--surface);
+  color: var(--ink);
   padding: 0.1em 0.4em;
-  border-radius: var(--radius-sm);
 }
 
 pre {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.55;
   background: var(--surface);
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
   padding: 1em 1.2em;
   overflow-x: auto;
   margin: 1.5em 0;
@@ -249,12 +223,10 @@ pre {
 
 pre code {
   background: transparent;
-  color: var(--ink);
   padding: 0;
-  border-radius: 0;
 }
 
-/* numbers in prose use mono — wrap with .num span */
+/* numbers-as-data helpers */
 .num,
 .mono {
   font-family: var(--font-mono);
@@ -262,34 +234,13 @@ pre code {
   font-size: 0.95em;
 }
 
-/* eyebrow — mono uppercase tracked-out */
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-.eyebrow-accent {
-  color: var(--accent);
-}
-
-/* colophon — for the masthead right block */
-.colophon {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.colophon strong {
-  color: var(--ink);
-  font-weight: 600;
+/* marker highlight — the one decorative device */
+.mark {
+  background: var(--mark);
+  color: var(--on-mark);
+  padding: 0 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 /* ============================================================
@@ -304,19 +255,19 @@ table {
 }
 
 th {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.05em;
   color: var(--muted);
   text-align: left;
-  padding: 0.6em 0.8em;
-  border-bottom: 1px solid var(--rule);
+  padding: 0.5em 0.8em;
+  border-bottom: 1px solid var(--ink);
 }
 
 td {
-  padding: 0.6em 0.8em;
+  padding: 0.55em 0.8em;
   border-bottom: 1px solid var(--rule);
   vertical-align: top;
 }
@@ -331,177 +282,153 @@ th[align="right"] {
 }
 
 /* ============================================================
-   TOC pattern — used on section indexes (field, stupidshit, reading)
+   Results table — section indexes + home log.
+   Rows are links; hovering floods the row with marker yellow.
    ============================================================ */
 
-.toc-list {
+.results {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.toc-list li {
+.results-head {
   display: grid;
-  grid-template-columns: 56px 1fr auto;
+  grid-template-columns: 7.5em 1fr auto;
   gap: 1.25em;
-  align-items: baseline;
-  padding: 0.9em 0;
+  padding: 0 0.5em 0.5em;
+  border-bottom: 1px solid var(--ink);
+}
+
+.results li {
   border-bottom: 1px solid var(--rule);
 }
 
-.toc-list .toc-num {
+.results .row {
+  display: grid;
+  grid-template-columns: 7.5em 1fr auto;
+  gap: 1.25em;
+  align-items: baseline;
+  padding: 0.8em 0.5em;
+  text-decoration: none;
+  color: var(--ink);
+  transition: background-color 70ms ease-out;
+}
+
+.results a.row:hover {
+  background: var(--mark);
+  color: var(--on-mark);
+}
+
+.results a.row:hover .row-date,
+.results a.row:hover .row-summary,
+.results a.row:hover .row-meta {
+  color: var(--on-mark);
+}
+
+.results .row-date {
   font-family: var(--font-mono);
   font-feature-settings: "tnum" 1;
   font-size: 13px;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
-.toc-list .toc-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
-  min-width: 0;
-}
-
-.toc-list .toc-title {
+.results .row-title {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
+  font-weight: 600;
   font-size: 22px;
-  line-height: 1.15;
-  letter-spacing: -0.005em;
-  color: var(--ink);
-  text-decoration: none;
+  line-height: 1.1;
+  display: block;
 }
 
-.toc-list .toc-title:hover {
-  color: var(--accent);
-}
-
-.toc-list .toc-summary {
+.results .row-summary {
   font-family: var(--font-ui);
   font-size: 14px;
   color: var(--muted);
-  line-height: 1.4;
+  line-height: 1.45;
+  display: block;
+  margin-top: 0.2em;
 }
 
-.toc-list .toc-date {
+.results .row-meta {
   font-family: var(--font-mono);
   font-feature-settings: "tnum" 1;
   font-size: 12px;
   color: var(--muted);
-  letter-spacing: 0.06em;
   white-space: nowrap;
 }
 
 @media (max-width: 560px) {
-  .toc-list li {
-    grid-template-columns: auto 1fr;
+  .results-head { display: none; }
+  .results .row {
+    grid-template-columns: 1fr auto;
     grid-template-rows: auto auto;
+    row-gap: 0.2em;
   }
-  .toc-list .toc-num { grid-row: 1; grid-column: 1; }
-  .toc-list .toc-date { grid-row: 1; grid-column: 2; justify-self: end; }
-  .toc-list .toc-body { grid-row: 2; grid-column: 1 / -1; }
+  .results .row-date { grid-row: 1; grid-column: 1; }
+  .results .row-meta { grid-row: 1; grid-column: 2; justify-self: end; }
+  .results .row-body { grid-row: 2; grid-column: 1 / -1; }
 }
 
 /* ============================================================
-   Magazine masthead lockup — home + every section index
-   ============================================================ */
-
-.masthead {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.5em;
-  border-top: 4px solid var(--ink);
-  border-bottom: 2px solid var(--ink);
-  padding: 18px 0 14px;
-  margin-bottom: 28px;
-}
-
-.masthead .nameplate {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-  font-size: clamp(48px, 9vw, 108px);
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  margin: 0;
-  text-decoration: none;
-  color: var(--ink);
-}
-
-.masthead .nameplate:hover {
-  text-decoration: none;
-}
-
-.masthead .nameplate .second-line {
-  display: block;
-  color: var(--accent);
-}
-
-.masthead .masthead-right {
-  text-align: right;
-  padding-top: 8px;
-  flex-shrink: 0;
-}
-
-@media (max-width: 540px) {
-  .masthead .nameplate {
-    font-size: 44px;
-  }
-  .masthead .masthead-right {
-    display: none;
-  }
-}
-
-/* ============================================================
-   Buttons
+   Buttons — square, ink-bordered, marker on hover
    ============================================================ */
 
 .btn {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 10px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
   cursor: pointer;
-  letter-spacing: 0.01em;
   text-decoration: none;
   display: inline-block;
-  transition: opacity 80ms ease-out;
+  transition: background-color 70ms ease-out, color 70ms ease-out;
 }
 
 .btn:hover {
+  background: var(--mark);
+  color: var(--on-mark);
   text-decoration: none;
-  opacity: 0.9;
 }
 
-.btn-secondary {
-  background: transparent;
-  color: var(--ink);
-  border-color: var(--ink);
+.btn-primary {
+  background: var(--ink);
+  color: var(--bg);
 }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--accent);
-  border-color: transparent;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-.btn-ghost:hover {
-  background: var(--accent-soft);
-  opacity: 1;
+.btn-primary:hover {
+  background: var(--mark);
+  color: var(--on-mark);
 }
 
 /* ============================================================
-   Misc utilities
+   Flag chips — coach states, warnings. Solid color, dark text.
+   ============================================================ */
+
+.flag {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  color: #111111;
+  display: inline-block;
+}
+
+.flag-green { background: var(--flag-green); }
+.flag-amber { background: var(--flag-amber); }
+.flag-red   { background: var(--flag-red); }
+.flag-off   { background: transparent; color: var(--muted); border: 1px solid var(--rule); }
+
+/* ============================================================
+   Misc
    ============================================================ */
 
 img {
