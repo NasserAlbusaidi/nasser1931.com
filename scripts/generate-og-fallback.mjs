@@ -1,44 +1,53 @@
 #!/usr/bin/env node
 // One-shot generator for the site's OG fallback image.
-// Field Journal palette + typography. Re-run when the look changes.
+// Splits v1.0 palette + typography (see DESIGN.md). Re-run when the look changes.
 //
 // Output: src/assets/og-fallback.jpg (1200x630, JPEG)
 
 import sharp from 'sharp';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const W = 1200;
 const H = 630;
 
-// Field Journal tokens (mirror DESIGN.md light mode).
-const BG = '#FAF7F2';
-const INK = '#1A1714';
-const MUTED = '#6B655C';
-const ACCENT = '#B85C1F';
-const RULE = '#E5DED2';
+// Splits tokens (mirror DESIGN.md light mode).
+const BG = '#FFFFFF';
+const INK = '#111111';
+const MUTED = '#6B6B6B';
+const MARK = '#FFE81C';
+const RULE = '#E4E4E1';
 
-// Letter-spacing 0.18em for the eyebrow at 22px ≈ 4px tracking.
+// Embed Barlow Condensed 700 so the rasterizer doesn't fall back to a system face.
+const fontPath = 'node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2';
+let fontFace = '';
+try {
+	const woff2 = readFileSync(fontPath).toString('base64');
+	fontFace = `@font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url(data:font/woff2;base64,${woff2}) format('woff2'); }`;
+} catch {
+	// Fall back silently — Arial Narrow-ish system condensed will render instead.
+}
+
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+	<style>
+		${fontFace}
+		text { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; }
+	</style>
 	<rect width="${W}" height="${H}" fill="${BG}"/>
 
-	<!-- Hairline frame; not full border, just the corner accents like a notebook. -->
-	<line x1="80" y1="80" x2="200" y2="80" stroke="${RULE}" stroke-width="1"/>
-	<line x1="80" y1="80" x2="80" y2="200" stroke="${RULE}" stroke-width="1"/>
-	<line x1="${W - 80}" y1="${H - 80}" x2="${W - 200}" y2="${H - 80}" stroke="${RULE}" stroke-width="1"/>
-	<line x1="${W - 80}" y1="${H - 80}" x2="${W - 80}" y2="${H - 200}" stroke="${RULE}" stroke-width="1"/>
+	<!-- Heavy bar, like the top of a results sheet -->
+	<rect x="80" y="90" width="${W - 160}" height="6" fill="${INK}"/>
 
-	<!-- Eyebrow: mono uppercase, 0.18em tracked -->
-	<text x="80" y="170" font-family="monospace" font-size="22" font-weight="500" letter-spacing="4" fill="${MUTED}">FIELD&#160;REPORT&#160;·&#160;MUSCAT</text>
+	<!-- Wordmark -->
+	<text x="80" y="80" font-weight="700" font-size="40" fill="${INK}">nasser1931</text>
 
-	<!-- Display title: Fraunces-like serif with optical sizing. Will fall back to system serif on the rasterizer. -->
-	<text x="80" y="370" font-family="'Fraunces','Source Serif 4',Georgia,serif" font-weight="600" font-size="124" fill="${INK}" letter-spacing="-3">Nasser <tspan fill="${ACCENT}">Al Busaidi</tspan></text>
+	<!-- Marker behind the name -->
+	<rect x="72" y="270" width="700" height="96" fill="${MARK}"/>
+	<text x="80" y="348" font-weight="700" font-size="112" letter-spacing="-1" fill="${INK}">NASSER AL BUSAIDI</text>
 
-	<!-- Subtitle: serif italic -->
-	<text x="80" y="445" font-family="'Source Serif 4',Georgia,serif" font-style="italic" font-size="32" fill="${INK}">Engineer in Muscat. Triathlete on the side.</text>
-	<text x="80" y="485" font-family="'Source Serif 4',Georgia,serif" font-style="italic" font-size="32" fill="${INK}">Writes long things, occasionally retracts them.</text>
+	<text x="80" y="440" font-weight="700" font-size="44" fill="${MUTED}">TRAINING, DATA, AND WRITING FROM MUSCAT</text>
 
-	<!-- Footer: site URL in mono -->
-	<text x="80" y="${H - 110}" font-family="monospace" font-size="22" fill="${MUTED}">nasser1931.com</text>
+	<line x1="80" y1="${H - 130}" x2="${W - 80}" y2="${H - 130}" stroke="${RULE}" stroke-width="2"/>
+	<text x="80" y="${H - 84}" font-family="monospace" font-size="24" fill="${MUTED}">nasser1931.com</text>
 </svg>`;
 
 const out = 'src/assets/og-fallback.jpg';
@@ -47,4 +56,4 @@ const buf = await sharp(Buffer.from(svg))
 	.toBuffer();
 
 writeFileSync(out, buf);
-console.log(`Wrote ${out} (${(buf.length / 1024).toFixed(1)}kb, ${W}×${H})`);
+console.log(`Wrote ${out} (${(buf.length / 1024).toFixed(1)}kb, ${W}x${H})`);

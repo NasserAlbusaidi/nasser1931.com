@@ -1,0 +1,45 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title="404 — Nasser Al Busaidi" description="Nothing at this URL." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<p class="code title-hero"><span class="hl">DNF</span></p>
+			<p class="msg">Nothing at this URL. <a href="/">Back to the start line</a>.</p>
+		</main>
+		<Footer />
+
+		<style>
+			main {
+				max-width: var(--container-wide);
+				margin: 0 auto;
+				padding: 4rem 1.5rem;
+			}
+
+			.code {
+				margin: 0 0 1rem;
+			}
+
+			.hl {
+				background: var(--mark);
+				color: var(--on-mark);
+				padding: 0 0.08em;
+			}
+
+			.msg {
+				font-family: var(--font-ui);
+				font-size: 16px;
+				color: var(--muted);
+				margin: 0;
+			}
+		</style>
+	</body>
+</html>

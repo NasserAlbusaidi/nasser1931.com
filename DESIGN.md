@@ -1,224 +1,154 @@
 # Design System — nasser1931.com
 
-**Name:** Press
-**Status:** v0.2 — drafted 2026-05-15. Supersedes Field Journal v0.1 (cream-on-ink + rust + Fraunces refined).
-**Concept:** Pretend the site is a quarterly publication of one person. Home page = current issue cover. Paper = lead feature. Field / stupidshit = front matter & dispatches. Reading = back-of-the-book shelf. Training pulse = standings page. **Loud on the masthead, disciplined in the prose.**
+**Name:** Splits
+**Status:** v1.0 — drafted 2026-07-18. Supersedes Press v0.2 (Fraunces masthead, newsprint cream, signal red) and Field Journal v0.1 before it.
+**Concept:** A race timing sheet. The site of a man who logs everything — splits, watts, kilograms, commits. Black figures on white paper, one hi-vis marker yellow, condensed caps like a start list taped to a wall. The data is the identity; there is no costume.
+
+**The founding constraint:** v1.0 exists to kill the recognizable AI-designed aesthetic. Press v0.2 was fluent 2026 machine-editorial — Fraunces 900 masthead, tracked-out mono eyebrows, cream + signal red, `№ 001` numbering, drop caps, "Nº 1 · Vol. 1 · A quarterly" cosplay. Every one of those tells is banned below. When in doubt, choose the move a template would never make: system fonts, pure white, a highlight instead of a colored link, a table instead of a card.
 
 ## Product Context
 
-- **What this is:** A personal site for a writer-engineer-triathlete in Muscat. The flagship is a rigorous N=1 long-form field report (the paper). Surrounding it: a `/field` log of training milestones, race results, and hinge moments; a `/stupidshit` folder for one-off oddities; a `/reading` list; a training pulse on the home page.
-- **Who it's for:** Curious readers who'd otherwise be on Gwern, Tom MacWright, Maggie Appleton, Robin Sloan, Patrick Collison. Friends. Future Nasser.
-- **Space / industry:** Long-form personal sites — the writer-researcher quadrant of the personal-web. The redesign deliberately pushes toward the *magazine-quarterly* corner of that space rather than the *understated-tasteful-blog* corner.
-- **Project type:** Editorial / personal site with data-presentation needs. Astro 6 static build + Firebase Hosting.
+- **What this is:** A personal site for an engineer-triathlete in Muscat. Flagship: a rigorous N=1 field report (`/paper`). Around it: `/field` (race results, milestones), `/stupidshit` (oddities), `/reading` (books), `/coach` (daily cycling briefing), and a live training pulse on the home page.
+- **Who it's for:** Curious readers, friends, future Nasser.
+- **Space:** Personal-web, writer-researcher quadrant — but styled from *his* world (race bibs, finish clocks, results sheets, intervals.icu), not from publishing.
+- **Project type:** Astro 6 static build + Firebase Hosting.
 
 ## Aesthetic Direction
 
-- **Direction:** Press — print-magazine-quarterly. Editorial confidence on the cover, reader-respect inside.
-- **Decoration level:** Intentional — full-bleed horizontal rules, drop caps, mono marginalia, asymmetric mastheads. No gradients, no textures, no ornaments.
-- **Mood:** A quarterly with one reader. Theatrical sectioning. Each visit is "this issue." The cover shouts; the articles whisper.
-- **Reference sites:** worksinprogress.co (color-block sectioning, magazine-on-web), craigmod.com (paper warmth, dated lists), robinrendle.com (metadata-as-design), realreview.org (cover confidence), patrickcollison.com (categories-as-personality).
+- **Direction:** Timing-sheet utilitarian. The vernacular of race results: dense tables, heavy top rule, condensed caps, tabular numbers, one flag color per state.
+- **Decoration level:** Near zero. The only ornament is the marker-yellow highlight, and it always means "this is active / this matters."
+- **Mood:** Fast, honest, slightly severe. A wall printout, not a magazine.
+- **Reference points (conceptual):** finish-line timing boards, TdF broadcast lower-thirds, Swiss federal-railway signage, the printed start list at a local triathlon. Personal-web kin: danluu's speed, gwern's density — but with visual confidence.
 
 ## Typography
 
-Four typefaces, four jobs. All free.
+Two webfonts (self-hosted via Fontsource), two system stacks. No font CDNs.
 
-| Role | Family | Weights | Notes |
+| Role | Family | Loading | Notes |
 |------|--------|---------|-------|
-| Display — masthead, hero, section heads | **Fraunces** | 700, 800, 900 (variable, opsz 9–144) | Pushed into **chunky / industrial mode**. Always set `font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0` on big display — gives newsprint slab feel, not Didone contrast. For in-article H2 use opsz 36, wght 800. Italic at lighter weights for emphasis. |
-| Body — nav, lists, blurbs, cards | **Switzer** | 400, 500, 600, 700 | Söhne-adjacent without the price. Loaded via Fontshare CDN. Replaces Geist. |
-| Long-form prose (paper only) | **Source Serif 4** | 400, 500, 600 (variable, opsz 8–60) | Retained from Field Journal — the one v0.1 asset worth keeping. Old-style figures (`onum`) on by default in prose; lining figures only in tabular contexts. |
-| Data, numbers, code, marginalia | **JetBrains Mono** | 400, 500, 600 | Replaces Geist Mono. Sharper, more code-coded. All numeric content uses mono with `font-feature-settings: "tnum"`. |
+| Display — wordmark, page titles, section heads, big stats | **Barlow Condensed** 500/600/700 | `@fontsource/barlow-condensed/{500,600,700}.css` | Highway-signage grotesque. Caps for titles and labels. AI design never reaches for condensed faces — that's the point. |
+| Long-form prose (`/paper`, entries) | **Literata** (variable) | `@fontsource-variable/literata` `index.css` + `wght-italic.css` | Designed for long screen reading (Google Play Books). CSS family name: `'Literata Variable'`. |
+| UI / body text everywhere else | **system-ui stack** | none | `system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`. Zero load, zero costume. |
+| Code, aligned data columns | **system mono stack** | none | `ui-monospace, "SF Mono", Menlo, Consolas, monospace`. Never tracked out, never uppercase. |
 
-**Loading:** one Google Fonts `<link>` + one Fontshare `<link>` in `BaseHead`:
+**Type patterns**
 
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400;1,9..144,500;1,9..144,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap">
-```
-
-**Type scale**
-
-| Token | Size | Line height | Family | Variation / weight | Tracking |
-|-------|------|-------------|--------|--------------------|----------|
-| `display-hero` | clamp(56px, 9vw, 108px) | 0.85 | Fraunces | opsz 9, wght 900, SOFT 0 | -0.04em |
-| `display-feature` | clamp(48px, 6.5vw, 88px) | 0.95 | Fraunces | opsz 9, wght 900, SOFT 0 | -0.02em |
-| `h1` | clamp(40px, 5vw, 64px) | 1 | Fraunces | opsz 9, wght 900, SOFT 0 | -0.02em |
-| `h2` (in-article) | 32px | 1.2 | Fraunces | opsz 36, wght 800, SOFT 0 | -0.01em |
-| `h3` | 22px | 1.15 | Fraunces | opsz 14, wght 700, SOFT 0 | -0.005em |
-| `dek` (cover sub-title) | 22px | 1.4 | Source Serif 4 italic w400 | — | normal |
-| `body-lg` (paper) | 19px | 1.65 | Source Serif 4 w400 | onum on | normal |
-| `body` (paper) | 18px | 1.65 | Source Serif 4 w400 | onum on | normal |
-| `body-ui` | 15px | 1.5 | Switzer w400 | — | normal |
-| `ui` | 14px | 1.5 | Switzer w400/500 | — | normal |
-| `ui-sm` | 12px | 1.4 | Switzer w400/500 | — | normal |
-| `eyebrow` | 11px | 1.4 | JetBrains Mono w500/600 | uppercase | 0.18em |
-| `colophon` | 11px | 1.5 | JetBrains Mono w400/600 | uppercase | 0.06–0.14em |
-| `mono` | 14px | 1.5 | JetBrains Mono w400 | tnum on | normal |
-| `mono-sm` | 12px | 1.4 | JetBrains Mono w400 | tnum on | normal |
-| `stat-big` | clamp(28px, 4vw, 48px) | 1 | Fraunces | opsz 9, wght 900, SOFT 0 | -0.01em |
+| Token | Spec |
+|-------|------|
+| `wordmark` | Barlow Condensed 700, lowercase, 26–30px, tracking -0.01em |
+| `title-hero` (home paper title, page H1) | Barlow Condensed 700 caps, clamp(48px, 8vw, 110px), line-height 0.9, tracking -0.01em |
+| `title-page` (section index H1) | Barlow Condensed 700 caps, clamp(40px, 6.5vw, 84px), line-height 0.9 |
+| `label` (column headers, block labels) | Barlow Condensed 600 caps, 13px, tracking 0.05em, `--muted`. **This replaces the eyebrow. Never mono, never 0.18em tracking.** |
+| `stat-big` | Barlow Condensed 700, clamp(30px, 4vw, 52px), line-height 1 |
+| `prose` | Literata 19px / 1.72 (16.5px on mobile) |
+| `body` | system sans 15px / 1.55 |
+| `data` | system mono 13px, `tnum` on, lowercase |
 
 **Rules**
 
-- Display hero only on home and `/paper`. Other pages start at h1.
-- "Fraunces wght 900 / opsz 9 / SOFT 0" is the **signature lockup**. Anything more refined (opsz 144) is reserved only for italic emphasis inside long-form prose.
-- Italic Source Serif 4 for: cover deks, blockquotes, titles of works inline.
-- Link underlines always present, never hover-only. `text-underline-offset: 3px; text-decoration-thickness: 1px;`
-- Numbers in prose use mono — race times, weights, watts, distances, dates. Surrounding words stay serif.
-- Drop caps on the first paragraph of `/paper` articles only: Fraunces wght 900 / opsz 9 / SOFT 0, 5.2em, color `--accent`, floated left, 8px 12px 0 0 padding.
-- `<code>` inline: `--accent` text on `--accent-soft` pill, JetBrains Mono.
+- Headings and labels are caps in Barlow Condensed. Everything else is sentence case. No small-caps, no letter-spacing above 0.06em anywhere.
+- Links are ink-colored with a 1.5px underline (`text-underline-offset: 3px`). Hover paints the marker (`background: var(--mark)`). Links are never a brand color.
+- Numbers in data contexts use the mono stack with `tnum`. Big display numbers use Barlow Condensed.
+- No drop caps. No italic-muted deks. Italic is for emphasis and titles-of-works only.
 
-## Color — Newsprint Red
+## Color — Marker on White
 
-**Approach:** restrained — one signature accent + warm neutrals. Color is rare and meaningful.
+One highlight, three flags, no tints.
 
 ### Light (default)
 
 | Token | Hex | Role |
 |-------|-----|------|
-| `--bg` | `#F8F5EE` | Page background. Newsprint cream — slightly cooler than Field Journal's. |
-| `--surface` | `#EFEAE0` | Card / inset surface. Slightly darker than `--bg`. |
-| `--ink` | `#15110D` | Body text. Warm carbon, not pure black. |
-| `--muted` | `#6F6A60` | Secondary text, dates, captions. |
-| `--rule` | `#DDD5C6` | Hairlines, borders, separators. |
-| `--accent` | `#C8311C` | **Signal red.** Magazine-cover red. Links, the issue-number colorway, eyebrows used as section identifiers, primary buttons, blockquote rule, drop cap, the second line of the nameplate. |
-| `--accent-soft` | `#F3DCD6` | Inline `code` background, ghost-button hover, alert backgrounds. |
+| `--bg` | `#FFFFFF` | Pure white. Deliberately — warm off-whites are the machine default now. |
+| `--surface` | `#F4F4F1` | Code blocks, inset panels. |
+| `--ink` | `#111111` | Text, rules, the header bar. |
+| `--muted` | `#6B6B6B` | Secondary text, dates. |
+| `--rule` | `#E4E4E1` | Hairlines. |
+| `--mark` | `#FFE81C` | **Marker yellow.** Hover fills, active rows, the highlighted word, selection. Always carries `--on-mark` text. |
+| `--on-mark` | `#111111` | Text on the marker, both modes. |
 
 ### Dark
 
-Warm carbon — not cool gray, not pure black. Same accent hue, slightly desaturated.
+| Token | Hex |
+|-------|-----|
+| `--bg` | `#0F0F0E` |
+| `--surface` | `#191917` |
+| `--ink` | `#F1F1ED` |
+| `--muted` | `#98988F` |
+| `--rule` | `#2A2A27` |
+| `--mark` | `#F5DF1E` |
+| `--on-mark` | `#111111` |
+
+**Flags** (coach states, warnings — solid chips with `#111111` text, both modes):
 
 | Token | Hex | Role |
 |-------|-----|------|
-| `--bg` | `#14110C` | |
-| `--surface` | `#1C1812` | |
-| `--ink` | `#ECE5D6` | |
-| `--muted` | `#948C7E` | |
-| `--rule` | `#2A251D` | |
-| `--accent` | `#E0533F` | |
-| `--accent-soft` | `#3A1E17` | |
+| `--flag-green` | `#2FBE56` | GREEN state, PRs, passes |
+| `--flag-amber` | `#FFC933` | AMBER state, warnings |
+| `--flag-red` | `#FF5A45` | RED state, failures |
 
-**Theme strategy:** CSS variables driven by `html.dark` class. JS toggle persists to `localStorage` (`np-theme`). Default respects `prefers-color-scheme` on first visit. (Same FOUC-safe boot as Field Journal — keep `BaseHead.astro`'s inline init script intact.)
+No `color-mix` pastel tints. A state is a solid flag chip or a 3px border — never an 8%-opacity wash.
 
-**Semantic colors** (used sparingly, callouts only — the accent red does the work everywhere else):
+**Theme strategy:** unchanged mechanics — CSS variables on `html.dark`, FOUC-safe boot in `BaseHead`, localStorage key `np-theme`.
 
-| Token | Hex (light) | Hex (dark) | Role |
-|-------|-------------|------------|------|
-| `--success` | `#5A7A3F` | `#9DBE7F` | Race finishes, PRs, "this survived check N." |
-| `--warning` | `#A87515` | `#D9A862` | Retraction notices, soft-warnings. |
-| `--error` | `#A93724` | `#D8624D` | Hard retractions, failed checks. |
-| `--info` | `#3F6B7A` | `#7FB3C5` | Footnotes, reproducibility callouts. |
+## Spacing & Layout
 
-## Spacing
-
-- **Base unit:** 4px.
-- **Density:** *Two densities*. Long-form prose breathes (1.65 line-height, 18–24px between paragraphs). Indexes and TOCs pack tight (14px row padding, 1px rules).
-
-| Token | px | rem |
-|-------|-----|-----|
-| `2xs` | 2 | 0.125 |
-| `xs` | 4 | 0.25 |
-| `sm` | 8 | 0.5 |
-| `md` | 16 | 1 |
-| `lg` | 24 | 1.5 |
-| `xl` | 32 | 2 |
-| `2xl` | 48 | 3 |
-| `3xl` | 64 | 4 |
-| `4xl` | 96 | 6 |
-| `5xl` | 128 | 8 |
-
-## Layout
-
-- **Approach:** hybrid. Cover-page composition on home & section indexes. Disciplined prose column inside `/paper` and entries. Figures break out wider than the prose column.
-- **Container widths:**
-  - `--col-prose` 720px — `/paper`, blog-style posts, long entries.
-  - `--col-wide` 1240px — home page magazine cover, section index pages.
-  - `--col-figure` 1100px — figure breakout max.
-- **Magazine masthead lockup** (home + every section index):
-  - 4px solid `--ink` rule on top, 2px solid `--ink` rule on bottom, ~18px / 14px padding.
-  - Nameplate left: Fraunces opsz 9 / wght 900 / SOFT 0, clamp(56px, 9vw, 108px), tracking -0.04em, line-height 0.85. Two lines: "NASSER" + "ALBUSAIDI" with the second line in `--accent`.
-  - Colophon right: JetBrains Mono 11px uppercase, tracking 0.06em–0.14em — `Nº 12`, month + year, city, volume.
-- **Cover grid (home only):** 2fr / 1fr — feature article (lead = `/paper`) on the left, aside on the right (front matter / currently reading / training pulse).
-- **TOC pattern (field, stupidshit, reading):** 56px `№ NNN` num column / 1fr title+summary / auto date column. 1px `--rule` borders between rows, 14px vertical padding, mono num + date.
-- **Border radius:** narrow. `radius-sm` 2px (buttons, chips, code pills, inputs). `radius-md` 4px (cards, alerts). No round corners. No `radius-full`.
-- **Hairlines:** 1px `--rule`. Section rules / mastheads: 2px `--ink`. Mastheads use the 4px-top + 2px-bottom asymmetric rule pair.
+- **Base unit:** 4px. Densities: prose breathes (1.72), tables pack (10–12px row padding).
+- **Containers:** `--col-prose` 720px · `--col-wide` 1200px · `--col-figure` 1080px.
+- **The bar:** every page opens with the header ending in a **3px solid `--ink` rule** — the one heavy stroke, like the top of a results sheet. All other rules are 1px `--rule` (or 1px `--ink` for table heads).
+- **Border radius: 0. Everywhere.** Square chips, square buttons, square code blocks.
+- **Tables over cards.** Lists are full-width rows with hairline separators; hovering a linked row floods it with `--mark`.
+- **Wordmark:** `nasser1931` lowercase (the domain is the name). No "NASSER / ALBUSAIDI" nameplate, no issue numbers, no colophon.
 
 ## Motion
 
-- **Approach:** minimal-functional. Motion clarifies state changes; it never decorates.
-- **Easing:** `ease-out` (enter), `ease-in` (exit), `ease-in-out` (theme toggle).
-- **Duration:**
-  - `micro` 50–100ms (hover color shift, link underline thicken)
-  - `short` 150–250ms (button press, focus ring fade)
-  - `medium` 250–400ms (theme toggle cross-fade)
-  - `long` 400–700ms (rare; only for figure reveals)
-- **Disallowed:** page transitions on navigation, scroll-jacking, parallax, decorative bounces, full-page loading spinners.
+- Hover fills: 60–80ms ease-out (feel instant).
+- One entrance moment site-wide: the marker highlight behind the featured word on the home title wipes in once (~400ms, `transform: scaleX`, left-origin). Nothing else animates on load.
+- `prefers-reduced-motion`: all transitions/animations off.
+- Banned: parallax, scroll-jacking, page transitions, count-up numbers, decorative micro-motion.
+
+## Components
+
+- **Header:** one row — wordmark left, nav right (Barlow Condensed 600 caps 14px) + theme toggle; 3px ink bar below. Active nav item sits on a `--mark` chip.
+- **Pulse strip (home):** full-width row of big Barlow Condensed numbers (hours · TSS · TSB · last session), hairline-divided columns, `label` captions, "updated Xh ago" in mono. Reads like a live timing board.
+- **Results table (indexes, home log):** `label`-style column headers over hairline rows: date (mono) | title (Barlow Condensed 600, 20–22px) | meta. Linked rows flood `--mark` on hover. No fake entry numbers.
+- **Buttons:** square, 1px `--ink` border, ink text; hover floods `--mark`. Primary variant: solid `--ink` with `--bg` text. Never colored, never rounded, never shadowed.
+- **Flag chip:** solid flag color, `#111` text, Barlow Condensed 600 caps 13px, square.
+- **Inline code:** `--surface` background, `--ink` text, mono. Not colored.
+- **Code block:** `--surface`, 1px `--rule` border, radius 0.
+- **Blockquote:** 3px solid `--ink` left rule, regular (not italic, not muted) Literata.
+- **Figures (paper):** breakout to `--col-figure`, 1px rule above; captions Literata 14px `--muted`, "Figure N." in 600 weight, no italics.
+- **Footer:** one mono line — location, github, rss, source. Unchanged content.
+
+## Anti-patterns — the AI-tell blacklist
+
+Banned across the site. Most of these were Press v0.2; that's why it's gone.
+
+- Fraunces, Instrument Serif, Space Grotesk, Playfair, Inter-as-identity — the 2025–26 AI font rotation
+- Warm cream/off-white page backgrounds (`#F8F5EE` and kin)
+- An "accent color" applied to links, eyebrows, and buttons alike
+- Tracked-out uppercase mono microlabels (the eyebrow)
+- Editorial cosplay: mastheads, issue numbers, colophons, "Nº", "Vol.", drop caps, deks
+- `№ 001` fake entry numbering
+- Pastel state tints via `color-mix(... 8–14%, transparent)`
+- Border-radius on anything
+- Icon-in-circle grids, gradient anything, glassmorphism, purple
+- Cards where a table row would do
+- Marketing copy patterns; cutesy self-aware framing ("the back of the book")
+- Google Fonts / Fontshare CDN links (fonts are self-hosted or system)
 
 ## Categories (information architecture)
 
-The site is organized by *what kind of thing* each entry is, not by chronology:
-
-- **paper** — the long-form field report. Full editorial treatment, masthead, drop cap, figure breakouts.
-- **field** — training milestones, race results, hinge moments. Dense TOC index, dated, mono-heavy stat blocks.
-- **stupidshit** — one-off oddities. Same TOC index pattern as field, lighter tags.
-- **reading** — books, with star rating + date. Currently / Finished (by year) / Want to Read shelves.
-- **coach** — daily cycling-coach briefing (read-only). Single column, eyebrow + display title for today's pick, signal chips (HRV / sleep / body battery / readiness / RHR) colored by GREEN/AMBER/RED state, mono code block for the workout DSL.
-
-(*blog* and *about* are retired — they were never built and don't fit the print-zine metaphor. /paper is the lead, /field is the front matter, /stupidshit is the back of the book.)
-
-## Component principles
-
-- **Buttons:** primary (red fill, `--bg` text), secondary (outlined ink), ghost (red on transparent, hover fills `--accent-soft`). 2px radius. Never gradient, never shadowed.
-- **Masthead lockup:** see Layout. Used at the top of home and every section index. Issue number is the unifying device.
-- **Cards:** rare. Most lists are TOC-style rows with num / title / summary / date columns.
-- **Drop cap:** on the first paragraph of `/paper` only. Fraunces 900 / opsz 9 / SOFT 0, 5.2em, color `--accent`, floated left.
-- **Figures:** wrapped in `<figure>` with `<figcaption>` — "Figure N." bolded ink, rest muted. Break out of the prose column to `--col-figure`.
-- **Tables:** mono headers (uppercase, 0.16em tracking, muted), Source Serif 4 body cells inside `/paper`, Switzer body cells elsewhere, mono right-aligned numeric columns with tabular nums.
-- **Blockquote:** 2px solid `--accent` left rule, italic Source Serif 4, `--muted` color, no quotation marks.
-- **Inline code:** `--accent` text on `--accent-soft` pill, JetBrains Mono.
-- **Code block:** JetBrains Mono, `--surface` background, 1px `--rule` border, 2px radius, 20–24px padding.
-- **Eyebrow:** JetBrains Mono 11px / 0.18em tracking / uppercase / `--muted` (or `--accent` when used as a section identifier).
-- **Pulse block (home):** mono frame, `--surface` inset, ink rule top + dotted divider, big Fraunces 900/9 stat numbers, mono labels. `FRESH` tag in `--accent`-on-`--accent-soft`.
-- **Stat callout:** 4-column grid, 1px `--rule` top, Fraunces 900/9 numbers, JetBrains Mono unit suffix and label.
-
-## Anti-patterns (explicit)
-
-Banned across the site:
-
-- Purple / violet gradients
-- 3-column icon-in-circle feature grids
-- Centered everything
-- Uniform bubbly border-radius
-- Generic gradient buttons
-- Generic stock-photo hero sections
-- Marketing copy patterns ("Designed for X", "Built with love")
-- Dark mode that's pure black `#000000`
-- Pure white `#FFFFFF` background
-- Sans-serif body for the paper or any long-form prose
-- "Loading..." spinners on static content
-- Soft Didone-contrast display (the new face is *chunky*, not refined — no opsz > 36 on display headlines)
-- Rust orange `#B85C1F` — retired with Field Journal v0.1
-- Geist sans — retired (replaced by Switzer)
-- Geist Mono — retired (replaced by JetBrains Mono)
-- Fraunces at its default `SOFT` / `WONK` settings on display — always explicit `SOFT 0, WONK 0`
+Unchanged: **paper** (flagship report) · **field** (dated log) · **stupidshit** (oddities) · **reading** (shelves) · **coach** (daily briefing). The home page is a board: pulse strip, the paper as lead item, recent log rows, reading line.
 
 ## Decisions Log
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-04-26 | Field Journal v0.1 created. | Initial design system. Cream + rust + Fraunces refined. Replaced Astro blog template defaults. |
-| 2026-04-26 | Numeric content all in mono (`tnum`). | Treats numbers as first-class data; matches the paper's rigor. Carried forward in v0.2. |
-| 2026-04-26 | Categories: paper, blog, field, stupidshit, reading, about. | Honors both rigor and personality. v0.2 retires blog + about. |
-| 2026-05-15 | **Press v0.2 — full rebrand of v0.1.** | User itched for fresher. Field Journal was tasteful; v0.2 trades tasteful for theatrical. Print-zine-quarterly concept won the brief. |
-| 2026-05-15 | Display: Fraunces retained but pushed to wght 900 / opsz 9 / SOFT 0. | Reuses existing bundle; one variable-font-axis change gives a completely different identity (chunky / industrial vs. refined Didone). Cheapest big-effect lever available. |
-| 2026-05-15 | Body: Switzer replaces Geist. | Söhne-adjacent without the price. Less tech-coded than Geist. Fontshare CDN, free. |
-| 2026-05-15 | Mono: JetBrains Mono replaces Geist Mono. | Sharper, more distinctive, still readable. Google Fonts CDN. |
-| 2026-05-15 | Long-form: Source Serif 4 retained. | The one Field Journal asset worth keeping; engineered for screen long-form. |
-| 2026-05-15 | Accent: signal red `#C8311C` replaces rust `#B85C1F`. | Magazine-cover red. Iconic editorial accent (Wired / Real Review / Penguin Modern Classics). High commitment, big payoff. |
-| 2026-05-15 | Magazine masthead lockup adopted on home + every section index. | Cover-as-identity. Nameplate + colophon + issue number is the unifying device. |
-| 2026-05-15 | `/blog` and `/about` retired from the IA. | Never built; don't fit the print-zine metaphor. Field + stupidshit cover the "blog" use case. |
-| 2026-05-15 | Considered alternates: Bodoni Moda + General Sans + IBM Plex Mono (Vogue); EB Garamond (Penguin Classics); Boska + Synonym (brutalist art-zine); Instrument Serif (soft modern). | All declined in favor of "Fraunces pushed" — lowest switching cost, same print-zine confidence. |
-| 2026-05-15 | Considered alternates: Ultramarine blue accent; alpine green accent. | Declined in favor of signal red as the higher-commitment editorial choice. |
-| 2026-05-16 | `/coach` added as a fifth section (read-only daily cycling-coach briefing). | Renders a snapshot pulled from project-furnace's intervals.icu pipeline. State color: GREEN→`--success`, AMBER→`--warning`, RED→`--error`. Workout DSL renders in the existing `pre` block (JetBrains Mono on `--surface`). No new design tokens. |
+| 2026-04-26 | Field Journal v0.1 created. | Initial system. Cream + rust + refined Fraunces. |
+| 2026-05-15 | Press v0.2 — full rebrand. | Print-quarterly concept; Fraunces pushed chunky; signal red. |
+| 2026-05-16 | `/coach` added as fifth section. | intervals.icu-driven daily briefing. |
+| 2026-07-18 | **Splits v1.0 — full rebrand, brief: "drop the Claude signature."** | Press v0.2 read as recognizably AI-designed (Fraunces + cream + signal red + mono eyebrows is the 2026 machine-editorial fingerprint). Replaced with race-timing vernacular native to the owner: Barlow Condensed + Literata + system stacks, pure white/near-black, marker-yellow highlight, tables over cards, radius 0. |
+| 2026-07-18 | Links are ink + underline; color only as highlight/flag. | A single accent coloring links, buttons and labels is itself a template tell. Highlight-on-hover is the ownable move. |
+| 2026-07-18 | Fonts self-hosted via Fontsource; UI/mono are system stacks. | Kills font-CDN links, speeds first paint, and system-stack UI text is a hand-built signal. |
+| 2026-07-18 | Wordmark is the domain, lowercase: `nasser1931`. | The site is named what it's called. Retires the two-line nameplate cosplay. |

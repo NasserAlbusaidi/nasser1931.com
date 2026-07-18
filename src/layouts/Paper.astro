@@ -50,9 +50,9 @@ const ogImage = image ? { src: image } : undefined;
 		<main>
 			<article>
 				<header class="paper-head">
-					<p class="eyebrow">{eyebrow}</p>
+					<p class="label">{eyebrow}</p>
 					<h1 class="paper-title">{title}</h1>
-					{subtitle && <p class="paper-subtitle"><em>{subtitle}</em></p>}
+					{subtitle && <p class="paper-subtitle">{subtitle}</p>}
 					{byline && <p class="paper-byline">{byline}</p>}
 					{companion && (
 						<p class="paper-companion">
@@ -62,8 +62,7 @@ const ogImage = image ? { src: image } : undefined;
 					{paperLog?.last_edit && (
 						<p class="paper-edited">
 							last edited <span class="paper-edited-rel" data-iso={paperLog.last_edit}>recently</span>
-							<span class="paper-edited-sep">·</span>
-							<span class="paper-edited-count">{paperLog.commits_7d}</span> commits this week
+							· <span class="paper-edited-count">{paperLog.commits_7d}</span> commits this week
 						</p>
 					)}
 				</header>
@@ -72,9 +71,8 @@ const ogImage = image ? { src: image } : undefined;
 				</div>
 				{share && (
 					<aside class="paper-share" data-share>
-						<p class="share-eyebrow">Share</p>
-						<button type="button" class="share-button" data-share-trigger>
-							<span class="share-label">Share this report</span>
+						<button type="button" class="btn" data-share-trigger>
+							Share this report
 						</button>
 						<p class="share-status" data-share-status aria-live="polite"></p>
 					</aside>
@@ -148,95 +146,58 @@ const ogImage = image ? { src: image } : undefined;
 			.paper-head {
 				max-width: var(--container-prose);
 				margin: 0 auto;
-				padding: 5rem 1.25rem 3rem;
+				padding: 4rem 1.25rem 2.5rem;
 			}
 
 			@media (max-width: 720px) {
 				.paper-head {
-					padding: 2.5rem 1.25rem 2rem;
-				}
-				.eyebrow {
-					margin-bottom: 1rem;
-				}
-				.paper-title {
-					font-size: clamp(32px, 8vw, 40px);
+					padding: 2.5rem 1.25rem 1.75rem;
 				}
 				.paper-subtitle {
 					font-size: 17px;
 				}
 			}
 
-			.eyebrow {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--muted);
-				margin: 0 0 1.5rem;
+			.paper-head .label {
+				margin: 0 0 1.25rem;
 			}
 
 			.paper-title {
-				font-family: var(--font-display);
-				font-weight: 900;
-				font-size: clamp(44px, 6vw, 72px);
-				line-height: 0.95;
-				letter-spacing: -0.03em;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				color: var(--ink);
+				font-size: clamp(44px, 7vw, 88px);
+				line-height: 0.9;
 				margin: 0 0 1rem;
 			}
 
 			.paper-subtitle {
 				font-family: var(--font-prose);
-				font-style: italic;
 				font-size: 20px;
-				line-height: 1.45;
-				color: var(--muted);
+				line-height: 1.5;
+				color: var(--ink);
 				margin: 0 0 1.25rem;
+				max-width: 48ch;
 			}
 
-			.paper-subtitle em {
-				font-style: italic;
-			}
-
-			.paper-byline {
+			.paper-byline,
+			.paper-companion,
+			.paper-edited {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
 				font-size: 12px;
-				line-height: 1.5;
+				line-height: 1.6;
 				color: var(--muted);
 				margin: 0;
 			}
 
 			.paper-companion {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				line-height: 1.5;
-				color: var(--muted);
-				margin: 1.25rem 0 0;
+				margin-top: 1.25rem;
 			}
 
 			.paper-companion a {
-				color: var(--accent);
-				text-decoration: underline;
-				text-decoration-thickness: 1px;
-				text-underline-offset: 3px;
+				color: var(--ink);
 			}
 
 			.paper-edited {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 11px;
-				letter-spacing: 0.04em;
-				line-height: 1.5;
-				color: var(--muted);
-				margin: 1.25rem 0 0;
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.4em;
-				align-items: baseline;
+				margin-top: 1rem;
 			}
 
 			.paper-edited-rel,
@@ -244,55 +205,15 @@ const ogImage = image ? { src: image } : undefined;
 				color: var(--ink);
 			}
 
-			.paper-edited-sep {
-				color: var(--rule);
-			}
-
 			.paper-share {
 				max-width: var(--container-prose);
 				margin: 4rem auto 0;
-				padding: 2rem 1.25rem 3rem;
+				padding: 2rem 1.25rem 2rem;
 				border-top: 1px solid var(--rule);
-			}
-
-			.share-eyebrow {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--muted);
-				margin: 0 0 1rem;
-			}
-
-			.share-button {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5em;
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.16em;
-				color: var(--accent);
-				background: transparent;
-				border: 1px solid var(--accent);
-				border-radius: var(--radius-md);
-				padding: 0.7em 1.1em;
-				cursor: pointer;
-				transition: background 120ms ease-out, color 120ms ease-out;
-			}
-
-			.share-button:hover,
-			.share-button:focus-visible {
-				background: var(--accent-soft);
-				outline: none;
 			}
 
 			.share-status {
 				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
 				font-size: 12px;
 				color: var(--muted);
 				margin: 0.75rem 0 0;
@@ -305,45 +226,30 @@ const ogImage = image ? { src: image } : undefined;
 				padding: 1rem 1.25rem 4rem;
 				color: var(--ink);
 				font-family: var(--font-prose);
-				font-size: 18px;
-				line-height: 1.65;
-				font-feature-settings: "onum" 1;
+				font-size: 19px;
+				line-height: 1.72;
 			}
 
 			.prose :global(p) {
 				margin: 0 0 1.1em;
 			}
 
-			/* Drop cap on the very first paragraph — Press v0.2 signature. */
-			.prose :global(p:first-of-type::first-letter) {
-				font-family: var(--font-display);
-				font-weight: 900;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				float: left;
-				font-size: 5.2em;
-				line-height: 0.85;
-				padding: 0.08em 0.12em 0 0;
-				color: var(--accent);
-			}
-
 			.prose :global(h2) {
 				font-family: var(--font-display);
-				font-weight: 800;
+				font-weight: 700;
 				font-size: 32px;
-				line-height: 1.15;
-				letter-spacing: -0.01em;
-				font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+				line-height: 1.05;
+				text-transform: uppercase;
+				letter-spacing: 0;
 				color: var(--ink);
 				margin: 2.4em 0 0.6em;
 			}
 
 			.prose :global(h3) {
 				font-family: var(--font-display);
-				font-weight: 700;
-				font-size: 22px;
-				line-height: 1.2;
-				letter-spacing: -0.005em;
-				font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
+				font-weight: 600;
+				font-size: 23px;
+				line-height: 1.1;
 				color: var(--ink);
 				margin: 2em 0 0.5em;
 			}
@@ -359,11 +265,9 @@ const ogImage = image ? { src: image } : undefined;
 			}
 
 			.prose :global(blockquote) {
-				border-left: 2px solid var(--accent);
+				border-left: 3px solid var(--ink);
 				padding: 0 1.25em;
 				margin: 1.6em 0;
-				font-style: italic;
-				color: var(--muted);
 			}
 
 			.prose :global(blockquote p) {
@@ -371,14 +275,15 @@ const ogImage = image ? { src: image } : undefined;
 			}
 
 			.prose :global(a) {
-				color: var(--accent);
+				color: var(--ink);
 				text-decoration: underline;
-				text-decoration-thickness: 1px;
+				text-decoration-thickness: 1.5px;
 				text-underline-offset: 3px;
 			}
 
 			.prose :global(a:hover) {
-				text-decoration-thickness: 2px;
+				background: var(--mark);
+				color: var(--on-mark);
 			}
 
 			.prose :global(hr) {
@@ -390,11 +295,10 @@ const ogImage = image ? { src: image } : undefined;
 			.prose :global(code) {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
-				font-size: 0.9em;
-				background: var(--accent-soft);
-				color: var(--accent);
+				font-size: 0.85em;
+				background: var(--surface);
+				color: var(--ink);
 				padding: 0.1em 0.4em;
-				border-radius: var(--radius-md);
 			}
 
 			.prose :global(pre) {
@@ -403,7 +307,6 @@ const ogImage = image ? { src: image } : undefined;
 				line-height: 1.55;
 				background: var(--surface);
 				border: 1px solid var(--rule);
-				border-radius: var(--radius-md);
 				padding: 1em 1.2em;
 				overflow-x: auto;
 				margin: 1.5em 0;
@@ -413,7 +316,6 @@ const ogImage = image ? { src: image } : undefined;
 				background: transparent;
 				color: var(--ink);
 				padding: 0;
-				border-radius: 0;
 				font-size: 14px;
 			}
 
@@ -427,9 +329,8 @@ const ogImage = image ? { src: image } : undefined;
 				margin: 0.4em 0;
 			}
 
-			/* Figures sit on the page like print — no card framing.
-			   Wider than prose, narrower than the screen. Hairline above
-			   and below ties them into the typography rhythm. */
+			/* Figures sit on the page like a printout — wider than prose,
+			   narrower than the screen, a hairline tying them to the rhythm. */
 			.prose :global(figure) {
 				margin: 3em auto;
 				margin-left: 50%;
@@ -442,12 +343,15 @@ const ogImage = image ? { src: image } : undefined;
 			.prose :global(figure a) {
 				display: block;
 				text-decoration: none;
-				border-radius: var(--radius-md);
 				cursor: zoom-in;
 			}
 
+			.prose :global(figure a:hover) {
+				background: transparent;
+			}
+
 			.prose :global(figure a:focus-visible) {
-				outline: 2px solid var(--accent);
+				outline: 2px solid var(--ink);
 				outline-offset: 4px;
 			}
 
@@ -456,14 +360,10 @@ const ogImage = image ? { src: image } : undefined;
 				height: auto;
 				display: block;
 				border: 0;
-				border-radius: 0;
-				/* Mix-blend keeps PNG whites from sitting as a bright slab on
-				   cream paper, without darkening colored data lines. */
 				background: transparent;
 			}
 
-			/* Optional darker-paper dim in dark mode — keeps figures from
-			   glowing against the dark background. */
+			/* Keep figures from glowing against the dark background. */
 			:global(html.dark) .prose :global(figure img) {
 				opacity: 0.92;
 				transition: opacity 150ms ease-out;
@@ -482,19 +382,16 @@ const ogImage = image ? { src: image } : undefined;
 				max-width: var(--container-prose);
 				padding: 1em 0.5rem 0;
 				border-top: 1px solid var(--rule);
-				font-style: italic;
 			}
 
 			.prose :global(figcaption strong) {
 				color: var(--ink);
-				font-style: normal;
 				font-weight: 600;
 				margin-right: 0.25em;
 			}
 
-			/* Tables — block-scrollable so wide grids (8+ cols of regression
-			   numbers, etc.) survive narrow viewports. Scroll shadows on the
-			   left/right edges signal that the table extends beyond view. */
+			/* Tables — block-scrollable so wide grids survive narrow viewports.
+			   Scroll shadows signal the table extends beyond view. */
 			.prose :global(table) {
 				display: block;
 				overflow-x: auto;
@@ -504,8 +401,8 @@ const ogImage = image ? { src: image } : undefined;
 				margin: 1.5em 0;
 				font-size: 15px;
 				background:
-					linear-gradient(to right, var(--paper) 30%, transparent),
-					linear-gradient(to right, transparent, var(--paper) 70%) 100% 0,
+					linear-gradient(to right, var(--bg) 30%, transparent),
+					linear-gradient(to right, transparent, var(--bg) 70%) 100% 0,
 					radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), transparent),
 					radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), transparent) 100% 0;
 				background-repeat: no-repeat;
@@ -515,8 +412,8 @@ const ogImage = image ? { src: image } : undefined;
 
 			:global(html.dark) .prose :global(table) {
 				background:
-					linear-gradient(to right, var(--paper) 30%, transparent),
-					linear-gradient(to right, transparent, var(--paper) 70%) 100% 0,
+					linear-gradient(to right, var(--bg) 30%, transparent),
+					linear-gradient(to right, transparent, var(--bg) 70%) 100% 0,
 					radial-gradient(farthest-side at 0 50%, rgba(255, 255, 255, 0.12), transparent),
 					radial-gradient(farthest-side at 100% 50%, rgba(255, 255, 255, 0.12), transparent) 100% 0;
 				background-repeat: no-repeat;
@@ -525,15 +422,15 @@ const ogImage = image ? { src: image } : undefined;
 			}
 
 			.prose :global(th) {
-				font-family: var(--font-mono);
-				font-size: 12px;
-				font-weight: 500;
+				font-family: var(--font-display);
+				font-size: 14px;
+				font-weight: 600;
 				text-transform: uppercase;
-				letter-spacing: 0.1em;
+				letter-spacing: 0.05em;
 				color: var(--muted);
 				text-align: left;
-				padding: 0.6em 0.8em;
-				border-bottom: 1px solid var(--rule);
+				padding: 0.5em 0.8em;
+				border-bottom: 1px solid var(--ink);
 				white-space: nowrap;
 			}
 
@@ -541,13 +438,9 @@ const ogImage = image ? { src: image } : undefined;
 				padding: 0.6em 0.8em;
 				border-bottom: 1px solid var(--rule);
 				vertical-align: top;
-			}
-
-			/* Numeric / short-token cells stay on one line; long-prose cells
-			   (the rare ones) can still wrap by overriding via inline class. */
-			.prose :global(td) {
 				white-space: nowrap;
 			}
+
 			.prose :global(td:last-child) {
 				white-space: normal;
 				min-width: 12em;
@@ -555,22 +448,19 @@ const ogImage = image ? { src: image } : undefined;
 
 			@media (max-width: 720px) {
 				.prose {
-					font-size: 16px;
-					line-height: 1.6;
+					font-size: 16.5px;
+					line-height: 1.65;
 					padding: 0.5rem 1.25rem 3rem;
 				}
 				.prose :global(h2) {
-					font-size: 24px;
+					font-size: 25px;
 					margin-top: 1.8em;
-					letter-spacing: -0.005em;
 				}
 				.prose :global(h3) {
-					font-size: 18px;
+					font-size: 19px;
 					margin-top: 1.6em;
 				}
-				/* Edge-to-edge figure bleed on small screens — full viewport
-				   width minus a hair of breathing room. The breakout still
-				   centers via the 50% / -50% trick. */
+				/* Edge-to-edge figure bleed on small screens. */
 				.prose :global(figure) {
 					margin: 1.75em auto;
 					margin-left: 50%;
@@ -578,11 +468,6 @@ const ogImage = image ? { src: image } : undefined;
 					width: 100vw;
 					max-width: 100vw;
 					padding: 0.85em 0 0;
-					border-top-color: var(--rule);
-				}
-				.prose :global(figure a),
-				.prose :global(figure img) {
-					border-radius: 0;
 				}
 				.prose :global(figcaption) {
 					font-size: 13px;
@@ -590,9 +475,7 @@ const ogImage = image ? { src: image } : undefined;
 					margin: 0.85em auto 0;
 					max-width: calc(100vw - 2rem);
 				}
-				/* Tables: full-bleed on mobile so the scroll axis is the
-				   viewport, not a card. Slightly smaller text packs more
-				   columns into the visible area. */
+				/* Tables full-bleed on mobile so the scroll axis is the viewport. */
 				.prose :global(table) {
 					font-size: 13px;
 					margin-left: -1.25rem;
@@ -612,10 +495,8 @@ const ogImage = image ? { src: image } : undefined;
 				.prose :global(pre) {
 					font-size: 13px;
 					padding: 0.85em 1em;
-					/* Allow horizontal scroll without trapping the page scroll */
 					margin-left: -1.25rem;
 					margin-right: -1.25rem;
-					border-radius: 0;
 					border-left: 0;
 					border-right: 0;
 				}

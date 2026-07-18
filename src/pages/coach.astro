@@ -109,7 +109,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 		<Header variant="compact" />
 		<main>
 			<section class="forecast" aria-label="Four-day forecast">
-				<h2 class="forecast-head">This week</h2>
+				<h2 class="forecast-head label">This week</h2>
 				<div class="forecast-rows">
 					{forecast.map((f) => (
 						<button
@@ -121,7 +121,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 						>
 							<span class="forecast-when">
 								<span class="forecast-day">{f.dayLabel}</span>
-								<span class="forecast-dot">·</span>
+								<span class="forecast-dot">/</span>
 								<span class="forecast-slot">{f.slotTag}</span>
 							</span>
 							<span class="forecast-title">{f.workoutName}</span>
@@ -130,7 +130,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 					))}
 				</div>
 				<p class="forecast-footnote">
-					Projections assume <em class="amber-em">AMBER</em> recovery for +1 to +3.
+					Projections assume <span class="flag flag-amber">amber</span> recovery for +1 to +3.
 				</p>
 			</section>
 
@@ -142,23 +142,18 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				<button type="button" id="back-to-today">← back to today</button>
 			</aside>
 
-			<header class="toc-header">
+			<header class="brief-head">
 				<div>
-					<span class="eyebrow eyebrow-accent" id="eyebrow-date">Morning briefing · {longDate}</span>
-					<h1 class="display-feature" id="header-title">{stateLabel}.</h1>
+					<span class="label" id="eyebrow-date">Morning briefing · {longDate}</span>
+					<h1 id="header-title">{stateLabel}.</h1>
 					<p class="subtitle" id="header-subtitle">{subtitle}</p>
 				</div>
-				<div class="toc-meta">
+				<div class="brief-meta">
 					<span class={`state-pill state-${cls.state}`} id="state-pill">{cls.state}</span>
-					<span class="bullet">·</span>
 					<span class="num" id="meta-week">W{ctx.macroWeek}</span>
-					<span class="bullet">·</span>
 					<span class="num" id="meta-slot">{ctx.slot ?? 'rest'}</span>
 					{fetchedAt && (
-						<>
-							<span class="bullet">·</span>
-							updated <span class="num" data-iso={fetchedAt}>recently</span>
-						</>
+						<span class="updated">updated <span class="num" data-iso={fetchedAt}>recently</span></span>
 					)}
 				</div>
 			</header>
@@ -171,11 +166,11 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			)}
 
 			<section class="block">
-				<h2 class="block-head">Recovery signals</h2>
+				<h2 class="block-head label">Recovery signals</h2>
 				<div class="signals">
 					{cls.classifications.map((c) => (
 						<div class={`signal signal-${c.class}`} data-key={c.key}>
-							<div class="signal-label">{c.label}</div>
+							<div class="signal-label label">{c.label}</div>
 							<div class="signal-value">
 								{c.value == null
 									? <span class="missing">—</span>
@@ -191,28 +186,28 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			</section>
 
 			<section class="block">
-				<h2 class="block-head">Computed signals</h2>
+				<h2 class="block-head label">Computed signals</h2>
 				<div class="computed">
 					<div class="comp">
-						<div class="comp-label">TSB · form</div>
+						<div class="comp-label label">TSB · form</div>
 						<div class="comp-value">
 							<span>{computed.tsb ?? '—'}</span>
 							{computed.tsb_category && <span class="comp-tag">{computed.tsb_category}</span>}
 						</div>
 					</div>
 					<div class="comp">
-						<div class="comp-label">Ramp rate</div>
+						<div class="comp-label label">Ramp rate</div>
 						<div class="comp-value">
 							<span>{wellness.ramp_rate != null ? Number(wellness.ramp_rate).toFixed(1) : '—'}</span>
 							{computed.ramp_rate_category && <span class="comp-tag">{computed.ramp_rate_category}</span>}
 						</div>
 					</div>
 					<div class="comp">
-						<div class="comp-label">Days since hard</div>
+						<div class="comp-label label">Days since hard</div>
 						<div class="comp-value">{computed.days_since_hard ?? '—'}</div>
 					</div>
 					<div class="comp">
-						<div class="comp-label">eFTP 14d</div>
+						<div class="comp-label label">eFTP 14d</div>
 						<div class="comp-value">
 							<span>{computed.eftp_14d_ago ?? '—'} → {computed.eftp_current ?? '—'}</span>
 							{computed.eftp_trend_status && <span class="comp-tag">{computed.eftp_trend_status}</span>}
@@ -222,31 +217,31 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			</section>
 
 			<section class="block">
-				<h2 class="block-head">Today's pick</h2>
+				<h2 class="block-head label">Today's pick</h2>
 				<div id="pick-title" class="pick-title">{stateLabel}</div>
 				<div id="pick-sub" class="pick-sub">{subtitle}</div>
 
 				<div id="pick-stats" class="pick-stats" style={pick.workoutKey ? '' : 'display:none'}>
 					<div>
-						<div class="comp-label">Duration</div>
+						<div class="comp-label label">Duration</div>
 						<div class="stat-big">
 							<span class="stat-num" id="stat-duration">{pick.workout?.duration_min ?? '—'}</span><span class="unit">min</span>
 						</div>
 					</div>
 					<div>
-						<div class="comp-label">Target IF</div>
+						<div class="comp-label label">Target IF</div>
 						<div class="stat-big">
 							<span class="stat-num" id="stat-if">{pick.workout?.target_if?.toFixed(2) ?? '—'}</span>
 						</div>
 					</div>
 					<div>
-						<div class="comp-label">Target TSS</div>
+						<div class="comp-label label">Target TSS</div>
 						<div class="stat-big">
 							<span class="stat-num" id="stat-tss">{pick.workout?.target_tss ?? '—'}</span>
 						</div>
 					</div>
 					<div>
-						<div class="comp-label">Cost</div>
+						<div class="comp-label label">Cost</div>
 						<div class="stat-big-text" id="stat-cost">{pick.workout?.recovery_cost ?? '—'}</div>
 					</div>
 				</div>
@@ -266,7 +261,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			</section>
 
 			<details class="block overrides">
-				<summary><span class="block-head">Override engine inputs</span></summary>
+				<summary><span class="block-head label">Override engine inputs</span></summary>
 				<div class="control-row">
 					<label for="o-state">Force state</label>
 					<select id="o-state">
@@ -301,11 +296,11 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 					<label for="o-nov2">Disable v2 overrides</label>
 					<input id="o-nov2" type="checkbox" />
 				</div>
-				<button type="button" id="o-reset" class="reset-btn">Reset</button>
+				<button type="button" id="o-reset" class="btn">Reset</button>
 			</details>
 
 			<details class="block push-hint">
-				<summary><span class="block-head">Ship to calendar (manual)</span></summary>
+				<summary><span class="block-head label">Ship to calendar (manual)</span></summary>
 				<p class="hint-prose">
 					Push hasn't been wired into the browser yet. Run this from the project root and the
 					workout lands on intervals.icu, which Garmin Calendar Sync forwards to the watch.
@@ -517,117 +512,99 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			main {
 				max-width: var(--container-prose);
 				margin: 0 auto;
-				padding: 2.5rem 1.5rem 4rem;
+				padding: 2rem 1.5rem 4rem;
 			}
 
 			/* ---- 4-day forecast strip ---- */
 			.forecast {
 				margin: 0 0 1.75rem;
-				border-top: 1px solid var(--rule);
 			}
 			.forecast-head {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--muted);
+				color: var(--ink);
 				margin: 0;
-				padding: 0.75rem 0 0.5rem;
+				padding: 0 0 0.4rem;
+				border-bottom: 1px solid var(--ink);
 			}
 			.forecast-rows {
 				display: flex;
 				flex-direction: column;
-				border-top: 1px solid var(--rule);
 			}
 			.forecast-row {
 				display: grid;
 				grid-template-columns: minmax(150px, auto) 1fr auto;
 				gap: 0.875rem;
 				align-items: baseline;
-				padding: 0.55rem 0.75rem 0.55rem 0.625rem;
+				padding: 0.55rem 0.5rem;
 				border: 0;
 				border-bottom: 1px solid var(--rule);
-				border-left: 2px solid transparent;
 				background: transparent;
 				color: var(--ink);
 				text-align: left;
 				cursor: pointer;
 				font-family: inherit;
-				transition: background 100ms ease-out, color 100ms ease-out, border-color 100ms ease-out;
+				transition: background-color 70ms ease-out, color 70ms ease-out;
 			}
-			.forecast-row:last-child { border-bottom: none; }
-			.forecast-row:hover:not(.active) { background: var(--surface); }
+			.forecast-row:hover:not(.active) { background: var(--mark); color: var(--on-mark); }
+			.forecast-row:hover:not(.active) .forecast-when,
+			.forecast-row:hover:not(.active) .forecast-title,
+			.forecast-row:hover:not(.active) .forecast-num { color: var(--on-mark); }
 			.forecast-row:focus-visible {
-				outline: 2px solid var(--accent);
+				outline: 2px solid var(--ink);
 				outline-offset: -2px;
 			}
 			.forecast-row.active {
-				border-left-color: var(--accent);
+				background: var(--ink);
+				color: var(--bg);
 				cursor: default;
 			}
 			.forecast-when {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
 				font-size: 12px;
-				font-weight: 500;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
 				color: var(--muted);
 				display: inline-flex;
 				gap: 0.4em;
 				align-items: baseline;
 				white-space: nowrap;
 			}
-			.forecast-row.active .forecast-day { color: var(--ink); }
-			.forecast-row.active .forecast-slot { color: var(--accent); font-weight: 600; }
-			.forecast-dot { color: var(--rule); }
+			.forecast-row.active .forecast-when { color: var(--bg); opacity: 0.75; }
+			.forecast-row.active .forecast-slot { opacity: 1; font-weight: 600; }
+			.forecast-dot { opacity: 0.5; }
 			.forecast-title {
-				font-family: var(--font-ui);
-				font-size: 14.5px;
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: 19px;
+				line-height: 1.1;
 				color: var(--ink);
-				font-weight: 500;
 			}
-			.forecast-row:not(.active) .forecast-title { color: var(--muted); font-weight: 400; }
-			.forecast-row:not(.active):hover .forecast-title { color: var(--ink); }
+			.forecast-row.active .forecast-title { color: var(--bg); }
+			.forecast-row:not(.active) .forecast-title { color: var(--muted); font-weight: 500; }
+			.forecast-row:not(.active):hover .forecast-title { color: var(--on-mark); }
 			.forecast-num {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
 				font-size: 12px;
-				color: var(--ink);
-				letter-spacing: 0.02em;
+				color: var(--muted);
 				white-space: nowrap;
 			}
-			.forecast-row:not(.active) .forecast-num { color: var(--muted); }
+			.forecast-row.active .forecast-num { color: var(--bg); }
 			.forecast-footnote {
-				font-family: var(--font-prose);
-				font-style: italic;
+				font-family: var(--font-ui);
 				font-size: 13px;
 				color: var(--muted);
 				margin: 0.75rem 0 0;
-				padding-left: 0.625rem;
-			}
-			.amber-em {
-				font-style: normal;
-				font-family: var(--font-mono);
-				font-size: 11px;
-				color: var(--warning);
-				letter-spacing: 0.14em;
-				padding: 1px 5px;
-				background: color-mix(in oklab, var(--warning) 14%, transparent);
-				border-radius: var(--radius-sm);
+				padding-left: 0.5rem;
 			}
 
 			/* ---- projection banner (visible when activeIndex > 0) ---- */
 			.projection-banner {
-				background: color-mix(in oklab, var(--accent) 6%, var(--bg));
-				border-left: 2px solid var(--accent);
+				border: 1px solid var(--ink);
+				border-left: 4px solid var(--flag-amber);
 				padding: 0.6rem 0.875rem;
 				margin: 0 0 1.5rem;
-				font-family: var(--font-prose);
+				font-family: var(--font-ui);
 				font-size: 14px;
 				color: var(--ink);
-				border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 				display: flex;
 				align-items: center;
 				flex-wrap: wrap;
@@ -635,34 +612,31 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			}
 			.projection-banner[hidden] { display: none; }
 			.projection-banner strong {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				letter-spacing: 0.16em;
+				font-family: var(--font-display);
+				font-size: 14px;
 				text-transform: uppercase;
-				color: var(--accent);
-				font-weight: 600;
+				letter-spacing: 0.04em;
+				font-weight: 700;
 			}
 			.projection-banner .num {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
 				font-size: 12px;
-				color: var(--ink);
-				letter-spacing: 0.04em;
 			}
 			#back-to-today {
 				margin-left: auto;
-				font-family: var(--font-mono);
-				font-size: 11px;
+				font-family: var(--font-display);
+				font-size: 13px;
+				font-weight: 600;
 				text-transform: uppercase;
-				letter-spacing: 0.12em;
+				letter-spacing: 0.04em;
 				padding: 4px 10px;
-				background: var(--bg);
+				background: transparent;
 				color: var(--ink);
-				border: 1px solid var(--rule);
-				border-radius: var(--radius-sm);
+				border: 1px solid var(--ink);
 				cursor: pointer;
 			}
-			#back-to-today:hover { border-color: var(--accent); color: var(--accent); }
+			#back-to-today:hover { background: var(--mark); color: var(--on-mark); }
 
 			/* Projection mode mutes today-only sections (signals, computed, push) */
 			main.projecting .signals,
@@ -673,68 +647,63 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			}
 			main.projecting .push-hint { display: none; }
 
-			.toc-header {
+			.brief-head {
 				display: grid;
 				grid-template-columns: 1fr auto;
 				gap: 1.5rem;
 				align-items: end;
 				padding-bottom: 1rem;
-				border-bottom: 2px solid var(--ink);
+				border-bottom: 3px solid var(--ink);
 				margin-bottom: 1.75rem;
 			}
 
-			.toc-header h1 {
+			.brief-head h1 {
 				margin: 0.4rem 0 0;
 				font-size: clamp(40px, 7vw, 72px);
-				line-height: 0.95;
+				line-height: 0.92;
 			}
 
 			.subtitle {
 				margin: 0.5rem 0 0;
-				font-family: var(--font-prose);
-				font-style: italic;
+				font-family: var(--font-ui);
 				color: var(--muted);
-				font-size: 17px;
+				font-size: 15px;
 			}
 
-			.toc-meta {
+			.brief-meta {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
-				font-size: 11px;
-				text-transform: uppercase;
-				letter-spacing: 0.12em;
+				font-size: 12px;
 				color: var(--muted);
 				display: flex;
-				gap: 0.4em;
+				gap: 0.75em;
 				align-items: baseline;
 				flex-wrap: wrap;
 				padding-bottom: 0.25rem;
 			}
-			.toc-meta .num { color: var(--ink); }
-			.toc-meta .bullet { color: var(--rule); }
+			.brief-meta .num { color: var(--ink); }
 
 			.state-pill {
-				font-family: var(--font-mono);
-				font-size: 11px;
+				font-family: var(--font-display);
+				font-size: 13px;
 				font-weight: 600;
-				letter-spacing: 0.18em;
-				padding: 3px 10px;
-				border-radius: var(--radius-sm);
+				letter-spacing: 0.05em;
+				padding: 2px 8px;
 				text-transform: uppercase;
+				color: #111111;
 			}
-			.state-pill.state-green { background: color-mix(in oklab, var(--success) 14%, transparent); color: var(--success); }
-			.state-pill.state-amber { background: color-mix(in oklab, var(--warning) 14%, transparent); color: var(--warning); }
-			.state-pill.state-red   { background: color-mix(in oklab, var(--error) 14%, transparent);   color: var(--error); }
+			.state-pill.state-green { background: var(--flag-green); }
+			.state-pill.state-amber { background: var(--flag-amber); }
+			.state-pill.state-red   { background: var(--flag-red); }
 
 			.staleness {
-				background: var(--surface);
-				border-left: 2px solid var(--warning);
+				border: 1px solid var(--rule);
+				border-left: 4px solid var(--flag-amber);
 				padding: 0.75rem 1rem;
 				margin: 0 0 1.5rem;
-				font-family: var(--font-prose);
+				font-family: var(--font-ui);
 				font-size: 14px;
 				color: var(--muted);
-				border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 			}
 			.staleness strong { color: var(--ink); font-weight: 600; }
 			.staleness .num { color: var(--ink); font-family: var(--font-mono); font-size: 0.92em; }
@@ -742,15 +711,10 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			.block { margin: 2rem 0 0; }
 
 			.block-head {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				color: var(--muted);
+				color: var(--ink);
 				margin: 0 0 0.875rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid var(--rule);
+				padding-bottom: 0.4rem;
+				border-bottom: 1px solid var(--ink);
 				display: block;
 			}
 
@@ -762,41 +726,30 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 
 			.signal {
 				border: 1px solid var(--rule);
-				border-radius: var(--radius-sm);
+				border-top: 3px solid var(--rule);
 				padding: 0.5rem 0.625rem;
 				background: var(--bg);
 			}
-			.signal-green { border-color: color-mix(in oklab, var(--success) 50%, var(--rule)); background: color-mix(in oklab, var(--success) 8%, var(--bg)); }
-			.signal-amber { border-color: color-mix(in oklab, var(--warning) 50%, var(--rule)); background: color-mix(in oklab, var(--warning) 8%, var(--bg)); }
-			.signal-red   { border-color: color-mix(in oklab, var(--error) 50%, var(--rule));   background: color-mix(in oklab, var(--error) 8%, var(--bg)); }
+			.signal-green { border-top-color: var(--flag-green); }
+			.signal-amber { border-top-color: var(--flag-amber); }
+			.signal-red   { border-top-color: var(--flag-red); }
 			.signal-missing, .signal-neutral { opacity: 0.55; }
 
 			.signal-label {
-				font-family: var(--font-mono);
-				font-size: 10px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.14em;
-				color: var(--muted);
+				font-size: 12px;
 				margin-bottom: 0.125rem;
 			}
 			.signal-value {
 				font-family: var(--font-display);
-				font-weight: 900;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				font-size: 22px;
+				font-weight: 700;
+				font-size: 24px;
 				line-height: 1;
 				color: var(--ink);
 			}
-			.signal-green .signal-value { color: var(--success); }
-			.signal-amber .signal-value { color: var(--warning); }
-			.signal-red   .signal-value { color: var(--error); }
 			.signal-value .unit {
 				font-family: var(--font-mono);
 				font-size: 11px;
-				font-weight: 500;
 				margin-left: 0.2em;
-				letter-spacing: 0.06em;
 				color: var(--muted);
 			}
 			.signal-value .missing { font-family: var(--font-mono); font-size: 18px; color: var(--muted); }
@@ -808,17 +761,12 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			}
 
 			.comp {
-				border-left: 2px solid var(--rule);
+				border-left: 3px solid var(--rule);
 				padding: 0.125rem 0.75rem;
 			}
 
 			.comp-label {
-				font-family: var(--font-mono);
-				font-size: 10px;
-				font-weight: 500;
-				text-transform: uppercase;
-				letter-spacing: 0.14em;
-				color: var(--muted);
+				font-size: 12px;
 				margin-bottom: 0.2rem;
 			}
 
@@ -831,29 +779,28 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 
 			.comp-tag {
 				margin-left: 0.4em;
-				font-size: 10px;
+				font-family: var(--font-display);
+				font-size: 12px;
+				font-weight: 600;
 				color: var(--muted);
 				text-transform: uppercase;
-				letter-spacing: 0.08em;
+				letter-spacing: 0.05em;
 			}
 
 			.pick-title {
 				font-family: var(--font-display);
-				font-weight: 900;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				font-size: clamp(28px, 4vw, 38px);
-				line-height: 1.05;
-				letter-spacing: -0.01em;
+				font-weight: 700;
+				font-size: clamp(28px, 4vw, 40px);
+				line-height: 1;
+				text-transform: uppercase;
 				color: var(--ink);
 				margin: 0 0 0.25rem;
 			}
 
 			.pick-sub {
 				font-family: var(--font-mono);
-				font-size: 11px;
+				font-size: 12px;
 				color: var(--muted);
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
 				margin-bottom: 1rem;
 			}
 
@@ -865,46 +812,41 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			}
 
 			.pick-stats .stat-big {
-				font-family: var(--font-display);
-				font-weight: 900;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				font-size: clamp(22px, 3vw, 34px);
+				font-size: clamp(24px, 3vw, 38px);
 				color: var(--ink);
-				line-height: 1;
 			}
 
 			.pick-stats .stat-big .unit {
 				font-family: var(--font-mono);
-				font-size: 0.45em;
+				font-size: 0.4em;
 				margin-left: 0.2em;
 				color: var(--muted);
-				font-weight: 500;
-				letter-spacing: 0.06em;
 				vertical-align: middle;
 			}
 
 			.stat-big-text {
-				font-family: var(--font-mono);
-				font-size: 14px;
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: 16px;
 				color: var(--ink);
 				text-transform: uppercase;
-				letter-spacing: 0.1em;
+				letter-spacing: 0.04em;
 				padding-top: 0.5rem;
 			}
 
 			.reasoning-details { margin: 1rem 0 0; }
 			.reasoning-details > summary {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				font-weight: 500;
+				font-family: var(--font-display);
+				font-size: 13px;
+				font-weight: 600;
 				color: var(--muted);
 				text-transform: uppercase;
-				letter-spacing: 0.14em;
+				letter-spacing: 0.05em;
 				cursor: pointer;
 				padding: 0.25rem 0;
 			}
 			.reasoning {
-				font-family: var(--font-prose);
+				font-family: var(--font-ui);
 				font-size: 14px;
 				color: var(--ink);
 				line-height: 1.55;
@@ -915,14 +857,13 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 
 			.warnings { margin: 1rem 0; }
 			.warning {
-				border-left: 2px solid var(--error);
-				background: color-mix(in oklab, var(--error) 8%, var(--bg));
+				border: 1px solid var(--rule);
+				border-left: 4px solid var(--flag-red);
 				padding: 0.6rem 0.875rem;
-				font-family: var(--font-prose);
+				font-family: var(--font-ui);
 				font-size: 14px;
 				color: var(--ink);
 				margin: 0.5rem 0;
-				border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 			}
 
 			.dsl {
@@ -958,10 +899,12 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				font-size: 12px;
 			}
 			.control-row label {
+				font-family: var(--font-display);
+				font-size: 13px;
+				font-weight: 600;
 				color: var(--muted);
 				text-transform: uppercase;
-				letter-spacing: 0.1em;
-				font-size: 11px;
+				letter-spacing: 0.05em;
 			}
 			.control-row select {
 				font-family: var(--font-mono);
@@ -970,34 +913,24 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				background: var(--bg);
 				color: var(--ink);
 				border: 1px solid var(--rule);
-				border-radius: var(--radius-sm);
 				min-width: 180px;
 			}
 			.control-row input[type="checkbox"] {
 				justify-self: start;
 				width: 16px; height: 16px;
-				accent-color: var(--accent);
+				accent-color: var(--ink);
 			}
 
-			.reset-btn {
+			.overrides .btn {
 				margin-top: 0.75rem;
-				font-family: var(--font-mono);
-				font-size: 11px;
-				text-transform: uppercase;
-				letter-spacing: 0.14em;
-				padding: 6px 14px;
-				background: var(--bg);
-				color: var(--ink);
-				border: 1px solid var(--rule);
-				border-radius: var(--radius-sm);
-				cursor: pointer;
+				font-size: 13px;
+				padding: 5px 14px;
 			}
-			.reset-btn:hover { border-color: var(--ink); }
 
 			.hint-prose {
 				margin: 0.75rem 0;
-				font-family: var(--font-prose);
-				font-size: 15px;
+				font-family: var(--font-ui);
+				font-size: 14px;
 				color: var(--muted);
 			}
 
@@ -1017,26 +950,26 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			.copy-row .cmd code { color: inherit; background: transparent; }
 
 			#copy-btn {
-				font-family: var(--font-mono);
-				font-size: 11px;
+				font-family: var(--font-display);
+				font-size: 13px;
+				font-weight: 600;
 				text-transform: uppercase;
-				letter-spacing: 0.12em;
+				letter-spacing: 0.04em;
 				padding: 0 14px;
-				background: var(--bg);
+				background: transparent;
 				color: var(--ink);
-				border: 1px solid var(--rule);
-				border-radius: var(--radius-sm);
+				border: 1px solid var(--ink);
 				cursor: pointer;
 			}
-			#copy-btn:hover { border-color: var(--ink); }
+			#copy-btn:hover { background: var(--mark); color: var(--on-mark); }
 
 			@media (max-width: 640px) {
 				.signals { grid-template-columns: repeat(2, 1fr); }
 				.computed { grid-template-columns: repeat(2, 1fr); }
 				.pick-stats { grid-template-columns: repeat(2, 1fr); }
 				.control-row { grid-template-columns: 1fr; gap: 0.25rem; }
-				.toc-header { grid-template-columns: 1fr; align-items: start; }
-				.toc-meta { padding-bottom: 0; }
+				.brief-head { grid-template-columns: 1fr; align-items: start; }
+				.brief-meta { padding-bottom: 0; }
 				.forecast-row {
 					grid-template-columns: 1fr auto;
 					grid-template-rows: auto auto;
@@ -1044,7 +977,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 					column-gap: 0.5rem;
 				}
 				.forecast-when { grid-row: 1; grid-column: 1 / -1; font-size: 11px; }
-				.forecast-title { grid-row: 2; grid-column: 1; font-size: 14px; }
+				.forecast-title { grid-row: 2; grid-column: 1; font-size: 17px; }
 				.forecast-num { grid-row: 2; grid-column: 2; align-self: baseline; }
 				#back-to-today { margin-left: 0; margin-top: 0.25rem; }
 			}

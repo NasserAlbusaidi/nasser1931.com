@@ -7,149 +7,95 @@ interface Props {
 }
 
 const { variant = 'cover' } = Astro.props;
-
-// Colophon — kept inline; bump issue/month/year as Press goes through editions.
-const issue = 'Nº 1';
-const periodLine = 'May 2026 · Muscat';
-const volumeLine = 'Vol. 1 · A quarterly';
 ---
 
-<header class:list={['masthead-wrap', variant]}>
-	<div class="masthead">
-		<a href="/" class="nameplate" aria-label="nasser1931.com — home">
-			<span class="line-1">NASSER</span>
-			<span class="line-2 second-line">ALBUSAIDI</span>
-		</a>
-		<div class="masthead-right">
-			<div class="colophon">
-				<div><strong>{issue}</strong></div>
-				<div>{periodLine}</div>
-				<div>{volumeLine}</div>
-			</div>
+<header class:list={['site-header', variant]}>
+	<div class="bar">
+		<a href="/" class="wordmark" aria-label="nasser1931.com — home">nasser1931</a>
+		<nav class="site-nav" aria-label="Sections">
+			<HeaderLink href="/paper">paper</HeaderLink>
+			<HeaderLink href="/field">field</HeaderLink>
+			<HeaderLink href="/stupidshit">stupidshit</HeaderLink>
+			<HeaderLink href="/reading">reading</HeaderLink>
+			<HeaderLink href="/coach">coach</HeaderLink>
 			<ThemeToggle />
-		</div>
+		</nav>
 	</div>
-	<nav class="section-nav" aria-label="Sections">
-		<HeaderLink href="/paper">paper</HeaderLink>
-		<HeaderLink href="/field">field</HeaderLink>
-		<HeaderLink href="/stupidshit">stupidshit</HeaderLink>
-		<HeaderLink href="/reading">reading</HeaderLink>
-		<HeaderLink href="/coach">coach</HeaderLink>
-	</nav>
 </header>
 
 <style>
-	.masthead-wrap {
+	.site-header {
 		max-width: var(--container-wide);
 		margin: 0 auto;
-		padding: 1.5rem 1.5rem 0;
-	}
-
-	.masthead-wrap.compact {
-		max-width: var(--container-prose);
 		padding: 1.25rem 1.5rem 0;
 	}
 
-	.masthead {
+	.site-header.compact {
+		max-width: var(--container-prose);
+	}
+
+	.bar {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
+		align-items: baseline;
 		gap: 1.5rem;
-		border-top: 4px solid var(--ink);
-		border-bottom: 2px solid var(--ink);
-		padding: 18px 0 14px;
+		border-bottom: 3px solid var(--ink);
+		padding-bottom: 0.75rem;
 	}
 
-	.nameplate {
+	.wordmark {
 		font-family: var(--font-display);
-		font-weight: 900;
-		font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-		font-size: clamp(48px, 9vw, 108px);
-		line-height: 0.85;
-		letter-spacing: -0.04em;
+		font-weight: 700;
+		font-size: 28px;
+		line-height: 1;
+		letter-spacing: -0.01em;
 		color: var(--ink);
 		text-decoration: none;
-		display: block;
-	}
-
-	.nameplate:hover {
-		text-decoration: none;
-		color: var(--ink);
-	}
-
-	.nameplate .line-1,
-	.nameplate .line-2 {
-		display: block;
-	}
-
-	.nameplate .second-line {
-		color: var(--accent);
-	}
-
-	.compact .nameplate {
-		font-size: clamp(36px, 6vw, 64px);
-	}
-
-	.masthead-right {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
-		padding-top: 4px;
 		flex-shrink: 0;
 	}
 
-	.colophon {
-		font-family: var(--font-mono);
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--muted);
-		line-height: 1.6;
-		text-align: right;
+	.wordmark:hover {
+		background: var(--mark);
+		color: var(--on-mark);
 	}
 
-	.colophon strong {
-		color: var(--ink);
-		font-weight: 600;
-	}
-
-	.section-nav {
+	.site-nav {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.25rem 0.75rem;
-		padding: 14px 0 0;
-		font-family: var(--font-mono);
-		font-size: 11px;
-		font-weight: 500;
+		align-items: baseline;
+		gap: 0.25rem 1rem;
+		font-family: var(--font-display);
+		font-size: 15px;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.16em;
+		letter-spacing: 0.04em;
 	}
 
-	.section-nav :global(a) {
+	.site-nav :global(a) {
 		color: var(--muted);
 		text-decoration: none;
-		padding: 4px 2px;
-		transition: color 100ms ease-out;
+		padding: 1px 4px;
+		transition: color 70ms ease-out, background-color 70ms ease-out;
 	}
 
-	.section-nav :global(a:hover) {
-		color: var(--ink);
+	.site-nav :global(a:hover) {
+		color: var(--on-mark);
+		background: var(--mark);
 		text-decoration: none;
 	}
 
-	.section-nav :global(a.active) {
-		color: var(--accent);
+	.site-nav :global(a.active) {
+		color: var(--on-mark);
+		background: var(--mark);
 	}
 
 	@media (max-width: 720px) {
-		.masthead-wrap { padding: 1rem 1rem 0; }
-		.colophon { font-size: 10px; }
-		.nameplate { font-size: clamp(40px, 14vw, 72px); }
-		.compact .nameplate { font-size: clamp(28px, 9vw, 48px); }
-	}
-
-	@media (max-width: 480px) {
-		.colophon { display: none; }
-		.section-nav { gap: 0.25rem 0.5rem; font-size: 10px; }
+		.site-header { padding: 1rem 1rem 0; }
+		.bar {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+		.site-nav { font-size: 14px; gap: 0.25rem 0.75rem; }
 	}
 </style>

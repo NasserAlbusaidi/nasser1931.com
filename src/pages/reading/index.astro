@@ -30,8 +30,6 @@ for (const b of finished) {
 	if (!finishedByYear.has(y)) finishedByYear.set(y, []);
 	finishedByYear.get(y)!.push(b);
 }
-
-const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 ---
 
 <!doctype html>
@@ -42,22 +40,14 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 	<body>
 		<Header />
 		<main>
-			<header class="toc-header">
-				<div>
-					<span class="eyebrow eyebrow-accent">Section · the shelves</span>
-					<h1>Reading.</h1>
-				</div>
-				<div class="toc-meta">
-					<span class="num">{stats.finished_total}</span> finished
-					<span class="bullet">·</span>
-					<span class="num">{stats.finished_this_year}</span> in {thisYear}
+			<header class="page-head">
+				<h1>Reading</h1>
+				<p class="page-meta">
+					{stats.finished_total} finished · {stats.finished_this_year} in {thisYear}
 					{updatedISO && (
-						<>
-							<span class="bullet">·</span>
-							updated <span class="num" data-iso={updatedISO}>recently</span>
-						</>
+						<> · updated <span data-iso={updatedISO}>recently</span></>
 					)}
-				</div>
+				</p>
 			</header>
 
 			{currently.length > 0 && (
@@ -68,10 +58,10 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 							<li>
 								<span class="book-title-cell">
 									<span class="book-title">{b.title}</span>
-									{b.author && <span class="author">· {b.author}</span>}
+									{b.author && <span class="author"> — {b.author}</span>}
 								</span>
 								<span class="meta-cell">
-									{b.started && <time class="started" datetime={b.started}>started {b.started}</time>}
+									{b.started && <time datetime={b.started}>started {b.started}</time>}
 									{b.format && <span class="format">{b.format}</span>}
 								</span>
 							</li>
@@ -91,13 +81,13 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 									<li>
 										<span class="book-title-cell">
 											<span class="book-title">{b.title}</span>
-											{b.author && <span class="author">· {b.author}</span>}
+											{b.author && <span class="author"> — {b.author}</span>}
 										</span>
 										<span class="meta-cell">
 											{b.rating != null && (
-												<span class="rating" aria-label={`${b.rating} of 5 stars`}>{stars(b.rating)}</span>
+												<span class="rating" aria-label={`${b.rating} of 5`}>{b.rating}/5</span>
 											)}
-											{b.finished && <time class="finished" datetime={b.finished}>{b.finished.slice(5).replace('-', '/')}</time>}
+											{b.finished && <time datetime={b.finished}>{b.finished.slice(5)}</time>}
 										</span>
 									</li>
 								))}
@@ -115,7 +105,7 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 							<li>
 								<span class="book-title-cell">
 									<span class="book-title">{b.title}</span>
-									{b.author && <span class="author">· {b.author}</span>}
+									{b.author && <span class="author"> — {b.author}</span>}
 								</span>
 								<span class="meta-cell">
 									{b.format && <span class="format">{b.format}</span>}
@@ -127,7 +117,7 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 			)}
 
 			{currently.length === 0 && finished.length === 0 && wantTo.length === 0 && (
-				<p class="empty"><em>The list is being plumbed in from Notion. Books will appear here once the integration is connected.</em></p>
+				<p class="empty">The list syncs from Notion. Books will appear once the integration is connected.</p>
 			)}
 		</main>
 		<Footer />
@@ -152,78 +142,46 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 
 		<style>
 			main {
-				max-width: var(--container-wide);
+				max-width: var(--container-prose);
 				margin: 0 auto;
-				padding: 2.5rem 1.5rem 4rem;
+				padding: 2rem 1.5rem 4rem;
 			}
 
-			.toc-header {
+			.page-head {
 				display: flex;
-				align-items: flex-end;
+				align-items: baseline;
 				justify-content: space-between;
 				gap: 1.5rem;
-				padding-bottom: 1rem;
-				border-bottom: 2px solid var(--ink);
-				margin-bottom: 1.5rem;
+				margin-bottom: 1rem;
 			}
 
-			.toc-header h1 {
-				font-family: var(--font-display);
-				font-weight: 900;
-				font-variation-settings: "opsz" 9, "SOFT" 0, "WONK" 0;
-				font-size: clamp(40px, 7vw, 88px);
-				line-height: 0.9;
-				letter-spacing: -0.03em;
-				margin: 0.5rem 0 0;
-			}
-
-			.eyebrow {
-				display: block;
-			}
-
-			.toc-meta {
+			.page-meta {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
-				font-size: 11px;
-				text-transform: uppercase;
-				letter-spacing: 0.12em;
+				font-size: 13px;
 				color: var(--muted);
+				margin: 0;
 				white-space: nowrap;
-				padding-bottom: 0.5rem;
-				display: flex;
-				gap: 0.4em;
-				align-items: baseline;
 			}
-
-			.toc-meta .num { color: var(--ink); }
-			.toc-meta .bullet { color: var(--rule); }
 
 			.shelf {
 				margin: 2.5rem 0 0;
 			}
 
 			.shelf-head {
-				font-family: var(--font-display);
-				font-weight: 800;
-				font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
-				font-size: 24px;
-				line-height: 1;
-				letter-spacing: -0.01em;
-				color: var(--ink);
-				margin: 0 0 0.875rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid var(--rule);
+				margin: 0 0 0.25rem;
+				padding-bottom: 0.4rem;
+				border-bottom: 1px solid var(--ink);
 			}
 
 			.year-head {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 11px;
-				font-weight: 500;
-				color: var(--accent);
+				font-family: var(--font-display);
+				font-weight: 600;
+				font-size: 16px;
 				text-transform: uppercase;
-				letter-spacing: 0.18em;
-				margin: 1.75rem 0 0.5rem;
+				letter-spacing: 0.05em;
+				color: var(--muted);
+				margin: 1.5rem 0 0.25rem;
 			}
 
 			.books {
@@ -236,7 +194,7 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 				display: grid;
 				grid-template-columns: 1fr auto;
 				gap: 1rem;
-				padding: 0.625rem 0;
+				padding: 0.55em 0.25em;
 				border-bottom: 1px solid var(--rule);
 				align-items: baseline;
 			}
@@ -255,7 +213,6 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 			.author {
 				color: var(--muted);
 				font-family: var(--font-prose);
-				font-style: normal;
 				font-size: 15px;
 			}
 
@@ -264,47 +221,33 @@ const stars = (n: number | null): string => (n == null ? '' : '★'.repeat(n));
 				gap: 0.875rem;
 				align-items: baseline;
 				flex-shrink: 0;
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--muted);
+				white-space: nowrap;
 			}
 
 			.rating {
-				font-size: 11px;
-				letter-spacing: 0.1em;
-				color: var(--accent);
-				white-space: nowrap;
-			}
-
-			.finished,
-			.started {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 11px;
-				color: var(--muted);
-				letter-spacing: 0.06em;
-				white-space: nowrap;
+				color: var(--ink);
 			}
 
 			.format {
-				font-family: var(--font-mono);
-				font-size: 10px;
-				color: var(--muted);
-				text-transform: uppercase;
-				letter-spacing: 0.14em;
-				white-space: nowrap;
+				text-transform: lowercase;
 			}
 
 			.empty {
-				font-family: var(--font-prose);
-				font-style: italic;
-				font-size: 17px;
+				font-family: var(--font-ui);
+				font-size: 15px;
 				color: var(--muted);
 				margin: 2rem 0;
 			}
 
 			@media (max-width: 540px) {
-				.toc-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-				.toc-meta { padding-bottom: 0; flex-wrap: wrap; white-space: normal; }
+				.page-head { flex-direction: column; gap: 0.25rem; }
+				.page-meta { white-space: normal; }
 				.books li { grid-template-columns: 1fr; }
-				.meta-cell { padding-top: 0.25rem; }
+				.meta-cell { padding-top: 0.15rem; }
 			}
 		</style>
 	</body>
