@@ -101,6 +101,8 @@ jobs:
       - name: Build
         if: steps.commit.outputs.committed == 'true'
         run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Firebase Hosting
         if: steps.commit.outputs.committed == 'true'

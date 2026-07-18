@@ -9,6 +9,10 @@ import training from '../data/training.json';
 import builds from '../data/builds.json';
 import coach from '../data/coach.json';
 import bank from '../data/workout-bank.json';
+// next-race.json is data-driven and hidden until real. Filled shape:
+//   { "race": { "name": "...", "date": "YYYY-MM-DD", "url": "https://..." | null } }
+// When race is null the Next-race cell doesn't render at all.
+import nextRace from '../data/next-race.json';
 import { classifyState, getScheduleContext, pickWorkout } from '../scripts/cycling-engine.mjs';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
@@ -48,6 +52,31 @@ const formFlag = form === 'fresh' ? 'flag-green' : form === 'fatigued' ? 'flag-a
 
 // ---- Live proof: build timestamp, rendered relative client-side ----
 const buildISO = new Date().toISOString();
+
+// ---- Live proof: last public push across my repos (build-time, guarded) ----
+// Excludes forks and this site's own repo (bot data-refresh pushes would
+// otherwise pin the cell to nasser1931.com forever). Any failure → null,
+// and the cell falls back to the build-timestamp "Last deploy" form.
+let lastShip = null;
+try {
+	const headers = { 'User-Agent': 'nasser1931.com', Accept: 'application/vnd.github+json' };
+	if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+	const res = await fetch(
+		'https://api.github.com/users/NasserAlbusaidi/repos?sort=pushed&per_page=15&type=owner',
+		{ headers, signal: AbortSignal.timeout(4000) },
+	);
+	if (res.ok) {
+		const repos = await res.json();
+		const repo = Array.isArray(repos)
+			? repos.find((r) => !r.fork && r.name !== 'nasser1931.com')
+			: null;
+		if (repo) {
+			lastShip = { name: repo.name, pushed_at: repo.pushed_at, html_url: repo.html_url };
+		}
+	}
+} catch {
+	lastShip = null;
+}
 
 // ---- Selected builds (featured, source order) ----
 const featuredBuilds = (builds.builds ?? []).filter((b) => b.featured);
@@ -95,7 +124,7 @@ const readingShelf =
 					systems I built.
 				</p>
 
-				<div class="proof-strip" role="group" aria-label="Live signals">
+				<div class={`proof-strip${nextRace.race ? ' has-race' : ''}`} role="group" aria-label="Live signals">
 					<div class="proof-cell">
 						<span class="proof-key label">Form</span>
 						<span class="proof-val">
@@ -115,12 +144,52 @@ const readingShelf =
 						)}
 					</a>
 
-					<div class="proof-cell">
-						<span class="proof-key label">Last deploy</span>
-						<span class="proof-val">
-							<span data-iso={buildISO}>just now</span>
-						</span>
-					</div>
+					{lastShip ? (
+						<a
+							class="proof-cell proof-link"
+							href={lastShip.html_url}
+							target="_blank"
+							rel="noopener"
+						>
+							<span class="proof-key label">Last ship</span>
+							<span class="proof-val">
+								{lastShip.name}
+								<span class="proof-sub" data-iso={lastShip.pushed_at}>just now</span>
+							</span>
+						</a>
+					) : (
+						<div class="proof-cell">
+							<span class="proof-key label">Last deploy</span>
+							<span class="proof-val">
+								<span data-iso={buildISO}>just now</span>
+							</span>
+						</div>
+					)}
+
+					{nextRace.race && (
+						nextRace.race.url ? (
+							<a
+								class="proof-cell proof-link"
+								href={nextRace.race.url}
+								target="_blank"
+								rel="noopener"
+							>
+								<span class="proof-key label">Next race</span>
+								<span class="proof-val">
+									{nextRace.race.name}
+									<span class="proof-sub" data-iso={`${nextRace.race.date}T00:00:00Z`}>—</span>
+								</span>
+							</a>
+						) : (
+							<div class="proof-cell">
+								<span class="proof-key label">Next race</span>
+								<span class="proof-val">
+									{nextRace.race.name}
+									<span class="proof-sub" data-iso={`${nextRace.race.date}T00:00:00Z`}>—</span>
+								</span>
+							</div>
+						)
+					)}
 				</div>
 			</section>
 
@@ -313,6 +382,10 @@ const readingShelf =
 				border-bottom: 1px solid var(--ink);
 			}
 
+			.proof-strip.has-race {
+				grid-template-columns: repeat(4, 1fr);
+			}
+
 			.proof-cell {
 				display: flex;
 				flex-direction: column;
@@ -365,7 +438,8 @@ const readingShelf =
 			}
 
 			@media (max-width: 720px) {
-				.proof-strip {
+				.proof-strip,
+				.proof-strip.has-race {
 					grid-template-columns: 1fr;
 				}
 				.proof-cell {
@@ -470,12 +544,16 @@ const readingShelf =
 					var now = Date.now();
 					var then = Date.parse(iso);
 					if (isNaN(then)) return '';
-					var diff = Math.max(0, now - then);
 					var min = 60 * 1000,
 						hr = 60 * min,
 						day = 24 * hr,
 						week = 7 * day,
 						month = 30 * day;
+					// Future date → race-clock countdown, e.g. "T−4d".
+					if (then > now) {
+						return 'T−' + Math.max(1, Math.ceil((then - now) / day)) + 'd';
+					}
+					var diff = now - then;
 					if (diff < min) return 'just now';
 					if (diff < hr) return Math.max(1, Math.round(diff / min)) + 'm ago';
 					if (diff < day) return Math.round(diff / hr) + 'h ago';
