@@ -1,0 +1,148 @@
+{
+  "updated": "2026-07-18",
+  "builds": [
+    {
+      "slug": "coach-engine",
+      "name": "Coach engine",
+      "year": 2026,
+      "status": "live",
+      "summary": "Daily cycling-coach engine — classifies recovery state from wellness signals and picks today's workout from a 22-workout bank. Running live on /coach.",
+      "stack": ["Python", "JavaScript"],
+      "url": "/coach",
+      "repo": null,
+      "featured": true
+    },
+    {
+      "slug": "silent-creep",
+      "name": "The Silent Creep",
+      "year": 2026,
+      "status": "shipped",
+      "summary": "1,300-day N=1 study: did training earn caloric license, or did intake quietly drift +387 kcal/day? Six guardrails, all the data.",
+      "stack": ["Python", "PyMC"],
+      "url": "/paper",
+      "repo": null,
+      "featured": true
+    },
+    {
+      "slug": "macrofactor-mcp",
+      "name": "macrofactor-mcp",
+      "year": 2026,
+      "status": "live",
+      "summary": "MCP server combining MacroFactor nutrition with Garmin training data — a local fueling and recovery decision engine.",
+      "stack": ["Python", "MCP"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/macrofactor-mcp",
+      "featured": true
+    },
+    {
+      "slug": "rihla",
+      "name": "Rihla",
+      "year": 2026,
+      "status": "wip",
+      "summary": "Flutter app for groups, events, and shared finances. Offline-first; settles group debts with minimum-transaction graph simplification.",
+      "stack": ["Flutter", "Dart"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/Rihla",
+      "featured": true
+    },
+    {
+      "slug": "nasser1931",
+      "name": "nasser1931.com",
+      "year": 2026,
+      "status": "live",
+      "summary": "This site — Astro static build with five self-updating data pipelines: training pulse, coach state, paper sync, Notion posts, reading list.",
+      "stack": ["Astro", "Firebase"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/nasser1931.com",
+      "featured": true
+    },
+    {
+      "slug": "mizan",
+      "name": "mizan",
+      "year": 2026,
+      "status": "live",
+      "summary": "Local dashboard for Claude Code + Codex usage that catches wrong-account leaks. Zero dependencies, nothing leaves your machine.",
+      "stack": ["JavaScript"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/mizan",
+      "featured": false
+    },
+    {
+      "slug": "readiness-engine",
+      "name": "Readiness Engine",
+      "year": 2026,
+      "status": "live",
+      "summary": "Daily training-readiness score from intervals.icu wellness data, pushed straight to your calendar.",
+      "stack": ["Python"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/Readiness-Engine",
+      "featured": false
+    },
+    {
+      "slug": "claude-md",
+      "name": "claude.md",
+      "year": 2026,
+      "status": "live",
+      "summary": "A gold-standard global CLAUDE.md for Claude Code — five mechanics for config the model actually follows, plus a template.",
+      "stack": [],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/claude.md",
+      "featured": false
+    },
+    {
+      "slug": "omanclimate",
+      "name": "OmanClimate",
+      "year": 2026,
+      "status": "wip",
+      "summary": "Reproducible climate atlas for Oman — ERA5 reanalysis, NOAA OISST, and station data.",
+      "stack": ["Python"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/OmanClimate",
+      "featured": false
+    },
+    {
+      "slug": "einsteins-travel-bureau",
+      "name": "Einstein's Travel Bureau",
+      "year": 2026,
+      "status": "live",
+      "summary": "Time-dilation sandbox dressed as a vintage travel agency — real SR+GR math behind brochures, boarding passes, and a multi-observer laboratory.",
+      "stack": ["React", "TypeScript"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/einsteins-travel-bureau",
+      "featured": false
+    },
+    {
+      "slug": "bite-pos",
+      "name": "Bite POS",
+      "year": 2026,
+      "status": "parked",
+      "summary": "Laravel POS for restaurants — QR menus, kitchen display, split payments, Stripe billing.",
+      "stack": ["Laravel", "Livewire"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/pos-system",
+      "featured": false
+    },
+    {
+      "slug": "inventory",
+      "name": "Inventory",
+      "year": 2026,
+      "status": "parked",
+      "summary": "Ledger-based warehouse management — double-entry stock movements, multi-channel sales, P&L tracking.",
+      "stack": ["Laravel"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/Inventory",
+      "featured": false
+    },
+    {
+      "slug": "invoice-ar",
+      "name": "invoice-ar",
+      "year": 2026,
+      "status": "live",
+      "summary": "GCC-compliant bilingual Arabic + English invoice PDF generator for Node.js. JSON in, PDF out.",
+      "stack": ["Node.js"],
+      "url": null,
+      "repo": "https://github.com/NasserAlbusaidi/invoice-ar",
+      "featured": false
+    }
+  ]
+}

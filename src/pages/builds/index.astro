@@ -1,0 +1,163 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import buildsData from '../../data/builds.json';
+
+type Build = {
+	slug: string;
+	name: string;
+	year: number;
+	status: 'live' | 'wip' | 'shipped' | 'parked';
+	summary: string;
+	stack: string[];
+	url: string | null;
+	repo: string | null;
+	featured: boolean;
+};
+
+const STATUS_ORDER: Record<Build['status'], number> = {
+	live: 0,
+	wip: 1,
+	shipped: 2,
+	parked: 3,
+};
+
+const builds: Build[] = [...(buildsData.builds as Build[])].sort((a, b) => {
+	const s = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
+	if (s !== 0) return s;
+	if (b.year !== a.year) return b.year - a.year;
+	return a.name.localeCompare(b.name);
+});
+
+// Prefer the live/site link; fall back to the repo. Null on both → non-link row.
+const hrefFor = (b: Build) => b.url ?? b.repo ?? null;
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title="Builds — Nasser Al Busaidi"
+			description="Everything I've built — live tools, work in progress, shipped studies, and parked experiments."
+		/>
+	</head>
+	<body>
+		<Header />
+		<main class="board">
+			<section aria-label="Builds">
+				<div class="section-top">
+					<span class="label">Builds</span>
+				</div>
+				<p class="dek">
+					Things I've shipped, things in progress, things honestly parked.
+				</p>
+
+				<div class="results-head" aria-hidden="true">
+					<span>Year</span>
+					<span>Build</span>
+					<span>Status</span>
+				</div>
+				<ul class="results">
+					{builds.map((b) => {
+						const href = hrefFor(b);
+						const cells = (
+							<>
+								<span class="row-date">{b.year}</span>
+								<span class="row-body">
+									<span class="row-title">{b.name}</span>
+									<span class="row-summary">{b.summary}</span>
+									{b.stack.length > 0 && (
+										<span class="row-stack">{b.stack.join(' · ')}</span>
+									)}
+								</span>
+								<span class="row-meta">{b.status}</span>
+							</>
+						);
+						return (
+							<li class:list={[b.status === 'parked' && 'is-parked']}>
+								{href ? (
+									isExternal(href) ? (
+										<a class="row" href={href} target="_blank" rel="noopener">
+											{cells}
+										</a>
+									) : (
+										<a class="row" href={href}>{cells}</a>
+									)
+								) : (
+									<div class="row row-static">{cells}</div>
+								)}
+							</li>
+						);
+					})}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+
+		<style>
+			.board {
+				max-width: var(--container-wide);
+				margin: 0 auto;
+				padding: 1.5rem 1.5rem 4rem;
+				display: flex;
+				flex-direction: column;
+				gap: 3.5rem;
+			}
+
+			@media (max-width: 720px) {
+				.board { padding: 1rem 1rem 3rem; gap: 2.5rem; }
+			}
+
+			.section-top {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				gap: 1rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid var(--ink);
+				margin-bottom: 1rem;
+			}
+
+			.section-top .label {
+				color: var(--ink);
+			}
+
+			.dek {
+				font-family: var(--font-ui);
+				font-size: 17px;
+				line-height: 1.55;
+				color: var(--ink);
+				max-width: 52ch;
+				margin: 0 0 2rem;
+			}
+
+			/* Stack line sits under the summary, mono + muted like a data cell. */
+			.row-stack {
+				display: block;
+				margin-top: 0.35em;
+				font-family: var(--font-mono);
+				font-feature-settings: "tnum" 1;
+				font-size: 12px;
+				color: var(--muted);
+			}
+
+			.results a.row:hover .row-stack {
+				color: var(--on-mark);
+			}
+
+			/* Non-link rows (nothing public to point at) — no hover flood. */
+			.row-static {
+				cursor: default;
+			}
+
+			/* Parked builds read slightly muted but stay legible. */
+			.is-parked .row-title,
+			.is-parked .row-body { color: var(--muted); }
+			.results a.row:hover .row-title { color: var(--on-mark); }
+			.is-parked a.row:hover .row-title,
+			.is-parked a.row:hover .row-body { color: var(--on-mark); }
+		</style>
+	</body>
+</html>
