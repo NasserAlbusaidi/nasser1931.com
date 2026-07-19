@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-18T13:38:39.404Z",
+  "updated": "2026-07-19T03:36:52.234Z",
   "form": "fatigued",
-  "form_tsb": -14.2,
-  "weekly_hours": 6.9,
-  "weekly_tss": 309,
+  "form_tsb": -10.5,
+  "weekly_hours": 7.2,
+  "weekly_tss": 283,
   "recent": [
+    {
+      "date": "2026-07-19",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 59
+    },
     {
       "date": "2026-07-18",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Brick Run 12min (easy)",
       "distance_km": 1.8,
       "duration_min": 12
-    },
-    {
-      "date": "2026-07-18",
-      "type": "bike",
-      "name": "Recovery Spin 30min",
-      "distance_km": 12.9,
-      "duration_min": 31
     }
   ]
 }
