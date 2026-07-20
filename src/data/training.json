@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-20T03:51:13.210Z",
+  "updated": "2026-07-20T19:51:15.686Z",
   "form": "fatigued",
-  "form_tsb": -14.3,
-  "weekly_hours": 7.2,
-  "weekly_tss": 283,
+  "form_tsb": -10.8,
+  "weekly_hours": 6.9,
+  "weekly_tss": 266,
   "recent": [
+    {
+      "date": "2026-07-20",
+      "type": "bike",
+      "name": "Threshold 3x10min @ 95% FTP",
+      "distance_km": 17.4,
+      "duration_min": 35
+    },
     {
       "date": "2026-07-19",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 29
-    },
-    {
-      "date": "2026-07-18",
-      "type": "run",
-      "name": "Brick Run 12min (easy)",
-      "distance_km": 1.8,
-      "duration_min": 12
     }
   ]
 }
