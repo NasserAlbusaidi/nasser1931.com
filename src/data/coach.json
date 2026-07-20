@@ -9,11 +9,11 @@
     "rhr": 49,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 24.935673,
-    "atl": 39.231293,
-    "ramp_rate": 2.5717964,
-    "ctl_load": 71.0,
-    "atl_load": 71.0,
+    "ctl": 24.182768,
+    "atl": 34.971386,
+    "ramp_rate": 1.8188915,
+    "ctl_load": 39.0,
+    "atl_load": 39.0,
     "weight": 79.599,
     "fatigue": null,
     "stress": null,
@@ -22,7 +22,7 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -14.3,
+    "tsb": -10.8,
     "tsb_category": "overreaching",
     "ramp_rate_category": "low",
     "days_since_hard": null,
@@ -33,9 +33,25 @@
     "eftp_oldest_ride_date": "2026-07-07",
     "eftp_trend_window_delta": -2,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 5
+    "ride_count_14d": 6
   },
   "recent_activities": [
+    {
+      "date": "2026-07-20",
+      "type": "Ride",
+      "name": "Threshold 3x10min @ 95% FTP",
+      "if": 0.8212560000000001,
+      "tss": 39,
+      "duration_min": 34.7,
+      "distance_km": 17.4,
+      "avg_w": 155,
+      "np": 170,
+      "avg_hr": 147,
+      "ef": 1.1564626,
+      "vi": 1.0967742,
+      "eftp": 203,
+      "device_watts": true
+    },
     {
       "date": "2026-07-18",
       "type": "Ride",
@@ -117,7 +133,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-20T14:08:12",
+  "_fetched_at": "2026-07-20T19:44:50",
   "_today": "2026-07-20",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
