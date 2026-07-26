@@ -117,7 +117,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-26T02:53:31",
+  "_fetched_at": "2026-07-26T08:27:42",
   "_today": "2026-07-26",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
