@@ -9,11 +9,11 @@
     "rhr": 51,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 22.70859,
-    "atl": 24.42402,
-    "ramp_rate": -1.4741783,
-    "ctl_load": 0.0,
-    "atl_load": 0.0,
+    "ctl": 24.038355,
+    "atl": 32.26873,
+    "ramp_rate": -0.144413,
+    "ctl_load": 78.0,
+    "atl_load": 78.0,
     "weight": 81.16,
     "fatigue": null,
     "stress": null,
@@ -22,10 +22,10 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -1.7,
+    "tsb": -8.2,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": 3,
+    "days_since_hard": 0,
     "days_since_long": 10,
     "days_since_vo2": null,
     "eftp_current": 203,
@@ -33,9 +33,25 @@
     "eftp_oldest_ride_date": "2026-07-13",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 5
+    "ride_count_14d": 6
   },
   "recent_activities": [
+    {
+      "date": "2026-07-27",
+      "type": "Ride",
+      "name": "As Seeb Road Cycling",
+      "if": 0.90338165,
+      "tss": 78,
+      "duration_min": 57.1,
+      "distance_km": 30.6,
+      "avg_w": 171,
+      "np": 187,
+      "avg_hr": 164,
+      "ef": 1.1402439,
+      "vi": 1.0935673,
+      "eftp": 203,
+      "device_watts": true
+    },
     {
       "date": "2026-07-24",
       "type": "Ride",
@@ -117,7 +133,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-27T14:37:14",
+  "_fetched_at": "2026-07-27T19:28:05",
   "_today": "2026-07-27",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
