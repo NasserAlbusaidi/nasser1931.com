@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-27T03:51:18.741Z",
+  "updated": "2026-07-27T14:53:14.809Z",
   "form": "neutral",
-  "form_tsb": -1.7,
-  "weekly_hours": 4.6,
-  "weekly_tss": 136,
+  "form_tsb": -8.2,
+  "weekly_hours": 5.5,
+  "weekly_tss": 214,
   "recent": [
+    {
+      "date": "2026-07-27",
+      "type": "bike",
+      "name": "As Seeb Road Cycling",
+      "distance_km": 30.6,
+      "duration_min": 57
+    },
     {
       "date": "2026-07-26",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 24
-    },
-    {
-      "date": "2026-07-24",
-      "type": "bike",
-      "name": "Bawshar Road Cycling",
-      "distance_km": 28,
-      "duration_min": 55
     }
   ]
 }
