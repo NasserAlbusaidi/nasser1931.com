@@ -1,14 +1,21 @@
 {
-  "updated": "2026-07-27T19:45:42.546Z",
+  "updated": "2026-07-28T03:22:01.487Z",
   "form": "neutral",
-  "form_tsb": -8.2,
-  "weekly_hours": 5,
-  "weekly_tss": 175,
+  "form_tsb": -5.2,
+  "weekly_hours": 5.7,
+  "weekly_tss": 180,
   "recent": [
+    {
+      "date": "2026-07-28",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 43
+    },
     {
       "date": "2026-07-27",
       "type": "bike",
-      "name": "As Seeb Road Cycling",
+      "name": "Recovery Spin 45min",
       "distance_km": 30.6,
       "duration_min": 57
     },
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 70
-    },
-    {
-      "date": "2026-07-25",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 24
     }
   ]
 }
