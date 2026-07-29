@@ -1,14 +1,14 @@
 {
-  "updated": "2026-07-29T03:23:22.120Z",
+  "updated": "2026-07-29T08:51:36.234Z",
   "form": "neutral",
-  "form_tsb": -3,
-  "weekly_hours": 5.8,
-  "weekly_tss": 178,
+  "form_tsb": -5.4,
+  "weekly_hours": 5,
+  "weekly_tss": 171,
   "recent": [
     {
       "date": "2026-07-29",
       "type": "workout",
-      "name": "Strength",
+      "name": "Recovery Spin 45min",
       "distance_km": null,
       "duration_min": 54
     },
