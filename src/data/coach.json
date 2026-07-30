@@ -1,20 +1,20 @@
 {
   "wellness": {
     "date": "2026-07-30",
-    "hrv": null,
-    "sleep_hours": null,
-    "sleep_score": null,
-    "sleep_quality": null,
+    "hrv": 39.0,
+    "sleep_hours": 8.78,
+    "sleep_score": 71.0,
+    "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 58,
+    "rhr": 55,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 24.104322,
-    "atl": 31.099552,
-    "ramp_rate": 1.2970028,
+    "ctl": 23.598877,
+    "atl": 28.560741,
+    "ramp_rate": 0.7915573,
     "ctl_load": 0.0,
     "atl_load": 0.0,
-    "weight": null,
+    "weight": 80.589,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,7 +22,7 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -7.0,
+    "tsb": -5.0,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
     "days_since_hard": 3,
@@ -39,7 +39,7 @@
     {
       "date": "2026-07-29",
       "type": "Ride",
-      "name": "As Seeb Road Cycling",
+      "name": "Recovery Spin 45min",
       "if": 0.7439613,
       "tss": 53,
       "duration_min": 57.6,
@@ -133,7 +133,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-07-30T02:29:24",
+  "_fetched_at": "2026-07-30T08:28:19",
   "_today": "2026-07-30",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
