@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-31T03:39:44.767Z",
-  "form": "neutral",
-  "form_tsb": -1.7,
-  "weekly_hours": 6,
-  "weekly_tss": 224,
+  "updated": "2026-07-31T09:12:14.660Z",
+  "form": "fatigued",
+  "form_tsb": -20.5,
+  "weekly_hours": 7.2,
+  "weekly_tss": 328,
   "recent": [
+    {
+      "date": "2026-07-31",
+      "type": "bike",
+      "name": "Easy Z2 60min",
+      "distance_km": 58.7,
+      "duration_min": 125
+    },
     {
       "date": "2026-07-29",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "Recovery Spin 45min",
       "distance_km": null,
       "duration_min": 54
-    },
-    {
-      "date": "2026-07-28",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 43
     }
   ]
 }
