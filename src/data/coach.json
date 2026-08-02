@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-08-01",
-    "hrv": 40.0,
-    "sleep_hours": 8.95,
-    "sleep_score": 76.0,
+    "date": "2026-08-02",
+    "hrv": 43.0,
+    "sleep_hours": 5.88,
+    "sleep_score": 71.0,
     "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 55,
+    "rhr": 57,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 26.430136,
-    "atl": 41.72874,
-    "ramp_rate": 3.1441193,
+    "ctl": 25.808279,
+    "atl": 36.17372,
+    "ramp_rate": 3.0701427,
     "ctl_load": 0.0,
-    "atl_load": 4.0,
-    "weight": 80.639,
+    "atl_load": 0.0,
+    "weight": null,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,18 +22,18 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -15.3,
+    "tsb": -10.4,
     "tsb_category": "overreaching",
     "ramp_rate_category": "ideal",
-    "days_since_hard": 1,
-    "days_since_long": 1,
+    "days_since_hard": 2,
+    "days_since_long": 2,
     "days_since_vo2": null,
     "eftp_current": 202,
     "eftp_oldest_ride_in_window": 203,
-    "eftp_oldest_ride_date": "2026-07-18",
+    "eftp_oldest_ride_date": "2026-07-20",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 5
   },
   "recent_activities": [
     {
@@ -115,26 +115,10 @@
       "vi": 1.0967742,
       "eftp": 203,
       "device_watts": true
-    },
-    {
-      "date": "2026-07-18",
-      "type": "Ride",
-      "name": "Recovery Spin 30min",
-      "if": 0.68115944,
-      "tss": 24,
-      "duration_min": 30.8,
-      "distance_km": 12.9,
-      "avg_w": 116,
-      "np": 141,
-      "avg_hr": 131,
-      "ef": 1.0763359,
-      "vi": 1.2155173,
-      "eftp": 203,
-      "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-01T19:09:32",
-  "_today": "2026-08-01",
+  "_fetched_at": "2026-08-02T02:52:37",
+  "_today": "2026-08-02",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
