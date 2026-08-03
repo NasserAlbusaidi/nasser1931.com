@@ -1,10 +1,17 @@
 {
-  "updated": "2026-08-03T03:41:05.133Z",
+  "updated": "2026-08-03T19:47:31.899Z",
   "form": "fatigued",
-  "form_tsb": -12.9,
-  "weekly_hours": 7.2,
-  "weekly_tss": 328,
+  "form_tsb": -24,
+  "weekly_hours": 7.5,
+  "weekly_tss": 351,
   "recent": [
+    {
+      "date": "2026-08-03",
+      "type": "bike",
+      "name": "As Seeb Road Cycling",
+      "distance_km": 41.6,
+      "duration_min": 78
+    },
     {
       "date": "2026-08-02",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 31
-    },
-    {
-      "date": "2026-07-31",
-      "type": "bike",
-      "name": "Easy Z2 60min",
-      "distance_km": 58.7,
-      "duration_min": 125
     }
   ]
 }
