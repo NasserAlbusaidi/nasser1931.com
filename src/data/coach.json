@@ -9,12 +9,12 @@
     "rhr": 60,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 28.12325,
-    "atl": 45.740368,
-    "ramp_rate": 4.6504765,
+    "ctl": 26.928564,
+    "atl": 39.73954,
+    "ramp_rate": 3.4557915,
     "ctl_load": 0.0,
     "atl_load": 0.0,
-    "weight": null,
+    "weight": 80.69,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,7 +22,7 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -17.6,
+    "tsb": -12.8,
     "tsb_category": "overreaching",
     "ramp_rate_category": "ideal",
     "days_since_hard": 1,
@@ -39,7 +39,7 @@
     {
       "date": "2026-08-03",
       "type": "Ride",
-      "name": "As Seeb Road Cycling",
+      "name": "Sweetspot 3x8min @ 88% FTP",
       "if": 0.884058,
       "tss": 101,
       "duration_min": 77.6,
@@ -117,7 +117,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-04T02:38:04",
+  "_fetched_at": "2026-08-04T08:38:09",
   "_today": "2026-08-04",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
