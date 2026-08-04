@@ -1,14 +1,14 @@
 {
-  "updated": "2026-08-04T03:25:47.718Z",
+  "updated": "2026-08-04T08:49:51.442Z",
   "form": "fatigued",
-  "form_tsb": -17.6,
-  "weekly_hours": 7.5,
-  "weekly_tss": 351,
+  "form_tsb": -12.8,
+  "weekly_hours": 6.8,
+  "weekly_tss": 346,
   "recent": [
     {
       "date": "2026-08-03",
       "type": "bike",
-      "name": "As Seeb Road Cycling",
+      "name": "Sweetspot 3x8min @ 88% FTP",
       "distance_km": 41.6,
       "duration_min": 78
     },
