@@ -1,10 +1,17 @@
 {
-  "updated": "2026-08-05T19:46:11.103Z",
+  "updated": "2026-08-06T03:23:35.454Z",
   "form": "fatigued",
-  "form_tsb": -15.5,
-  "weekly_hours": 6.9,
-  "weekly_tss": 351,
+  "form_tsb": -11.3,
+  "weekly_hours": 7.7,
+  "weekly_tss": 358,
   "recent": [
+    {
+      "date": "2026-08-06",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 51
+    },
     {
       "date": "2026-08-05",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 43
-    },
-    {
-      "date": "2026-08-03",
-      "type": "bike",
-      "name": "Sweetspot 3x8min @ 88% FTP",
-      "distance_km": 41.6,
-      "duration_min": 78
     }
   ]
 }
