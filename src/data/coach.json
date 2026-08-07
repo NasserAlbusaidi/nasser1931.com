@@ -9,12 +9,12 @@
     "rhr": 58,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 26.463104,
-    "atl": 33.298214,
-    "ramp_rate": -0.6038723,
-    "ctl_load": 0.0,
-    "atl_load": 0.0,
-    "weight": null,
+    "ctl": 29.87471,
+    "atl": 52.600918,
+    "ramp_rate": 2.8077335,
+    "ctl_load": 145.0,
+    "atl_load": 145.0,
+    "weight": 81.37,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,20 +22,36 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -6.8,
-    "tsb_category": "productive",
+    "tsb": -22.7,
+    "tsb_category": "overreaching",
     "ramp_rate_category": "low",
     "days_since_hard": 4,
-    "days_since_long": 7,
+    "days_since_long": 0,
     "days_since_vo2": null,
     "eftp_current": 202,
     "eftp_oldest_ride_in_window": 203,
     "eftp_oldest_ride_date": "2026-07-24",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "recent_activities": [
+    {
+      "date": "2026-08-07",
+      "type": "Ride",
+      "name": "Bawshar Road Cycling",
+      "if": 0.8357488,
+      "tss": 145,
+      "duration_min": 124.2,
+      "distance_km": 60.1,
+      "avg_w": 147,
+      "np": 173,
+      "avg_hr": 158,
+      "ef": 1.0949367,
+      "vi": 1.1768707,
+      "eftp": 202,
+      "device_watts": true
+    },
     {
       "date": "2026-08-05",
       "type": "Ride",
@@ -133,7 +149,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-07T00:02:11",
+  "_fetched_at": "2026-08-07T07:17:22",
   "_today": "2026-08-07",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
