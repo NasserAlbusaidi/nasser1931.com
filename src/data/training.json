@@ -1,7 +1,7 @@
 {
-  "updated": "2026-08-08T13:03:36.692Z",
+  "updated": "2026-08-08T18:49:12.942Z",
   "form": "fatigued",
-  "form_tsb": -19.1,
+  "form_tsb": -16.7,
   "weekly_hours": 7.5,
   "weekly_tss": 330,
   "recent": [
@@ -15,7 +15,7 @@
     {
       "date": "2026-08-07",
       "type": "bike",
-      "name": "Bawshar Road Cycling",
+      "name": "Recovery Spin 45min",
       "distance_km": 60.1,
       "duration_min": 124
     },
