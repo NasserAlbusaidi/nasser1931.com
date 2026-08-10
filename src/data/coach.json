@@ -9,11 +9,11 @@
     "rhr": 48,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 29.038702,
-    "atl": 41.850323,
-    "ramp_rate": 1.4612885,
-    "ctl_load": 52.0,
-    "atl_load": 52.0,
+    "ctl": 29.48574,
+    "atl": 44.379642,
+    "ramp_rate": 1.9083271,
+    "ctl_load": 71.0,
+    "atl_load": 71.0,
     "weight": 81.919,
     "fatigue": null,
     "stress": null,
@@ -22,10 +22,10 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -12.8,
+    "tsb": -14.9,
     "tsb_category": "overreaching",
     "ramp_rate_category": "low",
-    "days_since_hard": 7,
+    "days_since_hard": 0,
     "days_since_long": 3,
     "days_since_vo2": null,
     "eftp_current": 202,
@@ -33,9 +33,25 @@
     "eftp_oldest_ride_date": "2026-07-27",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "recent_activities": [
+    {
+      "date": "2026-08-10",
+      "type": "Ride",
+      "name": "Sweetspot 3x8min @ 88% FTP",
+      "if": 0.884058,
+      "tss": 71,
+      "duration_min": 54.4,
+      "distance_km": 28.7,
+      "avg_w": 162,
+      "np": 183,
+      "avg_hr": 155,
+      "ef": 1.1806451,
+      "vi": 1.1296296,
+      "eftp": 202,
+      "device_watts": true
+    },
     {
       "date": "2026-08-07",
       "type": "Ride",
@@ -133,7 +149,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-10T13:10:10",
+  "_fetched_at": "2026-08-10T18:58:19",
   "_today": "2026-08-10",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
