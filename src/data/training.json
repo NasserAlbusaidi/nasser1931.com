@@ -1,10 +1,17 @@
 {
-  "updated": "2026-08-18T01:42:00.332Z",
-  "form": "neutral",
-  "form_tsb": -9.3,
-  "weekly_hours": 7.7,
-  "weekly_tss": 333,
+  "updated": "2026-08-18T06:55:22.713Z",
+  "form": "fatigued",
+  "form_tsb": -10.1,
+  "weekly_hours": 8.3,
+  "weekly_tss": 339,
   "recent": [
+    {
+      "date": "2026-08-18",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 39
+    },
     {
       "date": "2026-08-17",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 56
-    },
-    {
-      "date": "2026-08-15",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 25
     }
   ]
 }
