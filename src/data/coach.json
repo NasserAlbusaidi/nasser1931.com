@@ -9,21 +9,21 @@
     "rhr": 45,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 30.982798,
-    "atl": 40.40438,
-    "ramp_rate": 1.7624035,
-    "ctl_load": 26.0,
-    "atl_load": 35.0,
+    "ctl": 31.147495,
+    "atl": 41.33624,
+    "ramp_rate": 1.9271011,
+    "ctl_load": 33.0,
+    "atl_load": 42.0,
     "weight": 80.98,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 51.0
   },
   "computed": {
-    "tsb": -9.4,
-    "tsb_category": "productive",
+    "tsb": -10.2,
+    "tsb_category": "overreaching",
     "ramp_rate_category": "low",
     "days_since_hard": 9,
     "days_since_long": 5,
@@ -33,9 +33,25 @@
     "eftp_oldest_ride_date": "2026-08-05",
     "eftp_trend_window_delta": 0,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "recent_activities": [
+    {
+      "date": "2026-08-19",
+      "type": "Ride",
+      "name": "Recovery Spin 45min",
+      "if": 0.6618358000000001,
+      "tss": 33,
+      "duration_min": 45.2,
+      "distance_km": 19.7,
+      "avg_w": 108,
+      "np": 137,
+      "avg_hr": 121,
+      "ef": 1.1322314,
+      "vi": 1.2685186,
+      "eftp": 202,
+      "device_watts": true
+    },
     {
       "date": "2026-08-17",
       "type": "Ride",
@@ -133,7 +149,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-19T12:48:58",
+  "_fetched_at": "2026-08-19T18:36:22",
   "_today": "2026-08-19",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
