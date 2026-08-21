@@ -9,33 +9,49 @@
     "rhr": 51,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 29.699043,
-    "atl": 31.063246,
-    "ramp_rate": -3.1975746,
-    "ctl_load": 0.0,
-    "atl_load": 0.0,
+    "ctl": 35.275253,
+    "atl": 62.613182,
+    "ramp_rate": 2.3786354,
+    "ctl_load": 237.0,
+    "atl_load": 237.0,
     "weight": null,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 51.0
   },
   "computed": {
-    "tsb": -1.4,
-    "tsb_category": "productive",
+    "tsb": -27.3,
+    "tsb_category": "high_risk",
     "ramp_rate_category": "low",
     "days_since_hard": 11,
-    "days_since_long": 7,
+    "days_since_long": 0,
     "days_since_vo2": null,
     "eftp_current": 202,
     "eftp_oldest_ride_in_window": 202,
     "eftp_oldest_ride_date": "2026-08-07",
     "eftp_trend_window_delta": 0,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "recent_activities": [
+    {
+      "date": "2026-08-21",
+      "type": "Ride",
+      "name": "friday ride",
+      "if": 0.7826086999999999,
+      "tss": 237,
+      "duration_min": 232.4,
+      "distance_km": 115.8,
+      "avg_w": 119,
+      "np": 162,
+      "avg_hr": 153,
+      "ef": 1.0588236,
+      "vi": 1.3613446,
+      "eftp": 202,
+      "device_watts": true
+    },
     {
       "date": "2026-08-19",
       "type": "Ride",
@@ -133,7 +149,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-21T01:20:41",
+  "_fetched_at": "2026-08-21T06:49:08",
   "_today": "2026-08-21",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
