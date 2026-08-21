@@ -14,7 +14,7 @@
     "ramp_rate": 2.3786354,
     "ctl_load": 237.0,
     "atl_load": 237.0,
-    "weight": null,
+    "weight": 79.739,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -149,7 +149,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-21T06:49:08",
+  "_fetched_at": "2026-08-21T12:49:30",
   "_today": "2026-08-21",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
