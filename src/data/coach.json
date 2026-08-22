@@ -1,12 +1,12 @@
 {
   "wellness": {
     "date": "2026-08-22",
-    "hrv": null,
-    "sleep_hours": null,
-    "sleep_score": null,
-    "sleep_quality": null,
+    "hrv": 58.0,
+    "sleep_hours": 10.3,
+    "sleep_score": 85.0,
+    "sleep_quality": 2,
     "training_readiness": null,
-    "rhr": 52,
+    "rhr": 49,
     "avg_sleeping_hr": null,
     "body_battery": null,
     "ctl": 35.386417,
@@ -133,7 +133,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-22T01:16:06",
+  "_fetched_at": "2026-08-22T06:40:42",
   "_today": "2026-08-22",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
