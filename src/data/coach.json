@@ -9,23 +9,23 @@
     "rhr": 47,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 34.608097,
-    "atl": 52.49634,
-    "ramp_rate": 2.7558079,
-    "ctl_load": 75.0,
-    "atl_load": 75.0,
+    "ctl": 34.4434,
+    "atl": 51.564484,
+    "ramp_rate": 2.5911121,
+    "ctl_load": 68.0,
+    "atl_load": 68.0,
     "weight": 81.98,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 51.0
   },
   "computed": {
-    "tsb": -17.9,
+    "tsb": -17.1,
     "tsb_category": "overreaching",
     "ramp_rate_category": "low",
-    "days_since_hard": 14,
+    "days_since_hard": 0,
     "days_since_long": 3,
     "days_since_vo2": null,
     "eftp_current": 202,
@@ -33,9 +33,25 @@
     "eftp_oldest_ride_date": "2026-08-10",
     "eftp_trend_window_delta": 0,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "recent_activities": [
+    {
+      "date": "2026-08-24",
+      "type": "Ride",
+      "name": "Sweetspot 2x20min @ 90% FTP",
+      "if": 0.8550725,
+      "tss": 68,
+      "duration_min": 55.6,
+      "distance_km": 27.8,
+      "avg_w": 158,
+      "np": 177,
+      "avg_hr": 156,
+      "ef": 1.1346154,
+      "vi": 1.1202532,
+      "eftp": 202,
+      "device_watts": true
+    },
     {
       "date": "2026-08-21",
       "type": "Ride",
@@ -133,7 +149,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-24T12:51:46",
+  "_fetched_at": "2026-08-24T18:40:33",
   "_today": "2026-08-24",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
