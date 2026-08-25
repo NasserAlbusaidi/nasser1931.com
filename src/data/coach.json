@@ -6,7 +6,7 @@
     "sleep_score": 74.0,
     "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 49,
+    "rhr": 48,
     "avg_sleeping_hr": null,
     "body_battery": null,
     "ctl": 33.633007,
@@ -133,7 +133,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-25T06:50:08",
+  "_fetched_at": "2026-08-25T12:49:04",
   "_today": "2026-08-25",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
