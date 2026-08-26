@@ -9,12 +9,12 @@
     "rhr": 51,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 33.920662,
-    "atl": 45.69003,
-    "ramp_rate": 2.7731667,
-    "ctl_load": 40.0,
-    "atl_load": 40.0,
-    "weight": null,
+    "ctl": 32.979527,
+    "atl": 40.897636,
+    "ramp_rate": 1.8320312,
+    "ctl_load": 0.0,
+    "atl_load": 4.0,
+    "weight": 80.25,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,8 +22,8 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -11.8,
-    "tsb_category": "overreaching",
+    "tsb": -7.9,
+    "tsb_category": "productive",
     "ramp_rate_category": "low",
     "days_since_hard": 2,
     "days_since_long": 5,
@@ -133,7 +133,7 @@
       "device_watts": true
     }
   ],
-  "_fetched_at": "2026-08-26T01:21:19",
+  "_fetched_at": "2026-08-26T06:51:14",
   "_today": "2026-08-26",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
