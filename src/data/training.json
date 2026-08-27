@@ -1,10 +1,17 @@
 {
-  "updated": "2026-08-26T19:55:34.214Z",
-  "form": "neutral",
-  "form_tsb": -7.9,
-  "weekly_hours": 8,
-  "weekly_tss": 333,
+  "updated": "2026-08-27T08:55:16.144Z",
+  "form": "fatigued",
+  "form_tsb": -19.6,
+  "weekly_hours": 11.2,
+  "weekly_tss": 482,
   "recent": [
+    {
+      "date": "2026-08-27",
+      "type": "bike",
+      "name": "Friday",
+      "distance_km": 105.2,
+      "duration_min": 190
+    },
     {
       "date": "2026-08-26",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 50
-    },
-    {
-      "date": "2026-08-24",
-      "type": "bike",
-      "name": "Sweetspot 2x20min @ 90% FTP",
-      "distance_km": 27.8,
-      "duration_min": 56
     }
   ]
 }
