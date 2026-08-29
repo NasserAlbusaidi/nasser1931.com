@@ -1,10 +1,17 @@
 {
-  "updated": "2026-08-28T22:10:21.469Z",
+  "updated": "2026-08-29T06:52:12.762Z",
   "form": "fatigued",
-  "form_tsb": -11.9,
-  "weekly_hours": 7.3,
-  "weekly_tss": 245,
+  "form_tsb": -13.5,
+  "weekly_hours": 8.5,
+  "weekly_tss": 300,
   "recent": [
+    {
+      "date": "2026-08-29",
+      "type": "bike",
+      "name": "Easy Z2 60min",
+      "distance_km": 33,
+      "duration_min": 69
+    },
     {
       "date": "2026-08-27",
       "type": "bike",
@@ -18,13 +25,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 39
-    },
-    {
-      "date": "2026-08-25",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 50
     }
   ]
 }
