@@ -10,11 +10,11 @@
     "avg_sleeping_hr": null,
     "body_battery": null,
     "ctl": 34.511204,
-    "atl": 43.402695,
+    "atl": 43.935184,
     "ramp_rate": 0.87635803,
     "ctl_load": 0.0,
-    "atl_load": 0.0,
-    "weight": null,
+    "atl_load": 4.0,
+    "weight": 78.769,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,12 +22,372 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -8.9,
+    "tsb": -9.4,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": 6,
+    "days_since_hard": 3,
+    "days_since_intensity_hard": 6,
+    "days_since_load_hard": 3,
+    "days_since_recovery_costly": 3,
+    "days_since_unknown_ride_load": null,
     "days_since_long": 3,
     "days_since_vo2": null,
+    "quality_load_guard": {
+      "status": "CLEAR",
+      "window_days": 2,
+      "days_since": null,
+      "trigger": "NO_BLOCKING_RIDE_IN_WINDOW",
+      "reason_codes": [
+        "NO_BLOCKING_RIDE_IN_2_DAY_WINDOW"
+      ],
+      "source_activity": null
+    },
+    "ride_load_classifications": [
+      {
+        "id": "i180859833",
+        "date": "2026-08-29",
+        "name": "Easy Z2 60min",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Easy Z2 60min",
+          "recorded_tss": 55.0,
+          "duration_min": 69.1,
+          "intensity_factor": 0.691,
+          "variability_index": 1.163,
+          "average_hr_bpm": 141,
+          "max_hr_bpm": 175,
+          "hr_available": true,
+          "heat_c": 35.9,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
+      {
+        "id": "i180227184",
+        "date": "2026-08-27",
+        "name": "Friday",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": true,
+        "load_hard_status": "HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT"
+        ],
+        "context": {
+          "name": "Friday",
+          "recorded_tss": 149.0,
+          "duration_min": 189.8,
+          "intensity_factor": 0.686,
+          "variability_index": 1.303,
+          "average_hr_bpm": 146,
+          "max_hr_bpm": 180,
+          "hr_available": true,
+          "heat_c": 35.8,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
+      {
+        "id": "i179266237",
+        "date": "2026-08-24",
+        "name": "Sweetspot 2x20min @ 90% FTP",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Sweetspot 2x20min @ 90% FTP",
+          "recorded_tss": 68.0,
+          "duration_min": 55.6,
+          "intensity_factor": 0.855,
+          "variability_index": 1.12,
+          "average_hr_bpm": 156,
+          "max_hr_bpm": 174,
+          "hr_available": true,
+          "heat_c": 41.8,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
+      {
+        "id": "i178166881",
+        "date": "2026-08-21",
+        "name": "friday ride",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": true,
+        "load_hard_status": "HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT"
+        ],
+        "context": {
+          "name": "friday ride",
+          "recorded_tss": 237.0,
+          "duration_min": 232.4,
+          "intensity_factor": 0.783,
+          "variability_index": 1.361,
+          "average_hr_bpm": 153,
+          "max_hr_bpm": 184,
+          "hr_available": true,
+          "heat_c": 37.6,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
+      {
+        "id": "i177578566",
+        "date": "2026-08-19",
+        "name": "Recovery Spin 45min",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "recovery",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "RECOVERY_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Recovery Spin 45min",
+          "recorded_tss": 33.0,
+          "duration_min": 45.2,
+          "intensity_factor": 0.662,
+          "variability_index": 1.269,
+          "average_hr_bpm": 121,
+          "max_hr_bpm": 156,
+          "hr_available": true,
+          "heat_c": 42.3,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
+      {
+        "id": "i176801175",
+        "date": "2026-08-17",
+        "name": "Easy Z2 60min",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Easy Z2 60min",
+          "recorded_tss": 52.0,
+          "duration_min": 66.8,
+          "intensity_factor": 0.681,
+          "variability_index": 1.102,
+          "average_hr_bpm": 132,
+          "max_hr_bpm": 156,
+          "hr_available": true,
+          "heat_c": 40.6,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
+    ],
     "eftp_current": 202,
     "eftp_oldest_ride_in_window": 202,
     "eftp_oldest_ride_date": "2026-08-17",
@@ -35,11 +395,23 @@
     "eftp_trend_status": "stable",
     "ride_count_14d": 6
   },
+  "annual_cycling": {
+    "year": 2026,
+    "as_of": "2026-08-30",
+    "distance_km": 2977.75,
+    "activity_count": 73,
+    "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
+    "source_status": "FRESH",
+    "stale": false,
+    "last_success_as_of": "2026-08-30"
+  },
   "recent_activities": [
     {
+      "id": "i180859833",
       "date": "2026-08-29",
       "type": "Ride",
       "name": "Easy Z2 60min",
+      "intent": null,
       "if": 0.6908212,
       "tss": 55,
       "duration_min": 69.1,
@@ -47,15 +419,71 @@
       "avg_w": 123,
       "np": 143,
       "avg_hr": 141,
+      "max_hr": 175,
       "ef": 1.0141844,
       "vi": 1.1626016,
+      "heat_c": 35.941643,
       "eftp": 202,
-      "device_watts": true
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Easy Z2 60min",
+          "recorded_tss": 55.0,
+          "duration_min": 69.1,
+          "intensity_factor": 0.691,
+          "variability_index": 1.163,
+          "average_hr_bpm": 141,
+          "max_hr_bpm": 175,
+          "hr_available": true,
+          "heat_c": 35.9,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
     },
     {
+      "id": "i180227184",
       "date": "2026-08-27",
       "type": "Ride",
       "name": "Friday",
+      "intent": null,
       "if": 0.6859904,
       "tss": 149,
       "duration_min": 189.8,
@@ -63,15 +491,77 @@
       "avg_w": 109,
       "np": 142,
       "avg_hr": 146,
+      "max_hr": 180,
       "ef": 0.9726027,
       "vi": 1.3027523,
+      "heat_c": 35.839153,
       "eftp": 202,
-      "device_watts": true
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": true,
+        "load_hard_status": "HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT"
+        ],
+        "context": {
+          "name": "Friday",
+          "recorded_tss": 149.0,
+          "duration_min": 189.8,
+          "intensity_factor": 0.686,
+          "variability_index": 1.303,
+          "average_hr_bpm": 146,
+          "max_hr_bpm": 180,
+          "hr_available": true,
+          "heat_c": 35.8,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
     },
     {
+      "id": "i179266237",
       "date": "2026-08-24",
       "type": "Ride",
       "name": "Sweetspot 2x20min @ 90% FTP",
+      "intent": null,
       "if": 0.8550725,
       "tss": 68,
       "duration_min": 55.6,
@@ -79,15 +569,71 @@
       "avg_w": 158,
       "np": 177,
       "avg_hr": 156,
+      "max_hr": 174,
       "ef": 1.1346154,
       "vi": 1.1202532,
+      "heat_c": 41.782875,
       "eftp": 202,
-      "device_watts": true
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Sweetspot 2x20min @ 90% FTP",
+          "recorded_tss": 68.0,
+          "duration_min": 55.6,
+          "intensity_factor": 0.855,
+          "variability_index": 1.12,
+          "average_hr_bpm": 156,
+          "max_hr_bpm": 174,
+          "hr_available": true,
+          "heat_c": 41.8,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
     },
     {
+      "id": "i178166881",
       "date": "2026-08-21",
       "type": "Ride",
       "name": "friday ride",
+      "intent": null,
       "if": 0.7826086999999999,
       "tss": 237,
       "duration_min": 232.4,
@@ -95,15 +641,79 @@
       "avg_w": 119,
       "np": 162,
       "avg_hr": 153,
+      "max_hr": 184,
       "ef": 1.0588236,
       "vi": 1.3613446,
+      "heat_c": 37.559963,
       "eftp": 202,
-      "device_watts": true
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": true,
+        "load_hard_status": "HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "DURATION_AT_OR_ABOVE_180_MIN",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT"
+        ],
+        "context": {
+          "name": "friday ride",
+          "recorded_tss": 237.0,
+          "duration_min": 232.4,
+          "intensity_factor": 0.783,
+          "variability_index": 1.361,
+          "average_hr_bpm": 153,
+          "max_hr_bpm": 184,
+          "hr_available": true,
+          "heat_c": 37.6,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
     },
     {
+      "id": "i177578566",
       "date": "2026-08-19",
       "type": "Ride",
       "name": "Recovery Spin 45min",
+      "intent": null,
       "if": 0.6618358000000001,
       "tss": 33,
       "duration_min": 45.2,
@@ -111,15 +721,71 @@
       "avg_w": 108,
       "np": 137,
       "avg_hr": 121,
+      "max_hr": 156,
       "ef": 1.1322314,
       "vi": 1.2685186,
+      "heat_c": 42.328632,
       "eftp": 202,
-      "device_watts": true
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "recovery",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "RECOVERY_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Recovery Spin 45min",
+          "recorded_tss": 33.0,
+          "duration_min": 45.2,
+          "intensity_factor": 0.662,
+          "variability_index": 1.269,
+          "average_hr_bpm": 121,
+          "max_hr_bpm": 156,
+          "hr_available": true,
+          "heat_c": 42.3,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
     },
     {
+      "id": "i176801175",
       "date": "2026-08-17",
       "type": "Ride",
       "name": "Easy Z2 60min",
+      "intent": null,
       "if": 0.68115944,
       "tss": 52,
       "duration_min": 66.8,
@@ -127,13 +793,74 @@
       "avg_w": 128,
       "np": 141,
       "avg_hr": 132,
+      "max_hr": 156,
       "ef": 1.0681819,
       "vi": 1.1015625,
+      "heat_c": 40.62862,
       "eftp": 202,
-      "device_watts": true
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Easy Z2 60min",
+          "recorded_tss": 52.0,
+          "duration_min": 66.8,
+          "intensity_factor": 0.681,
+          "variability_index": 1.102,
+          "average_hr_bpm": 132,
+          "max_hr_bpm": 156,
+          "hr_available": true,
+          "heat_c": 40.6,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
     }
   ],
-  "_fetched_at": "2026-08-30T04:09:52",
+  "_activity_source": {
+    "status": "FRESH",
+    "stale": false,
+    "error_code": null,
+    "error_type": null,
+    "last_success_as_of": "2026-08-30"
+  },
+  "_fetched_at": "2026-08-30T11:26:47",
   "_today": "2026-08-30",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,

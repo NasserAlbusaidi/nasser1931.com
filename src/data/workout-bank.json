@@ -150,6 +150,40 @@
     "target_if": 0.65,
     "target_tss": 50
   },
+  "easy_z2_75": {
+    "category": "recovery",
+    "dsl": "Aerobic base extension, still low cost. HR cap 138 bpm. Stay conversational and remove time before adding intensity.\n\nWarmup\n- 5m 50-65% 85rpm\n\nMain\n- 65m 65% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 75,
+    "min_state": "red",
+    "name": "Easy Z2 75min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.65,
+    "target_tss": 55
+  },
+  "endurance_z2_105": {
+    "category": "endurance",
+    "dsl": "Aerobic capacity volume. Keep this conversational and smooth; no tempo drift. HR cap 140 bpm. Fuel 60-80g carbs/hr.\n\nWarmup\n- 10m 50-65% 85rpm\n\nMain\n- 90m 65-70% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 105,
+    "min_state": "amber",
+    "name": "Endurance Z2 105min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "recovery",
+    "target_if": 0.7,
+    "target_tss": 85
+  },
   "ftp_20": {
     "category": "test",
     "dsl": "20-min best-effort. FTP ~ 95% of 20-min avg. Negative split \u2014 first 5min slightly below target.\n\nWarmup\n- 15m 50-70% 90rpm\n- 5m 80% 95rpm\n- 5m 50% 88rpm\n- 3m 105% 95rpm\n- 5m 50% 88rpm\n\nMain\n- 20m 100% 95rpm\n\nCooldown\n- 10m 55-45% 85rpm",
@@ -658,6 +692,21 @@
     "slot": "quality",
     "target_if": 0.93,
     "target_tss": 95
+  },
+  "threshold_tt_35": {
+    "category": "test",
+    "dsl": "Standardized threshold/CP-equivalent validation. Use resistance, slope, or manual mode with ERG OFF for the 35-minute main effort; the 100% step is a visual pacing reference, not a power cap. Use the same trainer, calibration, cooling, fueling, and time-of-day protocol. Record the full 35-minute average power directly; do NOT apply a 0.95 conversion from 20-minute power. Pace for the highest sustainable 35-minute average, not an early spike. If readiness is red, replace with easy Z2 and move the validation to the next suitable window.\n\nWarmup\n- 15m 50-70% 90rpm\n- 3m 85% 95rpm\n- 3m 50% 88rpm\n- 1m 100% 95rpm\n- 3m 50% 88rpm\n- 5m 50% 88rpm\n\nMain\n- 35m 100% 90rpm\n\nCooldown\n- 10m 55-45% 85rpm",
+    "duration_min": 75,
+    "min_state": "green",
+    "name": "Standardized Threshold TT 35min",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "very_high",
+    "slot": "test",
+    "target_if": 1.0,
+    "target_tss": 75
   },
   "vo2_5x4": {
     "category": "vo2",
