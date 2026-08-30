@@ -1,9 +1,14 @@
 {
-  "updated": "2026-07-24T13:47:04.916Z",
-  "last_edit": "2026-07-17T16:14:20+04:00",
+  "updated": "2026-08-30T04:33:03.275Z",
+  "last_edit": "2026-07-17T18:01:04+04:00",
   "commits_7d": 0,
-  "commits_total": 7,
+  "commits_total": 8,
   "recent": [
+    {
+      "sha": "87f06e3",
+      "date": "2026-07-17T18:01:04+04:00",
+      "message": "chore: renormalize pre-gitattributes CSV blobs to LF"
+    },
     {
       "sha": "958b098",
       "date": "2026-07-17T16:14:20+04:00",
