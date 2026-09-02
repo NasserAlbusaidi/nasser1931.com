@@ -1,10 +1,17 @@
 {
-  "updated": "2026-09-01T20:55:51.679Z",
+  "updated": "2026-09-02T04:10:44.434Z",
   "form": "neutral",
-  "form_tsb": -7.4,
-  "weekly_hours": 8.4,
-  "weekly_tss": 292,
+  "form_tsb": -7.9,
+  "weekly_hours": 8.9,
+  "weekly_tss": 296,
   "recent": [
+    {
+      "date": "2026-09-02",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 32
+    },
     {
       "date": "2026-09-01",
       "type": "workout",
@@ -18,13 +25,6 @@
       "name": "Threshold 3x8min @ 95% FTP",
       "distance_km": 28.1,
       "duration_min": 52
-    },
-    {
-      "date": "2026-08-30",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 39
     }
   ]
 }
