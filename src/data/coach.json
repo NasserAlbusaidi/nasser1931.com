@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-09-02",
+    "date": "2026-09-04",
     "hrv": 53.0,
-    "sleep_hours": 6.94,
-    "sleep_score": 76.0,
+    "sleep_hours": 5.67,
+    "sleep_score": 68.0,
     "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 52,
+    "rhr": 53,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 35.049072,
-    "atl": 45.409847,
-    "ramp_rate": 2.0695457,
-    "ctl_load": 62.0,
-    "atl_load": 66.0,
-    "weight": 78.779,
+    "ctl": 37.029408,
+    "atl": 55.38463,
+    "ramp_rate": 2.1602936,
+    "ctl_load": 183.0,
+    "atl_load": 183.0,
+    "weight": 78.349,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,27 +22,160 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -10.4,
+    "tsb": -18.4,
     "tsb_category": "overreaching",
     "ramp_rate_category": "low",
-    "days_since_hard": 6,
-    "days_since_intensity_hard": 9,
-    "days_since_load_hard": 6,
-    "days_since_recovery_costly": 6,
+    "days_since_hard": 0,
+    "days_since_intensity_hard": 0,
+    "days_since_load_hard": 0,
+    "days_since_recovery_costly": 0,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 6,
+    "days_since_long": 0,
     "days_since_vo2": null,
     "quality_load_guard": {
-      "status": "CLEAR",
+      "status": "BLOCK",
       "window_days": 2,
-      "days_since": null,
-      "trigger": "NO_BLOCKING_RIDE_IN_WINDOW",
+      "days_since": 0,
+      "trigger": "INTENSITY_AND_LOAD_HARD",
       "reason_codes": [
-        "NO_BLOCKING_RIDE_IN_2_DAY_WINDOW"
+        "IF_AT_OR_ABOVE_0_85",
+        "RECORDED_TSS_AT_OR_ABOVE_150",
+        "COMBINED_TSS_AND_DURATION_LOAD",
+        "LONG_SURGY_RIDE_LOAD",
+        "LONG_HOT_RIDE_LOAD_CONTEXT",
+        "RIDE_INTENT_UNKNOWN",
+        "RECORDED_TSS_USED_UNADJUSTED",
+        "DURATION_AVAILABLE",
+        "HR_AVAILABLE",
+        "VI_AVAILABLE",
+        "HEAT_CONTEXT_PRESENT"
       ],
-      "source_activity": null
+      "source_activity": {
+        "id": "i183074943",
+        "date": "2026-09-04",
+        "name": "Friday",
+        "classification": {
+          "model_version": "furnace-ride-load-v1",
+          "thresholds": {
+            "intensity_hard_if": 0.85,
+            "load_hard_tss": 150.0,
+            "load_hard_duration_min": 180.0,
+            "combined_load_tss": 120.0,
+            "combined_load_duration_min": 120.0,
+            "variable_ride_vi": 1.15,
+            "group_ride_vi": 1.08,
+            "hot_ride_c": 33.0
+          },
+          "intent": "unknown",
+          "intent_source": "missing",
+          "intensity_hard": true,
+          "intensity_hard_status": "HARD",
+          "load_hard": true,
+          "load_hard_status": "HARD",
+          "recovery_costly": true,
+          "recovery_costly_status": "COSTLY",
+          "quality_blocking": true,
+          "quality_guard_status": "BLOCK",
+          "reason_codes": [
+            "IF_AT_OR_ABOVE_0_85",
+            "RECORDED_TSS_AT_OR_ABOVE_150",
+            "COMBINED_TSS_AND_DURATION_LOAD",
+            "LONG_SURGY_RIDE_LOAD",
+            "LONG_HOT_RIDE_LOAD_CONTEXT",
+            "RIDE_INTENT_UNKNOWN",
+            "RECORDED_TSS_USED_UNADJUSTED",
+            "DURATION_AVAILABLE",
+            "HR_AVAILABLE",
+            "VI_AVAILABLE",
+            "HEAT_CONTEXT_PRESENT"
+          ],
+          "intensity_reason_codes": [
+            "IF_AT_OR_ABOVE_0_85"
+          ],
+          "load_reason_codes": [
+            "RECORDED_TSS_AT_OR_ABOVE_150",
+            "COMBINED_TSS_AND_DURATION_LOAD",
+            "LONG_SURGY_RIDE_LOAD",
+            "LONG_HOT_RIDE_LOAD_CONTEXT"
+          ],
+          "context": {
+            "name": "Friday",
+            "recorded_tss": 183.0,
+            "duration_min": 122.8,
+            "intensity_factor": 0.944,
+            "variability_index": 1.375,
+            "average_hr_bpm": 155,
+            "max_hr_bpm": 190,
+            "hr_available": true,
+            "heat_c": 35.9,
+            "wind_adjustment_applied": false,
+            "causal_injury_inference": false
+          }
+        }
+      }
     },
     "ride_load_classifications": [
+      {
+        "id": "i183074943",
+        "date": "2026-09-04",
+        "name": "Friday",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": true,
+        "load_hard_status": "HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT"
+        ],
+        "context": {
+          "name": "Friday",
+          "recorded_tss": 183.0,
+          "duration_min": 122.8,
+          "intensity_factor": 0.944,
+          "variability_index": 1.375,
+          "average_hr_bpm": 155,
+          "max_hr_bpm": 190,
+          "hr_available": true,
+          "heat_c": 35.9,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
       {
         "id": "i182525740",
         "date": "2026-09-02",
@@ -90,61 +223,6 @@
           "duration_min": 51.7,
           "intensity_factor": 0.601,
           "variability_index": 1.008,
-          "average_hr_bpm": 125,
-          "max_hr_bpm": 153,
-          "hr_available": true,
-          "heat_c": null,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      },
-      {
-        "id": "i182527311",
-        "date": "2026-09-02",
-        "name": "Indoor Cycling",
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_MISSING"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Indoor Cycling",
-          "recorded_tss": 31.0,
-          "duration_min": 51.3,
-          "intensity_factor": 0.601,
-          "variability_index": 1.017,
           "average_hr_bpm": 125,
           "max_hr_bpm": 153,
           "hr_available": true,
@@ -441,11 +519,46 @@
           "wind_adjustment_applied": false,
           "causal_injury_inference": false
         }
-      },
-      {
-        "id": "i177578566",
-        "date": "2026-08-19",
-        "name": "Recovery Spin 45min",
+      }
+    ],
+    "eftp_current": 202,
+    "eftp_oldest_ride_in_window": 202,
+    "eftp_oldest_ride_date": "2026-08-21",
+    "eftp_trend_window_delta": 0,
+    "eftp_trend_status": "stable",
+    "ride_count_14d": 7
+  },
+  "annual_cycling": {
+    "year": 2026,
+    "as_of": "2026-09-04",
+    "distance_km": 3088.16,
+    "activity_count": 76,
+    "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
+    "source_status": "FRESH",
+    "stale": false,
+    "last_success_as_of": "2026-09-04"
+  },
+  "recent_activities": [
+    {
+      "id": "i183074943",
+      "date": "2026-09-04",
+      "type": "Ride",
+      "name": "Friday",
+      "intent": null,
+      "if": 0.9444444,
+      "tss": 183,
+      "duration_min": 122.8,
+      "distance_km": 58.7,
+      "avg_w": 136,
+      "np": 187,
+      "avg_hr": 155,
+      "max_hr": 190,
+      "ef": 1.2064517,
+      "vi": 1.375,
+      "heat_c": 35.87669,
+      "eftp": 202,
+      "device_watts": true,
+      "ride_load_classification": {
         "model_version": "furnace-ride-load-v1",
         "thresholds": {
           "intensity_hard_if": 0.85,
@@ -457,20 +570,23 @@
           "group_ride_vi": 1.08,
           "hot_ride_c": 33.0
         },
-        "intent": "recovery",
-        "intent_source": "name",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": true,
+        "load_hard_status": "HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
         "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RECOVERY_INTENT_FROM_NAME",
+          "IF_AT_OR_ABOVE_0_85",
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT",
+          "RIDE_INTENT_UNKNOWN",
           "RECORDED_TSS_USED_UNADJUSTED",
           "DURATION_AVAILABLE",
           "HR_AVAILABLE",
@@ -478,44 +594,29 @@
           "HEAT_CONTEXT_PRESENT"
         ],
         "intensity_reason_codes": [
-          "IF_BELOW_0_85"
+          "IF_AT_OR_ABOVE_0_85"
         ],
         "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+          "RECORDED_TSS_AT_OR_ABOVE_150",
+          "COMBINED_TSS_AND_DURATION_LOAD",
+          "LONG_SURGY_RIDE_LOAD",
+          "LONG_HOT_RIDE_LOAD_CONTEXT"
         ],
         "context": {
-          "name": "Recovery Spin 45min",
-          "recorded_tss": 33.0,
-          "duration_min": 45.2,
-          "intensity_factor": 0.662,
-          "variability_index": 1.269,
-          "average_hr_bpm": 121,
-          "max_hr_bpm": 156,
+          "name": "Friday",
+          "recorded_tss": 183.0,
+          "duration_min": 122.8,
+          "intensity_factor": 0.944,
+          "variability_index": 1.375,
+          "average_hr_bpm": 155,
+          "max_hr_bpm": 190,
           "hr_available": true,
-          "heat_c": 42.3,
+          "heat_c": 35.9,
           "wind_adjustment_applied": false,
           "causal_injury_inference": false
         }
       }
-    ],
-    "eftp_current": 202,
-    "eftp_oldest_ride_in_window": 202,
-    "eftp_oldest_ride_date": "2026-08-19",
-    "eftp_trend_window_delta": 0,
-    "eftp_trend_status": "stable",
-    "ride_count_14d": 8
-  },
-  "annual_cycling": {
-    "year": 2026,
-    "as_of": "2026-09-02",
-    "distance_km": 3065.79,
-    "activity_count": 76,
-    "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
-    "source_status": "FRESH",
-    "stale": false,
-    "last_success_as_of": "2026-09-02"
-  },
-  "recent_activities": [
+    },
     {
       "id": "i182525740",
       "date": "2026-09-02",
@@ -579,78 +680,6 @@
           "duration_min": 51.7,
           "intensity_factor": 0.601,
           "variability_index": 1.008,
-          "average_hr_bpm": 125,
-          "max_hr_bpm": 153,
-          "hr_available": true,
-          "heat_c": null,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      }
-    },
-    {
-      "id": "i182527311",
-      "date": "2026-09-02",
-      "type": "VirtualRide",
-      "name": "Indoor Cycling",
-      "intent": null,
-      "if": 0.6010101,
-      "tss": 31,
-      "duration_min": 51.3,
-      "distance_km": 36.3,
-      "avg_w": 117,
-      "np": 119,
-      "avg_hr": 125,
-      "max_hr": 153,
-      "ef": 0.952,
-      "vi": 1.017094,
-      "heat_c": null,
-      "eftp": 202,
-      "device_watts": true,
-      "ride_load_classification": {
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_MISSING"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Indoor Cycling",
-          "recorded_tss": 31.0,
-          "duration_min": 51.3,
-          "intensity_factor": 0.601,
-          "variability_index": 1.017,
           "average_hr_bpm": 125,
           "max_hr_bpm": 153,
           "hr_available": true,
@@ -1033,78 +1062,6 @@
           "causal_injury_inference": false
         }
       }
-    },
-    {
-      "id": "i177578566",
-      "date": "2026-08-19",
-      "type": "Ride",
-      "name": "Recovery Spin 45min",
-      "intent": null,
-      "if": 0.6618358000000001,
-      "tss": 33,
-      "duration_min": 45.2,
-      "distance_km": 19.7,
-      "avg_w": 108,
-      "np": 137,
-      "avg_hr": 121,
-      "max_hr": 156,
-      "ef": 1.1322314,
-      "vi": 1.2685186,
-      "heat_c": 42.328632,
-      "eftp": 202,
-      "device_watts": true,
-      "ride_load_classification": {
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "recovery",
-        "intent_source": "name",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RECOVERY_INTENT_FROM_NAME",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_PRESENT"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Recovery Spin 45min",
-          "recorded_tss": 33.0,
-          "duration_min": 45.2,
-          "intensity_factor": 0.662,
-          "variability_index": 1.269,
-          "average_hr_bpm": 121,
-          "max_hr_bpm": 156,
-          "hr_available": true,
-          "heat_c": 42.3,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      }
     }
   ],
   "_activity_source": {
@@ -1112,10 +1069,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-02"
+    "last_success_as_of": "2026-09-04"
   },
-  "_fetched_at": "2026-09-02T16:07:48",
-  "_today": "2026-09-02",
+  "_fetched_at": "2026-09-04T10:47:54",
+  "_today": "2026-09-04",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
