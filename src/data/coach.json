@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-09-04",
-    "hrv": 53.0,
-    "sleep_hours": 5.67,
-    "sleep_score": 68.0,
-    "sleep_quality": 3,
+    "date": "2026-09-05",
+    "hrv": null,
+    "sleep_hours": null,
+    "sleep_score": null,
+    "sleep_quality": null,
     "training_readiness": null,
-    "rhr": 53,
+    "rhr": 54,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 37.029408,
-    "atl": 55.38463,
-    "ramp_rate": 2.1602936,
-    "ctl_load": 183.0,
-    "atl_load": 183.0,
-    "weight": 78.349,
+    "ctl": 37.0993,
+    "atl": 53.336594,
+    "ramp_rate": 1.7565422,
+    "ctl_load": 40.0,
+    "atl_load": 40.0,
+    "weight": null,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,20 +22,20 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -18.4,
+    "tsb": -16.2,
     "tsb_category": "overreaching",
     "ramp_rate_category": "low",
-    "days_since_hard": 0,
-    "days_since_intensity_hard": 0,
-    "days_since_load_hard": 0,
-    "days_since_recovery_costly": 0,
+    "days_since_hard": 1,
+    "days_since_intensity_hard": 1,
+    "days_since_load_hard": 1,
+    "days_since_recovery_costly": 1,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 0,
+    "days_since_long": 1,
     "days_since_vo2": null,
     "quality_load_guard": {
       "status": "BLOCK",
       "window_days": 2,
-      "days_since": 0,
+      "days_since": 1,
       "trigger": "INTENSITY_AND_LOAD_HARD",
       "reason_codes": [
         "IF_AT_OR_ABOVE_0_85",
@@ -456,87 +456,24 @@
           "wind_adjustment_applied": false,
           "causal_injury_inference": false
         }
-      },
-      {
-        "id": "i178166881",
-        "date": "2026-08-21",
-        "name": "friday ride",
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": true,
-        "load_hard_status": "HARD",
-        "recovery_costly": true,
-        "recovery_costly_status": "COSTLY",
-        "quality_blocking": true,
-        "quality_guard_status": "BLOCK",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "RECORDED_TSS_AT_OR_ABOVE_150",
-          "DURATION_AT_OR_ABOVE_180_MIN",
-          "COMBINED_TSS_AND_DURATION_LOAD",
-          "LONG_SURGY_RIDE_LOAD",
-          "LONG_HOT_RIDE_LOAD_CONTEXT",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_PRESENT"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "RECORDED_TSS_AT_OR_ABOVE_150",
-          "DURATION_AT_OR_ABOVE_180_MIN",
-          "COMBINED_TSS_AND_DURATION_LOAD",
-          "LONG_SURGY_RIDE_LOAD",
-          "LONG_HOT_RIDE_LOAD_CONTEXT"
-        ],
-        "context": {
-          "name": "friday ride",
-          "recorded_tss": 237.0,
-          "duration_min": 232.4,
-          "intensity_factor": 0.783,
-          "variability_index": 1.361,
-          "average_hr_bpm": 153,
-          "max_hr_bpm": 184,
-          "hr_available": true,
-          "heat_c": 37.6,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
       }
     ],
     "eftp_current": 202,
     "eftp_oldest_ride_in_window": 202,
-    "eftp_oldest_ride_date": "2026-08-21",
+    "eftp_oldest_ride_date": "2026-08-24",
     "eftp_trend_window_delta": 0,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 7
+    "ride_count_14d": 6
   },
   "annual_cycling": {
     "year": 2026,
-    "as_of": "2026-09-04",
+    "as_of": "2026-09-05",
     "distance_km": 3088.16,
     "activity_count": 76,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
-    "last_success_as_of": "2026-09-04"
+    "last_success_as_of": "2026-09-05"
   },
   "recent_activities": [
     {
@@ -982,86 +919,6 @@
           "causal_injury_inference": false
         }
       }
-    },
-    {
-      "id": "i178166881",
-      "date": "2026-08-21",
-      "type": "Ride",
-      "name": "friday ride",
-      "intent": null,
-      "if": 0.7826086999999999,
-      "tss": 237,
-      "duration_min": 232.4,
-      "distance_km": 115.8,
-      "avg_w": 119,
-      "np": 162,
-      "avg_hr": 153,
-      "max_hr": 184,
-      "ef": 1.0588236,
-      "vi": 1.3613446,
-      "heat_c": 37.559963,
-      "eftp": 202,
-      "device_watts": true,
-      "ride_load_classification": {
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": true,
-        "load_hard_status": "HARD",
-        "recovery_costly": true,
-        "recovery_costly_status": "COSTLY",
-        "quality_blocking": true,
-        "quality_guard_status": "BLOCK",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "RECORDED_TSS_AT_OR_ABOVE_150",
-          "DURATION_AT_OR_ABOVE_180_MIN",
-          "COMBINED_TSS_AND_DURATION_LOAD",
-          "LONG_SURGY_RIDE_LOAD",
-          "LONG_HOT_RIDE_LOAD_CONTEXT",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_PRESENT"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "RECORDED_TSS_AT_OR_ABOVE_150",
-          "DURATION_AT_OR_ABOVE_180_MIN",
-          "COMBINED_TSS_AND_DURATION_LOAD",
-          "LONG_SURGY_RIDE_LOAD",
-          "LONG_HOT_RIDE_LOAD_CONTEXT"
-        ],
-        "context": {
-          "name": "friday ride",
-          "recorded_tss": 237.0,
-          "duration_min": 232.4,
-          "intensity_factor": 0.783,
-          "variability_index": 1.361,
-          "average_hr_bpm": 153,
-          "max_hr_bpm": 184,
-          "hr_available": true,
-          "heat_c": 37.6,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      }
     }
   ],
   "_activity_source": {
@@ -1069,10 +926,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-04"
+    "last_success_as_of": "2026-09-05"
   },
-  "_fetched_at": "2026-09-04T20:24:10",
-  "_today": "2026-09-04",
+  "_fetched_at": "2026-09-05T03:24:33",
+  "_today": "2026-09-05",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
