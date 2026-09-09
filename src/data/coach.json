@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-09-07",
-    "hrv": 54.0,
-    "sleep_hours": 4.45,
-    "sleep_score": 62.0,
+    "date": "2026-09-09",
+    "hrv": 52.0,
+    "sleep_hours": 6.78,
+    "sleep_score": 70.0,
     "sleep_quality": 3,
     "training_readiness": null,
     "rhr": 50,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 37.911835,
-    "atl": 57.0622,
-    "ramp_rate": 2.683281,
-    "ctl_load": 146.0,
-    "atl_load": 146.0,
-    "weight": 78.639,
+    "ctl": 36.95807,
+    "atl": 52.449642,
+    "ramp_rate": 2.6383743,
+    "ctl_load": 104.0,
+    "atl_load": 112.0,
+    "weight": 78.18,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,15 +22,15 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -19.2,
+    "tsb": -15.5,
     "tsb_category": "overreaching",
     "ramp_rate_category": "low",
-    "days_since_hard": 3,
-    "days_since_intensity_hard": 3,
-    "days_since_load_hard": 3,
-    "days_since_recovery_costly": 3,
+    "days_since_hard": 5,
+    "days_since_intensity_hard": 5,
+    "days_since_load_hard": 5,
+    "days_since_recovery_costly": 5,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 3,
+    "days_since_long": 5,
     "days_since_vo2": null,
     "quality_load_guard": {
       "status": "CLEAR",
@@ -43,6 +43,61 @@
       "source_activity": null
     },
     "ride_load_classifications": [
+      {
+        "id": "i184779747",
+        "date": "2026-09-09",
+        "name": "Easy Z2 60min",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_PRESENT"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Easy Z2 60min",
+          "recorded_tss": 104.0,
+          "duration_min": 109.8,
+          "intensity_factor": 0.752,
+          "variability_index": 1.246,
+          "average_hr_bpm": 153,
+          "max_hr_bpm": 184,
+          "hr_available": true,
+          "heat_c": 35.0,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
       {
         "id": "i184077163",
         "date": "2026-09-07",
@@ -86,61 +141,6 @@
         ],
         "context": {
           "name": "Sweetspot 3x10min @ 88% (trainer)",
-          "recorded_tss": 73.0,
-          "duration_min": 61.1,
-          "intensity_factor": 0.847,
-          "variability_index": 1.096,
-          "average_hr_bpm": 150,
-          "max_hr_bpm": 173,
-          "hr_available": true,
-          "heat_c": null,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      },
-      {
-        "id": "i184079483",
-        "date": "2026-09-07",
-        "name": "Tower Hamlets Virtual Cycling",
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_MISSING"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Tower Hamlets Virtual Cycling",
           "recorded_tss": 73.0,
           "duration_min": 61.1,
           "intensity_factor": 0.847,
@@ -439,11 +439,46 @@
           "wind_adjustment_applied": false,
           "causal_injury_inference": false
         }
-      },
-      {
-        "id": "i179266237",
-        "date": "2026-08-24",
-        "name": "Sweetspot 2x20min @ 90% FTP",
+      }
+    ],
+    "eftp_current": 202,
+    "eftp_oldest_ride_in_window": 202,
+    "eftp_oldest_ride_date": "2026-08-27",
+    "eftp_trend_window_delta": 0,
+    "eftp_trend_status": "stable",
+    "ride_count_14d": 7
+  },
+  "annual_cycling": {
+    "year": 2026,
+    "as_of": "2026-09-09",
+    "distance_km": 3167.49,
+    "activity_count": 78,
+    "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
+    "source_status": "FRESH",
+    "stale": false,
+    "last_success_as_of": "2026-09-09"
+  },
+  "recent_activities": [
+    {
+      "id": "i184779747",
+      "date": "2026-09-09",
+      "type": "Ride",
+      "name": "Easy Z2 60min",
+      "intent": null,
+      "if": 0.7524753,
+      "tss": 104,
+      "duration_min": 109.8,
+      "distance_km": 52.0,
+      "avg_w": 122,
+      "np": 152,
+      "avg_hr": 153,
+      "max_hr": 184,
+      "ef": 0.99346405,
+      "vi": 1.2459016,
+      "heat_c": 34.968674,
+      "eftp": 202,
+      "device_watts": true,
+      "ride_load_classification": {
         "model_version": "furnace-ride-load-v1",
         "thresholds": {
           "intensity_hard_if": 0.85,
@@ -455,20 +490,20 @@
           "group_ride_vi": 1.08,
           "hot_ride_c": 33.0
         },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": true,
-        "intensity_hard_status": "HARD",
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
         "load_hard": false,
         "load_hard_status": "NOT_HARD",
-        "recovery_costly": true,
-        "recovery_costly_status": "COSTLY",
-        "quality_blocking": true,
-        "quality_guard_status": "BLOCK",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
         "reason_codes": [
-          "IF_AT_OR_ABOVE_0_85",
+          "IF_BELOW_0_85",
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
+          "ENDURANCE_INTENT_FROM_NAME",
           "RECORDED_TSS_USED_UNADJUSTED",
           "DURATION_AVAILABLE",
           "HR_AVAILABLE",
@@ -476,44 +511,26 @@
           "HEAT_CONTEXT_PRESENT"
         ],
         "intensity_reason_codes": [
-          "IF_AT_OR_ABOVE_0_85"
+          "IF_BELOW_0_85"
         ],
         "load_reason_codes": [
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
         ],
         "context": {
-          "name": "Sweetspot 2x20min @ 90% FTP",
-          "recorded_tss": 68.0,
-          "duration_min": 55.6,
-          "intensity_factor": 0.855,
-          "variability_index": 1.12,
-          "average_hr_bpm": 156,
-          "max_hr_bpm": 174,
+          "name": "Easy Z2 60min",
+          "recorded_tss": 104.0,
+          "duration_min": 109.8,
+          "intensity_factor": 0.752,
+          "variability_index": 1.246,
+          "average_hr_bpm": 153,
+          "max_hr_bpm": 184,
           "hr_available": true,
-          "heat_c": 41.8,
+          "heat_c": 35.0,
           "wind_adjustment_applied": false,
           "causal_injury_inference": false
         }
       }
-    ],
-    "eftp_current": 202,
-    "eftp_oldest_ride_in_window": 202,
-    "eftp_oldest_ride_date": "2026-08-24",
-    "eftp_trend_window_delta": 0,
-    "eftp_trend_status": "stable",
-    "ride_count_14d": 8
-  },
-  "annual_cycling": {
-    "year": 2026,
-    "as_of": "2026-09-07",
-    "distance_km": 3142.76,
-    "activity_count": 78,
-    "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
-    "source_status": "FRESH",
-    "stale": false,
-    "last_success_as_of": "2026-09-07"
-  },
-  "recent_activities": [
+    },
     {
       "id": "i184077163",
       "date": "2026-09-07",
@@ -573,78 +590,6 @@
         ],
         "context": {
           "name": "Sweetspot 3x10min @ 88% (trainer)",
-          "recorded_tss": 73.0,
-          "duration_min": 61.1,
-          "intensity_factor": 0.847,
-          "variability_index": 1.096,
-          "average_hr_bpm": 150,
-          "max_hr_bpm": 173,
-          "hr_available": true,
-          "heat_c": null,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      }
-    },
-    {
-      "id": "i184079483",
-      "date": "2026-09-07",
-      "type": "VirtualRide",
-      "name": "Tower Hamlets Virtual Cycling",
-      "intent": null,
-      "if": 0.8465346499999999,
-      "tss": 73,
-      "duration_min": 61.1,
-      "distance_km": 27.3,
-      "avg_w": 156,
-      "np": 171,
-      "avg_hr": 150,
-      "max_hr": 173,
-      "ef": 1.14,
-      "vi": 1.0961539,
-      "heat_c": null,
-      "eftp": 202,
-      "device_watts": true,
-      "ride_load_classification": {
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_MISSING"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Tower Hamlets Virtual Cycling",
           "recorded_tss": 73.0,
           "duration_min": 61.1,
           "intensity_factor": 0.847,
@@ -1029,78 +974,6 @@
           "causal_injury_inference": false
         }
       }
-    },
-    {
-      "id": "i179266237",
-      "date": "2026-08-24",
-      "type": "Ride",
-      "name": "Sweetspot 2x20min @ 90% FTP",
-      "intent": null,
-      "if": 0.8550725,
-      "tss": 68,
-      "duration_min": 55.6,
-      "distance_km": 27.8,
-      "avg_w": 158,
-      "np": 177,
-      "avg_hr": 156,
-      "max_hr": 174,
-      "ef": 1.1346154,
-      "vi": 1.1202532,
-      "heat_c": 41.782875,
-      "eftp": 202,
-      "device_watts": true,
-      "ride_load_classification": {
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "unknown",
-        "intent_source": "missing",
-        "intensity_hard": true,
-        "intensity_hard_status": "HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": true,
-        "recovery_costly_status": "COSTLY",
-        "quality_blocking": true,
-        "quality_guard_status": "BLOCK",
-        "reason_codes": [
-          "IF_AT_OR_ABOVE_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_PRESENT"
-        ],
-        "intensity_reason_codes": [
-          "IF_AT_OR_ABOVE_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Sweetspot 2x20min @ 90% FTP",
-          "recorded_tss": 68.0,
-          "duration_min": 55.6,
-          "intensity_factor": 0.855,
-          "variability_index": 1.12,
-          "average_hr_bpm": 156,
-          "max_hr_bpm": 174,
-          "hr_available": true,
-          "heat_c": 41.8,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      }
     }
   ],
   "_activity_source": {
@@ -1108,10 +981,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-07"
+    "last_success_as_of": "2026-09-09"
   },
-  "_fetched_at": "2026-09-07T03:24:02",
-  "_today": "2026-09-07",
+  "_fetched_at": "2026-09-09T10:53:58",
+  "_today": "2026-09-09",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
