@@ -9,11 +9,11 @@
     "rhr": 52,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 40.815617,
-    "atl": 70.96465,
-    "ramp_rate": 3.786209,
-    "ctl_load": 237.0,
-    "atl_load": 237.0,
+    "ctl": 36.933445,
+    "atl": 48.999504,
+    "ramp_rate": -0.095962524,
+    "ctl_load": 72.0,
+    "atl_load": 72.0,
     "weight": 78.699,
     "fatigue": null,
     "stress": null,
@@ -22,9 +22,9 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -30.1,
-    "tsb_category": "high_risk",
-    "ramp_rate_category": "ideal",
+    "tsb": -12.1,
+    "tsb_category": "overreaching",
+    "ramp_rate_category": "low",
     "days_since_hard": 7,
     "days_since_intensity_hard": 7,
     "days_since_load_hard": 7,
@@ -46,7 +46,7 @@
       {
         "id": "i185450337",
         "date": "2026-09-11",
-        "name": "Bawshar Road Cycling",
+        "name": "Friday Long / Group Ride",
         "model_version": "furnace-ride-load-v1",
         "thresholds": {
           "intensity_hard_if": 0.85,
@@ -58,8 +58,8 @@
           "group_ride_vi": 1.08,
           "hot_ride_c": 33.0
         },
-        "intent": "unknown",
-        "intent_source": "missing",
+        "intent": "group",
+        "intent_source": "name",
         "intensity_hard": false,
         "intensity_hard_status": "NOT_HARD",
         "load_hard": false,
@@ -71,7 +71,7 @@
         "reason_codes": [
           "IF_BELOW_0_85",
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
+          "GROUP_INTENT_FROM_NAME",
           "RECORDED_TSS_USED_UNADJUSTED",
           "DURATION_AVAILABLE",
           "HR_AVAILABLE",
@@ -85,7 +85,7 @@
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
         ],
         "context": {
-          "name": "Bawshar Road Cycling",
+          "name": "Friday Long / Group Ride",
           "recorded_tss": 72.0,
           "duration_min": 81.3,
           "intensity_factor": 0.728,
@@ -457,7 +457,7 @@
       "id": "i185450337",
       "date": "2026-09-11",
       "type": "Ride",
-      "name": "Bawshar Road Cycling",
+      "name": "Friday Long / Group Ride",
       "intent": null,
       "if": 0.7277228,
       "tss": 72,
@@ -484,8 +484,8 @@
           "group_ride_vi": 1.08,
           "hot_ride_c": 33.0
         },
-        "intent": "unknown",
-        "intent_source": "missing",
+        "intent": "group",
+        "intent_source": "name",
         "intensity_hard": false,
         "intensity_hard_status": "NOT_HARD",
         "load_hard": false,
@@ -497,7 +497,7 @@
         "reason_codes": [
           "IF_BELOW_0_85",
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "RIDE_INTENT_UNKNOWN",
+          "GROUP_INTENT_FROM_NAME",
           "RECORDED_TSS_USED_UNADJUSTED",
           "DURATION_AVAILABLE",
           "HR_AVAILABLE",
@@ -511,7 +511,7 @@
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
         ],
         "context": {
-          "name": "Bawshar Road Cycling",
+          "name": "Friday Long / Group Ride",
           "recorded_tss": 72.0,
           "duration_min": 81.3,
           "intensity_factor": 0.728,
@@ -971,7 +971,7 @@
     "error_type": null,
     "last_success_as_of": "2026-09-11"
   },
-  "_fetched_at": "2026-09-11T03:29:56",
+  "_fetched_at": "2026-09-11T10:45:55",
   "_today": "2026-09-11",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
