@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-09-11",
-    "hrv": 48.0,
-    "sleep_hours": 4.28,
-    "sleep_score": 51.0,
-    "sleep_quality": 4,
+    "date": "2026-09-12",
+    "hrv": 47.0,
+    "sleep_hours": 8.57,
+    "sleep_score": 79.0,
+    "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 52,
+    "rhr": 50,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 36.933445,
-    "atl": 48.999504,
-    "ramp_rate": -0.095962524,
-    "ctl_load": 72.0,
-    "atl_load": 72.0,
-    "weight": 78.699,
+    "ctl": 36.064465,
+    "atl": 42.476585,
+    "ramp_rate": -0.09370422,
+    "ctl_load": 0.0,
+    "atl_load": 0.0,
+    "weight": null,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,15 +22,15 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -12.1,
-    "tsb_category": "overreaching",
+    "tsb": -6.4,
+    "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": 7,
-    "days_since_intensity_hard": 7,
-    "days_since_load_hard": 7,
-    "days_since_recovery_costly": 7,
+    "days_since_hard": 8,
+    "days_since_intensity_hard": 8,
+    "days_since_load_hard": 8,
+    "days_since_recovery_costly": 8,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 7,
+    "days_since_long": 8,
     "days_since_vo2": null,
     "quality_load_guard": {
       "status": "CLEAR",
@@ -444,13 +444,13 @@
   },
   "annual_cycling": {
     "year": 2026,
-    "as_of": "2026-09-11",
+    "as_of": "2026-09-12",
     "distance_km": 3202.59,
     "activity_count": 79,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
-    "last_success_as_of": "2026-09-11"
+    "last_success_as_of": "2026-09-12"
   },
   "recent_activities": [
     {
@@ -969,10 +969,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-11"
+    "last_success_as_of": "2026-09-12"
   },
-  "_fetched_at": "2026-09-11T20:36:58",
-  "_today": "2026-09-11",
+  "_fetched_at": "2026-09-12T03:35:12",
+  "_today": "2026-09-12",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
