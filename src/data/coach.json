@@ -9,11 +9,11 @@
     "rhr": 51,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 36.102154,
-    "atl": 42.67278,
-    "ramp_rate": -0.092113495,
-    "ctl_load": 68.0,
-    "atl_load": 68.0,
+    "ctl": 36.125683,
+    "atl": 42.8059,
+    "ramp_rate": -0.06858444,
+    "ctl_load": 69.0,
+    "atl_load": 69.0,
     "weight": 77.47,
     "fatigue": null,
     "stress": null,
@@ -22,7 +22,7 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -6.6,
+    "tsb": -6.7,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
     "days_since_hard": 10,
@@ -43,6 +43,61 @@
       "source_activity": null
     },
     "ride_load_classifications": [
+      {
+        "id": "i186467671",
+        "date": "2026-09-14",
+        "name": "Sweetspot 3x12min @ 88% (trainer)",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_MISSING"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Sweetspot 3x12min @ 88% (trainer)",
+          "recorded_tss": 69.0,
+          "duration_min": 68.2,
+          "intensity_factor": 0.777,
+          "variability_index": 1.075,
+          "average_hr_bpm": 146,
+          "max_hr_bpm": 168,
+          "hr_available": true,
+          "heat_c": null,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
       {
         "id": "i185450337",
         "date": "2026-09-11",
@@ -380,24 +435,96 @@
         }
       }
     ],
-    "eftp_current": 202,
+    "eftp_current": 201,
     "eftp_oldest_ride_in_window": 202,
     "eftp_oldest_ride_date": "2026-08-31",
-    "eftp_trend_window_delta": 0,
+    "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "annual_cycling": {
     "year": 2026,
     "as_of": "2026-09-14",
-    "distance_km": 3202.59,
-    "activity_count": 79,
+    "distance_km": 3236.77,
+    "activity_count": 80,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
     "last_success_as_of": "2026-09-14"
   },
   "recent_activities": [
+    {
+      "id": "i186467671",
+      "date": "2026-09-14",
+      "type": "VirtualRide",
+      "name": "Sweetspot 3x12min @ 88% (trainer)",
+      "intent": null,
+      "if": 0.7772277,
+      "tss": 69,
+      "duration_min": 68.2,
+      "distance_km": 34.2,
+      "avg_w": 146,
+      "np": 157,
+      "avg_hr": 146,
+      "max_hr": 168,
+      "ef": 1.0753424,
+      "vi": 1.0753424,
+      "heat_c": null,
+      "eftp": 201,
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "unknown",
+        "intent_source": "missing",
+        "intensity_hard": false,
+        "intensity_hard_status": "NOT_HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": false,
+        "recovery_costly_status": "NOT_COSTLY",
+        "quality_blocking": false,
+        "quality_guard_status": "CLEAR",
+        "reason_codes": [
+          "IF_BELOW_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "RIDE_INTENT_UNKNOWN",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_MISSING"
+        ],
+        "intensity_reason_codes": [
+          "IF_BELOW_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "Sweetspot 3x12min @ 88% (trainer)",
+          "recorded_tss": 69.0,
+          "duration_min": 68.2,
+          "intensity_factor": 0.777,
+          "variability_index": 1.075,
+          "average_hr_bpm": 146,
+          "max_hr_bpm": 168,
+          "hr_available": true,
+          "heat_c": null,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
+    },
     {
       "id": "i185450337",
       "date": "2026-09-11",
@@ -844,7 +971,7 @@
     "error_type": null,
     "last_success_as_of": "2026-09-14"
   },
-  "_fetched_at": "2026-09-14T03:50:40",
+  "_fetched_at": "2026-09-14T12:04:01",
   "_today": "2026-09-14",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
