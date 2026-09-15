@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-09-14",
-    "hrv": 51.0,
-    "sleep_hours": 7.17,
-    "sleep_score": 69.0,
+    "date": "2026-09-15",
+    "hrv": 45.0,
+    "sleep_hours": 7.15,
+    "sleep_score": 75.0,
     "sleep_quality": 3,
     "training_readiness": null,
     "rhr": 51,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 36.125683,
-    "atl": 42.8059,
-    "ramp_rate": -0.06858444,
-    "ctl_load": 69.0,
-    "atl_load": 69.0,
-    "weight": 77.47,
+    "ctl": 35.275707,
+    "atl": 37.639977,
+    "ramp_rate": -0.066970825,
+    "ctl_load": 0.0,
+    "atl_load": 4.0,
+    "weight": 77.75,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -22,15 +22,15 @@
     "vo2max": null
   },
   "computed": {
-    "tsb": -6.7,
+    "tsb": -2.4,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": 10,
-    "days_since_intensity_hard": 10,
-    "days_since_load_hard": 10,
-    "days_since_recovery_costly": 10,
+    "days_since_hard": 11,
+    "days_since_intensity_hard": 11,
+    "days_since_load_hard": 11,
+    "days_since_recovery_costly": 11,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 10,
+    "days_since_long": 11,
     "days_since_vo2": null,
     "quality_load_guard": {
       "status": "CLEAR",
@@ -378,79 +378,24 @@
           "wind_adjustment_applied": false,
           "causal_injury_inference": false
         }
-      },
-      {
-        "id": "i181538829",
-        "date": "2026-08-31",
-        "name": "Threshold 3x8min @ 95% FTP",
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "quality",
-        "intent_source": "name",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "QUALITY_INTENT_FROM_NAME",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_PRESENT"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Threshold 3x8min @ 95% FTP",
-          "recorded_tss": 58.0,
-          "duration_min": 52.5,
-          "intensity_factor": 0.812,
-          "variability_index": 1.128,
-          "average_hr_bpm": 157,
-          "max_hr_bpm": 182,
-          "hr_available": true,
-          "heat_c": 34.6,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
       }
     ],
     "eftp_current": 201,
     "eftp_oldest_ride_in_window": 202,
-    "eftp_oldest_ride_date": "2026-08-31",
+    "eftp_oldest_ride_date": "2026-09-02",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 7
+    "ride_count_14d": 6
   },
   "annual_cycling": {
     "year": 2026,
-    "as_of": "2026-09-14",
+    "as_of": "2026-09-15",
     "distance_km": 3236.77,
     "activity_count": 80,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
-    "last_success_as_of": "2026-09-14"
+    "last_success_as_of": "2026-09-15"
   },
   "recent_activities": [
     {
@@ -890,78 +835,6 @@
           "causal_injury_inference": false
         }
       }
-    },
-    {
-      "id": "i181538829",
-      "date": "2026-08-31",
-      "type": "Ride",
-      "name": "Threshold 3x8min @ 95% FTP",
-      "intent": null,
-      "if": 0.81159424,
-      "tss": 58,
-      "duration_min": 52.5,
-      "distance_km": 28.1,
-      "avg_w": 149,
-      "np": 168,
-      "avg_hr": 157,
-      "max_hr": 182,
-      "ef": 1.0700637,
-      "vi": 1.1275167,
-      "heat_c": 34.646515,
-      "eftp": 202,
-      "device_watts": true,
-      "ride_load_classification": {
-        "model_version": "furnace-ride-load-v1",
-        "thresholds": {
-          "intensity_hard_if": 0.85,
-          "load_hard_tss": 150.0,
-          "load_hard_duration_min": 180.0,
-          "combined_load_tss": 120.0,
-          "combined_load_duration_min": 120.0,
-          "variable_ride_vi": 1.15,
-          "group_ride_vi": 1.08,
-          "hot_ride_c": 33.0
-        },
-        "intent": "quality",
-        "intent_source": "name",
-        "intensity_hard": false,
-        "intensity_hard_status": "NOT_HARD",
-        "load_hard": false,
-        "load_hard_status": "NOT_HARD",
-        "recovery_costly": false,
-        "recovery_costly_status": "NOT_COSTLY",
-        "quality_blocking": false,
-        "quality_guard_status": "CLEAR",
-        "reason_codes": [
-          "IF_BELOW_0_85",
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-          "QUALITY_INTENT_FROM_NAME",
-          "RECORDED_TSS_USED_UNADJUSTED",
-          "DURATION_AVAILABLE",
-          "HR_AVAILABLE",
-          "VI_AVAILABLE",
-          "HEAT_CONTEXT_PRESENT"
-        ],
-        "intensity_reason_codes": [
-          "IF_BELOW_0_85"
-        ],
-        "load_reason_codes": [
-          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-        ],
-        "context": {
-          "name": "Threshold 3x8min @ 95% FTP",
-          "recorded_tss": 58.0,
-          "duration_min": 52.5,
-          "intensity_factor": 0.812,
-          "variability_index": 1.128,
-          "average_hr_bpm": 157,
-          "max_hr_bpm": 182,
-          "hr_available": true,
-          "heat_c": 34.6,
-          "wind_adjustment_applied": false,
-          "causal_injury_inference": false
-        }
-      }
     }
   ],
   "_activity_source": {
@@ -969,10 +842,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-14"
+    "last_success_as_of": "2026-09-15"
   },
-  "_fetched_at": "2026-09-14T21:35:40",
-  "_today": "2026-09-14",
+  "_fetched_at": "2026-09-15T03:50:14",
+  "_today": "2026-09-15",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
