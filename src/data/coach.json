@@ -9,40 +9,158 @@
     "rhr": 53,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 35.41039,
-    "atl": 39.551613,
-    "ramp_rate": -1.5476799,
-    "ctl_load": 41.0,
-    "atl_load": 52.0,
+    "ctl": 36.186825,
+    "atl": 43.94464,
+    "ramp_rate": -0.77124405,
+    "ctl_load": 74.0,
+    "atl_load": 85.0,
     "weight": 77.919,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 51.0
   },
   "computed": {
-    "tsb": -4.1,
+    "tsb": -7.8,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": 12,
-    "days_since_intensity_hard": 12,
+    "days_since_hard": 0,
+    "days_since_intensity_hard": 0,
     "days_since_load_hard": 12,
-    "days_since_recovery_costly": 12,
+    "days_since_recovery_costly": 0,
     "days_since_unknown_ride_load": null,
     "days_since_long": 12,
     "days_since_vo2": null,
     "quality_load_guard": {
-      "status": "CLEAR",
+      "status": "BLOCK",
       "window_days": 2,
-      "days_since": null,
-      "trigger": "NO_BLOCKING_RIDE_IN_WINDOW",
+      "days_since": 0,
+      "trigger": "INTENSITY_HARD",
       "reason_codes": [
-        "NO_BLOCKING_RIDE_IN_2_DAY_WINDOW"
+        "IF_AT_OR_ABOVE_0_85",
+        "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+        "ENDURANCE_INTENT_FROM_NAME",
+        "RECORDED_TSS_USED_UNADJUSTED",
+        "DURATION_AVAILABLE",
+        "HR_AVAILABLE",
+        "VI_AVAILABLE",
+        "HEAT_CONTEXT_MISSING"
       ],
-      "source_activity": null
+      "source_activity": {
+        "id": "i187365788",
+        "date": "2026-09-16",
+        "name": "September Easy Z2 60min",
+        "classification": {
+          "model_version": "furnace-ride-load-v1",
+          "thresholds": {
+            "intensity_hard_if": 0.85,
+            "load_hard_tss": 150.0,
+            "load_hard_duration_min": 180.0,
+            "combined_load_tss": 120.0,
+            "combined_load_duration_min": 120.0,
+            "variable_ride_vi": 1.15,
+            "group_ride_vi": 1.08,
+            "hot_ride_c": 33.0
+          },
+          "intent": "endurance",
+          "intent_source": "name",
+          "intensity_hard": true,
+          "intensity_hard_status": "HARD",
+          "load_hard": false,
+          "load_hard_status": "NOT_HARD",
+          "recovery_costly": true,
+          "recovery_costly_status": "COSTLY",
+          "quality_blocking": true,
+          "quality_guard_status": "BLOCK",
+          "reason_codes": [
+            "IF_AT_OR_ABOVE_0_85",
+            "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+            "ENDURANCE_INTENT_FROM_NAME",
+            "RECORDED_TSS_USED_UNADJUSTED",
+            "DURATION_AVAILABLE",
+            "HR_AVAILABLE",
+            "VI_AVAILABLE",
+            "HEAT_CONTEXT_MISSING"
+          ],
+          "intensity_reason_codes": [
+            "IF_AT_OR_ABOVE_0_85"
+          ],
+          "load_reason_codes": [
+            "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+          ],
+          "context": {
+            "name": "September Easy Z2 60min",
+            "recorded_tss": 74.0,
+            "duration_min": 60.8,
+            "intensity_factor": 0.856,
+            "variability_index": 1.193,
+            "average_hr_bpm": 143,
+            "max_hr_bpm": 179,
+            "hr_available": true,
+            "heat_c": null,
+            "wind_adjustment_applied": false,
+            "causal_injury_inference": false
+          }
+        }
+      }
     },
     "ride_load_classifications": [
+      {
+        "id": "i187365788",
+        "date": "2026-09-16",
+        "name": "September Easy Z2 60min",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_MISSING"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "September Easy Z2 60min",
+          "recorded_tss": 74.0,
+          "duration_min": 60.8,
+          "intensity_factor": 0.856,
+          "variability_index": 1.193,
+          "average_hr_bpm": 143,
+          "max_hr_bpm": 179,
+          "hr_available": true,
+          "heat_c": null,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
       {
         "id": "i186467671",
         "date": "2026-09-14",
@@ -385,19 +503,91 @@
     "eftp_oldest_ride_date": "2026-09-02",
     "eftp_trend_window_delta": -1,
     "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "ride_count_14d": 7
   },
   "annual_cycling": {
     "year": 2026,
     "as_of": "2026-09-16",
-    "distance_km": 3236.77,
-    "activity_count": 80,
+    "distance_km": 3267.38,
+    "activity_count": 81,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
     "last_success_as_of": "2026-09-16"
   },
   "recent_activities": [
+    {
+      "id": "i187365788",
+      "date": "2026-09-16",
+      "type": "VirtualRide",
+      "name": "September Easy Z2 60min",
+      "intent": null,
+      "if": 0.8564356,
+      "tss": 74,
+      "duration_min": 60.8,
+      "distance_km": 30.6,
+      "avg_w": 145,
+      "np": 173,
+      "avg_hr": 143,
+      "max_hr": 179,
+      "ef": 1.2097902,
+      "vi": 1.1931034,
+      "heat_c": null,
+      "eftp": 201,
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "endurance",
+        "intent_source": "name",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "ENDURANCE_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_MISSING"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "September Easy Z2 60min",
+          "recorded_tss": 74.0,
+          "duration_min": 60.8,
+          "intensity_factor": 0.856,
+          "variability_index": 1.193,
+          "average_hr_bpm": 143,
+          "max_hr_bpm": 179,
+          "hr_available": true,
+          "heat_c": null,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
+    },
     {
       "id": "i186467671",
       "date": "2026-09-14",
@@ -844,7 +1034,7 @@
     "error_type": null,
     "last_success_as_of": "2026-09-16"
   },
-  "_fetched_at": "2026-09-16T16:19:12",
+  "_fetched_at": "2026-09-16T20:58:48",
   "_today": "2026-09-16",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
