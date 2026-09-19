@@ -1,10 +1,10 @@
 {
   "wellness": {
     "date": "2026-09-19",
-    "hrv": null,
-    "sleep_hours": null,
-    "sleep_score": null,
-    "sleep_quality": null,
+    "hrv": 40.0,
+    "sleep_hours": 10.58,
+    "sleep_score": 75.0,
+    "sleep_quality": 3,
     "training_readiness": null,
     "rhr": 54,
     "avg_sleeping_hr": null,
@@ -14,7 +14,7 @@
     "ramp_rate": 3.533352,
     "ctl_load": 85.0,
     "atl_load": 85.0,
-    "weight": null,
+    "weight": 77.8,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -930,7 +930,7 @@
     "error_type": null,
     "last_success_as_of": "2026-09-19"
   },
-  "_fetched_at": "2026-09-19T03:37:12",
+  "_fetched_at": "2026-09-19T10:27:47",
   "_today": "2026-09-19",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
