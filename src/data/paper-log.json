@@ -1,9 +1,14 @@
 {
-  "updated": "2026-08-30T04:33:03.275Z",
-  "last_edit": "2026-07-17T18:01:04+04:00",
-  "commits_7d": 0,
-  "commits_total": 8,
+  "updated": "2026-09-20T20:00:19.979Z",
+  "last_edit": "2026-09-19T22:27:19+04:00",
+  "commits_7d": 1,
+  "commits_total": 9,
   "recent": [
+    {
+      "sha": "dddd05e",
+      "date": "2026-09-19T22:27:19+04:00",
+      "message": "docs: restructure docs with archive, directory READMEs and repo doctor"
+    },
     {
       "sha": "87f06e3",
       "date": "2026-07-17T18:01:04+04:00",
@@ -38,11 +43,6 @@
       "sha": "67b1f6a",
       "date": "2026-05-23T08:50:45+04:00",
       "message": "feat: add cycling research tooling"
-    },
-    {
-      "sha": "85c90a1",
-      "date": "2026-04-30T15:36:10+04:00",
-      "message": "chore: initial commit — Project Furnace tracking system"
     }
   ]
 }
