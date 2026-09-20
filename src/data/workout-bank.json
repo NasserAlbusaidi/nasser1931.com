@@ -406,6 +406,126 @@
     "target_if": 0.55,
     "target_tss": 25
   },
+  "sep2026_cadence_45": {
+    "category": "recovery",
+    "dsl": "Recovery-week Tuesday. HR cap 140 bpm. If HR drifts over the cap, drop the power, not the time. Six 30s high-cadence spin-ups, light gear, no power target.\n\nWarmup\n- 10m 50-65% 85rpm\n\nMain\n- 15m 60-70% 90rpm\n\nSpin-ups 6x\n- 30s 60% 110rpm\n- 2m 60% 90rpm\n\nCooldown\n- 5m 55-50% 85rpm",
+    "duration_min": 45,
+    "min_state": "amber",
+    "name": "Z2 45min + spin-ups",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.65,
+    "target_tss": 28,
+    "type": "Ride"
+  },
+  "sep2026_easy_45": {
+    "category": "recovery",
+    "dsl": "Aerobic ceiling, approximately IF <=0.72. Conversational effort. HR cap 140 bpm. Reduce power and/or duration when recovery or heat requires it. Friday classification overrides Saturday endurance; missed time expires.\n\nWarmup\n- 5m 50-65% 85rpm\n\nMain\n- 35m 60-72% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 45,
+    "min_state": "amber",
+    "name": "September Easy Z2 45min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.65,
+    "target_tss": 30,
+    "type": "Ride"
+  },
+  "sep2026_easy_60": {
+    "category": "recovery",
+    "dsl": "Aerobic ceiling, approximately IF <=0.72. Conversational effort. HR cap 140 bpm. Reduce power and/or duration when recovery or heat requires it. Friday classification overrides Saturday endurance; missed time expires.\n\nWarmup\n- 5m 50-65% 85rpm\n\nMain\n- 50m 60-72% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 60,
+    "min_state": "amber",
+    "name": "September Easy Z2 60min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.65,
+    "target_tss": 41,
+    "type": "Ride"
+  },
+  "sep2026_easy_90": {
+    "category": "recovery",
+    "dsl": "Aerobic ceiling, approximately IF <=0.72. Conversational effort. HR cap 140 bpm. Reduce power and/or duration when recovery or heat requires it. Friday classification overrides Saturday endurance; missed time expires.\n\nWarmup\n- 5m 50-65% 85rpm\n\nMain\n- 80m 60-72% 90rpm\n\nCooldown\n- 5m 60-50% 85rpm",
+    "duration_min": 90,
+    "min_state": "amber",
+    "name": "September Easy Z2 90min",
+    "next_day_ok": [
+      "group_ride",
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "target_if": 0.65,
+    "target_tss": 63,
+    "type": "Ride"
+  },
+  "sep2026_ss_3x10": {
+    "category": "sweetspot",
+    "dsl": "Trainer familiarization ride: ERG on, fan on, record the Neo versus Favero comparison; do not force the meters to match. Steady, controlled, RPE 7. Breathing hard but rhythmic. Hold the number; do not chase a higher one.\n\nWarmup\n- 12m 50-70% 88rpm\n\nMain Set 3x\n- 10m 88% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
+    "duration_min": 62,
+    "min_state": "green",
+    "name": "Sweetspot 3x10min @ 88% (trainer)",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "base",
+    "target_if": 0.84,
+    "target_tss": 59,
+    "type": "Ride"
+  },
+  "sep2026_ss_3x12": {
+    "category": "sweetspot",
+    "dsl": "Trainer familiarization ride: ERG on, fan on, record the Neo versus Favero comparison; do not force the meters to match. Steady, controlled, RPE 7. Breathing hard but rhythmic. Hold the number; do not chase a higher one.\n\nWarmup\n- 12m 50-70% 88rpm\n\nMain Set 3x\n- 12m 88% 90rpm\n- 4m 50% 85rpm\n\nCooldown\n- 8m 60-45% 85rpm",
+    "duration_min": 68,
+    "min_state": "green",
+    "name": "Sweetspot 3x12min @ 88% (trainer)",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "base",
+    "target_if": 0.84,
+    "target_tss": 68,
+    "type": "Ride"
+  },
+  "sep2026_test_20": {
+    "category": "test",
+    "dsl": "Baseline test on the Neo after two familiarization rides. ERG OFF, fan on. The 20 minutes is a MAX effort: no target watts, the step is open on purpose so nothing caps you. Pace it evenly; the first 5 minutes should feel too easy, the last 5 should hurt. Most people land 100-110% of current FTP. 95% of the 20-minute average is an indoor working estimate only; validate it in training before adopting a new setting. Readiness must be green; otherwise replace with easy riding and move the assessment outside the challenge.\n\nWarmup\n- 15m 50-70% 90rpm\n- 1m 100% 95rpm\n- 1m 50% 88rpm\n- 1m 100% 95rpm\n- 1m 50% 88rpm\n- 1m 100% 95rpm\n- 1m 50% 88rpm\n- 5m 55% 88rpm\n\nMain\n- 20m freeride\n\nCooldown\n- 10m 55-45% 85rpm",
+    "duration_min": 56,
+    "min_state": "green",
+    "name": "FTP Test 20min (trainer)",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "test",
+    "target_if": 0.84,
+    "target_tss": 65,
+    "type": "Ride"
+  },
   "sprint_10x20s": {
     "category": "sprint",
     "dsl": "Short sprint cluster. RPE 10. Tabata feel.\n\nWarmup\n- 15m 50-70% 90rpm\n\nMain Set 10x\n- 20s 220% 100rpm\n- 40s 50% 90rpm\n\nRecovery between clusters\n- 5m 55% 88rpm\n\nMain Set 10x\n- 20s 220% 100rpm\n- 40s 50% 90rpm\n\nCooldown\n- 10m 55-45% 85rpm",
