@@ -1,4 +1,1877 @@
 {
+  "athlete_vo2max_4x3": {
+    "athlete_authored": true,
+    "calendar_id_kind": "bike_easy",
+    "category": "vo2",
+    "dsl": "VO2max: hold the target evenly, no hard start. Breathing very hard and HR above 180 by the last minute of each rep. If a rep falls under 215 W, stop the set and spin easy. Big fan on.\n\n- 720s 55%\n- 180s 80%\n- 120s 50%\n- 180s 112%\n- 180s 50%\n- 180s 112%\n- 180s 50%\n- 180s 112%\n- 180s 50%\n- 180s 112%\n- 180s 50%\n- 840s 60%\n- 300s 50%",
+    "duration_min": 60.0,
+    "estimate_note": "Load and intensity are the live Intervals.icu values for the athlete-authored workout.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2max 4 x 3 min / 60 min",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        720,
+        55
+      ],
+      [
+        180,
+        80
+      ],
+      [
+        120,
+        50
+      ],
+      [
+        180,
+        112
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        112
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        112
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        112
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        840,
+        60
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.787,
+    "target_tss": 62
+  },
+  "athlete_vo2max_4x4": {
+    "athlete_authored": true,
+    "calendar_id_kind": "bike_easy",
+    "category": "vo2",
+    "dsl": "VO2max: hold the target evenly, no hard start. Breathing very hard and HR above 180 by the last minute of each rep. If a rep falls under 215 W, stop the set and spin easy. Big fan on.\n\n- 720s 55%\n- 180s 80%\n- 120s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 360s 60%\n- 300s 50%",
+    "duration_min": 60.0,
+    "estimate_note": "Load and intensity are the live Intervals.icu values for the athlete-authored workout.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2max 4 x 4 min / 60 min",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        720,
+        55
+      ],
+      [
+        180,
+        80
+      ],
+      [
+        120,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        360,
+        60
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.831,
+    "target_tss": 69
+  },
+  "athlete_vo2max_5x4": {
+    "athlete_authored": true,
+    "calendar_id_kind": "bike_easy",
+    "category": "vo2",
+    "dsl": "VO2max: hold the target evenly, no hard start. Breathing very hard and HR above 180 by the last minute of each rep. If a rep falls under 215 W, stop the set and spin easy. Big fan on.\n\n- 720s 55%\n- 180s 80%\n- 120s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 240s 112%\n- 240s 50%\n- 480s 50%",
+    "duration_min": 65.0,
+    "estimate_note": "Load and intensity are the live Intervals.icu values for the athlete-authored workout.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2max 5 x 4 min / 65 min",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        720,
+        55
+      ],
+      [
+        180,
+        80
+      ],
+      [
+        120,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        240,
+        112
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        50
+      ]
+    ],
+    "target_if": 0.854,
+    "target_tss": 79
+  },
+  "balanced_accelerations": {
+    "category": "sprint",
+    "dsl": "Advanced optional replacement for the final short-effort week only, never additional. Smooth rolling start and light gear, RPE 7-8, no maximal torque. 150% is a guide, not a sprint-power target. Requires symptom-free training and explicit weekly review.\n\n- 600s 55%\n- 8s 150%\n- 172s 50%\n- 8s 150%\n- 172s 50%\n- 8s 150%\n- 172s 50%\n- 8s 150%\n- 172s 50%\n- 780s 65%\n- 300s 50%",
+    "duration_min": 40.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Controlled accelerations 4 x 8 sec",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        8,
+        150
+      ],
+      [
+        172,
+        50
+      ],
+      [
+        8,
+        150
+      ],
+      [
+        172,
+        50
+      ],
+      [
+        8,
+        150
+      ],
+      [
+        172,
+        50
+      ],
+      [
+        8,
+        150
+      ],
+      [
+        172,
+        50
+      ],
+      [
+        780,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.646,
+    "target_tss": 28
+  },
+  "balanced_aerobic_75": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 3900s 68%\n- 300s 50%",
+    "duration_min": 75.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 75 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        3900,
+        68
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.663,
+    "target_tss": 55
+  },
+  "balanced_current_over_under": {
+    "category": "over_under",
+    "dsl": "Within each block repeat2min95%FTP/1min105% three times. Five-minute recoveries. Strong controlled effort; lower the overs if repeatability suffers.\n\n- 600s 55%\n- 120s 95%\n- 60s 105%\n- 120s 95%\n- 60s 105%\n- 120s 95%\n- 60s 105%\n- 300s 50%\n- 120s 95%\n- 60s 105%\n- 120s 95%\n- 60s 105%\n- 120s 95%\n- 60s 105%\n- 300s 50%\n- 120s 95%\n- 60s 105%\n- 120s 95%\n- 60s 105%\n- 120s 95%\n- 60s 105%\n- 780s 65%\n- 300s 50%",
+    "duration_min": 65.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Over-unders 3 x 9 min / 65 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        300,
+        50
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        300,
+        50
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        120,
+        95
+      ],
+      [
+        60,
+        105
+      ],
+      [
+        780,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.823,
+    "target_tss": 73
+  },
+  "balanced_current_threshold_2x15": {
+    "category": "threshold",
+    "dsl": "Repeatable controlled work, familiar fueling and good cooling. Stop the set when form or power becomes unrepeatable; do not raise FTP from one difficult session.\n\n- 600s 55%\n- 900s 95%\n- 240s 50%\n- 900s 95%\n- 960s 65%\n- 300s 50%",
+    "duration_min": 65.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 2 x 15 min / 65 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        900,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        900,
+        95
+      ],
+      [
+        960,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.816,
+    "target_tss": 72
+  },
+  "balanced_current_threshold_2x20": {
+    "category": "threshold",
+    "dsl": "Controlled repeatable effort. Power is a starting guide; adjust to recovery, cooling and repeatability.\n\n- 600s 55%\n- 1200s 95%\n- 240s 50%\n- 1200s 95%\n- 660s 65%\n- 300s 50%",
+    "duration_min": 70.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 2 x 20 min / 70 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        1200,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        1200,
+        95
+      ],
+      [
+        660,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.847,
+    "target_tss": 84
+  },
+  "balanced_current_threshold_3x10": {
+    "category": "threshold",
+    "dsl": "Repeatable controlled work, familiar fueling and good cooling. Stop the set when form or power becomes unrepeatable; do not raise FTP from one difficult session.\n\n- 600s 55%\n- 600s 95%\n- 240s 50%\n- 600s 95%\n- 240s 50%\n- 600s 95%\n- 720s 65%\n- 300s 50%",
+    "duration_min": 65.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 3 x 10 min / 65 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        600,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        600,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        600,
+        95
+      ],
+      [
+        720,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.812,
+    "target_tss": 71
+  },
+  "balanced_current_threshold_3x12": {
+    "category": "threshold",
+    "dsl": "Repeatable controlled work, familiar fueling and good cooling. Stop the set when form or power becomes unrepeatable; do not raise FTP from one difficult session.\n\n- 600s 55%\n- 720s 95%\n- 240s 50%\n- 720s 95%\n- 240s 50%\n- 720s 95%\n- 660s 65%\n- 300s 50%",
+    "duration_min": 70.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 3 x 12 min / 70 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        720,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        720,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        720,
+        95
+      ],
+      [
+        660,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.829,
+    "target_tss": 80
+  },
+  "balanced_current_threshold_3x8": {
+    "category": "threshold",
+    "dsl": "Repeatable controlled work, familiar fueling and good cooling. Stop the set when form or power becomes unrepeatable; do not raise FTP from one difficult session.\n\n- 600s 55%\n- 480s 95%\n- 240s 50%\n- 480s 95%\n- 240s 50%\n- 480s 95%\n- 780s 65%\n- 300s 50%",
+    "duration_min": 60.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 3 x 8 min / 60 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        480,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        95
+      ],
+      [
+        780,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.792,
+    "target_tss": 63
+  },
+  "balanced_current_vo2_4x3": {
+    "category": "vo2",
+    "dsl": "Controlled repeatable effort. Power is a starting guide; adjust to recovery, cooling and repeatability.\n\n- 600s 55%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 1260s 65%\n- 300s 50%",
+    "duration_min": 60.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2 4 x 3 min / 60 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        1260,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.817,
+    "target_tss": 67
+  },
+  "balanced_current_vo2_5x3": {
+    "category": "vo2",
+    "dsl": "Controlled repeatable effort. Power is a starting guide; adjust to recovery, cooling and repeatability.\n\n- 600s 55%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 240s 50%\n- 180s 115%\n- 1140s 65%\n- 300s 50%",
+    "duration_min": 65.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2 5 x 3 min / 65 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        180,
+        115
+      ],
+      [
+        1140,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.837,
+    "target_tss": 76
+  },
+  "balanced_deload_touch": {
+    "category": "threshold",
+    "dsl": "Repeatable controlled work, familiar fueling and good cooling. Stop the set when form or power becomes unrepeatable; do not raise FTP from one difficult session.\n\n- 600s 55%\n- 300s 95%\n- 240s 50%\n- 300s 95%\n- 960s 65%\n- 300s 50%",
+    "duration_min": 45.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Deload threshold touch 2 x 5 / 45 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        300,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        300,
+        95
+      ],
+      [
+        960,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.726,
+    "target_tss": 39
+  },
+  "balanced_easy_105": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3. Reduce power for heat or fatigue. No fixed HR cap while strap reliability is unresolved.\n\n- 300s 50%\n- 5700s 65%\n- 300s 50%",
+    "duration_min": 105,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Easy endurance 105 min",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "long",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        5700,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.64,
+    "target_tss": 72
+  },
+  "balanced_easy_120": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 6600s 65%\n- 300s 50%",
+    "duration_min": 120.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 120 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        6600,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.641,
+    "target_tss": 82
+  },
+  "balanced_easy_135": {
+    "category": "endurance",
+    "dsl": "Conversational RPE 2-3. Reduce power for heat or fatigue. No fixed HR cap while strap reliability is unresolved.\n\n- 300s 50%\n- 7500s 65%\n- 300s 50%",
+    "duration_min": 135.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Easy endurance 135 min",
+    "next_day_ok": [
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "long",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        7500,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.642,
+    "target_tss": 93
+  },
+  "balanced_easy_150": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 8400s 65%\n- 300s 50%",
+    "duration_min": 150.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 150 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        8400,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.643,
+    "target_tss": 103
+  },
+  "balanced_easy_180": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 10200s 65%\n- 300s 50%",
+    "duration_min": 180.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 180 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        10200,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.644,
+    "target_tss": 124
+  },
+  "balanced_easy_30": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 1200s 65%\n- 300s 50%",
+    "duration_min": 30.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 30 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        1200,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.612,
+    "target_tss": 19
+  },
+  "balanced_easy_40": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 1800s 65%\n- 300s 50%",
+    "duration_min": 40.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 40 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        1800,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.622,
+    "target_tss": 26
+  },
+  "balanced_easy_45": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 2100s 65%\n- 300s 50%",
+    "duration_min": 45.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 45 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        2100,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.625,
+    "target_tss": 29
+  },
+  "balanced_easy_50": {
+    "category": "endurance",
+    "dsl": "Conversational RPE 2-3. Reduce power for heat or fatigue. No fixed HR cap while strap reliability is unresolved.\n\n- 300s 50%\n- 2400s 65%\n- 300s 50%",
+    "duration_min": 50.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Easy endurance 50 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "low",
+    "slot": "recovery",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        2400,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.628,
+    "target_tss": 33
+  },
+  "balanced_easy_60": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 3000s 65%\n- 300s 50%",
+    "duration_min": 60.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 60 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        3000,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.632,
+    "target_tss": 40
+  },
+  "balanced_easy_75": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 3900s 65%\n- 300s 50%",
+    "duration_min": 75.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 75 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        3900,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.635,
+    "target_tss": 50
+  },
+  "balanced_easy_90": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 4800s 65%\n- 300s 50%",
+    "duration_min": 90.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 90 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        4800,
+        65
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.638,
+    "target_tss": 61
+  },
+  "balanced_long_180": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 10200s 70%\n- 300s 50%",
+    "duration_min": 180.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 180 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        10200,
+        70
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.693,
+    "target_tss": 144
+  },
+  "balanced_ou_3x6": {
+    "category": "over_under",
+    "dsl": "Three controlled sets of 2 min at 90% / 1 min at 102%, repeated twice. No racing the overs. RPE 6-7 ceiling.\n\n- 600s 55%\n- 120s 90%\n- 60s 102%\n- 120s 90%\n- 60s 102%\n- 240s 50%\n- 120s 90%\n- 60s 102%\n- 120s 90%\n- 60s 102%\n- 240s 50%\n- 120s 90%\n- 60s 102%\n- 120s 90%\n- 60s 102%\n- 300s 50%",
+    "duration_min": 41.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Over-under 3 x 6 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        60,
+        102
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        60,
+        102
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        60,
+        102
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        60,
+        102
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        60,
+        102
+      ],
+      [
+        120,
+        90
+      ],
+      [
+        60,
+        102
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.792,
+    "target_tss": 43
+  },
+  "balanced_recovery_30": {
+    "category": "endurance",
+    "dsl": "Conversational RPE2-3; power is a guide. Reduce for heat or fatigue. No extra surges to chase TSS.\n\n- 300s 50%\n- 1200s 55%\n- 300s 50%",
+    "duration_min": 30.0,
+    "estimate_note": "Planning approximation from step power; actual TSS can differ. Never chase a missing score.",
+    "hard": false,
+    "min_state": "amber",
+    "name": "Furnace / Endurance 30 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "endurance",
+    "steps": [
+      [
+        300,
+        50
+      ],
+      [
+        1200,
+        55
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.535,
+    "target_tss": 14
+  },
+  "balanced_short_6x30": {
+    "category": "anaerobic",
+    "dsl": "Repeatable RPE 8 efforts, not all-out sprints. 125% is a starting guide; reduce if power fades or form changes. Full easy recoveries.\n\n- 600s 55%\n- 30s 125%\n- 150s 50%\n- 30s 125%\n- 150s 50%\n- 30s 125%\n- 150s 50%\n- 30s 125%\n- 150s 50%\n- 30s 125%\n- 150s 50%\n- 30s 125%\n- 300s 50%",
+    "duration_min": 30.5,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Short efforts 6 x 30 sec",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        30,
+        125
+      ],
+      [
+        150,
+        50
+      ],
+      [
+        30,
+        125
+      ],
+      [
+        150,
+        50
+      ],
+      [
+        30,
+        125
+      ],
+      [
+        150,
+        50
+      ],
+      [
+        30,
+        125
+      ],
+      [
+        150,
+        50
+      ],
+      [
+        30,
+        125
+      ],
+      [
+        150,
+        50
+      ],
+      [
+        30,
+        125
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.744,
+    "target_tss": 28
+  },
+  "balanced_ss_3x8": {
+    "category": "sweetspot",
+    "dsl": "Only after entry and block gates. Smooth cadence, strong cooling, familiar fuel. Stop or reduce if form or repeatability deteriorates. Never chase the percentage at the expense of control.\n\n- 600s 55%\n- 480s 88%\n- 240s 50%\n- 480s 88%\n- 240s 50%\n- 480s 88%\n- 300s 50%",
+    "duration_min": 47.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Sweet spot 3 x 8 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        480,
+        88
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        88
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        88
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.765,
+    "target_tss": 46
+  },
+  "balanced_tempo_2x8": {
+    "category": "tempo",
+    "dsl": "Only after entry and block gates. Smooth cadence, strong cooling, familiar fuel. Stop or reduce if form or repeatability deteriorates. Never chase the percentage at the expense of control.\n\n- 600s 55%\n- 480s 80%\n- 240s 50%\n- 480s 80%\n- 300s 50%",
+    "duration_min": 35.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Tempo 2 x 8 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "moderate",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        480,
+        80
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        80
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.692,
+    "target_tss": 28
+  },
+  "balanced_threshold_3x6": {
+    "category": "threshold",
+    "dsl": "Only after entry and block gates. Smooth cadence, strong cooling, familiar fuel. Stop or reduce if form or repeatability deteriorates. Never chase the percentage at the expense of control.\n\n- 600s 55%\n- 360s 95%\n- 240s 50%\n- 360s 95%\n- 240s 50%\n- 360s 95%\n- 300s 50%",
+    "duration_min": 41.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 3 x 6 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        360,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        360,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        360,
+        95
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.795,
+    "target_tss": 43
+  },
+  "balanced_threshold_3x8": {
+    "category": "threshold",
+    "dsl": "Only after entry and block gates. Smooth cadence, strong cooling, familiar fuel. Stop or reduce if form or repeatability deteriorates. Never chase the percentage at the expense of control.\n\n- 600s 55%\n- 480s 95%\n- 240s 50%\n- 480s 95%\n- 240s 50%\n- 480s 95%\n- 300s 50%",
+    "duration_min": 47.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / Threshold 3 x 8 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        480,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        95
+      ],
+      [
+        240,
+        50
+      ],
+      [
+        480,
+        95
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.82,
+    "target_tss": 53
+  },
+  "balanced_vo2_4x2": {
+    "category": "vo2",
+    "dsl": "Only after entry and block gates. Smooth cadence, strong cooling, familiar fuel. Stop or reduce if form or repeatability deteriorates. Never chase the percentage at the expense of control.\n\n- 600s 55%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 300s 50%",
+    "duration_min": 32.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2 introduction 4 x 2 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.806,
+    "target_tss": 35
+  },
+  "balanced_vo2_4x3": {
+    "category": "vo2",
+    "dsl": "Alternative lane after the week8 review. Repeat controlled RPE8 work, never all-out. Start near110% only as tolerated; percentage is not individualized VO2 proof.\n\n- 600s 55%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 300s 50%",
+    "duration_min": 36.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2 4 x 3 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.856,
+    "target_tss": 44
+  },
+  "balanced_vo2_5x2": {
+    "category": "vo2",
+    "dsl": "Only after entry and block gates. Smooth cadence, strong cooling, familiar fuel. Stop or reduce if form or repeatability deteriorates. Never chase the percentage at the expense of control.\n\n- 600s 55%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 180s 50%\n- 120s 110%\n- 300s 50%",
+    "duration_min": 37.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2 repeatability 5 x 2 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.819,
+    "target_tss": 41
+  },
+  "balanced_vo2_5x3": {
+    "category": "vo2",
+    "dsl": "Alternative lane after the week8 review. Repeat controlled RPE8 work, never all-out. Start near110% only as tolerated; percentage is not individualized VO2 proof.\n\n- 600s 55%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 180s 50%\n- 180s 110%\n- 300s 50%",
+    "duration_min": 42.0,
+    "estimate_note": "Planning approximation from step power, not physiological measurement or a completion target.",
+    "hard": true,
+    "min_state": "green",
+    "name": "Furnace / VO2 5 x 3 min",
+    "next_day_ok": [
+      "lower",
+      "rest",
+      "upper"
+    ],
+    "recovery_cost": "high",
+    "slot": "quality",
+    "steps": [
+      [
+        600,
+        55
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        180,
+        50
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        300,
+        50
+      ]
+    ],
+    "target_if": 0.869,
+    "target_tss": 53
+  },
   "brick_run_w1_10": {
     "category": "run",
     "dsl": "Straight off the Sunday spin, transition fast. Minutes never pace. Any shin/Achilles/knee whisper -> stop, flag it.\n\nWarmup\n- 2m Z1 HR\n\nMain\n- 8m Z2 HR",
