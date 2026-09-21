@@ -1,48 +1,166 @@
 {
   "wellness": {
-    "date": "2026-09-20",
-    "hrv": 45.0,
-    "sleep_hours": 5.51,
-    "sleep_score": 54.0,
-    "sleep_quality": 4,
+    "date": "2026-09-21",
+    "hrv": 50.0,
+    "sleep_hours": 7.79,
+    "sleep_score": 84.0,
+    "sleep_quality": 2,
     "training_readiness": null,
-    "rhr": 54,
+    "rhr": 52,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 37.011967,
-    "atl": 44.38802,
-    "ramp_rate": 1.6783981,
-    "ctl_load": 0.0,
-    "atl_load": 8.0,
-    "weight": 79.36,
+    "ctl": 37.858704,
+    "atl": 48.196907,
+    "ramp_rate": 1.7330208,
+    "ctl_load": 73.0,
+    "atl_load": 73.0,
+    "weight": 78.36,
     "fatigue": null,
     "stress": null,
     "soreness": null,
     "spO2": null,
-    "vo2max": null
+    "vo2max": 51.0
   },
   "computed": {
-    "tsb": -7.4,
-    "tsb_category": "productive",
+    "tsb": -10.3,
+    "tsb_category": "overreaching",
     "ramp_rate_category": "low",
-    "days_since_hard": 2,
-    "days_since_intensity_hard": 4,
-    "days_since_load_hard": 2,
-    "days_since_recovery_costly": 2,
+    "days_since_hard": 0,
+    "days_since_intensity_hard": 0,
+    "days_since_load_hard": 3,
+    "days_since_recovery_costly": 0,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 2,
+    "days_since_long": 3,
     "days_since_vo2": null,
     "quality_load_guard": {
-      "status": "CLEAR",
+      "status": "BLOCK",
       "window_days": 2,
-      "days_since": null,
-      "trigger": "NO_BLOCKING_RIDE_IN_WINDOW",
+      "days_since": 0,
+      "trigger": "INTENSITY_HARD",
       "reason_codes": [
-        "NO_BLOCKING_RIDE_IN_2_DAY_WINDOW"
+        "IF_AT_OR_ABOVE_0_85",
+        "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+        "QUALITY_INTENT_FROM_NAME",
+        "RECORDED_TSS_USED_UNADJUSTED",
+        "DURATION_AVAILABLE",
+        "HR_AVAILABLE",
+        "VI_AVAILABLE",
+        "HEAT_CONTEXT_MISSING"
       ],
-      "source_activity": null
+      "source_activity": {
+        "id": "i188710688",
+        "date": "2026-09-21",
+        "name": "FTP Test 20min (trainer)",
+        "classification": {
+          "model_version": "furnace-ride-load-v1",
+          "thresholds": {
+            "intensity_hard_if": 0.85,
+            "load_hard_tss": 150.0,
+            "load_hard_duration_min": 180.0,
+            "combined_load_tss": 120.0,
+            "combined_load_duration_min": 120.0,
+            "variable_ride_vi": 1.15,
+            "group_ride_vi": 1.08,
+            "hot_ride_c": 33.0
+          },
+          "intent": "quality",
+          "intent_source": "name",
+          "intensity_hard": true,
+          "intensity_hard_status": "HARD",
+          "load_hard": false,
+          "load_hard_status": "NOT_HARD",
+          "recovery_costly": true,
+          "recovery_costly_status": "COSTLY",
+          "quality_blocking": true,
+          "quality_guard_status": "BLOCK",
+          "reason_codes": [
+            "IF_AT_OR_ABOVE_0_85",
+            "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+            "QUALITY_INTENT_FROM_NAME",
+            "RECORDED_TSS_USED_UNADJUSTED",
+            "DURATION_AVAILABLE",
+            "HR_AVAILABLE",
+            "VI_AVAILABLE",
+            "HEAT_CONTEXT_MISSING"
+          ],
+          "intensity_reason_codes": [
+            "IF_AT_OR_ABOVE_0_85"
+          ],
+          "load_reason_codes": [
+            "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+          ],
+          "context": {
+            "name": "FTP Test 20min (trainer)",
+            "recorded_tss": 73.0,
+            "duration_min": 56.1,
+            "intensity_factor": 0.886,
+            "variability_index": 1.119,
+            "average_hr_bpm": 150,
+            "max_hr_bpm": 189,
+            "hr_available": true,
+            "heat_c": null,
+            "wind_adjustment_applied": false,
+            "causal_injury_inference": false
+          }
+        }
+      }
     },
     "ride_load_classifications": [
+      {
+        "id": "i188710688",
+        "date": "2026-09-21",
+        "name": "FTP Test 20min (trainer)",
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "quality",
+        "intent_source": "name",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "QUALITY_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_MISSING"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "FTP Test 20min (trainer)",
+          "recorded_tss": 73.0,
+          "duration_min": 56.1,
+          "intensity_factor": 0.886,
+          "variability_index": 1.119,
+          "average_hr_bpm": 150,
+          "max_hr_bpm": 189,
+          "hr_available": true,
+          "heat_c": null,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      },
       {
         "id": "i187819921",
         "date": "2026-09-18",
@@ -384,24 +502,96 @@
         }
       }
     ],
-    "eftp_current": 201,
+    "eftp_current": 205,
     "eftp_oldest_ride_in_window": 202,
     "eftp_oldest_ride_date": "2026-09-07",
-    "eftp_trend_window_delta": -1,
-    "eftp_trend_status": "stable",
-    "ride_count_14d": 6
+    "eftp_trend_window_delta": 3,
+    "eftp_trend_status": "rising",
+    "ride_count_14d": 7
   },
   "annual_cycling": {
     "year": 2026,
-    "as_of": "2026-09-20",
-    "distance_km": 3367.44,
-    "activity_count": 82,
+    "as_of": "2026-09-21",
+    "distance_km": 3390.85,
+    "activity_count": 83,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
-    "last_success_as_of": "2026-09-20"
+    "last_success_as_of": "2026-09-21"
   },
   "recent_activities": [
+    {
+      "id": "i188710688",
+      "date": "2026-09-21",
+      "type": "VirtualRide",
+      "name": "FTP Test 20min (trainer)",
+      "intent": null,
+      "if": 0.8861386,
+      "tss": 73,
+      "duration_min": 56.1,
+      "distance_km": 23.4,
+      "avg_w": 160,
+      "np": 179,
+      "avg_hr": 150,
+      "max_hr": 189,
+      "ef": 1.1933334,
+      "vi": 1.11875,
+      "heat_c": null,
+      "eftp": 205,
+      "device_watts": true,
+      "ride_load_classification": {
+        "model_version": "furnace-ride-load-v1",
+        "thresholds": {
+          "intensity_hard_if": 0.85,
+          "load_hard_tss": 150.0,
+          "load_hard_duration_min": 180.0,
+          "combined_load_tss": 120.0,
+          "combined_load_duration_min": 120.0,
+          "variable_ride_vi": 1.15,
+          "group_ride_vi": 1.08,
+          "hot_ride_c": 33.0
+        },
+        "intent": "quality",
+        "intent_source": "name",
+        "intensity_hard": true,
+        "intensity_hard_status": "HARD",
+        "load_hard": false,
+        "load_hard_status": "NOT_HARD",
+        "recovery_costly": true,
+        "recovery_costly_status": "COSTLY",
+        "quality_blocking": true,
+        "quality_guard_status": "BLOCK",
+        "reason_codes": [
+          "IF_AT_OR_ABOVE_0_85",
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
+          "QUALITY_INTENT_FROM_NAME",
+          "RECORDED_TSS_USED_UNADJUSTED",
+          "DURATION_AVAILABLE",
+          "HR_AVAILABLE",
+          "VI_AVAILABLE",
+          "HEAT_CONTEXT_MISSING"
+        ],
+        "intensity_reason_codes": [
+          "IF_AT_OR_ABOVE_0_85"
+        ],
+        "load_reason_codes": [
+          "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
+        ],
+        "context": {
+          "name": "FTP Test 20min (trainer)",
+          "recorded_tss": 73.0,
+          "duration_min": 56.1,
+          "intensity_factor": 0.886,
+          "variability_index": 1.119,
+          "average_hr_bpm": 150,
+          "max_hr_bpm": 189,
+          "hr_available": true,
+          "heat_c": null,
+          "wind_adjustment_applied": false,
+          "causal_injury_inference": false
+        }
+      }
+    },
     {
       "id": "i187819921",
       "date": "2026-09-18",
@@ -850,10 +1040,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-20"
+    "last_success_as_of": "2026-09-21"
   },
-  "_fetched_at": "2026-09-20T20:27:22",
-  "_today": "2026-09-20",
+  "_fetched_at": "2026-09-21T03:49:09",
+  "_today": "2026-09-21",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
