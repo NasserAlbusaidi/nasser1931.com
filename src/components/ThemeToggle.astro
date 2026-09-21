@@ -7,22 +7,24 @@
 	type="button"
 	id="theme-toggle"
 	aria-label="Toggle color theme"
+	aria-pressed="false"
 	title="Toggle theme"
 >
-	<span class="toggle-word toggle-dark">dark</span>
-	<span class="toggle-word toggle-light">light</span>
+	<span class="toggle-word toggle-dark">Dark</span>
+	<span class="toggle-word toggle-light">Light</span>
 </button>
 
 <style>
 	#theme-toggle {
-		font-family: var(--font-display);
-		font-size: 15px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		font-family: var(--font-ui);
+		font-size: 14px;
+		font-weight: 500;
 		background: transparent;
 		border: 0;
-		padding: 1px 4px;
+		border-radius: 0;
+		padding: .5rem .75rem;
+		min-height: 44px;
+		min-width: 60px;
 		color: var(--muted);
 		cursor: pointer;
 		transition: color 70ms ease-out, background-color 70ms ease-out;
@@ -49,10 +51,12 @@
 	(function () {
 		var btn = document.getElementById('theme-toggle');
 		if (!btn) return;
+		btn.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
 		btn.addEventListener('click', function () {
 			var root = document.documentElement;
 			var nowDark = !root.classList.contains('dark');
 			root.classList.toggle('dark', nowDark);
+			btn.setAttribute('aria-pressed', String(nowDark));
 			try {
 				localStorage.setItem('np-theme', nowDark ? 'dark' : 'light');
 			} catch (_) {

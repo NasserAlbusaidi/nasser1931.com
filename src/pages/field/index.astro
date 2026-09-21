@@ -3,104 +3,51 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-
-const entries = (await getCollection('field')).sort(
-	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
-
-const total = entries.length;
-const years = entries.map((e) => e.data.date.getUTCFullYear());
-const range = years.length === 0
-	? '—'
-	: years[years.length - 1] === years[0]
-		? `${years[0]}`
-		: `${years[years.length - 1]}–${years[0]}`;
-
-const fmtDate = (d: Date) => {
-	const y = d.getUTCFullYear();
-	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-	const day = String(d.getUTCDate()).padStart(2, '0');
-	return `${y}-${m}-${day}`;
-};
+import PageIntro from '../../components/PageIntro.astro';
+import EntryIndex from '../../components/EntryIndex.astro';
+import HomePulse from '../../components/HomePulse.astro';
+import training from '../../data/training.json';
+const entries = (await getCollection('field')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const journal = entries.map(entry => ({ ...entry.data, href: `/field/${entry.id}/` }));
+const ride = training.recent.find(activity => activity.type === 'bike');
+const formatDate = (date: string) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
+const formatDuration = (minutes: number | null) => minutes == null ? null : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title="Field — Nasser Al Busaidi" description="Training milestones, race results, hinge moments." />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<header class="page-head">
-				<h1>Field</h1>
-				<p class="page-meta">{total} {total === 1 ? 'entry' : 'entries'} · {range}</p>
-			</header>
-
-			{entries.length === 0 ? (
-				<p class="empty">Nothing here yet — race results, training milestones, hinge moments.</p>
-			) : (
-				<>
-					<div class="results-head">
-						<span class="label">Date</span>
-						<span class="label">Entry</span>
-						<span></span>
-					</div>
-					<ul class="results">
-						{entries.map((entry) => (
-							<li>
-								<a class="row" href={`/field/${entry.id}`}>
-									<time class="row-date" datetime={entry.data.date.toISOString()}>
-										{fmtDate(entry.data.date)}
-									</time>
-									<span class="row-body">
-										<span class="row-title">{entry.data.title}</span>
-										{entry.data.summary && <span class="row-summary">{entry.data.summary}</span>}
-									</span>
-									<span class="row-meta"></span>
-								</a>
-							</li>
-						))}
-					</ul>
-				</>
-			)}
-		</main>
-		<Footer />
-
-		<style>
-			main {
-				max-width: var(--container-wide);
-				margin: 0 auto;
-				padding: 2rem 1.5rem 4rem;
-			}
-
-			.page-head {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1.5rem;
-				margin-bottom: 1.5rem;
-			}
-
-			.page-meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 13px;
-				color: var(--muted);
-				margin: 0;
-				white-space: nowrap;
-			}
-
-			.empty {
-				font-family: var(--font-ui);
-				font-size: 15px;
-				color: var(--muted);
-				margin: 2rem 0;
-			}
-
-			@media (max-width: 540px) {
-				.page-head { flex-direction: column; gap: 0.25rem; }
-			}
-		</style>
-	</body>
+  <head><BaseHead title="Life — Nasser Al Busaidi" description="Cycling, training, and notes from outside the screen." /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="interior">
+      <PageIntro title="Life" eyebrow="03 / Back on Earth" description="Long rides, strength sessions, and reasons to close the laptop." meta="Muscat, Oman" />
+      <section aria-labelledby="training-title">
+        <div class="interior-section-head"><h2 id="training-title"><span aria-hidden="true">01 /</span> From the training log</h2><a href="/coach">Cycling briefing <span aria-hidden="true">↗</span></a></div>
+        <div class="life-log">
+          <article class="latest-ride" aria-labelledby="latest-ride-title">
+            <p class="interior-eyebrow">Last recorded ride</p>
+            {ride ? <><p class="life-distance">{ride.distance_km ?? '—'}<span>km</span></p><h3 id="latest-ride-title">{ride.name}</h3><div class="life-ride-meta"><time datetime={ride.date}>{formatDate(ride.date)}</time>{ride.duration_min != null && <span>{formatDuration(ride.duration_min)}</span>}</div></> : <h3 id="latest-ride-title">No ride in this snapshot.</h3>}
+          </article>
+          <div class="life-snapshot"><HomePulse /></div>
+        </div>
+      </section>
+      <section class="life-journal" aria-labelledby="life-journal-title">
+        <div class="interior-section-head"><h2 id="life-journal-title"><span aria-hidden="true">02 /</span> Field notes</h2><span>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span></div>
+        {entries.length ? <EntryIndex entries={journal} /> : <p class="interior-empty">No field notes yet. More to write after the next ride.</p>}
+      </section>
+    </main>
+    <Footer />
+  </body>
 </html>
+<style>
+  .life-log { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); border: 1px solid var(--rule); background: var(--surface); }
+  .latest-ride { padding: 2.5rem; border-top: 2px solid var(--accent); }
+  .latest-ride .interior-eyebrow { margin: 0; }
+  .life-distance { font-family: var(--font-display); font-size: clamp(4rem, 8vw, 7rem); font-weight: 350; line-height: 1.2; letter-spacing: -.06em; color: var(--accent); margin: 1rem 0 1.5rem; overflow-wrap: anywhere; }
+  .life-distance > span { font-size: 1.25rem; color: var(--muted); letter-spacing: 0; margin-left: .65rem; }
+  .latest-ride h3 { font-size: 1.5rem; font-weight: 400; line-height: 1.3; }
+  .life-ride-meta { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; color: var(--muted); font-size: .875rem; margin-top: 1rem; }
+  .life-snapshot { padding: 2rem; border-left: 1px solid var(--rule); }
+  .life-journal { margin-top: 3.5rem; }
+  @media (max-width: 900px) { .life-log { grid-template-columns: minmax(0, 1fr); } .latest-ride { padding: 2rem; } .life-snapshot { border-left: 0; border-top: 1px solid var(--rule); } }
+  @media (max-width: 540px) { .latest-ride, .life-snapshot { padding: 1.5rem 1.25rem; } .life-journal { margin-top: 2.5rem; } }
+</style>

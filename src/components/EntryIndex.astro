@@ -1,0 +1,28 @@
+---
+interface Entry { title: string; summary: string; date: Date; href: string; tags?: string[]; }
+interface Props { entries: Entry[]; }
+const { entries } = Astro.props;
+const formatDate = (date: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+---
+<ol class="entry-index">
+  {entries.map((entry, index) => <li><a href={entry.href} class:list={['entry-link', index === 0 && 'entry-lead']}>
+    <div class="entry-index-meta"><span class="entry-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><time datetime={entry.date.toISOString()}>{formatDate(entry.date)}</time></div>
+    <div class="entry-index-story"><h3>{entry.title}</h3>{entry.summary && <p>{entry.summary}</p>}{entry.tags?.length ? <span class="entry-index-tags">{entry.tags.join(' / ')}</span> : null}<span class="entry-read">Read the entry <span aria-hidden="true">↗</span></span></div>
+  </a></li>)}
+</ol>
+<style>
+  .entry-index { list-style: none; padding: 0; margin: 0; }
+  li { border-bottom: 1px solid var(--rule); }
+  .entry-link { display: grid; grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr); gap: 3rem; padding: 2rem 1.5rem; color: var(--ink); text-decoration: none; }
+  .entry-lead { background: var(--surface); border-top: 2px solid var(--accent); padding-block: 2.5rem; }
+  .entry-index-meta { display: flex; flex-direction: column; gap: 1rem; font-family: var(--font-mono); font-size: .8125rem; line-height: 1.7; color: var(--muted); }
+  .entry-number { color: var(--accent); }
+  h3 { font-size: clamp(1.5rem, 3vw, 2.4rem); line-height: 1.2; font-weight: 400; max-width: 24ch; overflow-wrap: anywhere; }
+  .entry-lead h3 { font-size: clamp(1.75rem, 4vw, 3.25rem); }
+  .entry-index-story p { font-size: 1.125rem; line-height: 1.65; color: var(--muted); max-width: 48ch; margin: 1rem 0; }
+  .entry-index-tags { display: block; font-family: var(--font-mono); font-size: .75rem; color: var(--muted); margin-bottom: .5rem; }
+  .entry-read { display: inline-flex; gap: 1.5rem; font-size: .9375rem; margin-top: 1.25rem; }
+  .entry-link:hover { background: var(--paper-hover); color: var(--ink); }
+  .entry-link:hover .entry-read { color: var(--accent); }
+  @media (max-width: 720px) { .entry-link { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding: 1.5rem 1.25rem; } .entry-index-meta { flex-direction: row; flex-wrap: wrap; justify-content: space-between; } .entry-index-story p { font-size: 1rem; } }
+</style>

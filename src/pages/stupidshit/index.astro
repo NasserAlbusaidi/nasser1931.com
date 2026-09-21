@@ -3,106 +3,23 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-
-const entries = (await getCollection('stupidshit')).sort(
-	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
-
-const total = entries.length;
-const years = entries.map((e) => e.data.date.getUTCFullYear());
-const range = years.length === 0
-	? '—'
-	: years[years.length - 1] === years[0]
-		? `${years[0]}`
-		: `${years[years.length - 1]}–${years[0]}`;
-
-const fmtDate = (d: Date) => {
-	const y = d.getUTCFullYear();
-	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-	const day = String(d.getUTCDate()).padStart(2, '0');
-	return `${y}-${m}-${day}`;
-};
+import PageIntro from '../../components/PageIntro.astro';
+import EntryIndex from '../../components/EntryIndex.astro';
+const entries = (await getCollection('stupidshit')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const journal = entries.map(entry => ({ ...entry.data, href: `/stupidshit/${entry.id}/` }));
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title="Stupidshit — Nasser Al Busaidi" description="One-off oddities, weird hacks, and jokes that warrant a permanent URL." />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<header class="page-head">
-				<h1>Stupidshit</h1>
-				<p class="page-meta">{total} {total === 1 ? 'entry' : 'entries'} · {range}</p>
-			</header>
-
-			{entries.length === 0 ? (
-				<p class="empty">Folder is empty between odd ideas.</p>
-			) : (
-				<>
-					<div class="results-head">
-						<span class="label">Date</span>
-						<span class="label">Entry</span>
-						<span></span>
-					</div>
-					<ul class="results">
-						{entries.map((entry) => (
-							<li>
-								<a class="row" href={`/stupidshit/${entry.id}`}>
-									<time class="row-date" datetime={entry.data.date.toISOString()}>
-										{fmtDate(entry.data.date)}
-									</time>
-									<span class="row-body">
-										<span class="row-title">{entry.data.title}</span>
-										{entry.data.summary && <span class="row-summary">{entry.data.summary}</span>}
-									</span>
-									<span class="row-meta">
-										{entry.data.tags && entry.data.tags.length > 0 ? entry.data.tags.join(' · ') : ''}
-									</span>
-								</a>
-							</li>
-						))}
-					</ul>
-				</>
-			)}
-		</main>
-		<Footer />
-
-		<style>
-			main {
-				max-width: var(--container-wide);
-				margin: 0 auto;
-				padding: 2rem 1.5rem 4rem;
-			}
-
-			.page-head {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1.5rem;
-				margin-bottom: 1.5rem;
-			}
-
-			.page-meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 13px;
-				color: var(--muted);
-				margin: 0;
-				white-space: nowrap;
-			}
-
-			.empty {
-				font-family: var(--font-ui);
-				font-size: 15px;
-				color: var(--muted);
-				margin: 2rem 0;
-			}
-
-			@media (max-width: 540px) {
-				.page-head { flex-direction: column; gap: 0.25rem; }
-			}
-		</style>
-	</body>
+  <head><BaseHead title="Notes — Nasser Al Busaidi" description="Small ideas, oddities, and things worth writing down." /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="interior">
+      <PageIntro title="Notes" eyebrow="02 / Notes & observations" description="Small ideas, oddities, and things worth writing down." meta={`${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`} />
+      <section aria-labelledby="journal-title">
+        <div class="interior-section-head"><h2 id="journal-title">The notebook</h2><a href="/rss.xml">Follow via RSS <span aria-hidden="true">↗</span></a></div>
+        {entries.length ? <EntryIndex entries={journal} /> : <p class="interior-empty">No notes here yet. The next odd idea will have a home.</p>}
+      </section>
+    </main>
+    <Footer />
+  </body>
 </html>

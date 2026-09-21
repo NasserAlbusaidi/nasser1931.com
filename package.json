@@ -12,6 +12,7 @@
     "refresh-pulse": "node scripts/refresh-pulse.mjs",
     "refresh-paper-log": "node scripts/refresh-paper-log.mjs",
     "refresh-reading": "node scripts/refresh-reading.mjs",
+    "import-storygraph": "node scripts/import-storygraph.mjs",
     "sync-posts": "node scripts/sync-posts.mjs",
     "generate-og": "node scripts/generate-og-fallback.mjs",
     "build": "astro build",
@@ -24,6 +25,7 @@
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@fontsource-variable/literata": "^5.2.8",
+    "@fontsource-variable/outfit": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.2.8",
     "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "chokidar": "^4.0.3",
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "csv-parse": "^7.0.2"
   }
 }

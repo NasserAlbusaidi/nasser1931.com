@@ -47,7 +47,7 @@ jobs:
             exit 0
           fi
           git commit -m "chore: sync reading list from Notion"
-          git pull --rebase origin main
+          # Fail a stale push instead of replaying old Notion data over a source switch.
           git push
           echo "committed=true" >> "$GITHUB_OUTPUT"
 

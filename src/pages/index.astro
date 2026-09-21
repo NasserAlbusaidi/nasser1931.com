@@ -3,569 +3,131 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import HomePulse from '../components/HomePulse.astro';
+import ReadingSource from '../components/ReadingSource.astro';
+import { formatReadingDate } from '../lib/reading-date';
 import reading from '../data/reading.json';
 import training from '../data/training.json';
 import builds from '../data/builds.json';
 import coach from '../data/coach.json';
 import bank from '../data/workout-bank.json';
-// next-race.json is data-driven and hidden until real. Filled shape:
-//   { "race": { "name": "...", "date": "YYYY-MM-DD", "url": "https://..." | null } }
-// When race is null the Next-race cell doesn't render at all.
-import nextRace from '../data/next-race.json';
 import { classifyState, getScheduleContext, pickWorkout } from '../scripts/cycling-engine.mjs';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import '../styles/home.css';
 
-// ---- Live proof: today's canonical coach pick (server-side, UTC-anchored) ----
-// Guarded — a missing/unparseable snapshot degrades to a bare "coach →" link,
-// never a build error.
-let todaysPick = null;
+// Use the same dated snapshot and recommendation engine as /coach.
+let workout: { name: string; duration: number | null } | null = null;
 try {
-	const today = new Date((coach._today ?? new Date().toISOString().slice(0, 10)) + 'T00:00:00Z');
-	const cls = classifyState(coach.wellness ?? {});
-	const ctx = getScheduleContext(today);
-	const pick = pickWorkout(cls.state, ctx, bank, coach.computed ?? {});
-	const workoutName = pick.workoutKey === null
-		? (ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day')
-		: (pick.workout?.name ?? 'Unknown');
-	todaysPick = {
-		workoutName,
-		durationMin: pick.workout?.duration_min ?? null,
-		intensity: pick.workout?.target_if ?? null,
-		state: cls.state,
-	};
-} catch {
-	todaysPick = null;
-}
+  const context = getScheduleContext(new Date(`${coach._today}T00:00:00Z`));
+  const state = classifyState(coach.wellness ?? {});
+  const pick = pickWorkout(state.state, context, bank, coach.computed ?? {});
+  workout = {
+    name: pick.workoutKey === null ? (context.slot === 'group_ride' ? 'Group ride day' : 'Rest day') : (pick.workout?.name ?? 'View briefing'),
+    duration: pick.workout?.duration_min ?? null,
+  };
+} catch { /* Keep the project accessible even without a valid snapshot. */ }
 
-const pickNumerics = todaysPick && todaysPick.durationMin != null
-	? `${todaysPick.durationMin}min${todaysPick.intensity != null ? ` · ${todaysPick.intensity.toFixed(2)}` : ''}`
-	: null;
-
-// ---- Live proof: training form (read the pre-baked word, don't derive it) ----
-const form = training.form ?? 'neutral';
-const formTsb = training.form_tsb;
-const tsbDisplay = formTsb == null
-	? '—'
-	: (formTsb > 0 ? `+${Math.round(formTsb)}` : Math.round(formTsb).toString());
-const formFlag = form === 'fresh' ? 'flag-green' : form === 'fatigued' ? 'flag-amber' : 'flag-off';
-
-// ---- Live proof: build timestamp, rendered relative client-side ----
-const buildISO = new Date().toISOString();
-
-// ---- Live proof: last public push across my repos (build-time, guarded) ----
-// Excludes forks and this site's own repo (bot data-refresh pushes would
-// otherwise pin the cell to nasser1931.com forever). Any failure → null,
-// and the cell falls back to the build-timestamp "Last deploy" form.
-let lastShip = null;
-try {
-	const headers = { 'User-Agent': 'nasser1931.com', Accept: 'application/vnd.github+json' };
-	if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-	const res = await fetch(
-		'https://api.github.com/users/NasserAlbusaidi/repos?sort=pushed&per_page=15&type=owner',
-		{ headers, signal: AbortSignal.timeout(4000) },
-	);
-	if (res.ok) {
-		const repos = await res.json();
-		const repo = Array.isArray(repos)
-			? repos.find((r) => !r.fork && r.name !== 'nasser1931.com')
-			: null;
-		if (repo) {
-			lastShip = { name: repo.name, pushed_at: repo.pushed_at, html_url: repo.html_url };
-		}
-	}
-} catch {
-	lastShip = null;
-}
-
-// ---- Selected builds (featured, source order) ----
-const featuredBuilds = (builds.builds ?? []).filter((b) => b.featured);
-const buildHref = (b) => b.url ?? b.repo ?? null;
-const isExternal = (href) => typeof href === 'string' && /^https?:/.test(href);
-
-// ---- Recent field + stupidshit entries, merged & sorted by date desc ----
-const fieldEntries = await getCollection('field');
-const stupidEntries = await getCollection('stupidshit');
-const log = [
-	...fieldEntries.map((e) => ({ ...e, section: 'field' })),
-	...stupidEntries.map((e) => ({ ...e, section: 'stupidshit' })),
-]
-	.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-	.slice(0, 6);
-
-const fmtDate = (d) => {
-	const y = d.getUTCFullYear();
-	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-	const day = String(d.getUTCDate()).padStart(2, '0');
-	return `${y}-${m}-${day}`;
+const [field, notes] = await Promise.all([getCollection('field'), getCollection('stupidshit')]);
+const entries = [...field.map(entry => ({ ...entry, section: 'field', label: 'Life' })), ...notes.map(entry => ({ ...entry, section: 'stupidshit', label: 'Notes' }))]
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const books = (reading.currently_reading.length ? reading.currently_reading : reading.finished).slice(0, 2);
+const ride = training.recent.find(activity => activity.type === 'bike');
+const rihla = builds.builds.find(build => build.slug === 'rihla');
+const shortProjects = builds.builds.filter(build => ['macrofactor-mcp', 'mizan'].includes(build.slug));
+const summaries: Record<string, string> = {
+  'macrofactor-mcp': 'A local tool connecting nutrition and training data.',
+  'mizan': 'A local dashboard for Claude Code and Codex usage.',
 };
-
-// Fall back to recently finished if nothing is in-progress.
-const readingShelf =
-	reading.currently_reading?.length > 0
-		? reading.currently_reading.slice(0, 3).map((b) => ({ ...b, state: 'in_progress' }))
-		: reading.finished.slice(0, 3).map((b) => ({ ...b, state: 'finished' }));
+const date = (value: string | Date) => {
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(parsed.getTime()) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed) : null;
+};
+const coachDate = date(coach._today);
+const duration = (minutes: number | null) => minutes == null ? null : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main class="board">
-			<section class="hero" aria-label="Introduction">
-				<h1 class="hero-title title-hero">
-					I build the <span class="hl">software</span> that trains me.
-				</h1>
-				<p class="hero-dek">
-					Developer and triathlete in Muscat. Everything on this page is live data from
-					systems I built.
-				</p>
+  <head><BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="home">
+      <section class="introduction" aria-labelledby="intro-title">
+        <picture class="space-scene" aria-hidden="true">
+          <source media="(max-width: 720px)" srcset="/images/earth-orbit-v2-small.webp 800w, /images/earth-orbit-v2.webp 1254w" sizes="44rem" />
+          <img src="/images/earth-orbit-v2.webp" alt="" width="1254" height="1254" fetchpriority="high" />
+        </picture>
+        <div class="intro-content">
+        <div class="intro-stage">
+        <div class="intro-copy">
+          <p class="eyebrow"><span aria-hidden="true">✦</span> A personal observatory</p>
+          <h1 id="intro-title">Nasser<br /><span>Al Busaidi<span class="name-stop">.</span></span></h1>
+          <p class="intro-line">I build software, ride bikes,<br class="desktop-break" /> and get curious about the details.</p>
+          <p class="intro-description">A small corner of the universe for the things I make, the roads I ride, and the worlds I get lost in.</p>
+          <div class="intro-links"><a class="text-link" href="#work">Explore my work <span aria-hidden="true">↓</span></a><a class="quiet-link" href="mailto:nasserbusaidi@gmail.com">Say hello</a></div>
+        </div>
+        <div class="orbit-location"><span>Home base</span><strong>Muscat, Oman</strong></div>
+        </div>
+        <div class="horizon-caption"><span>An imagined view of Earth</span><a href="#work">Explore below <span aria-hidden="true">↓</span></a></div>
+        </div>
+      </section>
+      <div class="home-content">
+        <aside class="margin-note" aria-label="A few things about me">
+          <div class="orbit-intro"><span class="margin-number">In my orbit</span><p>Software. Long rides.<br />Other worlds.</p></div>
+          <div class="context-item"><span>On the workbench</span><a href="#rihla">Rihla — for the plans we make together <span aria-hidden="true">↓</span></a></div>
+          {books[0] && <div class="context-item"><span>{reading.currently_reading.length ? 'On the go' : 'From the reading shelf'}</span><a href="/reading">{books[0].title} <span aria-hidden="true">↗</span></a></div>}
+        </aside>
 
-				<div class={`proof-strip${nextRace.race ? ' has-race' : ''}`} role="group" aria-label="Live signals">
-					<div class="proof-cell">
-						<span class="proof-key label">Form</span>
-						<span class="proof-val">
-							{form} <span class={`flag ${formFlag}`}>{tsbDisplay}</span>
-						</span>
-					</div>
+      <section id="work" class="work-section" aria-labelledby="work-title">
+        <div class="section-heading"><h2 id="work-title"><span class="section-index" aria-hidden="true">01 /</span> Selected work</h2><a class="quiet-link" href="/builds">All projects <span aria-hidden="true">↗</span></a></div>
+        <div class="featured-work">
+          <article id="rihla" class="rihla-feature">
+            <a class="project-link" href={rihla?.url ?? rihla?.repo ?? '/builds'}>
+              <div class="project-topline"><span class="eyebrow">Software × everyday life</span><span class="project-number">01</span></div>
+              <h3>{rihla?.name ?? 'Rihla'}</h3>
+              <p class="project-deck">For the plans you make together.</p>
+              <ul class="rihla-details">
+                <li><span class="rihla-marker" aria-hidden="true">01</span><span>Groups<small>Your people, in one place.</small></span></li>
+                <li><span class="rihla-marker" aria-hidden="true">02</span><span>Events<small>Something to look forward to.</small></span></li>
+                <li><span class="rihla-marker" aria-hidden="true">03</span><span>Shared expenses<small>Fewer transfers to settle up.</small></span></li>
+              </ul>
+              <p class="rihla-description">An app for organising life with other people. Built to work offline.</p>
+              <div class="project-bottom"><span>{rihla?.stack.join(' · ')}{rihla?.status === 'wip' && ' · In progress'}</span><span class="project-action">Explore Rihla <span aria-hidden="true">↗</span></span></div>
+            </a>
+          </article>
+          <article class="coach-feature">
+            <a class="project-link" href="/coach">
+              <div class="project-topline"><span class="eyebrow">Software × cycling</span><span class="project-number">02</span></div>
+              <h3>A coach I can<br /> <em>look inside.</em></h3>
+              <p class="coach-description">A cycling briefing that turns recovery signals into a workout suggestion. Built around my own training.</p>
+              <div class="briefing-preview">
+                <span class="eyebrow">From the briefing{coachDate && ` · ${coachDate}`}</span>
+                {workout ? <><strong>{workout.name}</strong>{workout.duration && <span class="workout-duration">{workout.duration}<small>minutes</small></span>}</> : <strong>Explore the cycling coach</strong>}
+              </div>
+              <div class="project-bottom"><span>Python · JavaScript</span><span class="project-action">Explore the coach <span aria-hidden="true">↗</span></span></div>
+            </a>
+          </article>
+        </div>
+        <div class="more-work">
+          {shortProjects.map((project, index) => <a href={project.url ?? project.repo ?? '/builds'} class="small-project"><span class="small-project-number">0{index + 3}</span><div><h3>{project.name}</h3><p>{summaries[project.slug]}</p><span class="small-project-meta">{project.stack.join(' · ')}{project.status === 'wip' && ' · In progress'}</span></div><span class="small-project-arrow" aria-hidden="true">↗</span></a>)}
+        </div>
+      </section>
 
-					<a class="proof-cell proof-link" href="/coach">
-						<span class="proof-key label">Today's pick</span>
-						{todaysPick ? (
-							<span class="proof-val">
-								{todaysPick.workoutName}
-								{pickNumerics && <span class="proof-sub">{pickNumerics}</span>}
-							</span>
-						) : (
-							<span class="proof-val">coach →</span>
-						)}
-					</a>
+      <section class="life-section" id="life" aria-labelledby="life-title">
+        <div class="life-copy"><p class="eyebrow">02 / Back on Earth</p><h2 id="life-title">Out for<br /><em>the long ride.</em></h2><p>Cycling, strength sessions, and a reason to close the laptop.</p><a class="text-link" href="/field">Notes from life <span aria-hidden="true">↗</span></a></div>
+        <div class="ride-note">
+          <span class="eyebrow">Field log / Last recorded ride</span>
+          {ride ? <><div class="ride-distance">{ride.distance_km ?? '—'}<span>km</span></div><p class="ride-name">{ride.name}</p><p class="ride-meta"><time datetime={ride.date}>{date(ride.date)}</time>{ride.duration_min != null && <span>{duration(ride.duration_min)}</span>}</p></> : <p class="ride-name">No ride in this snapshot.</p>}
+          <div class="life-footnote"><span>{training.weekly_hours} hours of training in the recorded week</span><span>Updated <time datetime={training.updated}>{date(training.updated)}</time></span></div>
+          <a class="life-connection" href="/coach">The training behind the tool <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
 
-					{lastShip ? (
-						<a
-							class="proof-cell proof-link"
-							href={lastShip.html_url}
-							target="_blank"
-							rel="noopener"
-						>
-							<span class="proof-key label">Last ship</span>
-							<span class="proof-val">
-								{lastShip.name}
-								<span class="proof-sub" data-iso={lastShip.pushed_at}>just now</span>
-							</span>
-						</a>
-					) : (
-						<div class="proof-cell">
-							<span class="proof-key label">Last deploy</span>
-							<span class="proof-val">
-								<span data-iso={buildISO}>just now</span>
-							</span>
-						</div>
-					)}
-
-					{nextRace.race && (
-						nextRace.race.url ? (
-							<a
-								class="proof-cell proof-link"
-								href={nextRace.race.url}
-								target="_blank"
-								rel="noopener"
-							>
-								<span class="proof-key label">Next race</span>
-								<span class="proof-val">
-									{nextRace.race.name}
-									<span class="proof-sub" data-iso={`${nextRace.race.date}T00:00:00Z`}>—</span>
-								</span>
-							</a>
-						) : (
-							<div class="proof-cell">
-								<span class="proof-key label">Next race</span>
-								<span class="proof-val">
-									{nextRace.race.name}
-									<span class="proof-sub" data-iso={`${nextRace.race.date}T00:00:00Z`}>—</span>
-								</span>
-							</div>
-						)
-					)}
-				</div>
-			</section>
-
-			<section class="builds" aria-label="Selected builds">
-				<div class="section-top">
-					<span class="label">Builds</span>
-					<span class="section-links"><a href="/builds">all builds →</a></span>
-				</div>
-				{featuredBuilds.length === 0 ? (
-					<p class="empty">Nothing to show yet.</p>
-				) : (
-					<ul class="results">
-						{featuredBuilds.map((b) => {
-							const href = buildHref(b);
-							const ext = isExternal(href);
-							return (
-								<li>
-									<a
-										class="row"
-										href={href ?? '/builds'}
-										{...(ext ? { target: '_blank', rel: 'noopener' } : {})}
-									>
-										<span class="row-date">{b.year}</span>
-										<span class="row-body">
-											<span class="row-title">{b.name}</span>
-											{b.summary && <span class="row-summary">{b.summary}</span>}
-										</span>
-										<span class="row-meta">{b.status}</span>
-									</a>
-								</li>
-							);
-						})}
-					</ul>
-				)}
-			</section>
-
-			<section class="log" aria-label="Log">
-				<div class="section-top">
-					<span class="label">Log</span>
-					<span class="section-links">
-						<a href="/field">field</a> · <a href="/stupidshit">stupidshit</a>
-					</span>
-				</div>
-				{log.length === 0 ? (
-					<p class="empty">Nothing logged yet.</p>
-				) : (
-					<ul class="results">
-						{log.map((entry) => (
-							<li>
-								<a class="row" href={`/${entry.section}/${entry.id}`}>
-									<time class="row-date" datetime={new Date(entry.data.date).toISOString()}>
-										{fmtDate(new Date(entry.data.date))}
-									</time>
-									<span class="row-body">
-										<span class="row-title">{entry.data.title}</span>
-										{entry.data.summary && <span class="row-summary">{entry.data.summary}</span>}
-									</span>
-									<span class="row-meta">{entry.section}</span>
-								</a>
-							</li>
-						))}
-					</ul>
-				)}
-			</section>
-
-			<HomePulse />
-
-			<section class="shelf" aria-label="Reading">
-				<div class="section-top">
-					<span class="label">
-						{readingShelf[0]?.state === 'in_progress' ? 'Currently reading' : 'Recently finished'}
-					</span>
-					<span class="section-links"><a href="/reading">all reading</a></span>
-				</div>
-				{readingShelf.length === 0 ? (
-					<p class="empty">Shelf is empty between books.</p>
-				) : (
-					<ul class="shelf-list">
-						{readingShelf.map((book) => (
-							<li>
-								<span class="book">
-									<em>{book.title}</em>
-									{book.author && <span class="book-author"> — {book.author}</span>}
-								</span>
-								<span class="book-meta">
-									{book.state === 'in_progress'
-										? 'in progress'
-										: book.rating
-											? `${book.rating}/5`
-											: '—'}
-								</span>
-							</li>
-						))}
-					</ul>
-				)}
-			</section>
-
-			<section class="contact" aria-label="Contact">
-				<div class="section-top">
-					<span class="label">Contact</span>
-				</div>
-				<dl class="contact-list">
-					<div class="contact-row">
-						<dt class="label">Email</dt>
-						<dd><a href="mailto:nasserbusaidi@gmail.com">nasserbusaidi@gmail.com</a></dd>
-					</div>
-					<div class="contact-row">
-						<dt class="label">GitHub</dt>
-						<dd>
-							<a href="https://github.com/NasserAlbusaidi" target="_blank" rel="noopener"
-								>github.com/NasserAlbusaidi</a
-							>
-						</dd>
-					</div>
-					<div class="contact-row">
-						<dt class="label">Location</dt>
-						<dd>Muscat, Oman</dd>
-					</div>
-				</dl>
-			</section>
-		</main>
-		<Footer />
-
-		<style>
-			.board {
-				max-width: var(--container-wide);
-				margin: 0 auto;
-				padding: 1.5rem 1.5rem 4rem;
-				display: flex;
-				flex-direction: column;
-				gap: 3.5rem;
-			}
-
-			@media (max-width: 720px) {
-				.board { padding: 1rem 1rem 3rem; gap: 2.5rem; }
-			}
-
-			/* ---- hero ---- */
-			.hero-title {
-				margin: 0 0 1rem;
-				max-width: 16ch;
-			}
-
-			.hero-dek {
-				font-family: var(--font-ui);
-				font-size: 17px;
-				line-height: 1.55;
-				color: var(--ink);
-				max-width: 52ch;
-				margin: 0 0 2rem;
-			}
-
-			/* The one entrance moment: the marker wipes in behind the word.
-			   The text starts at --ink and crossfades to --on-mark mid-wipe —
-			   in dark mode a static --on-mark (#111) would be invisible on the
-			   near-black page during the animation delay. */
-			.hl {
-				position: relative;
-				z-index: 0;
-				padding: 0 0.06em;
-				color: var(--ink);
-				animation: hl-ink 200ms 300ms ease-out both;
-			}
-
-			.hl::before {
-				content: '';
-				position: absolute;
-				inset: 0;
-				background: var(--mark);
-				z-index: -1;
-				transform-origin: left;
-				animation: hl-wipe 400ms 150ms ease-out both;
-			}
-
-			@keyframes hl-wipe {
-				from { transform: scaleX(0); }
-				to { transform: scaleX(1); }
-			}
-
-			@keyframes hl-ink {
-				from { color: var(--ink); }
-				to { color: var(--on-mark); }
-			}
-
-			/* ---- live proof strip: a timing-sheet row ---- */
-			.proof-strip {
-				display: grid;
-				grid-template-columns: repeat(3, 1fr);
-				border-top: 1px solid var(--ink);
-				border-bottom: 1px solid var(--ink);
-			}
-
-			.proof-strip.has-race {
-				grid-template-columns: repeat(4, 1fr);
-			}
-
-			.proof-cell {
-				display: flex;
-				flex-direction: column;
-				gap: 0.4rem;
-				padding: 0.9rem 1.5rem 0.9rem 0;
-				border-right: 1px solid var(--rule);
-			}
-
-			.proof-cell:last-child {
-				border-right: 0;
-			}
-
-			.proof-key {
-				color: var(--muted);
-			}
-
-			.proof-val {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 15px;
-				color: var(--ink);
-				display: flex;
-				align-items: baseline;
-				gap: 0.5em;
-				flex-wrap: wrap;
-			}
-
-			.proof-sub {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-			}
-
-			a.proof-link {
-				text-decoration: none;
-				color: var(--ink);
-				transition: background-color 70ms ease-out;
-			}
-
-			a.proof-link:hover {
-				background: var(--mark);
-				color: var(--on-mark);
-			}
-
-			a.proof-link:hover .proof-key,
-			a.proof-link:hover .proof-val,
-			a.proof-link:hover .proof-sub {
-				color: var(--on-mark);
-			}
-
-			@media (max-width: 720px) {
-				.proof-strip,
-				.proof-strip.has-race {
-					grid-template-columns: 1fr;
-				}
-				.proof-cell {
-					flex-direction: row;
-					justify-content: space-between;
-					align-items: baseline;
-					gap: 1rem;
-					border-right: 0;
-					border-bottom: 1px solid var(--rule);
-					padding: 0.75rem 0;
-				}
-				.proof-cell:last-child {
-					border-bottom: 0;
-				}
-			}
-
-			/* ---- reading shelf ---- */
-			.shelf-list {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
-
-			.shelf-list li {
-				display: flex;
-				justify-content: space-between;
-				align-items: baseline;
-				gap: 1rem;
-				padding: 0.55em 0.5em;
-				border-bottom: 1px solid var(--rule);
-			}
-
-			.book {
-				font-family: var(--font-prose);
-				font-size: 16px;
-				color: var(--ink);
-			}
-
-			.book em {
-				font-style: italic;
-			}
-
-			.book-author {
-				color: var(--muted);
-			}
-
-			.book-meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-				white-space: nowrap;
-			}
-
-			/* ---- contact ---- */
-			.contact-list {
-				margin: 0;
-				padding: 0;
-			}
-
-			.contact-row {
-				display: grid;
-				grid-template-columns: 7.5em 1fr;
-				gap: 1.25em;
-				align-items: baseline;
-				padding: 0.55em 0.5em;
-				border-bottom: 1px solid var(--rule);
-			}
-
-			.contact-row dt {
-				color: var(--muted);
-			}
-
-			.contact-row dd {
-				margin: 0;
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 14px;
-				color: var(--ink);
-			}
-
-			@media (max-width: 560px) {
-				.contact-row {
-					grid-template-columns: 1fr;
-					gap: 0.2em;
-				}
-			}
-
-			.empty {
-				font-family: var(--font-ui);
-				font-size: 15px;
-				color: var(--muted);
-				margin: 1rem 0;
-			}
-		</style>
-
-		<!-- Compute "deploy X ago" client-side so static HTML doesn't go stale. -->
-		<script is:inline>
-			(function () {
-				function format(iso) {
-					if (!iso) return '';
-					var now = Date.now();
-					var then = Date.parse(iso);
-					if (isNaN(then)) return '';
-					var min = 60 * 1000,
-						hr = 60 * min,
-						day = 24 * hr,
-						week = 7 * day,
-						month = 30 * day;
-					// Future date → race-clock countdown, e.g. "T−4d".
-					if (then > now) {
-						return 'T−' + Math.max(1, Math.ceil((then - now) / day)) + 'd';
-					}
-					var diff = now - then;
-					if (diff < min) return 'just now';
-					if (diff < hr) return Math.max(1, Math.round(diff / min)) + 'm ago';
-					if (diff < day) return Math.round(diff / hr) + 'h ago';
-					if (diff < week) return Math.round(diff / day) + 'd ago';
-					if (diff < month) return Math.round(diff / week) + 'w ago';
-					return Math.round(diff / month) + 'mo ago';
-				}
-				document.querySelectorAll('.proof-strip [data-iso]').forEach(function (el) {
-					var label = format(el.getAttribute('data-iso'));
-					if (label) el.textContent = label;
-				});
-			})();
-		</script>
-	</body>
+      <div class="notebook-grid">
+        <section aria-labelledby="notes-title" class="notes-section"><div class="section-heading"><h2 id="notes-title">Notes & observations</h2><a class="quiet-link" href="/stupidshit">More notes <span aria-hidden="true">↗</span></a></div><ul class="note-list">{entries.map(entry => <li><a href={`/${entry.section}/${entry.id}/`}><span class="note-meta">{entry.label} <span aria-hidden="true">/</span> <time datetime={entry.data.date.toISOString()}>{date(entry.data.date)}</time></span><h3>{entry.data.title}</h3><p>{entry.data.summary}</p><span class="note-arrow" aria-hidden="true">↗</span></a></li>)}</ul></section>
+        <section aria-labelledby="reading-title" class="reading-section"><div class="section-heading"><h2 id="reading-title">On the shelf</h2><a class="quiet-link" href="/reading">Reading list <span aria-hidden="true">↗</span></a></div><p class="shelf-intro">A few other worlds to get lost in.</p><ul class="shelf-list">{books.map(book => <li><span class="book-author">{book.author}</span><h3>{book.title}</h3><div class="book-detail"><span>{book.status}{book.finished ? ` · ${formatReadingDate(book.finished)}` : ''}</span>{book.rating !== null && <span aria-label={`Rated ${book.rating} out of 5`}>{book.rating}/5</span>}</div></li>)}</ul><ReadingSource /></section>
+      </div>
+      <div class="closing-note"><p>Something here sparked a thought?</p><a href="mailto:nasserbusaidi@gmail.com">I’d like to hear it. <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </main>
+    <Footer />
+  </body>
 </html>

@@ -1,154 +1,74 @@
 {
-  "updated": "2026-06-07T19:18:50.191Z",
+  "source": "storygraph",
+  "source_method": "csv",
+  "profile_url": "https://app.thestorygraph.com/profile/nasser1931",
+  "updated": "2026-09-20T10:32:25.367Z",
   "stats": {
-    "finished_total": 22,
-    "finished_this_year": 5
+    "finished_total": 27,
+    "finished_this_year": 14
   },
-  "currently_reading": [],
+  "currently_reading": [
+    {
+      "title": "Abaddon's Gate",
+      "author": "James S.A. Corey",
+      "status": "Reading",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null
+    }
+  ],
   "finished": [
     {
-      "title": "The Martian",
-      "author": "Andy Weir",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": "2026-06-07"
-    },
-    {
-      "title": "Not Till We Are Lost — Bobiverse #5",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": "2026-05-25"
-    },
-    {
-      "title": "Heaven's River — Bobiverse #4",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": "2026-05-14"
-    },
-    {
-      "title": "All These Worlds — Bobiverse #3",
-      "author": "Dennis E. Taylor",
+      "title": "Gods of Risk",
+      "author": "James S.A. Corey",
       "status": "Finished",
       "rating": null,
       "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": "2026-04-16"
+      "genres": [],
+      "started": "2026-09-17",
+      "finished": "2026-09-17"
     },
     {
-      "title": "We Are Legion (We Are Bob)",
-      "author": "Dennis E. Taylor",
+      "title": "The Butcher of Anderson Station",
+      "author": "James S.A. Corey",
       "status": "Finished",
-      "rating": 4,
+      "rating": null,
       "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": "2026-02-20",
-      "finished": "2026-03-01"
+      "genres": [],
+      "started": "2026-09-17",
+      "finished": "2026-09-17"
     },
     {
-      "title": "For We Are Many — Bobiverse #1",
-      "author": "Dennis E. Taylor",
+      "title": "Caliban's War",
+      "author": "James S.A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2026-09-16"
+    },
+    {
+      "title": "Drive",
+      "author": "James S.A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-09-16",
+      "finished": "2026-09-16"
+    },
+    {
+      "title": "Leviathan Wakes",
+      "author": "James S.A. Corey",
       "status": "Finished",
       "rating": 5,
       "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": "2026-03-09",
-      "finished": null
-    },
-    {
-      "title": "Dune",
-      "author": "Frank Herbert",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
+      "genres": [],
       "started": null,
-      "finished": null
-    },
-    {
-      "title": "The Lost World",
-      "author": "Michael Crichton",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "1984",
-      "author": "George Orwell",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "Fire and Blood",
-      "author": "George R.R. Martin",
-      "status": "Finished",
-      "rating": 4,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "The World of Ice and Fire",
-      "author": "George R.R. Martin",
-      "status": "Finished",
-      "rating": 4,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "Solaris",
-      "author": "Stanisław Lem",
-      "status": "Finished",
-      "rating": 4,
-      "format": "Physical",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
+      "finished": "2026-09-06"
     },
     {
       "title": "Dune Messiah",
@@ -156,35 +76,9 @@
       "status": "Finished",
       "rating": 4,
       "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
+      "genres": [],
       "started": null,
-      "finished": null
-    },
-    {
-      "title": "Jurassic Park",
-      "author": "Michael Crichton",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "For We Are Many — Bobiverse #2",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
+      "finished": "2026-08-06"
     },
     {
       "title": "Project Hail Mary",
@@ -192,21 +86,137 @@
       "status": "Finished",
       "rating": 5,
       "format": "Audiobook",
-      "genres": [
-        "Sci-Fi"
-      ],
+      "genres": [],
       "started": null,
-      "finished": null
+      "finished": "2026-08-06"
     },
     {
-      "title": "We Are Legion (We Are Bob)",
+      "title": "All Systems Red",
+      "author": "Martha Wells",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2026-08-01"
+    },
+    {
+      "title": "The Martian",
+      "author": "Andy Weir",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-05-01",
+      "finished": "2026-06-07"
+    },
+    {
+      "title": "All These Worlds",
       "author": "Dennis E. Taylor",
       "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-04-17",
+      "finished": "2026"
+    },
+    {
+      "title": "For We Are Many",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2026"
+    },
+    {
+      "title": "Heaven's River",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026",
+      "finished": "2026"
+    },
+    {
+      "title": "Not Till We Are Lost",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2026"
+    },
+    {
+      "title": "We Are Legion",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2026"
+    },
+    {
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "status": "Finished",
       "rating": 5,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2025-02-04"
+    },
+    {
+      "title": "Solaris",
+      "author": "Stanisław Lem",
+      "status": "Finished",
+      "rating": 4,
+      "format": "Paperback",
+      "genres": [],
+      "started": null,
+      "finished": "2024-05-08"
+    },
+    {
+      "title": "Nineteen Eighty-Four",
+      "author": "George Orwell",
+      "status": "Finished",
+      "rating": null,
+      "format": "Paperback",
+      "genres": [],
+      "started": null,
+      "finished": "2024-02-20"
+    },
+    {
+      "title": "A Clash of Kings",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 4,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2016-10-08"
+    },
+    {
+      "title": "A Game of Thrones",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": "2016-08-03"
+    },
+    {
+      "title": "A Dance with Dragons",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
       "started": null,
       "finished": null
     },
@@ -214,11 +224,19 @@
       "title": "A Feast for Crows",
       "author": "George R.R. Martin",
       "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "A Knight of the Seven Kingdoms",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": null,
+      "format": "Ebook",
+      "genres": [],
       "started": null,
       "finished": null
     },
@@ -226,145 +244,71 @@
       "title": "A Storm of Swords",
       "author": "George R.R. Martin",
       "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
       "started": null,
       "finished": null
     },
     {
-      "title": "A Clash of Kings",
+      "title": "Fire & Blood: 300 Years Before a Game of Thrones",
       "author": "George R.R. Martin",
       "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
       "started": null,
       "finished": null
     },
     {
-      "title": "A Dance with Dragons",
-      "author": "George R.R. Martin",
+      "title": "Jurassic Park",
+      "author": "Michael Crichton",
       "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
+      "rating": null,
+      "format": "Ebook",
+      "genres": [],
       "started": null,
       "finished": null
     },
     {
-      "title": "A Game of Thrones",
-      "author": "George R.R. Martin",
+      "title": "The Lost World",
+      "author": "Michael Crichton",
       "status": "Finished",
-      "rating": 5,
-      "format": "Physical",
-      "genres": [
-        "Fantasy"
-      ],
+      "rating": null,
+      "format": "Paperback",
+      "genres": [],
+      "started": null,
+      "finished": null
+    },
+    {
+      "title": "The World of Ice & Fire",
+      "author": "Linda Antonsson, Elio M. García Jr., George R.R. Martin",
+      "status": "Finished",
+      "rating": null,
+      "format": "Hardcover",
+      "genres": [],
       "started": null,
       "finished": null
     }
   ],
   "want_to_read": [
     {
-      "title": "Revelation Space",
-      "author": "Alastair Reynolds",
+      "title": "The Infinite Extent",
+      "author": "Dennis E. Taylor",
       "status": "Want to Read",
       "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
+      "format": "Audiobook",
+      "genres": [],
       "started": null,
       "finished": null
     },
     {
-      "title": "The Algebraist",
-      "author": "Iain M. Banks",
+      "title": "Three Cups of Tea: One Man's Mission to Promote Peace . . . One School at a Time",
+      "author": "Greg Mortenson, David Oliver Relin",
       "status": "Want to Read",
       "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "Aurora",
-      "author": "Kim Stanley Robinson",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "House of Suns",
-      "author": "Alastair Reynolds",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "Children of Time",
-      "author": "Adrian Tchaikovsky",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "Blindsight",
-      "author": "Peter Watts",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "The Mote in God's Eye",
-      "author": "Larry Niven & Jerry Pournelle",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
-      "started": null,
-      "finished": null
-    },
-    {
-      "title": "A Fire Upon the Deep",
-      "author": "Vernor Vinge",
-      "status": "Want to Read",
-      "rating": null,
-      "format": null,
-      "genres": [
-        "Sci-Fi"
-      ],
+      "format": "Paperback",
+      "genres": [],
       "started": null,
       "finished": null
     }

@@ -1,223 +1,45 @@
 ---
 import data from '../data/training.json';
-
-const formatDistance = (km) => (km == null ? null : `${km.toFixed(1)}km`);
-
-const formatDuration = (min) => {
-	if (min == null) return null;
-	if (min < 60) return `${min}min`;
-	const h = Math.floor(min / 60);
-	const m = min % 60;
-	return m === 0 ? `${h}h` : `${h}h${m}m`;
-};
-
-const formatRelative = (iso) => {
-	if (!iso) return null;
-	const then = new Date(iso).getTime();
-	const now = Date.now();
-	const diffMin = Math.max(0, Math.round((now - then) / 60000));
-	if (diffMin < 60) return `${diffMin}m ago`;
-	const diffH = Math.round(diffMin / 60);
-	if (diffH < 48) return `${diffH}h ago`;
-	const diffD = Math.round(diffH / 24);
-	return `${diffD}d ago`;
-};
-
-const recent = (data.recent ?? []).slice(0, 3);
-const updatedRel = formatRelative(data.updated);
 const form = data.form ?? 'neutral';
-const formTsb = data.form_tsb;
-const tsbDisplay = formTsb == null ? '—' : (formTsb > 0 ? `+${Math.round(formTsb)}` : Math.round(formTsb).toString());
-const weeklyHours = data.weekly_hours ?? 0;
-const weeklyTss = data.weekly_tss ?? 0;
-const hoursDisplay = Number.isInteger(weeklyHours) ? weeklyHours : weeklyHours.toFixed(1);
-const formFlag = form === 'fresh' ? 'flag-green' : form === 'fatigued' ? 'flag-amber' : 'flag-off';
+const tsb = data.form_tsb;
+const displayTsb = tsb == null ? '—' : `${tsb > 0 ? '+' : ''}${Math.round(tsb)}`;
+const snapshotDate = new Date(data.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Muscat' });
+const formatDuration = (min: number | null) => min == null ? '' : min < 60 ? `${min} min` : `${Math.floor(min / 60)}h ${min % 60}m`;
 ---
-
-<section class="pulse" aria-label="Training pulse">
-	<div class="pulse-top">
-		<span class="label">Training pulse</span>
-		{updatedRel && (
-			<span class="pulse-updated">updated <span data-iso={data.updated}>{updatedRel}</span></span>
-		)}
-	</div>
-
-	<div class="pulse-board">
-		<div class="cell">
-			<div class="cell-num stat-big">{hoursDisplay}<span class="cell-unit">h</span></div>
-			<div class="cell-label label">this week</div>
-		</div>
-		<div class="cell">
-			<div class="cell-num stat-big">{weeklyTss}</div>
-			<div class="cell-label label">TSS</div>
-		</div>
-		<div class="cell">
-			<div class="cell-num stat-big">{tsbDisplay}</div>
-			<div class="cell-label label">form (TSB) <span class={`flag ${formFlag}`}>{form}</span></div>
-		</div>
-		{recent.length > 0 && (
-			<div class="cell cell-sessions">
-				<ul class="sessions">
-					{recent.map((r) => (
-						<li>
-							<time class="s-date" datetime={r.date}>{r.date.slice(5)}</time>
-							<span class="s-name">{r.name}</span>
-							<span class="s-num">
-								{[formatDistance(r.distance_km), formatDuration(r.duration_min)].filter(Boolean).join(' · ')}
-							</span>
-						</li>
-					))}
-				</ul>
-			</div>
-		)}
-	</div>
-</section>
-
-<script is:inline>
-	(function () {
-		const fmt = (iso) => {
-			const then = new Date(iso).getTime();
-			if (Number.isNaN(then)) return null;
-			const diffMin = Math.max(0, Math.round((Date.now() - then) / 60000));
-			if (diffMin < 60) return diffMin + 'm ago';
-			const diffH = Math.round(diffMin / 60);
-			if (diffH < 48) return diffH + 'h ago';
-			return Math.round(diffH / 24) + 'd ago';
-		};
-		document.querySelectorAll('.pulse [data-iso]').forEach((el) => {
-			const out = fmt(el.dataset.iso);
-			if (out) el.textContent = out;
-		});
-	})();
+<div class="pulse" aria-label="Training snapshot">
+  <dl class="pulse-stats">
+    <div><dt>Hours / last 7 days</dt><dd>{data.weekly_hours.toFixed(1)}</dd></div>
+    <div><dt><abbr title="Training Stress Score">TSS</abbr> / last 7 days</dt><dd>{data.weekly_tss}</dd></div>
+    <div><dt>Form / <abbr title="Training Stress Balance">TSB</abbr></dt><dd>{displayTsb}<small>{form}</small></dd></div>
+  </dl>
+  <details class="recent-sessions" open><summary>Recent sessions <span aria-hidden="true">+</span></summary><ul>{data.recent.map((activity) => <li><time datetime={activity.date}>{new Date(`${activity.date}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}</time><span>{activity.name}</span><span class="session-duration">{[formatDuration(activity.duration_min), activity.distance_km != null ? `${activity.distance_km.toFixed(1)} km` : ''].filter(Boolean).join(' · ')}</span></li>)}</ul></details>
+  <p class="snapshot-date">Snapshot <time datetime={data.updated}>{snapshotDate}</time><span data-snapshot={data.updated}></span></p>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-snapshot]').forEach((element) => {
+    const stamp = Date.parse(element.dataset.snapshot ?? '');
+    if (!Number.isFinite(stamp)) return;
+    const minutes = Math.max(0, Math.floor((Date.now() - stamp) / 60000));
+    element.textContent = ' · ' + (minutes < 60 ? `${minutes}m ago` : minutes < 2880 ? `${Math.floor(minutes / 60)}h ago` : `${Math.floor(minutes / 1440)}d ago`);
+    element.title = new Date(stamp).toLocaleString('en-GB', { timeZone: 'Asia/Muscat' }) + ' (Muscat)';
+  });
 </script>
-
 <style>
-	.pulse {
-		border-top: 1px solid var(--ink);
-		border-bottom: 1px solid var(--rule);
-	}
-
-	.pulse-top {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		gap: 1rem;
-		padding: 0.5rem 0;
-		border-bottom: 1px solid var(--rule);
-	}
-
-	.pulse-top .label {
-		color: var(--ink);
-	}
-
-	.pulse-updated {
-		font-family: var(--font-mono);
-		font-feature-settings: "tnum" 1;
-		font-size: 12px;
-		color: var(--muted);
-	}
-
-	.pulse-board {
-		display: grid;
-		grid-template-columns: auto auto auto 1fr;
-		gap: 0;
-	}
-
-	.cell {
-		padding: 0.875rem 1.75rem 0.875rem 0;
-		margin-right: 1.75rem;
-		border-right: 1px solid var(--rule);
-	}
-
-	.cell-sessions {
-		border-right: 0;
-		margin-right: 0;
-		padding-right: 0;
-		min-width: 0;
-	}
-
-	.cell-num {
-		color: var(--ink);
-	}
-
-	.cell-unit {
-		font-size: 0.45em;
-		font-weight: 600;
-		color: var(--muted);
-		margin-left: 2px;
-	}
-
-	.cell-label {
-		margin-top: 0.3rem;
-		display: flex;
-		gap: 0.5em;
-		align-items: baseline;
-		white-space: nowrap;
-	}
-
-	.sessions {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.sessions li {
-		display: grid;
-		grid-template-columns: 3.5em 1fr auto;
-		gap: 0.75rem;
-		align-items: baseline;
-		padding: 0.28rem 0;
-		border-bottom: 1px solid var(--rule);
-		font-size: 13px;
-		min-width: 0;
-	}
-
-	.sessions li:last-child {
-		border-bottom: 0;
-	}
-
-	.s-date {
-		font-family: var(--font-mono);
-		font-feature-settings: "tnum" 1;
-		font-size: 12px;
-		color: var(--muted);
-	}
-
-	.s-name {
-		font-family: var(--font-ui);
-		color: var(--ink);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-width: 0;
-	}
-
-	.s-num {
-		font-family: var(--font-mono);
-		font-feature-settings: "tnum" 1;
-		font-size: 12px;
-		color: var(--muted);
-		white-space: nowrap;
-	}
-
-	@media (max-width: 880px) {
-		.pulse-board {
-			grid-template-columns: repeat(3, auto);
-		}
-		.cell-sessions {
-			grid-column: 1 / -1;
-			border-top: 1px solid var(--rule);
-			padding-top: 0.5rem;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.cell {
-			padding-right: 1rem;
-			margin-right: 1rem;
-		}
-		.s-name { white-space: normal; }
-		.sessions li { grid-template-columns: 3.5em 1fr; }
-		.s-num { grid-column: 2; }
-	}
+  .pulse-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .pulse-stats > div { display: flex; flex-direction: column-reverse; justify-content: end; gap: .4rem; padding: 1.25rem .6rem 1.25rem 0; }
+  .pulse-stats > div + div { border-left: 1px solid var(--rule); padding-left: 1rem; }
+  dt { font-size: .875rem; color: var(--muted); }
+  dd { margin: 0; font-family: var(--font-display); font-size: 2.5rem; font-weight: 350; line-height: 1.15; display: flex; flex-wrap: wrap; gap: .25rem; align-items: baseline; }
+  dd small { font-family: var(--font-ui); font-weight: 400; font-size: .75rem; }
+  abbr { text-decoration: none; }
+  summary { cursor: pointer; padding-block: 1rem; font-size: 1rem; }
+  summary > span { float: right; font-size: 1.2rem; line-height: 1.1; }
+  details[open] summary > span { transform: rotate(45deg); }
+  summary:hover { text-decoration: underline; text-underline-offset: 4px; }
+  ul { list-style: none; padding: 0; margin: 0 0 .75rem; }
+  li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .35rem .75rem; padding-block: .85rem; border-top: 1px solid var(--rule); font-size: 1rem; }
+  time, .session-duration { font-size: .8125rem; color: var(--muted); }
+  .session-duration { grid-column: 2; }
+  .snapshot-date { font-size: .75rem; color: var(--muted); margin: 0 0 1rem; }
+  @media (max-width: 540px) { .pulse-stats { grid-template-columns: minmax(0, 1fr); } .pulse-stats > div { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .85rem 0; } .pulse-stats > div + div { border-left: 0; border-top: 1px solid var(--rule); padding-left: 0; } }
 </style>

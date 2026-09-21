@@ -1,23 +1,22 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Splits — Design Tokens
-   Source of truth: DESIGN.md (v1.0, drafted 2026-07-18)
-   A race timing sheet: black figures, white paper, marker yellow.
+   Personal observatory — September 2026
+   Orbital imagery, precise labels, spacious type, and readable long-form pages.
    ============================================================ */
 
 @theme {
-  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-display: "Outfit Variable", system-ui, sans-serif;
   --font-prose: "Literata Variable", Georgia, "Times New Roman", serif;
-  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-ui: "Outfit Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --color-bg: #FFFFFF;
-  --color-surface: #F4F4F1;
-  --color-ink: #111111;
-  --color-muted: #6B6B6B;
-  --color-rule: #E4E4E1;
-  --color-mark: #FFE81C;
+  --color-bg: #EEF1F4;
+  --color-surface: #FFFFFF;
+  --color-ink: #172337;
+  --color-muted: #526077;
+  --color-rule: #CBD3DE;
+  --color-mark: #DCE5EF;
 
   --spacing-2xs: 0.125rem;
   --spacing-xs: 0.25rem;
@@ -30,7 +29,7 @@
   --spacing-4xl: 6rem;
 
   --container-prose: 720px;
-  --container-wide: 1200px;
+  --container-wide: 1360px;
   --container-figure: 1080px;
 }
 
@@ -39,13 +38,17 @@
    ============================================================ */
 
 :root {
-  --bg: #FFFFFF;
-  --surface: #F4F4F1;
-  --ink: #111111;
-  --muted: #6B6B6B;
-  --rule: #E4E4E1;
-  --mark: #FFE81C;
-  --on-mark: #111111;
+  --bg: #EEF1F4;
+  --surface: #FFFFFF;
+  --ink: #172337;
+  --muted: #526077;
+  --rule: #CBD3DE;
+  --mark: #DCE5EF;
+  --on-mark: #172337;
+  --accent: #8C5827;
+  --deep: #101C2D;
+  --paper-hover: #E5EBF2;
+  --electric: #8C5827;
   --flag-green: #2FBE56;
   --flag-amber: #FFC933;
   --flag-red: #FF5A45;
@@ -54,13 +57,17 @@
 }
 
 html.dark {
-  --bg: #0F0F0E;
-  --surface: #191917;
-  --ink: #F1F1ED;
-  --muted: #98988F;
-  --rule: #2A2A27;
-  --mark: #F5DF1E;
-  --on-mark: #111111;
+  --bg: #080D16;
+  --surface: #101824;
+  --ink: #EEF2F8;
+  --muted: #A6B3C6;
+  --rule: #293547;
+  --mark: #263449;
+  --on-mark: #EEF2F8;
+  --accent: #E8BD85;
+  --deep: #101C2D;
+  --paper-hover: #172234;
+  --electric: #E8BD85;
   --flag-green: #2FBE56;
   --flag-amber: #FFC933;
   --flag-red: #FF5A45;
@@ -103,42 +110,42 @@ body {
 }
 
 /* ============================================================
-   Display typography — Barlow Condensed, caps
+   Display typography — Outfit; Literata reserved for long-form prose
    ============================================================ */
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   color: var(--ink);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  letter-spacing: -0.035em;
   margin: 0;
 }
 
 h1 {
-  font-size: clamp(40px, 6.5vw, 84px);
-  line-height: 0.9;
-  text-transform: uppercase;
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  line-height: 1.12;
+  text-transform: none;
 }
 
 h2 {
-  font-size: 30px;
-  line-height: 1.05;
-  text-transform: uppercase;
+  font-size: 1.875rem;
+  line-height: 1.2;
+  text-transform: none;
 }
 
 h3 {
   font-size: 22px;
-  line-height: 1.1;
-  font-weight: 600;
+  line-height: 1.3;
+  font-weight: 500;
 }
 
 .title-hero {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(48px, 8vw, 110px);
-  line-height: 0.9;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
+  font-weight: 500;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-transform: none;
 }
 
 .stat-big {
@@ -148,13 +155,13 @@ h3 {
   line-height: 1;
 }
 
-/* label — replaces the old eyebrow. Condensed caps, restrained tracking. */
+/* Supporting labels use the same quiet, readable UI face. */
 .label {
   font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 14px;
+  font-weight: 450;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--muted);
   line-height: 1.3;
 }
@@ -176,10 +183,14 @@ a:hover {
   color: var(--on-mark);
 }
 
-a:focus-visible {
+a:focus-visible, button:focus-visible, summary:focus-visible {
   outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  outline-offset: 4px;
 }
+
+main:focus { outline: none; }
+.skip-link { position: fixed; top: .75rem; left: 1rem; z-index: 100; background: var(--ink); color: var(--bg); padding: .75rem 1rem; transform: translateY(-180%); }
+.skip-link:focus { transform: translateY(0); }
 
 em, i {
   font-style: italic;
@@ -216,6 +227,7 @@ pre {
   line-height: 1.55;
   background: var(--surface);
   border: 1px solid var(--rule);
+  border-radius: 2px;
   padding: 1em 1.2em;
   overflow-x: auto;
   margin: 1.5em 0;
@@ -234,7 +246,7 @@ pre code {
   font-size: 0.95em;
 }
 
-/* marker highlight — the one decorative device */
+/* Text highlight */
 .mark {
   background: var(--mark);
   color: var(--on-mark);
@@ -283,7 +295,7 @@ th[align="right"] {
 
 /* ============================================================
    Results table — section indexes + home log.
-   Rows are links; hovering floods the row with marker yellow.
+   Rows are links, with a subtle surface change on hover.
    ============================================================ */
 
 .results {
@@ -309,7 +321,8 @@ th[align="right"] {
   grid-template-columns: 7.5em 1fr auto;
   gap: 1.25em;
   align-items: baseline;
-  padding: 0.8em 0.5em;
+  padding: 1.2em 0.75em;
+  border-radius: 0;
   text-decoration: none;
   color: var(--ink);
   transition: background-color 70ms ease-out;
@@ -336,15 +349,15 @@ th[align="right"] {
 
 .results .row-title {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 22px;
-  line-height: 1.1;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.3;
   display: block;
 }
 
 .results .row-summary {
   font-family: var(--font-ui);
-  font-size: 14px;
+  font-size: 16px;
   color: var(--muted);
   line-height: 1.45;
   display: block;
@@ -372,17 +385,18 @@ th[align="right"] {
 }
 
 /* ============================================================
-   Buttons — square, ink-bordered, marker on hover
+   Buttons — simple ink borders
    ============================================================ */
 
 .btn {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 15px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  text-transform: none;
+  letter-spacing: 0;
   padding: 8px 16px;
   border: 1px solid var(--ink);
+  border-radius: 2px;
   background: transparent;
   color: var(--ink);
   cursor: pointer;

@@ -47,9 +47,10 @@ const ogImage = image ? { src: image } : undefined;
 
 	<body>
 		<Header variant="compact" />
-		<main>
+		<main id="main-content" tabindex="-1">
 			<article>
 				<header class="paper-head">
+					<a class="paper-back" href="/builds#archive-title">← Work archive</a>
 					<p class="label">{eyebrow}</p>
 					<h1 class="paper-title">{title}</h1>
 					{subtitle && <p class="paper-subtitle">{subtitle}</p>}
@@ -62,7 +63,7 @@ const ogImage = image ? { src: image } : undefined;
 					{paperLog?.last_edit && (
 						<p class="paper-edited">
 							last edited <span class="paper-edited-rel" data-iso={paperLog.last_edit}>recently</span>
-							· <span class="paper-edited-count">{paperLog.commits_7d}</span> commits this week
+							· <span class="paper-edited-count">{paperLog.commits_7d}</span> commits in the recorded week
 						</p>
 					)}
 				</header>
@@ -144,7 +145,7 @@ const ogImage = image ? { src: image } : undefined;
 			}
 
 			.paper-head {
-				max-width: var(--container-prose);
+				max-width: 960px;
 				margin: 0 auto;
 				padding: 4rem 1.25rem 2.5rem;
 			}
@@ -160,12 +161,20 @@ const ogImage = image ? { src: image } : undefined;
 
 			.paper-head .label {
 				margin: 0 0 1.25rem;
+				font-family: var(--font-mono);
+				font-size: .75rem;
+				text-transform: uppercase;
+				letter-spacing: .1em;
+				color: var(--accent);
 			}
+			.paper-back { display: inline-block; font-size: .875rem; color: var(--muted); text-decoration: none; margin-bottom: 2rem; padding-block: .5rem; }
 
 			.paper-title {
-				font-size: clamp(44px, 7vw, 88px);
-				line-height: 0.9;
+				font-size: clamp(2.5rem, 7vw, 5.5rem);
+				font-weight: 350;
+				line-height: 1.1;
 				margin: 0 0 1rem;
+				overflow-wrap: anywhere;
 			}
 
 			.paper-subtitle {
@@ -182,7 +191,7 @@ const ogImage = image ? { src: image } : undefined;
 			.paper-edited {
 				font-family: var(--font-mono);
 				font-feature-settings: "tnum" 1;
-				font-size: 12px;
+				font-size: .8125rem;
 				line-height: 1.6;
 				color: var(--muted);
 				margin: 0;
@@ -236,10 +245,10 @@ const ogImage = image ? { src: image } : undefined;
 
 			.prose :global(h2) {
 				font-family: var(--font-display);
-				font-weight: 700;
-				font-size: 32px;
-				line-height: 1.05;
-				text-transform: uppercase;
+				font-weight: 450;
+				font-size: 2rem;
+				line-height: 1.25;
+				text-transform: none;
 				letter-spacing: 0;
 				color: var(--ink);
 				margin: 2.4em 0 0.6em;
@@ -328,6 +337,8 @@ const ogImage = image ? { src: image } : undefined;
 			.prose :global(li) {
 				margin: 0.4em 0;
 			}
+			.prose :global(ul) { list-style: disc; }
+			.prose :global(ol) { list-style: decimal; }
 
 			/* Figures sit on the page like a printout — wider than prose,
 			   narrower than the screen, a hairline tying them to the rhythm. */
@@ -425,7 +436,7 @@ const ogImage = image ? { src: image } : undefined;
 				font-family: var(--font-display);
 				font-size: 14px;
 				font-weight: 600;
-				text-transform: uppercase;
+				text-transform: none;
 				letter-spacing: 0.05em;
 				color: var(--muted);
 				text-align: left;

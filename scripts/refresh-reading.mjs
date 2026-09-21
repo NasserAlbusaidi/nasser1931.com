@@ -13,6 +13,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+// A StoryGraph import owns this snapshot until deliberately switched back.
+// Check before credentials/network access so the existing scheduled job is a no-op.
+try {
+	const existing = JSON.parse(fs.readFileSync(path.resolve('src/data/reading.json'), 'utf8'));
+	if (existing.source && existing.source !== 'notion') {
+		console.log('Reading source is not Notion; skipping Notion refresh.');
+		process.exit(0);
+	}
+} catch (error) {
+	if (error.code !== 'ENOENT') throw error;
+}
+
 const TOKEN = (process.env.NOTION_TOKEN || '').trim();
 const DB_ID = (process.env.NOTION_READING_DB || 'cc065a07385442afacf12561c8d7d425').trim();
 const NOTION_VERSION = '2022-06-28';
@@ -110,6 +122,7 @@ const main = async () => {
 	const finished_this_year = finished.filter((b) => b.finished?.startsWith(`${thisYear}`)).length;
 
 	const snapshot = {
+		source: 'notion',
 		updated: new Date().toISOString(),
 		stats: {
 			finished_total: finished.length,
@@ -127,8 +140,13 @@ const main = async () => {
 	let prev = null;
 	try {
 		prev = JSON.parse(fs.readFileSync(out, 'utf8'));
-	} catch {
-		// first run
+	} catch (error) {
+		if (error.code !== 'ENOENT') throw error;
+	}
+	// An import may have changed ownership while the Notion request was in flight.
+	if (prev?.source && prev.source !== 'notion') {
+		console.log('Reading source changed; skipping Notion write.');
+		return;
 	}
 
 	if (prev && contentKey(prev) === contentKey(snapshot)) {

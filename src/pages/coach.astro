@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import coach from '../data/coach.json';
 import bank from '../data/workout-bank.json';
+import '../styles/coach.css';
 import {
 	classifyState,
 	getScheduleContext,
@@ -33,7 +34,7 @@ const stateLabel = pick.workoutKey === null
 const subtitle = pick.workoutKey === null
 	? (ctx.slot === 'group_ride'
 		? 'Friday is the group ride — ride what falls. No structured workout to push.'
-		: 'No cycling slot scheduled today.')
+		: 'No cycling slot scheduled for this date.')
 	: `${pick.workout?.category ?? ''} · key ${pick.workoutKey}`;
 
 const pushCmd = `python3 tools/intervalsicu/pick_workout.py --push --time 05:30`;
@@ -57,7 +58,7 @@ function buildEntry(offset: number) {
 	const entryPick = offset === 0 ? pick : { ...entryV1, warnings: [] as string[] };
 
 	let slotTag: string;
-	if (offset === 0) slotTag = 'today';
+	if (offset === 0) slotTag = 'snapshot';
 	else if (entryCtx.slot === 'group_ride') slotTag = 'group';
 	else if (entryCtx.slot) slotTag = entryCtx.slot;
 	else slotTag = 'rest';
@@ -102,14 +103,15 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 	<head>
 		<BaseHead
 			title="Coach — Nasser Al Busaidi"
-			description="A daily cycling briefing — recovery signals, today's pick, and the reasoning. Driven by intervals.icu."
+			description="A cycling briefing from recorded recovery signals, with workout suggestions and the reasoning behind them."
 		/>
 	</head>
 	<body>
 		<Header variant="compact" />
-		<main>
+		<main id="main-content" tabindex="-1" class="coach-page">
+			<header class="coach-intro"><div><p class="coach-eyebrow">Training / The briefing room</p><h1>Cycling coach<span>.</span></h1><p>Recovery signals, a workout suggestion, and the reasoning behind it.</p></div><a href="/field">Back to life <span aria-hidden="true">↗</span></a></header>
 			<section class="forecast" aria-label="Four-day forecast">
-				<h2 class="forecast-head label">This week</h2>
+				<h2 class="forecast-head label">Four-day outlook</h2>
 				<div class="forecast-rows">
 					{forecast.map((f) => (
 						<button
@@ -137,15 +139,23 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			<aside class="projection-banner" id="projection-banner" hidden>
 				<strong>Projection</strong> ·
 				viewing <span class="num" id="proj-date-label">—</span>,
-				<span class="num" id="proj-offset-label">+0</span> from today.
-				Recovery assumed AMBER; v1 only.
-				<button type="button" id="back-to-today">← back to today</button>
+				<span class="num" id="proj-offset-label">+0</span> from the snapshot.
+				Baseline: AMBER recovery; v1 only.
+				<button type="button" id="back-to-today">← Back to snapshot</button>
 			</aside>
 
+			{!wellnessFresh && wellnessDateISO && (
+				<aside class="staleness">
+					Wellness data is from <span class="num">{wellnessDateISO}</span>; this briefing uses the snapshot dated <span class="num">{todayISO}</span>.
+				</aside>
+			)}
+
+			<div class="coach-dashboard">
+			<section class="recommendation" aria-labelledby="header-title">
 			<header class="brief-head">
 				<div>
-					<span class="label" id="eyebrow-date">Morning briefing · {longDate}</span>
-					<h1 id="header-title">{stateLabel}.</h1>
+					<span class="label" id="eyebrow-date">Snapshot · {longDate}</span>
+					<h2 id="header-title">{stateLabel}.</h2>
 					<p class="subtitle" id="header-subtitle">{subtitle}</p>
 				</div>
 				<div class="brief-meta">
@@ -158,15 +168,50 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				</div>
 			</header>
 
-			{!wellnessFresh && wellnessDateISO && (
-				<aside class="staleness">
-					<strong>Note:</strong> wellness snapshot is from <span class="num">{wellnessDateISO}</span>,
-					not today ({todayISO}). intervals.icu's Garmin sync is usually 1–3h behind — refresh later.
-				</aside>
-			)}
+				<div id="pick-title" class="pick-title" hidden>{stateLabel}</div>
+				<div id="pick-sub" class="pick-sub" hidden>{subtitle}</div>
 
+				<div id="pick-stats" class="pick-stats" style={pick.workoutKey ? '' : 'display:none'}>
+					<div>
+						<div class="comp-label label">Duration</div>
+						<div class="stat-big">
+							<span class="stat-num" id="stat-duration">{pick.workout?.duration_min ?? '—'}</span><span class="unit">min</span>
+						</div>
+					</div>
+					<div>
+						<div class="comp-label label">Target IF</div>
+						<div class="stat-big">
+							<span class="stat-num" id="stat-if">{pick.workout?.target_if?.toFixed(2) ?? '—'}</span>
+						</div>
+					</div>
+					<div>
+						<div class="comp-label label">Target TSS</div>
+						<div class="stat-big">
+							<span class="stat-num" id="stat-tss">{pick.workout?.target_tss ?? '—'}</span>
+						</div>
+					</div>
+					<div>
+						<div class="comp-label label">Cost</div>
+						<div class="stat-big-text" id="stat-cost">{pick.workout?.recovery_cost ?? '—'}</div>
+					</div>
+				</div>
+
+				<details class="reasoning-details" open>
+					<summary>Why this workout</summary>
+					<ol id="reasoning-list" class="reasoning">
+						{pick.reasoning.map((r) => <li>{r}</li>)}
+					</ol>
+				</details>
+
+				<div id="warnings" class="warnings" style={(pick.warnings ?? []).length ? '' : 'display:none'}>
+					{(pick.warnings ?? []).map((w) => <div class="warning">{w}</div>)}
+				</div>
+
+				<pre id="dsl-block" class="dsl" style={pick.workoutKey ? '' : 'display:none'}><code id="dsl-code">{pick.workout?.dsl ?? ''}</code></pre>
+			</section>
+			<aside class="coach-signals" aria-label="Recorded training signals">
 			<section class="block">
-				<h2 class="block-head label">Recovery signals</h2>
+				<h2 class="block-head label">Recovery signals</h2><p class="signals-date">Recorded {wellnessDateISO ?? todayISO}</p>
 				<div class="signals">
 					{cls.classifications.map((c) => (
 						<div class={`signal signal-${c.class}`} data-key={c.key}>
@@ -186,7 +231,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			</section>
 
 			<section class="block">
-				<h2 class="block-head label">Computed signals</h2>
+				<h2 class="block-head label">Training context</h2>
 				<div class="computed">
 					<div class="comp">
 						<div class="comp-label label">TSB · form</div>
@@ -216,50 +261,9 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 				</div>
 			</section>
 
-			<section class="block">
-				<h2 class="block-head label">Today's pick</h2>
-				<div id="pick-title" class="pick-title">{stateLabel}</div>
-				<div id="pick-sub" class="pick-sub">{subtitle}</div>
-
-				<div id="pick-stats" class="pick-stats" style={pick.workoutKey ? '' : 'display:none'}>
-					<div>
-						<div class="comp-label label">Duration</div>
-						<div class="stat-big">
-							<span class="stat-num" id="stat-duration">{pick.workout?.duration_min ?? '—'}</span><span class="unit">min</span>
-						</div>
-					</div>
-					<div>
-						<div class="comp-label label">Target IF</div>
-						<div class="stat-big">
-							<span class="stat-num" id="stat-if">{pick.workout?.target_if?.toFixed(2) ?? '—'}</span>
-						</div>
-					</div>
-					<div>
-						<div class="comp-label label">Target TSS</div>
-						<div class="stat-big">
-							<span class="stat-num" id="stat-tss">{pick.workout?.target_tss ?? '—'}</span>
-						</div>
-					</div>
-					<div>
-						<div class="comp-label label">Cost</div>
-						<div class="stat-big-text" id="stat-cost">{pick.workout?.recovery_cost ?? '—'}</div>
-					</div>
-				</div>
-
-				<details class="reasoning-details" open>
-					<summary>Reasoning</summary>
-					<ol id="reasoning-list" class="reasoning">
-						{pick.reasoning.map((r) => <li>{r}</li>)}
-					</ol>
-				</details>
-
-				<div id="warnings" class="warnings" style={(pick.warnings ?? []).length ? '' : 'display:none'}>
-					{(pick.warnings ?? []).map((w) => <div class="warning">{w}</div>)}
-				</div>
-
-				<pre id="dsl-block" class="dsl" style={pick.workoutKey ? '' : 'display:none'}><code id="dsl-code">{pick.workout?.dsl ?? ''}</code></pre>
-			</section>
-
+			</aside>
+			</div>
+			<div class="coach-tools">
 			<details class="block overrides">
 				<summary><span class="block-head label">Override engine inputs</span></summary>
 				<div class="control-row">
@@ -300,16 +304,16 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			</details>
 
 			<details class="block push-hint">
-				<summary><span class="block-head label">Ship to calendar (manual)</span></summary>
+				<summary><span class="block-head label">Send to calendar (manual)</span></summary>
 				<p class="hint-prose">
-					Push hasn't been wired into the browser yet. Run this from the project root and the
-					workout lands on intervals.icu, which Garmin Calendar Sync forwards to the watch.
+					Run this in the project-furnace repository to send the canonical workout to Intervals.icu. It recalculates the workout; changes made here are not included.
 				</p>
 				<div class="copy-row">
 					<pre class="cmd"><code id="push-cmd">{pushCmd}</code></pre>
 					<button type="button" id="copy-btn" aria-live="polite">Copy</button>
 				</div>
 			</details>
+			</div>
 		</main>
 		<Footer />
 
@@ -379,7 +383,7 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 					? (ctx.slot === 'group_ride' ? 'Group ride day' : 'Rest day')
 					: (pick.workout?.name ?? 'Unknown');
 				if (eyebrow) {
-					eyebrow.textContent = (isToday ? 'Morning briefing · ' : 'Projection · ') + longDateFmt(date);
+					eyebrow.textContent = (isToday ? 'Snapshot · ' : 'Projection · ') + longDateFmt(date);
 				}
 				if (headerTitle) headerTitle.textContent = headerLabel + '.';
 
@@ -508,489 +512,5 @@ const forecast = [0, 1, 2, 3].map(buildEntry);
 			})();
 		</script>
 
-		<style>
-			main {
-				max-width: var(--container-prose);
-				margin: 0 auto;
-				padding: 2rem 1.5rem 4rem;
-			}
-
-			/* ---- 4-day forecast strip ---- */
-			.forecast {
-				margin: 0 0 1.75rem;
-			}
-			.forecast-head {
-				color: var(--ink);
-				margin: 0;
-				padding: 0 0 0.4rem;
-				border-bottom: 1px solid var(--ink);
-			}
-			.forecast-rows {
-				display: flex;
-				flex-direction: column;
-			}
-			.forecast-row {
-				display: grid;
-				grid-template-columns: minmax(150px, auto) 1fr auto;
-				gap: 0.875rem;
-				align-items: baseline;
-				padding: 0.55rem 0.5rem;
-				border: 0;
-				border-bottom: 1px solid var(--rule);
-				background: transparent;
-				color: var(--ink);
-				text-align: left;
-				cursor: pointer;
-				font-family: inherit;
-				transition: background-color 70ms ease-out, color 70ms ease-out;
-			}
-			.forecast-row:hover:not(.active) { background: var(--mark); color: var(--on-mark); }
-			.forecast-row:hover:not(.active) .forecast-when,
-			.forecast-row:hover:not(.active) .forecast-title,
-			.forecast-row:hover:not(.active) .forecast-num { color: var(--on-mark); }
-			.forecast-row:focus-visible {
-				outline: 2px solid var(--ink);
-				outline-offset: -2px;
-			}
-			/* The active row is ink-filled — an ink outline would vanish into it. */
-			.forecast-row.active:focus-visible {
-				outline-color: var(--bg);
-			}
-			.forecast-row.active {
-				background: var(--ink);
-				color: var(--bg);
-				cursor: default;
-			}
-			.forecast-when {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-				display: inline-flex;
-				gap: 0.4em;
-				align-items: baseline;
-				white-space: nowrap;
-			}
-			.forecast-row.active .forecast-when { color: var(--bg); opacity: 0.75; }
-			.forecast-row.active .forecast-slot { opacity: 1; font-weight: 600; }
-			.forecast-dot { opacity: 0.5; }
-			.forecast-title {
-				font-family: var(--font-display);
-				font-weight: 600;
-				font-size: 19px;
-				line-height: 1.1;
-				color: var(--ink);
-			}
-			.forecast-row.active .forecast-title { color: var(--bg); }
-			.forecast-row:not(.active) .forecast-title { color: var(--muted); font-weight: 500; }
-			.forecast-row:not(.active):hover .forecast-title { color: var(--on-mark); }
-			.forecast-num {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-				white-space: nowrap;
-			}
-			.forecast-row.active .forecast-num { color: var(--bg); }
-			.forecast-footnote {
-				font-family: var(--font-ui);
-				font-size: 13px;
-				color: var(--muted);
-				margin: 0.75rem 0 0;
-				padding-left: 0.5rem;
-			}
-
-			/* ---- projection banner (visible when activeIndex > 0) ---- */
-			.projection-banner {
-				border: 1px solid var(--ink);
-				border-left: 4px solid var(--flag-amber);
-				padding: 0.6rem 0.875rem;
-				margin: 0 0 1.5rem;
-				font-family: var(--font-ui);
-				font-size: 14px;
-				color: var(--ink);
-				display: flex;
-				align-items: center;
-				flex-wrap: wrap;
-				gap: 0.4em;
-			}
-			.projection-banner[hidden] { display: none; }
-			.projection-banner strong {
-				font-family: var(--font-display);
-				font-size: 14px;
-				text-transform: uppercase;
-				letter-spacing: 0.04em;
-				font-weight: 700;
-			}
-			.projection-banner .num {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-			}
-			#back-to-today {
-				margin-left: auto;
-				font-family: var(--font-display);
-				font-size: 13px;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.04em;
-				padding: 4px 10px;
-				background: transparent;
-				color: var(--ink);
-				border: 1px solid var(--ink);
-				cursor: pointer;
-			}
-			#back-to-today:hover { background: var(--mark); color: var(--on-mark); }
-
-			/* Projection mode mutes today-only sections (signals, computed, push) */
-			main.projecting .signals,
-			main.projecting .computed {
-				opacity: 0.42;
-				pointer-events: none;
-				transition: opacity 200ms ease-out;
-			}
-			main.projecting .push-hint { display: none; }
-
-			.brief-head {
-				display: grid;
-				grid-template-columns: 1fr auto;
-				gap: 1.5rem;
-				align-items: end;
-				padding-bottom: 1rem;
-				border-bottom: 3px solid var(--ink);
-				margin-bottom: 1.75rem;
-			}
-
-			.brief-head h1 {
-				margin: 0.4rem 0 0;
-				font-size: clamp(40px, 7vw, 72px);
-				line-height: 0.92;
-			}
-
-			.subtitle {
-				margin: 0.5rem 0 0;
-				font-family: var(--font-ui);
-				color: var(--muted);
-				font-size: 15px;
-			}
-
-			.brief-meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-				display: flex;
-				gap: 0.75em;
-				align-items: baseline;
-				flex-wrap: wrap;
-				padding-bottom: 0.25rem;
-			}
-			.brief-meta .num { color: var(--ink); }
-
-			.state-pill {
-				font-family: var(--font-display);
-				font-size: 13px;
-				font-weight: 600;
-				letter-spacing: 0.05em;
-				padding: 2px 8px;
-				text-transform: uppercase;
-				color: #111111;
-			}
-			.state-pill.state-green { background: var(--flag-green); }
-			.state-pill.state-amber { background: var(--flag-amber); }
-			.state-pill.state-red   { background: var(--flag-red); }
-
-			.staleness {
-				border: 1px solid var(--rule);
-				border-left: 4px solid var(--flag-amber);
-				padding: 0.75rem 1rem;
-				margin: 0 0 1.5rem;
-				font-family: var(--font-ui);
-				font-size: 14px;
-				color: var(--muted);
-			}
-			.staleness strong { color: var(--ink); font-weight: 600; }
-			.staleness .num { color: var(--ink); font-family: var(--font-mono); font-size: 0.92em; }
-
-			.block { margin: 2rem 0 0; }
-
-			.block-head {
-				color: var(--ink);
-				margin: 0 0 0.875rem;
-				padding-bottom: 0.4rem;
-				border-bottom: 1px solid var(--ink);
-				display: block;
-			}
-
-			.signals {
-				display: grid;
-				grid-template-columns: repeat(5, 1fr);
-				gap: 0.5rem;
-			}
-
-			.signal {
-				border: 1px solid var(--rule);
-				border-top: 3px solid var(--rule);
-				padding: 0.5rem 0.625rem;
-				background: var(--bg);
-			}
-			.signal-green { border-top-color: var(--flag-green); }
-			.signal-amber { border-top-color: var(--flag-amber); }
-			.signal-red   { border-top-color: var(--flag-red); }
-			/* Mute only the value — dimming the whole tile drops the 12px label
-			   below AA contrast, and the label is what says which signal is absent. */
-			.signal-missing .signal-value,
-			.signal-neutral .signal-value { color: var(--muted); }
-			.signal-missing, .signal-neutral { border-top-color: var(--rule); }
-
-			.signal-label {
-				font-size: 12px;
-				margin-bottom: 0.125rem;
-			}
-			.signal-value {
-				font-family: var(--font-display);
-				font-weight: 700;
-				font-size: 24px;
-				line-height: 1;
-				color: var(--ink);
-			}
-			.signal-value .unit {
-				font-family: var(--font-mono);
-				font-size: 11px;
-				margin-left: 0.2em;
-				color: var(--muted);
-			}
-			.signal-value .missing { font-family: var(--font-mono); font-size: 18px; color: var(--muted); }
-
-			.computed {
-				display: grid;
-				grid-template-columns: repeat(4, 1fr);
-				gap: 0.5rem;
-			}
-
-			.comp {
-				border-left: 3px solid var(--rule);
-				padding: 0.125rem 0.75rem;
-			}
-
-			.comp-label {
-				font-size: 12px;
-				margin-bottom: 0.2rem;
-			}
-
-			.comp-value {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 15px;
-				color: var(--ink);
-			}
-
-			.comp-tag {
-				margin-left: 0.4em;
-				font-family: var(--font-display);
-				font-size: 12px;
-				font-weight: 600;
-				color: var(--muted);
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-			}
-
-			.pick-title {
-				font-family: var(--font-display);
-				font-weight: 700;
-				font-size: clamp(28px, 4vw, 40px);
-				line-height: 1;
-				text-transform: uppercase;
-				color: var(--ink);
-				margin: 0 0 0.25rem;
-			}
-
-			.pick-sub {
-				font-family: var(--font-mono);
-				font-size: 12px;
-				color: var(--muted);
-				margin-bottom: 1rem;
-			}
-
-			.pick-stats {
-				display: grid;
-				grid-template-columns: repeat(4, 1fr);
-				gap: 0.75rem;
-				margin: 1rem 0;
-			}
-
-			.pick-stats .stat-big {
-				font-size: clamp(24px, 3vw, 38px);
-				color: var(--ink);
-			}
-
-			.pick-stats .stat-big .unit {
-				font-family: var(--font-mono);
-				font-size: 0.4em;
-				margin-left: 0.2em;
-				color: var(--muted);
-				vertical-align: middle;
-			}
-
-			.stat-big-text {
-				font-family: var(--font-display);
-				font-weight: 600;
-				font-size: 16px;
-				color: var(--ink);
-				text-transform: uppercase;
-				letter-spacing: 0.04em;
-				padding-top: 0.5rem;
-			}
-
-			.reasoning-details { margin: 1rem 0 0; }
-			.reasoning-details > summary {
-				font-family: var(--font-display);
-				font-size: 13px;
-				font-weight: 600;
-				color: var(--muted);
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				cursor: pointer;
-				padding: 0.25rem 0;
-			}
-			.reasoning {
-				font-family: var(--font-ui);
-				font-size: 14px;
-				color: var(--ink);
-				line-height: 1.55;
-				margin: 0.5rem 0;
-				padding-left: 1.5rem;
-			}
-			/* :global — recompute() rebuilds these nodes with createElement, which
-			   never carries the Astro scope attribute, so scoped rules can't match. */
-			.reasoning :global(li) { margin: 0.2rem 0; }
-
-			.warnings { margin: 1rem 0; }
-			.warnings :global(.warning) {
-				border: 1px solid var(--rule);
-				border-left: 4px solid var(--flag-red);
-				padding: 0.6rem 0.875rem;
-				font-family: var(--font-ui);
-				font-size: 14px;
-				color: var(--ink);
-				margin: 0.5rem 0;
-			}
-
-			.dsl {
-				margin: 1.25rem 0 0;
-				font-size: 13px;
-				max-height: 360px;
-				overflow-y: auto;
-				white-space: pre;
-			}
-			.dsl code { white-space: pre; }
-
-			.overrides > summary,
-			.push-hint > summary {
-				cursor: pointer;
-				padding: 0.25rem 0;
-				list-style: revert;
-			}
-			.overrides .block-head,
-			.push-hint .block-head {
-				display: inline-block;
-				border: none;
-				padding: 0;
-				margin: 0;
-			}
-
-			.control-row {
-				display: grid;
-				grid-template-columns: 200px 1fr;
-				gap: 0.75rem;
-				align-items: center;
-				padding: 0.4rem 0;
-				font-family: var(--font-mono);
-				font-size: 12px;
-			}
-			.control-row label {
-				font-family: var(--font-display);
-				font-size: 13px;
-				font-weight: 600;
-				color: var(--muted);
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-			}
-			.control-row select {
-				font-family: var(--font-mono);
-				font-size: 12px;
-				padding: 4px 8px;
-				background: var(--bg);
-				color: var(--ink);
-				border: 1px solid var(--rule);
-				min-width: 180px;
-			}
-			.control-row input[type="checkbox"] {
-				justify-self: start;
-				width: 16px; height: 16px;
-				accent-color: var(--ink);
-			}
-
-			.overrides .btn {
-				margin-top: 0.75rem;
-				font-size: 13px;
-				padding: 5px 14px;
-			}
-
-			.hint-prose {
-				margin: 0.75rem 0;
-				font-family: var(--font-ui);
-				font-size: 14px;
-				color: var(--muted);
-			}
-
-			.copy-row {
-				display: flex;
-				align-items: stretch;
-				gap: 0.5rem;
-			}
-			.copy-row .cmd {
-				flex: 1;
-				margin: 0;
-				font-size: 12.5px;
-				background: var(--ink);
-				color: var(--bg);
-				border: none;
-			}
-			.copy-row .cmd code { color: inherit; background: transparent; }
-
-			#copy-btn {
-				font-family: var(--font-display);
-				font-size: 13px;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.04em;
-				padding: 0 14px;
-				background: transparent;
-				color: var(--ink);
-				border: 1px solid var(--ink);
-				cursor: pointer;
-			}
-			#copy-btn:hover { background: var(--mark); color: var(--on-mark); }
-
-			@media (max-width: 640px) {
-				.signals { grid-template-columns: repeat(2, 1fr); }
-				.computed { grid-template-columns: repeat(2, 1fr); }
-				.pick-stats { grid-template-columns: repeat(2, 1fr); }
-				.control-row { grid-template-columns: 1fr; gap: 0.25rem; }
-				.brief-head { grid-template-columns: 1fr; align-items: start; }
-				.brief-meta { padding-bottom: 0; }
-				.forecast-row {
-					grid-template-columns: 1fr auto;
-					grid-template-rows: auto auto;
-					row-gap: 0.15rem;
-					column-gap: 0.5rem;
-				}
-				.forecast-when { grid-row: 1; grid-column: 1 / -1; font-size: 11px; }
-				.forecast-title { grid-row: 2; grid-column: 1; font-size: 17px; }
-				.forecast-num { grid-row: 2; grid-column: 2; align-self: baseline; }
-				#back-to-today { margin-left: 0; margin-top: 0.25rem; }
-			}
-		</style>
 	</body>
 </html>

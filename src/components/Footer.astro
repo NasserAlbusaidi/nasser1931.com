@@ -16,32 +16,33 @@ const today = new Date();
 			<a href="https://github.com/NasserAlbusaidi/nasser1931.com">source</a>
 		</p>
 		<p class="copy">
-			<span class="muted">© {today.getFullYear()} Nasser Al Busaidi. Built by hand.</span>
+			<span class="muted">© {today.getFullYear()} Nasser Al Busaidi.</span>
 		</p>
 	</div>
 </footer>
 
 <style>
 	.site-footer {
-		margin-top: 6rem;
+		margin-top: 4rem;
 		border-top: 1px solid var(--rule);
-		padding: 2rem 1.25rem 4rem;
+		padding: 1.5rem 1.5rem 2.5rem;
 	}
 
 	.inner {
-		max-width: var(--container-wide);
+		max-width: calc(var(--container-wide) - 3rem);
 		margin: 0 auto;
 		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem;
 	}
 
 	.meta,
 	.copy {
 		margin: 0;
-		font-family: var(--font-mono);
+		font-family: var(--font-ui);
 		font-feature-settings: "tnum" 1;
-		font-size: 12px;
+		font-size: 14px;
 		line-height: 1.5;
 		display: flex;
 		flex-wrap: wrap;
@@ -59,6 +60,7 @@ const today = new Date();
 	}
 
 	.meta a {
+		padding-block: .5rem;
 		color: var(--muted);
 		text-decoration: none;
 	}

@@ -2,253 +2,43 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import PageIntro from '../../components/PageIntro.astro';
 import data from '../../data/reading.json';
-
-type Book = {
-	title: string;
-	author: string | null;
-	status: string | null;
-	rating: number | null;
-	format: string | null;
-	genres: string[];
-	started: string | null;
-	finished: string | null;
-};
-
+import ReadingSource from '../../components/ReadingSource.astro';
+import { formatReadingDate } from '../../lib/reading-date';
+import '../../styles/reading.css';
+type Book = { title: string; author: string | null; status: string | null; rating: number | null; format: string | null; genres: string[]; started: string | null; finished: string | null; };
 const currently: Book[] = data.currently_reading ?? [];
 const finished: Book[] = data.finished ?? [];
 const wantTo: Book[] = data.want_to_read ?? [];
-const stats = data.stats ?? { finished_total: 0, finished_this_year: 0 };
-const updatedISO: string | null = data.updated ?? null;
-
-const thisYear = new Date().getUTCFullYear();
-
-// Group finished books by year for a denser list.
+const snapshotYear = data.updated.slice(0, 4);
+const finishedInYear = finished.filter(book => book.finished?.startsWith(snapshotYear)).length;
 const finishedByYear = new Map<string, Book[]>();
-for (const b of finished) {
-	const y = b.finished?.slice(0, 4) ?? 'undated';
-	if (!finishedByYear.has(y)) finishedByYear.set(y, []);
-	finishedByYear.get(y)!.push(b);
+for (const book of finished) {
+  const year = book.finished?.slice(0, 4) ?? 'undated';
+  if (!finishedByYear.has(year)) finishedByYear.set(year, []);
+  finishedByYear.get(year)!.push(book);
 }
+const years = [...finishedByYear.entries()].sort(([a], [b]) => a === 'undated' ? 1 : b === 'undated' ? -1 : b.localeCompare(a));
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title="Reading — Nasser Al Busaidi" description="Books finished, currently reading, and what's next. Synced from Notion." />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<header class="page-head">
-				<h1>Reading</h1>
-				<p class="page-meta">
-					{stats.finished_total} finished · {stats.finished_this_year} in {thisYear}
-					{updatedISO && (
-						<> · updated <span data-iso={updatedISO}>recently</span></>
-					)}
-				</p>
-			</header>
-
-			{currently.length > 0 && (
-				<section class="shelf">
-					<h2 class="shelf-head">Currently</h2>
-					<ul class="books">
-						{currently.map((b) => (
-							<li>
-								<span class="book-title-cell">
-									<span class="book-title">{b.title}</span>
-									{b.author && <span class="author"> — {b.author}</span>}
-								</span>
-								<span class="meta-cell">
-									{b.started && <time datetime={b.started}>started {b.started}</time>}
-									{b.format && <span class="format">{b.format}</span>}
-								</span>
-							</li>
-						))}
-					</ul>
-				</section>
-			)}
-
-			{finished.length > 0 && (
-				<section class="shelf">
-					<h2 class="shelf-head">Finished</h2>
-					{[...finishedByYear.entries()].map(([year, books]) => (
-						<>
-							<h3 class="year-head">{year}</h3>
-							<ul class="books">
-								{books.map((b) => (
-									<li>
-										<span class="book-title-cell">
-											<span class="book-title">{b.title}</span>
-											{b.author && <span class="author"> — {b.author}</span>}
-										</span>
-										<span class="meta-cell">
-											{b.rating != null && (
-												<span class="rating" aria-label={`${b.rating} of 5`}>{b.rating}/5</span>
-											)}
-											{b.finished && <time datetime={b.finished}>{b.finished.slice(5)}</time>}
-										</span>
-									</li>
-								))}
-							</ul>
-						</>
-					))}
-				</section>
-			)}
-
-			{wantTo.length > 0 && (
-				<section class="shelf">
-					<h2 class="shelf-head">Want to read</h2>
-					<ul class="books">
-						{wantTo.map((b) => (
-							<li>
-								<span class="book-title-cell">
-									<span class="book-title">{b.title}</span>
-									{b.author && <span class="author"> — {b.author}</span>}
-								</span>
-								<span class="meta-cell">
-									{b.format && <span class="format">{b.format}</span>}
-								</span>
-							</li>
-						))}
-					</ul>
-				</section>
-			)}
-
-			{currently.length === 0 && finished.length === 0 && wantTo.length === 0 && (
-				<p class="empty">The list syncs from Notion. Books will appear once the integration is connected.</p>
-			)}
-		</main>
-		<Footer />
-
-		<script is:inline>
-			(function () {
-				const fmt = (iso) => {
-					const then = new Date(iso).getTime();
-					if (Number.isNaN(then)) return null;
-					const diffMin = Math.max(0, Math.round((Date.now() - then) / 60000));
-					if (diffMin < 60) return diffMin + 'm ago';
-					const diffH = Math.round(diffMin / 60);
-					if (diffH < 48) return diffH + 'h ago';
-					return Math.round(diffH / 24) + 'd ago';
-				};
-				document.querySelectorAll('[data-iso]').forEach((el) => {
-					const out = fmt(el.dataset.iso);
-					if (out) el.textContent = out;
-				});
-			})();
-		</script>
-
-		<style>
-			main {
-				max-width: var(--container-prose);
-				margin: 0 auto;
-				padding: 2rem 1.5rem 4rem;
-			}
-
-			.page-head {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1.5rem;
-				margin-bottom: 1rem;
-			}
-
-			.page-meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 13px;
-				color: var(--muted);
-				margin: 0;
-				white-space: nowrap;
-			}
-
-			.shelf {
-				margin: 2.5rem 0 0;
-			}
-
-			.shelf-head {
-				margin: 0 0 0.25rem;
-				padding-bottom: 0.4rem;
-				border-bottom: 1px solid var(--ink);
-			}
-
-			.year-head {
-				font-family: var(--font-display);
-				font-weight: 600;
-				font-size: 16px;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
-				color: var(--muted);
-				margin: 1.5rem 0 0.25rem;
-			}
-
-			.books {
-				list-style: none;
-				margin: 0;
-				padding: 0;
-			}
-
-			.books li {
-				display: grid;
-				grid-template-columns: 1fr auto;
-				gap: 1rem;
-				padding: 0.55em 0.25em;
-				border-bottom: 1px solid var(--rule);
-				align-items: baseline;
-			}
-
-			.book-title-cell {
-				min-width: 0;
-			}
-
-			.book-title {
-				font-family: var(--font-prose);
-				font-style: italic;
-				color: var(--ink);
-				font-size: 16px;
-			}
-
-			.author {
-				color: var(--muted);
-				font-family: var(--font-prose);
-				font-size: 15px;
-			}
-
-			.meta-cell {
-				display: flex;
-				gap: 0.875rem;
-				align-items: baseline;
-				flex-shrink: 0;
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-				white-space: nowrap;
-			}
-
-			.rating {
-				color: var(--ink);
-			}
-
-			.format {
-				text-transform: lowercase;
-			}
-
-			.empty {
-				font-family: var(--font-ui);
-				font-size: 15px;
-				color: var(--muted);
-				margin: 2rem 0;
-			}
-
-			@media (max-width: 540px) {
-				.page-head { flex-direction: column; gap: 0.25rem; }
-				.page-meta { white-space: normal; }
-				.books li { grid-template-columns: 1fr; }
-				.meta-cell { padding-top: 0.15rem; }
-			}
-		</style>
-	</body>
+  <head><BaseHead title="Reading — Nasser Al Busaidi" description="Books finished, currently reading, and what's next on the shelf." /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="interior reading-page">
+      <PageIntro title="Reading" eyebrow="04 / Other worlds" description="A shelf of places I've been, and a few I haven't reached yet." />
+      <div class="reading-provenance"><ReadingSource /></div>
+      {(currently.length > 0 || finished.length > 0) && <section class="reading-now" aria-labelledby="reading-now-title">
+        <div class="current-shelf"><div class="interior-section-head"><h2 id="reading-now-title">On the go</h2><span>{currently.length} {currently.length === 1 ? 'book' : 'books'}</span></div>
+          {currently.length ? <ul class="current-books">{currently.map(book => <li><article><p class="interior-eyebrow">{book.format ?? 'Currently reading'}</p><h3>{book.title}</h3>{book.author && <p class="current-author">{book.author}</p>}{book.started && <p class="current-started">Started {formatReadingDate(book.started)}</p>}</article></li>)}</ul> : <p class="interior-empty">Between books at the moment.</p>}
+        </div>
+        <aside class="reading-totals" aria-label="Reading totals in this import"><p class="interior-eyebrow">The shelf so far</p><dl><div><dt>Books finished</dt><dd>{finished.length}</dd></div><div><dt>Finished in {snapshotYear}</dt><dd>{finishedInYear}</dd></div><div><dt>Want to read</dt><dd>{wantTo.length}</dd></div></dl></aside>
+      </section>}
+      {wantTo.length > 0 && <section class="reading-section" aria-labelledby="want-title"><div class="interior-section-head"><h2 id="want-title">Want to read</h2><span>{wantTo.length} books</span></div><ul class="planned-books">{wantTo.map(book => <li><h3>{book.title}</h3>{book.author && <p>{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</li>)}</ul></section>}
+      {finished.length > 0 && <section class="reading-section" aria-labelledby="finished-title"><div class="interior-section-head"><h2 id="finished-title">Finished</h2><span>{finished.length} books</span></div>{years.map(([year, books]) => <section class="reading-year" aria-labelledby={`year-${year}`}><div class="reading-year-label"><h3 id={`year-${year}`}>{year === 'undated' ? 'Undated' : year}</h3><span>{books.length} {books.length === 1 ? 'book' : 'books'}</span></div><ul class="finished-books">{books.map(book => <li><div><h4>{book.title}</h4>{book.author && <p class="book-author">{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</div><div class="book-record">{book.rating != null && <span class="book-rating" aria-label={`Rated ${book.rating} out of 5`}>{book.rating}<small> / 5</small></span>}{book.finished && <span>{formatReadingDate(book.finished)}</span>}</div></li>)}</ul></section>)}</section>}
+      {currently.length === 0 && finished.length === 0 && wantTo.length === 0 && <p class="interior-empty">No books in this snapshot yet.</p>}
+    </main>
+    <Footer />
+  </body>
 </html>

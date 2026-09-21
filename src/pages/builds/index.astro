@@ -3,6 +3,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import buildsData from '../../data/builds.json';
+import '../../styles/work.css';
 
 type Build = {
 	slug: string;
@@ -30,134 +31,96 @@ const builds: Build[] = [...(buildsData.builds as Build[])].sort((a, b) => {
 	return a.name.localeCompare(b.name);
 });
 
+const statusLabel: Record<Build['status'], string> = {
+	live: 'Live', wip: 'In progress', shipped: 'Published', parked: 'On hold',
+};
+const selectedSlugs = ['rihla', 'coach-engine', 'einsteins-travel-bureau'];
+const selected = selectedSlugs.flatMap(slug => builds.filter(build => build.slug === slug));
+const archived = (build: Build) => build.status === 'parked' || build.status === 'shipped';
+const moreProjects = builds.filter(build => !selectedSlugs.includes(build.slug) && !archived(build));
+const archive = builds.filter(build => !selectedSlugs.includes(build.slug) && archived(build));
+const projectStories: Record<string, { lead: string; detail: string; category: string }> = {
+	rihla: {
+		lead: 'For the plans we make together.',
+		detail: 'Groups, events, and shared expenses in one app. Designed to work offline, with fewer transfers needed to settle up.',
+		category: 'Everyday life',
+	},
+	'coach-engine': {
+		lead: 'A little more context before the next ride.',
+		detail: 'A cycling briefing that turns recovery signals into a workout suggestion. The reasoning is there to read, alongside the recommendation.',
+		category: 'Software × cycling',
+	},
+	'einsteins-travel-bureau': {
+		lead: 'A travel agency for spacetime.',
+		detail: 'A time-dilation sandbox with brochures, boarding passes, and a multi-observer laboratory. Special and general relativity do the maths behind the trip.',
+		category: 'An experiment in physics',
+	},
+};
+const shortDescriptions: Record<string, string> = {
+	'macrofactor-mcp': 'A local tool connecting nutrition and training data.',
+	mizan: 'A local dashboard for Claude Code and Codex usage.',
+	nasser1931: 'This personal website, built with Astro and Firebase.',
+	'readiness-engine': 'A training-readiness score delivered to your calendar.',
+	'invoice-ar': 'Arabic and English invoice PDFs from JSON.',
+	'claude-md': 'A configuration guide and template for Claude Code.',
+	omanclimate: 'A climate atlas for Oman built from public datasets.',
+	'silent-creep': 'A personal study of training, eating, and weight.',
+	'bite-pos': 'Restaurant menus, kitchen orders, and payments.',
+	inventory: 'Warehouse stock movements, sales, and financial tracking.',
+};
+const updated = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${buildsData.updated}T00:00:00Z`));
+
 // Prefer the live/site link; fall back to the repo. Null on both → non-link row.
 const hrefFor = (b: Build) => b.url ?? b.repo ?? null;
 const isExternal = (href: string) => /^https?:\/\//.test(href);
+const destinationLabel = (build: Build) => build.url ? (build.slug === 'coach-engine' ? 'Read the briefing' : 'View project') : 'View source';
+const projectGroups = [
+	{ id: 'more-projects', title: 'More from the workbench', number: '02', projects: moreProjects },
+	{ id: 'archive', title: 'Archive', number: '03', projects: archive },
+];
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead
-			title="Builds — Nasser Al Busaidi"
-			description="Everything I've built — live tools, work in progress, shipped studies, and parked experiments."
+			title="Work — Nasser Al Busaidi"
+			description="Software for everyday life, cycling, and curious experiments. Projects by Nasser Al Busaidi."
 		/>
 	</head>
 	<body>
 		<Header />
-		<main class="board">
-			<section aria-label="Builds">
-				<div class="section-top">
-					<span class="label">Builds</span>
-				</div>
-				<p class="dek">
-					Things I've shipped, things in progress, things honestly parked.
-				</p>
+		<main id="main-content" tabindex="-1" class="work-page">
+			<header class="work-intro">
+				<div><p class="work-eyebrow">From the observatory</p><h1>Work<span>.</span></h1><p class="work-deck">Tools for everyday life, training, and the occasional trip through spacetime.</p></div>
+				<div class="work-inventory"><span class="work-eyebrow">Project log</span><span>{builds.length} projects</span><p>Notes & statuses updated<br /><time datetime={buildsData.updated}>{updated}</time></p></div>
+			</header>
 
-				<div class="results-head" aria-hidden="true">
-					<span>Year</span>
-					<span>Build</span>
-					<span>Status</span>
-				</div>
-				<ul class="results">
-					{builds.map((b) => {
-						const href = hrefFor(b);
-						const cells = (
-							<>
-								<span class="row-date">{b.year}</span>
-								<span class="row-body">
-									<span class="row-title">{b.name}</span>
-									<span class="row-summary">{b.summary}</span>
-									{b.stack.length > 0 && (
-										<span class="row-stack">{b.stack.join(' · ')}</span>
-									)}
-								</span>
-								<span class="row-meta">{b.status}</span>
-							</>
-						);
-						return (
-							<li class:list={[b.status === 'parked' && 'is-parked']}>
-								{href ? (
-									isExternal(href) ? (
-										<a class="row" href={href} target="_blank" rel="noopener">
-											{cells}
-										</a>
-									) : (
-										<a class="row" href={href}>{cells}</a>
-									)
-								) : (
-									<div class="row row-static">{cells}</div>
-								)}
-							</li>
-						);
-					})}
-				</ul>
+			<section class="work-selected" aria-labelledby="selected-title">
+				<div class="work-section-heading"><h2 id="selected-title"><span aria-hidden="true">01 /</span> A closer look</h2><span>Selected projects</span></div>
+				{selected.map((project, index) => {
+					const story = projectStories[project.slug];
+					const href = hrefFor(project);
+					const external = href && isExternal(href);
+					return <article class:list={['work-feature', `work-feature-${project.slug}`]} id={project.slug} aria-labelledby={`${project.slug}-title`}>
+						<div class="work-feature-identity"><span class="work-project-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><div><p class="work-eyebrow">{story.category}</p><h3 id={`${project.slug}-title`}>{project.name}</h3><div class="work-project-meta"><span>{project.year}</span><span class:list={['work-status', project.status === 'wip' && 'work-status-progress']}>{statusLabel[project.status]}</span></div></div></div>
+						<div class="work-feature-story"><p class="work-project-lead">{story.lead}</p><p class="work-project-description">{story.detail}</p><div class="work-feature-footer"><span class="work-stack">{project.stack.join(' · ')}</span>{href && <a class="work-project-link" href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>{destinationLabel(project)}<span aria-hidden="true">↗</span>{external && <span class="work-sr-only"> (opens in a new tab)</span>}</a>}</div></div>
+					</article>;
+				})}
 			</section>
+
+			{projectGroups.map(group => group.projects.length > 0 && <section class="work-project-group" aria-labelledby={`${group.id}-title`}>
+				<div class="work-section-heading"><h2 id={`${group.id}-title`}><span aria-hidden="true">{group.number} /</span> {group.title}</h2><span>{group.projects.length} projects</span></div>
+				<ul class="work-project-list">{group.projects.map(project => {
+					const href = hrefFor(project);
+					const external = href && isExternal(href);
+					const Tag = href ? 'a' : 'div';
+					return <li id={project.slug}><Tag class="work-project-row" href={href ?? undefined} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+						<span class="work-row-year">{project.year}</span><div class="work-row-title"><h3>{project.name}</h3>{project.stack.length > 0 && <span class="work-stack">{project.stack.join(' · ')}</span>}</div><p class="work-row-description">{shortDescriptions[project.slug] ?? project.summary}</p><div class="work-row-end"><span class:list={['work-status', project.status === 'wip' && 'work-status-progress']}>{statusLabel[project.status]}</span>{href && <span class="work-row-destination">{destinationLabel(project)} <span aria-hidden="true">↗</span>{external && <span class="work-sr-only"> (opens in a new tab)</span>}</span>}</div>
+					</Tag></li>;
+				})}</ul>
+			</section>)}
 		</main>
 		<Footer />
-
-		<style>
-			.board {
-				max-width: var(--container-wide);
-				margin: 0 auto;
-				padding: 1.5rem 1.5rem 4rem;
-				display: flex;
-				flex-direction: column;
-				gap: 3.5rem;
-			}
-
-			@media (max-width: 720px) {
-				.board { padding: 1rem 1rem 3rem; gap: 2.5rem; }
-			}
-
-			.section-top {
-				display: flex;
-				justify-content: space-between;
-				align-items: baseline;
-				gap: 1rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 1px solid var(--ink);
-				margin-bottom: 1rem;
-			}
-
-			.section-top .label {
-				color: var(--ink);
-			}
-
-			.dek {
-				font-family: var(--font-ui);
-				font-size: 17px;
-				line-height: 1.55;
-				color: var(--ink);
-				max-width: 52ch;
-				margin: 0 0 2rem;
-			}
-
-			/* Stack line sits under the summary, mono + muted like a data cell. */
-			.row-stack {
-				display: block;
-				margin-top: 0.35em;
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 12px;
-				color: var(--muted);
-			}
-
-			.results a.row:hover .row-stack {
-				color: var(--on-mark);
-			}
-
-			/* Non-link rows (nothing public to point at) — no hover flood. */
-			.row-static {
-				cursor: default;
-			}
-
-			/* Parked builds read slightly muted but stay legible. */
-			.is-parked .row-title,
-			.is-parked .row-body { color: var(--muted); }
-			.results a.row:hover .row-title { color: var(--on-mark); }
-			.is-parked a.row:hover .row-title,
-			.is-parked a.row:hover .row-body { color: var(--on-mark); }
-		</style>
 	</body>
 </html>

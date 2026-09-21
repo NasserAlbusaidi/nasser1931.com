@@ -4,13 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # nasser1931.com
 
-Personal site. Astro static build, deployed to Firebase Hosting. Centerpiece is the field-report paper at `/paper`; everything else is scaffolding.
+Personal home for software, cycling, reading, and experiments. Astro static build, deployed to Firebase Hosting. The field report at `/paper` connects the work and training tracks.
 
 ## Design System
 
-Always read **DESIGN.md** before making any visual or UI decision. All font choices, colors, spacing, type scale, layout widths, motion durations, category names, and component patterns are defined there. Do not deviate without explicit user approval. The system is named **"Splits" (v1.0, drafted 2026-07-18)** — a race-timing-sheet identity built to kill the recognizable AI-designed aesthetic. Pure white `#FFFFFF` / near-black `#111111` + one marker yellow `#FFE81C`; links are ink + underline (color only ever appears as highlight or flag). Barlow Condensed (display, caps) / Literata (long-form prose) / system-ui (UI) / system mono (data) — the two webfonts are self-hosted via Fontsource, no font CDNs. Border radius 0 everywhere; tables over cards; hover floods rows with the marker. Press v0.2 (Fraunces masthead, newsprint cream, signal red, mono eyebrows) is retired — its tells are the explicit anti-pattern blacklist in DESIGN.md.
-
-When QA-ing a UI change, flag any code that doesn't match DESIGN.md.
+Read **DESIGN.md** before visual changes. The current direction is a space-centric personal observatory, requested in September 2026. The homepage uses original fictional planetary artwork, large Outfit display type, precise mono labels, dark blue-black surfaces, and amber accents. Preserve the clear personal introduction and visible work, cycling, notes, and reading. Default to dark while honoring saved `np-theme`; the light alternative uses lunar gray. The atlas is retired. See `src/pages/index.astro` and `src/styles/home.css`. Preserve existing data syncs, URLs, generated paper content, and Firebase architecture.
 
 ## Stale sibling docs — don't trust as source of truth
 
@@ -71,7 +69,7 @@ For one-off manual deploys, the legacy command above still works — useful for 
 src/
 ├── consts.ts                  ← SITE_TITLE, SITE_DESCRIPTION
 ├── pages/
-│   ├── index.astro            ← home page, features the paper
+│   ├── index.astro            ← home page, features Rihla and the cycling coach
 │   ├── paper/
 │   │   └── index.md           ← /paper (synced from endurance-license/study.md)
 │   ├── field/                 ← /field index + dynamic [...slug] route
@@ -84,7 +82,7 @@ src/
 │   ├── Entry.astro            ← shared layout for /field + /stupidshit entries
 │   └── Paper.astro            ← long-form layout for /paper
 ├── components/
-│   ├── Header.astro           ← nav: paper / field / stupidshit / reading + theme toggle
+│   ├── Header.astro           ← nav: Work / Notes / Life / Reading + theme toggle
 │   ├── Footer.astro
 │   ├── BaseHead.astro
 │   ├── HeaderLink.astro
@@ -101,7 +99,7 @@ Single-source paper rendered at `/paper`.
 
 - **Source of truth:** `NasserAlbusaidi/project-furnace` (private repo) at `paper/endurance-license/study.md` plus its sibling `figures/` directory. **Canonical edit flow: commit + push to project-furnace; CI auto-syncs to this repo.** Do NOT hand-edit `src/pages/paper/index.md` — it's a generated artifact and will be overwritten by the next sync.
 - **Auto-sync:** `.github/workflows/sync-paper.yml` runs every 30 minutes (cron `*/30 * * * *`), plus `workflow_dispatch` and `repository_dispatch[paper-update]` (left wired for a future webhook from project-furnace if 30min lag is too slow). It checks out project-furnace via the `PAPER_REPO_SSH_KEY` deploy key, runs `sync-paper` + `refresh-paper-log`, then commits + builds + deploys *only when the diff is non-empty*. Frontmatter (title, subtitle, byline, eyebrow, OG image) is hard-coded in `scripts/sync-paper.mjs`.
-- **Editing log:** Visible at the foot of `/paper`. The 8 most recent commits to `paper/**` in project-furnace, sourced from `src/data/paper-log.json` (written by `scripts/refresh-paper-log.mjs`). The byline gets a "last edited Xh ago · N commits this week" stamp; the homepage paper card gets a "· edited Xh ago" suffix. All relative timestamps recompute in the browser from `data-iso` so static HTML doesn't show a stale build-time value.
+- **Editing log:** Visible at the foot of `/paper`. The 8 most recent commits to `paper/**` in project-furnace, sourced from `src/data/paper-log.json` (written by `scripts/refresh-paper-log.mjs`). The byline gets a "last edited Xh ago · N commits this week" stamp; the paper editing log retains its relative timestamp. All relative timestamps recompute in the browser from `data-iso` so static HTML doesn't show a stale build-time value.
 - **Local fallback (offline editing):** `npm run sync-paper` still works against `~/Desktop/Personal/ProjecrFurnance` (which is a local clone of project-furnace). Use this for previewing changes before pushing — but the canonical publish path is push-to-project-furnace, not local sync + commit-here.
 - **Concurrency:** sync-paper, refresh-pulse, and sync-reading all share `concurrency.group: bot-pushes-main` so the three bots never race to push to main. Each also `git pull --rebase origin main` before push as belt-and-suspenders.
 - **Webhook from project-furnace:** `.github/workflows/notify-site.yml` lives in project-furnace and fires `repository_dispatch[paper-update]` to this repo on every push that touches `paper/**`. That cuts sync latency from up-to-30min to ~10s. Auth is via `SITE_DISPATCH_TOKEN` secret in project-furnace, currently set to a copy of the user's gh CLI token (full repo+workflow scope). For a tighter security posture, swap for a fine-grained PAT scoped to nasser1931.com only with Actions:write — but for a solo private repo this is fine.
@@ -125,7 +123,7 @@ gh workflow run sync-paper.yml  # easier: run the same sync on CI; commits + pus
 - All section H2s have `margin-top: 2.4em` for clear section breaks.
 
 `src/pages/index.astro`:
-- Home page features the paper as a clickable card. The whole card is a single `<a class="feature-link">` wrapping a `<div class="feature">`. **Do not nest another `<a>` inside** — browsers close the outer anchor early and the click breaks. The h2 inside is plain text; hover color comes from `.feature:hover h2`.
+- Home page features Rihla and the cycling coach, each inside one `<a class="project-link">`. Do not nest links inside those anchors. Research is omitted from the homepage for now; preserve `/paper` and its archive entry. The coach feature uses the same snapshot and engine as `/coach`.
 
 Share button (Paper layout):
 - `Paper.astro` ships an inline-JS share button under the prose. Uses `navigator.share()` when available, falls back to `navigator.clipboard.writeText()` with a "link copied" status. Disable per-page by passing `share: false` in frontmatter.
@@ -146,23 +144,29 @@ Both records must be at the apex. In Route 53, **leave the Name field empty** to
 
 ## The training pulse
 
-The home page renders a "currently training" section above the paper card, sourced from `src/data/training.json`. The JSON is a committed snapshot — visitors get whatever was last pushed.
+The home page renders a dated ride summary, and `/field` (Life) renders the last recorded ride, trailing seven-day totals, and the available recent sessions using HomePulse, sourced from `src/data/training.json`. The JSON is a committed snapshot — visitors get whatever was last pushed.
 
 - **Source:** intervals.icu API (which is fed by Garmin → intervals.icu sync).
 - **Refresh:** `.github/workflows/refresh-pulse.yml` runs on cron `0 */6 * * *` plus `workflow_dispatch`. The script (`scripts/refresh-pulse.mjs`) fetches the last 14 days of activities + wellness, writes `src/data/training.json`, and the workflow commits + pushes **only if the snapshot diff is non-empty** — so quiet days don't trigger a redeploy.
 - **Form translation:** TSB = CTL − ATL. `> +5` → `fresh`, `−10..+5` → `neutral`, `< −10` → `fatigued`. Standard TrainingPeaks bands.
-- **Component:** `src/components/HomePulse.astro` reads the JSON at build, renders a 3-row date-right list of recent sessions plus a summary line (weekly hours · TSS · form · "updated X ago"). The `updated X ago` text is recomputed in the browser from `data-iso` so it stays accurate between refreshes.
+- **Component:** `src/components/HomePulse.astro` renders trailing seven-day hours/TSS and recorded form, plus a recent-session disclosure that starts open. Keep the absolute snapshot date visible; a `data-snapshot` span adds relative age in the browser. The recent list is capped, not the full training history.
 - **Secrets (GitHub Actions):** `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID`. Local credential mirror lives in `~/Desktop/Personal/Portfolio/.env` under the `VITE_INTERVALS_*` names — the script reads either prefix.
 - **Manual refresh:** `gh workflow run refresh-pulse.yml` is the simplest path. Locally you can also `bash -c 'set -a; source ~/Desktop/Personal/Portfolio/.env; set +a; npm run refresh-pulse'`.
 - **The pulse-bot commit author** (`pulse-bot <bot@nasser1931.com>`) is harmless — these commits are auto-generated and only ever touch `src/data/training.json`.
 
 ## The reading list
 
-`/reading` is driven by `src/data/reading.json`, synced from a Notion database (Reading List, db id `cc065a07385442afacf12561c8d7d425`).
+**Current source: StoryGraph CSV import for `nasser1931`.** `scripts/import-storygraph.mjs` accepts an official export and writes the existing reading snapshot schema plus source metadata. Run `npm run import-storygraph -- <export.csv> nasser1931`. CSV files stay outside Git; private tags, reviews, and signed download links must never be committed. Import preserves year/month-only dates, and the pages use `formatReadingDate` so a year is not displayed as an invented January date. `ReadingSource.astro` identifies the export source and import date. This is not unattended live sync.
+
+`refresh-reading.mjs` checks snapshot ownership before credentials or network calls and skips a non-Notion source. Do not remove that guard or reintroduce a rebasing bot push that could replay stale Notion changes over an imported snapshot. To intentionally return to Notion, explicitly switch the snapshot source as part of that task.
+
+### Legacy Notion source
+
+The previous `/reading` source used `src/data/reading.json`, synced from a Notion database (Reading List, db id `cc065a07385442afacf12561c8d7d425`).
 
 - **Source schema (Notion):** Title (title), Author (text), Status (select: Reading | Want to Read | Finished | Dropped), Rating (select: 1–5 stars), Format (select: Audiobook | Physical | Kindle | PDF), Genre (multi_select), Started (date), Finished (date).
 - **Sync:** `.github/workflows/sync-reading.yml` runs cron `0 */6 * * *` plus `workflow_dispatch`. It calls the Notion query API with `NOTION_TOKEN`, transforms each page into a flat `Book` record, sorts Finished by `Finished` date desc, and writes the snapshot. Idempotent — only commits + deploys when the snapshot diff is non-empty.
-- **Page render:** `src/pages/reading/index.astro` reads the JSON, splits into Currently / Finished / Want to Read sections, and groups Finished by year. Ratings render as mono `N/5` (star emoji are a banned pattern under Splits — see DESIGN.md).
+- **Page render:** `src/pages/reading/index.astro` reads the JSON, splits into Currently / Finished / Want to Read sections, and groups Finished by year. Ratings render as `N/5`; do not invent reviews or ratings.
 - **Setup (one-time):** create an internal integration at notion.so/my-integrations, share the Reading List page with the integration, set `NOTION_TOKEN` as a GitHub secret on this repo. The script reads `NOTION_READING_DB` env var to override the database id if it ever changes; default is the known id.
 
 ## Writing posts from Notion (no-code authoring)
@@ -198,7 +202,7 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
 - **Concurrency:** shares `bot-pushes-main` with sync-paper, refresh-pulse, sync-reading, sync-posts. Commit author is `coach-bot <bot@nasser1931.com>`.
 - **Secrets (GitHub Actions):** `PAPER_REPO_SSH_KEY` (deploy key, shared with sync-paper), `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID` — all already configured for the existing workflows.
 - **Manual refresh:** `gh workflow run refresh-coach.yml`.
-- **4-day forecast strip:** Above the masthead, `/coach` renders a TOC-style strip (today + next 3 days). Each row is `DATE · slot-tag    workout-name   ·   duration / IF`. Today uses the real classified state + v2 overrides; future days assume AMBER and run v1 only (v2 overrides depend on today's signals — TSB, ramp, days-since-hard — which aren't projectable). Tiles are clickable: clicking a future tile reprojects the hero (eyebrow flips to `Projection · DATE`, state pill suffixed `· proj`, masthead title + Today's-pick block + DSL all swap), the projection banner appears with a `← back to today` button, recovery + computed signals mute via `main.projecting` (`opacity: 0.42`), and the push-block hides. Override panel (force state / override slot / override macro week) still applies to the active selection. Click today's tile or the banner button to return to live state. Mobile reflows each row into 2 lines (date+slot top, name + numerics bottom). All forecast picks render server-side from `getScheduleContext(date)` + `pickWorkoutV1` so the strip is correct on first paint.
+- **4-day outlook:** `/coach` opens with a compact introduction and four date buttons, followed by recommendation and recorded signals. All dates anchor to `coach._today`, labelled Snapshot. Future days assume AMBER and run v1 only; selection updates the recommendation, state, reasoning, warnings, and DSL. Keep chronological `.forecast-row` order and all existing IDs. `main.projecting` highlights recorded signals and hides the manual calendar command. Overrides apply to the selected date; Back to snapshot returns to the recorded day. `header-title` is an H2 below the static page H1; duplicate `pick-title` and `pick-sub` remain hidden script targets. Styles live in `src/styles/coach.css`, including global rules for dynamically created reasoning/warning elements. The manual command runs in project-furnace and recalculates the canonical workout; it does not include browser overrides.
 - **v1 caveats / deferred work:**
   - **Push-to-calendar is a copy block, not a button.** The page renders the exact `python3 tools/intervalsicu/pick_workout.py --push --time 05:30` command in a system-mono `<pre>` with a copy-to-clipboard button. The real button needs a Firebase Function proxy + single-user auth (open question: Firebase Auth magic link vs. passphrase) — deferred. The push block also hides on future-day projections, because `pick_workout.py` has no `--date` flag and showing today's command while previewing Tuesday would be a lie.
   - **Engine duplication.** `src/scripts/cycling-engine.mjs` mirrors `pick_workout.py`. When the Python rules change (thresholds, override rules, slot logic), update the JS module too. Long-term: extract a shared `cycling_engine.mjs` in project-furnace and sync it down via the paper pattern, so there's one canonical engine.

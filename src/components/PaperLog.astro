@@ -21,12 +21,12 @@ const isoDate = (s) => (s ? s.split('T')[0] : '');
 		</ul>
 		<p class="paper-log-summary">
 			<span class="num">{data.commits_7d}</span>
-			<span class="lbl">commits in last 7 days</span>
+			<span class="lbl">commits in the recorded week</span>
 			<span class="dot">·</span>
 			<span class="lbl">total tracked</span>
 			<span class="num">{data.commits_total}</span>
 			<span class="dot">·</span>
-			<span class="lbl">source</span>
+			<span class="lbl">private source</span>
 			<a class="repo-link" href={REPO}>project-furnace</a>
 		</p>
 	</aside>
@@ -119,5 +119,10 @@ const isoDate = (s) => (s ? s.split('T')[0] : '');
 	.paper-log-summary .repo-link:hover {
 		background: var(--mark);
 		color: var(--on-mark);
+	}
+	@media (max-width: 600px) {
+		.paper-log-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .4rem 1rem; }
+		.paper-log-msg { grid-row: 2; grid-column: 1 / -1; overflow-wrap: anywhere; }
+		.paper-log-sha { grid-row: 1; grid-column: 2; }
 	}
 </style>

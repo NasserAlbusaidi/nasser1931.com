@@ -1,154 +1,38 @@
-# Design System — nasser1931.com
+# Personal observatory — nasser1931.com
 
-**Name:** Splits
-**Status:** v1.0 — drafted 2026-07-18. Supersedes Press v0.2 (Fraunces masthead, newsprint cream, signal red) and Field Journal v0.1 before it.
-**Concept:** A race timing sheet. The site of a man who logs everything — splits, watts, kilograms, commits. Black figures on white paper, one hi-vis marker yellow, condensed caps like a start list taped to a wall. The data is the identity; there is no costume.
+**Current direction:** Space-centric, requested 20 September 2026. Retains the previously approved personal homepage structure and real content.
 
-**The founding constraint:** v1.0 exists to kill the recognizable AI-designed aesthetic. Press v0.2 was fluent 2026 machine-editorial — Fraunces 900 masthead, tracked-out mono eyebrows, cream + signal red, `№ 001` numbering, drop caps, "Nº 1 · Vol. 1 · A quarterly" cosplay. Every one of those tells is banned below. When in doubt, choose the move a template would never make: system fonts, pure white, a highlight instead of a colored link, a table instead of a card.
+## Experience
 
-## Product Context
+Nasser's personal home for work, cycling, notes, and reading. The opening pairs a large name and direct introduction on the left with a close view of Earth on the right. A small home-base annotation connects the orbital artwork to Muscat. A compact "In my orbit" strip leads into selected work. Native links and ordinary document scrolling keep everything directly accessible.
 
-- **What this is:** A personal site for an engineer-triathlete in Muscat. Flagship: a rigorous N=1 field report (`/paper`). Around it: `/field` (race results, milestones), `/stupidshit` (oddities), `/reading` (books), `/coach` (daily cycling briefing), and a live training pulse on the home page.
-- **Who it's for:** Curious readers, friends, future Nasser.
-- **Space:** Personal-web, writer-researcher quadrant — but styled from *his* world (race bibs, finish clocks, results sheets, intervals.icu), not from publishing.
-- **Project type:** Astro 6 static build + Firebase Hosting.
+## Visual language
 
-## Aesthetic Direction
+- Outfit for spacious display type and supporting text; system mono for navigation details, section numbers, and log labels. Literata remains for long-form article prose.
+- Default dark: blue-black #080D16, surface #101824, text #EEF2F8, muted #A6B3C6, amber #E8BD85.
+- Light alternative: lunar gray #EEF1F4, text #172337, muted #526077, bronze #8C5827. Preserve the saved `np-theme` preference. The image-led hero remains dark in both themes.
+- Planetary artwork supplies the atmosphere. Use restrained rules and numbering around real content. No moving starfields, simulated telemetry, navigation puzzles, or compulsory animation.
+- The homepage hero spans the full page width. Earth is an independently positioned transparent image, deliberately large and cropped at the outer edges; do not stretch a landscape image to fill the space. The introduction, home-base annotation, and caption stay in document flow, within the same centred content width and responsive gutters as the sections below. Grid layouts stack on narrow screens. All links have visible focus; reduced motion disables smooth scrolling.
 
-- **Direction:** Timing-sheet utilitarian. The vernacular of race results: dense tables, heavy top rule, condensed caps, tabular numbers, one flag color per state.
-- **Decoration level:** Near zero. The only ornament is the marker-yellow highlight, and it always means "this is active / this matters."
-- **Mood:** Fast, honest, slightly severe. A wall printout, not a magazine.
-- **Reference points (conceptual):** finish-line timing boards, TdF broadcast lower-thirds, Swiss federal-railway signage, the printed start list at a local triathlon. Personal-web kin: danluu's speed, gwern's density — but with visual confidence.
+## Artwork
 
-## Typography
+`public/images/earth-orbit-v2.webp` (1254 × 1254) and `earth-orbit-v2-small.webp` (800 × 800) are transparent WebP exports of a single original built-in imagegen asset, generated 21 September 2026. The globe shows Africa and Arabia, oceans and clouds, a shadowed western limb, city lights, a blue atmosphere, and warm light at the upper right. It is a decorative Earth illustration, not a NASA photograph or navigation map. The homepage labels it "An imagined view of Earth" and uses empty alternative text. No pin claims to mark a precise location. The earlier orbital-horizon images remain as unused prior assets.
 
-Two webfonts (self-hosted via Fontsource), two system stacks. No font CDNs.
+Generation prompt (built-in mode, one image): "A premium cinematic photorealistic-style illustration of Earth viewed from orbit. A complete spherical Earth centered in a square frame, occupying 88–92% of the canvas, on a genuine transparent background. Recognisable rich blue oceans, wispy ivory-white clouds, Africa, the Arabian Peninsula and the eastern hemisphere visible. Subtle night-side city lights, realistic spherical geometry and detailed natural texture. Left third in deep shadow; narrow electric-blue atmospheric rim; restrained warm sunrise on the upper-right limb. Natural navy, cyan, ivory, and restrained amber. Complete uncropped globe, natural circular silhouette, transparent margin outside its atmosphere. Earth only: no surrounding stars, text, rings, spacecraft, gridlines, HUD, logos, floor, cast shadow or panels. Decorative illustration, not scientific or navigational imagery. One image, no variants."
 
-| Role | Family | Loading | Notes |
-|------|--------|---------|-------|
-| Display — wordmark, page titles, section heads, big stats | **Barlow Condensed** 500/600/700 | `@fontsource/barlow-condensed/{500,600,700}.css` | Highway-signage grotesque. Caps for titles and labels. AI design never reaches for condensed faces — that's the point. |
-| Long-form prose (`/paper`, entries) | **Literata** (variable) | `@fontsource-variable/literata` `index.css` + `wght-italic.css` | Designed for long screen reading (Google Play Books). CSS family name: `'Literata Variable'`. |
-| UI / body text everywhere else | **system-ui stack** | none | `system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`. Zero load, zero costume. |
-| Code, aligned data columns | **system mono stack** | none | `ui-monospace, "SF Mono", Menlo, Consolas, monospace`. Never tracked out, never uppercase. |
+## Content and routes
 
-**Type patterns**
+- Work: `/builds`; Notes: `/stupidshit`; Life: `/field`; Reading: `/reading`.
+- Preserve `/paper`, `/coach`, existing article URLs, collections, RSS, and sitemap.
+- Rihla leads the homepage work section, with its groups, events, and shared-expense features and an explicit in-progress status. Research is omitted from the homepage for now; The Silent Creep remains available at `/paper` and in the project archive.
+- Work uses a project-log layout: Rihla, Coach engine, and Einstein's Travel Bureau receive detailed features; the remaining tools form a compact catalogue, followed by published and paused work in the archive. Preserve every inventory entry, the dated statuses, and source links. Use text and spacing to extend the observatory theme without repeating the homepage hero.
+- The coach feature uses the same canonical engine and dated snapshot as `/coach`.
+- Reading uses a dated StoryGraph CSV import and links to the profile; do not label it automatic or live. Private tags and reviews are not site content. Cycling and reading use committed snapshots with dates. Avoid invented activities, book reviews, project statuses, or reading totals. No Nedd claim without supporting content.
+- Notes uses a spacious journal index, with the actual latest entry featured. Life leads with the last recorded ride, the trailing seven-day totals, and the available recent sessions, followed by field notes. Do not imply the capped activity snapshot is a complete training history.
+- Reading uses a current-book feature, totals from the imported shelf, planned books, and a finished list grouped by year. Preserve partial dates and the undated group; do not invent covers, progress, or reviews.
+- The coach is a working surface: compact introduction, four date controls, then recommendation and recorded signals side by side. Keep the snapshot/projection distinction, engine overrides, and manual calendar command. Its engine and source data remain unchanged.
+- Entry pages and the archived paper use large Outfit headings and a readable Literata prose column. Preserve paper figures, tables, metadata, sharing, and editing log. The 404 page uses the same type, colors, and a direct route home.
 
-| Token | Spec |
-|-------|------|
-| `wordmark` | Barlow Condensed 700, lowercase, 26–30px, tracking -0.01em |
-| `title-hero` (home paper title, page H1) | Barlow Condensed 700 caps, clamp(48px, 8vw, 110px), line-height 0.9, tracking -0.01em |
-| `title-page` (section index H1) | Barlow Condensed 700 caps, clamp(40px, 6.5vw, 84px), line-height 0.9 |
-| `label` (column headers, block labels) | Barlow Condensed 600 caps, 13px, tracking 0.05em, `--muted`. **This replaces the eyebrow. Never mono, never 0.18em tracking.** |
-| `stat-big` | Barlow Condensed 700, clamp(30px, 4vw, 52px), line-height 1 |
-| `prose` | Literata 19px / 1.72 (16.5px on mobile) |
-| `body` | system sans 15px / 1.55 |
-| `data` | system mono 13px, `tnum` on, lowercase |
+## Implementation
 
-**Rules**
-
-- Headings and labels are caps in Barlow Condensed. Everything else is sentence case. No small-caps, no letter-spacing above 0.06em anywhere.
-- Links are ink-colored with a 1.5px underline (`text-underline-offset: 3px`). Hover paints the marker (`background: var(--mark)`). Links are never a brand color.
-- Numbers in data contexts use the mono stack with `tnum`. Big display numbers use Barlow Condensed.
-- No drop caps. No italic-muted deks. Italic is for emphasis and titles-of-works only.
-
-## Color — Marker on White
-
-One highlight, three flags, no tints.
-
-### Light (default)
-
-| Token | Hex | Role |
-|-------|-----|------|
-| `--bg` | `#FFFFFF` | Pure white. Deliberately — warm off-whites are the machine default now. |
-| `--surface` | `#F4F4F1` | Code blocks, inset panels. |
-| `--ink` | `#111111` | Text, rules, the header bar. |
-| `--muted` | `#6B6B6B` | Secondary text, dates. |
-| `--rule` | `#E4E4E1` | Hairlines. |
-| `--mark` | `#FFE81C` | **Marker yellow.** Hover fills, active rows, the highlighted word, selection. Always carries `--on-mark` text. |
-| `--on-mark` | `#111111` | Text on the marker, both modes. |
-
-### Dark
-
-| Token | Hex |
-|-------|-----|
-| `--bg` | `#0F0F0E` |
-| `--surface` | `#191917` |
-| `--ink` | `#F1F1ED` |
-| `--muted` | `#98988F` |
-| `--rule` | `#2A2A27` |
-| `--mark` | `#F5DF1E` |
-| `--on-mark` | `#111111` |
-
-**Flags** (coach states, warnings — solid chips with `#111111` text, both modes):
-
-| Token | Hex | Role |
-|-------|-----|------|
-| `--flag-green` | `#2FBE56` | GREEN state, PRs, passes |
-| `--flag-amber` | `#FFC933` | AMBER state, warnings |
-| `--flag-red` | `#FF5A45` | RED state, failures |
-
-No `color-mix` pastel tints. A state is a solid flag chip or a 3px border — never an 8%-opacity wash.
-
-**Theme strategy:** unchanged mechanics — CSS variables on `html.dark`, FOUC-safe boot in `BaseHead`, localStorage key `np-theme`.
-
-## Spacing & Layout
-
-- **Base unit:** 4px. Densities: prose breathes (1.72), tables pack (10–12px row padding).
-- **Containers:** `--col-prose` 720px · `--col-wide` 1200px · `--col-figure` 1080px.
-- **The bar:** every page opens with the header ending in a **3px solid `--ink` rule** — the one heavy stroke, like the top of a results sheet. All other rules are 1px `--rule` (or 1px `--ink` for table heads).
-- **Border radius: 0. Everywhere.** Square chips, square buttons, square code blocks.
-- **Tables over cards.** Lists are full-width rows with hairline separators; hovering a linked row floods it with `--mark`.
-- **Wordmark:** `nasser1931` lowercase (the domain is the name). No "NASSER / ALBUSAIDI" nameplate, no issue numbers, no colophon.
-
-## Motion
-
-- Hover fills: 60–80ms ease-out (feel instant).
-- One entrance moment site-wide: the marker highlight behind the featured word on the home title wipes in once (~400ms, `transform: scaleX`, left-origin). Nothing else animates on load.
-- `prefers-reduced-motion`: all transitions/animations off.
-- Banned: parallax, scroll-jacking, page transitions, count-up numbers, decorative micro-motion.
-
-## Components
-
-- **Header:** one row — wordmark left, nav right (Barlow Condensed 600 caps 14px) + theme toggle; 3px ink bar below. Active nav item sits on a `--mark` chip.
-- **Pulse strip (home):** full-width row of big Barlow Condensed numbers (hours · TSS · TSB · last session), hairline-divided columns, `label` captions, "updated Xh ago" in mono. Reads like a live timing board.
-- **Results table (indexes, home log):** `label`-style column headers over hairline rows: date (mono) | title (Barlow Condensed 600, 20–22px) | meta. Linked rows flood `--mark` on hover. No fake entry numbers.
-- **Buttons:** square, 1px `--ink` border, ink text; hover floods `--mark`. Primary variant: solid `--ink` with `--bg` text. Never colored, never rounded, never shadowed.
-- **Flag chip:** solid flag color, `#111` text, Barlow Condensed 600 caps 13px, square.
-- **Inline code:** `--surface` background, `--ink` text, mono. Not colored.
-- **Code block:** `--surface`, 1px `--rule` border, radius 0.
-- **Blockquote:** 3px solid `--ink` left rule, regular (not italic, not muted) Literata.
-- **Figures (paper):** breakout to `--col-figure`, 1px rule above; captions Literata 14px `--muted`, "Figure N." in 600 weight, no italics.
-- **Footer:** one mono line — location, github, rss, source. Unchanged content.
-
-## Anti-patterns — the AI-tell blacklist
-
-Banned across the site. Most of these were Press v0.2; that's why it's gone.
-
-- Fraunces, Instrument Serif, Space Grotesk, Playfair, Inter-as-identity — the 2025–26 AI font rotation
-- Warm cream/off-white page backgrounds (`#F8F5EE` and kin)
-- An "accent color" applied to links, eyebrows, and buttons alike
-- Tracked-out uppercase mono microlabels (the eyebrow)
-- Editorial cosplay: mastheads, issue numbers, colophons, "Nº", "Vol.", drop caps, deks
-- `№ 001` fake entry numbering
-- Pastel state tints via `color-mix(... 8–14%, transparent)`
-- Border-radius on anything
-- Icon-in-circle grids, gradient anything, glassmorphism, purple
-- Cards where a table row would do
-- Marketing copy patterns; cutesy self-aware framing ("the back of the book")
-- Google Fonts / Fontshare CDN links (fonts are self-hosted or system)
-
-## Categories (information architecture)
-
-Unchanged: **paper** (flagship report) · **field** (dated log) · **stupidshit** (oddities) · **reading** (shelves) · **coach** (daily briefing). The home page is a board: pulse strip, the paper as lead item, recent log rows, reading line.
-
-## Decisions Log
-
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-04-26 | Field Journal v0.1 created. | Initial system. Cream + rust + refined Fraunces. |
-| 2026-05-15 | Press v0.2 — full rebrand. | Print-quarterly concept; Fraunces pushed chunky; signal red. |
-| 2026-05-16 | `/coach` added as fifth section. | intervals.icu-driven daily briefing. |
-| 2026-07-18 | **Splits v1.0 — full rebrand, brief: "drop the Claude signature."** | Press v0.2 read as recognizably AI-designed (Fraunces + cream + signal red + mono eyebrows is the 2026 machine-editorial fingerprint). Replaced with race-timing vernacular native to the owner: Barlow Condensed + Literata + system stacks, pure white/near-black, marker-yellow highlight, tables over cards, radius 0. |
-| 2026-07-18 | Links are ink + underline; color only as highlight/flag. | A single accent coloring links, buttons and labels is itself a template tell. Highlight-on-hover is the ownable move. |
-| 2026-07-18 | Fonts self-hosted via Fontsource; UI/mono are system stacks. | Kills font-CDN links, speeds first paint, and system-stack UI text is a hand-built signal. |
-| 2026-07-18 | Wordmark is the domain, lowercase: `nasser1931`. | The site is named what it's called. Retires the two-line nameplate cosplay. |
+`src/pages/index.astro` and `src/styles/home.css` own the homepage. `src/pages/builds/index.astro` and `src/styles/work.css` own the Work page. `PageIntro`, `EntryIndex`, and `interior.css` support Notes, Life, and Reading; Reading and Coach have dedicated stylesheets. `global.css` contains shared themes and type. Preserve Astro, npm, Firebase, the lockfile, and all existing sync workflows. Generated paper markdown and figures must not be hand-edited. Local design edits do not imply publication.

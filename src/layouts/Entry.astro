@@ -3,130 +3,52 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-
-interface Props {
-	title: string;
-	summary: string;
-	date: Date;
-	eyebrow: string;
-}
-
+interface Props { title: string; summary: string; date: Date; eyebrow: string; }
 const { title, summary, date, eyebrow } = Astro.props;
+const backHref = eyebrow === 'Life' ? '/field' : '/stupidshit';
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={`${title} — ${eyebrow}`} description={summary} />
-	</head>
-	<body>
-		<Header variant="compact" />
-		<main>
-			<article>
-				<header class="entry-head">
-					<p class="entry-kind label">{eyebrow}</p>
-					<h1>{title}</h1>
-					<p class="meta">
-						<FormattedDate date={date} />
-					</p>
-					<p class="summary">{summary}</p>
-				</header>
-				<div class="prose">
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-
-		<style>
-			main {
-				max-width: var(--container-prose);
-				margin: 0 auto;
-				padding: 3rem 1.25rem 2rem;
-			}
-
-			.entry-head {
-				margin: 0 0 2.5rem;
-				padding-bottom: 1.25rem;
-				border-bottom: 1px solid var(--ink);
-			}
-
-			.entry-kind {
-				margin: 0 0 1rem;
-			}
-
-			h1 {
-				font-size: clamp(36px, 5.5vw, 64px);
-				margin: 0 0 0.75rem;
-			}
-
-			.meta {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 13px;
-				color: var(--muted);
-				margin: 0 0 0.75rem;
-			}
-
-			.summary {
-				font-family: var(--font-ui);
-				font-size: 16px;
-				line-height: 1.5;
-				color: var(--muted);
-				margin: 0;
-				max-width: 56ch;
-			}
-
-			.prose {
-				font-family: var(--font-prose);
-				font-size: 17px;
-				line-height: 1.7;
-				color: var(--ink);
-			}
-
-			.prose :global(p) {
-				margin: 0 0 1.1em;
-			}
-
-			.prose :global(h2) {
-				font-family: var(--font-display);
-				font-weight: 700;
-				font-size: 26px;
-				text-transform: uppercase;
-				letter-spacing: 0;
-				margin: 2em 0 0.5em;
-			}
-
-			.prose :global(a) {
-				color: var(--ink);
-				text-decoration: underline;
-				text-decoration-thickness: 1.5px;
-				text-underline-offset: 3px;
-			}
-
-			.prose :global(a:hover) {
-				background: var(--mark);
-				color: var(--on-mark);
-			}
-
-			.prose :global(code) {
-				font-family: var(--font-mono);
-				font-size: 0.9em;
-				background: var(--surface);
-				color: var(--ink);
-				padding: 0.1em 0.4em;
-			}
-
-			.prose :global(.stats) {
-				font-family: var(--font-mono);
-				font-feature-settings: "tnum" 1;
-				font-size: 13px;
-				color: var(--muted);
-				background: var(--surface);
-				border: 1px solid var(--rule);
-				padding: 1em 1.2em;
-				margin: 1.5em 0;
-			}
-		</style>
-	</body>
+  <head><BaseHead title={`${title} — ${eyebrow} — Nasser Al Busaidi`} description={summary} ogType="article" /></head>
+  <body>
+    <Header variant="compact" />
+    <main id="main-content" tabindex="-1" class="entry-page">
+      <article>
+        <header class="entry-head">
+          <a class="entry-back" href={backHref}>← All {eyebrow === 'Life' ? 'field notes' : 'notes'}</a>
+          <div class="entry-meta"><span>{eyebrow} /</span><FormattedDate date={date} /></div>
+          <h1>{title}</h1>
+          <p class="entry-summary">{summary}</p>
+        </header>
+        <div class="entry-prose"><slot /></div>
+        <footer class="entry-foot"><span>Nasser Al Busaidi</span><a href={backHref}>Back to {eyebrow.toLowerCase()} <span aria-hidden="true">↗</span></a></footer>
+      </article>
+    </main>
+    <Footer />
+  </body>
 </html>
+<style>
+  .entry-page { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 1rem; }
+  .entry-head { border-bottom: 1px solid var(--rule); margin-bottom: 2.5rem; padding-bottom: 2.5rem; }
+  .entry-back { display: inline-block; font-size: .875rem; color: var(--muted); text-decoration: none; padding-block: .5rem; margin-bottom: 2rem; }
+  .entry-back:hover { background: transparent; color: var(--accent); }
+  .entry-meta { display: flex; flex-wrap: wrap; gap: .75rem; font-family: var(--font-mono); font-size: .8125rem; color: var(--muted); margin-bottom: 1.25rem; }
+  .entry-meta > span { color: var(--accent); }
+  h1 { font-size: clamp(2.2rem, 5.8vw, 4.75rem); font-weight: 350; line-height: 1.08; letter-spacing: -.045em; max-width: 18ch; overflow-wrap: anywhere; }
+  .entry-summary { color: var(--muted); font-size: 1.25rem; line-height: 1.6; max-width: 50ch; margin: 1.5rem 0 0; }
+  .entry-prose { max-width: 680px; margin: 0 auto; font-family: var(--font-prose); font-size: 1.125rem; line-height: 1.8; overflow-wrap: anywhere; }
+  .entry-prose :global(p) { margin-bottom: 1.25em; }
+  .entry-prose :global(h2) { font-size: 1.875rem; line-height: 1.25; font-weight: 450; margin: 2em 0 .7em; }
+  .entry-prose :global(h3) { font-size: 1.4rem; line-height: 1.35; font-weight: 450; margin: 1.75em 0 .7em; }
+  .entry-prose :global(ul), .entry-prose :global(ol) { padding-left: 1.5em; margin: 1.25em 0; }
+  .entry-prose :global(ul) { list-style: disc; }
+  .entry-prose :global(ol) { list-style: decimal; }
+  .entry-prose :global(li) { margin: .4em 0; }
+  .entry-prose :global(blockquote) { border-color: var(--accent); color: var(--muted); }
+  .entry-prose :global(pre) { overflow-x: auto; font-size: .875rem; }
+  .entry-prose :global(table) { display: block; overflow-x: auto; }
+  .entry-prose :global(.stats) { font-family: var(--font-mono); font-size: .875rem; color: var(--muted); border: 1px solid var(--rule); background: var(--surface); padding: 1.25rem; margin-block: 1.5rem; }
+  .entry-foot { max-width: 680px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: .875rem; color: var(--muted); }
+  .entry-foot a { padding-block: .5rem; text-decoration: none; }
+  @media (max-width: 720px) { .entry-page { padding: 1.5rem 1.25rem 1rem; } .entry-head { padding-bottom: 2rem; } .entry-back { margin-bottom: 1.5rem; } .entry-summary { font-size: 1.125rem; } .entry-prose { font-size: 1rem; line-height: 1.8; } }
+</style>
