@@ -8,17 +8,22 @@ import { buildPublicForecast } from '../lib/public-coach.mjs';
 import '../styles/coach.css';
 const forecast = buildPublicForecast(coach, bank);
 const current = forecast[0];
+const nextSession = forecast.slice(1).find(day => day.kind === 'structured' || day.kind === 'group');
 ---
 <!doctype html>
 <html lang="en">
   <head><BaseHead title="Cycling coach — Nasser Al Busaidi" description="A daily cycling recommendation and a four-day training outlook. A personal software project by Nasser Al Busaidi." /></head>
   <body>
-    <Header variant="compact" />
+    <Header />
     <main id="main-content" tabindex="-1" class="coach-page">
-      <header class="coach-intro"><div><p class="coach-eyebrow">A personal training project</p><h1>Cycling coach<span>.</span></h1><p>The next ride, with a little more thought behind it.</p></div><a href="/field">Training log <span aria-hidden="true">→</span></a></header>
+      <header class="coach-intro">
+        <div><p class="coach-eyebrow">A personal training project</p><h1>Cycling coach<span>.</span></h1><p>The next ride, with a little more thought behind it.</p></div>
+        <a href="/field">Training log <span aria-hidden="true">→</span></a>
+      </header>
       {current ? <div class="coach-dashboard">
         <section class="recommendation" aria-labelledby="recommendation-title">
-          <p class="coach-eyebrow">Recorded recommendation · <time datetime={current.date}>{current.label}</time></p>
+          <div class="recommendation-heading"><p class="coach-eyebrow">Recommendation</p><span class="coach-status">Recorded</span></div>
+          <p class="recommendation-date"><time datetime={current.date}>{current.label}</time></p>
           <h2 id="recommendation-title">{current.title}<span>.</span></h2>
           <p class="recommendation-description">{current.description}</p>
           {(current.duration || current.targetIf || current.targetTss) && <dl class="workout-stats">
@@ -26,18 +31,28 @@ const current = forecast[0];
             {current.targetIf && <div><dt>Target intensity factor</dt><dd>{current.targetIf.toFixed(2)}</dd></div>}
             {current.targetTss && <div><dt>Target training stress</dt><dd>{current.targetTss}</dd></div>}
           </dl>}
-          <div class="coach-explanation"><h3>How it works</h3><p>A small rule-based engine combines my cycling schedule with recovery inputs to select a session from a workout library. This page shares the recommendation; the inputs and controls stay off the page.</p><p>It is built around my own training, and updates when a new snapshot arrives.</p></div>
+          {current.kind === 'rest' && <div class="next-session">
+            <p class="coach-eyebrow">Next in the outlook</p>
+            {nextSession ? <><h3>{nextSession.title}</h3><p><time datetime={nextSession.date}>{nextSession.label}</time>{nextSession.duration && <span>{nextSession.duration} min</span>}<span>Projected</span></p></> : <><h3>The next few days</h3><p>The outlook lists rest days and any sessions available in this snapshot.</p></>}
+          </div>}
+          <div class="coach-explanation"><h3>Built around my training</h3><p>A small rule-based engine selects sessions from a workout library around my cycling schedule. Rest days belong in that schedule too.</p><p>This briefing updates when a new training snapshot arrives.</p></div>
         </section>
-        <section class="outlook" aria-labelledby="outlook-title">
+        <section class="outlook" id="outlook" aria-labelledby="outlook-title">
           <h2 id="outlook-title">Four-day outlook</h2>
-          <ol class="outlook-list">{forecast.map(day => <li>
-            {day.kind === 'rest' ? <div class="outlook-rest"><time datetime={day.date}>{day.label}</time><strong>{day.title}</strong><span>{day.projected ? 'Projected' : 'Recorded'}</span></div> : <details open={!day.projected}>
-              <summary><span class="outlook-date"><time datetime={day.date}>{day.label}</time><span>{day.projected ? 'Projected' : 'Recorded'}</span></span><strong>{day.title}</strong>{day.duration && <span class="outlook-duration">{day.duration} min</span>}</summary>
+          <p class="outlook-deck">One recorded recommendation. Three days to look ahead.</p>
+          <ol class="outlook-list">{forecast.map(day => <li class:list={{ 'outlook-rest': day.kind === 'rest', 'outlook-session': day.kind !== 'rest', 'outlook-recorded': !day.projected }}>
+            <div class="outlook-date"><time datetime={day.date}>{day.label}</time><span class="coach-status">{day.projected ? 'Projected' : 'Recorded'}</span></div>
+            <h3>{day.title}</h3>
+            {day.kind !== 'rest' && <>
               <p>{day.description}</p>
-              {day.targetIf && <p class="outlook-target">Target intensity factor: {day.targetIf.toFixed(2)}</p>}{day.targetTss && <p class="outlook-target">Target training stress: {day.targetTss}</p>}
-            </details>}
+              {(day.duration || day.targetIf || day.targetTss) && <dl class="outlook-targets">
+                {day.duration && <div><dt>Duration</dt><dd>{day.duration} min</dd></div>}
+                {day.targetIf && <div><dt>Intensity factor</dt><dd>{day.targetIf.toFixed(2)}</dd></div>}
+                {day.targetTss && <div><dt>Training stress</dt><dd>{day.targetTss}</dd></div>}
+              </dl>}
+            </>}
           </li>)}</ol>
-          <p class="outlook-note">Future sessions use the schedule and a moderate-recovery baseline. They are provisional, not predictions of how I will feel.</p>
+          <p class="outlook-note">Upcoming sessions use a fixed baseline. They are provisional plans, not predictions of how I will feel.</p>
         </section>
       </div> : <p class="coach-empty">The latest recommendation is unavailable. The <a href="/field">training log</a> is still here.</p>}
     </main>

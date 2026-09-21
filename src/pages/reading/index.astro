@@ -7,14 +7,20 @@ import data from '../../data/reading.json';
 import ReadingSource from '../../components/ReadingSource.astro';
 import BookCover from '../../components/BookCover.astro';
 import CoverCredits from '../../components/CoverCredits.astro';
+import SeriesTrack from '../../components/SeriesTrack.astro';
+import { buildReadingSeries, findBookSeries } from '../../lib/reading-series.mjs';
+import { readingAnchor } from '../../lib/reading-anchor';
 import { formatReadingDate } from '../../lib/reading-date';
 import '../../styles/reading.css';
+
 type Book = { title: string; author: string | null; status: string | null; rating: number | null; format: string | null; genres: string[]; started: string | null; finished: string | null; };
 const currently: Book[] = data.currently_reading ?? [];
 const finished: Book[] = data.finished ?? [];
 const wantTo: Book[] = data.want_to_read ?? [];
+const series = buildReadingSeries(data);
 const snapshotYear = data.updated.slice(0, 4);
 const finishedInYear = finished.filter(book => book.finished?.startsWith(snapshotYear)).length;
+const audioCount = finished.filter(book => book.format?.toLowerCase() === 'audiobook').length;
 const finishedByYear = new Map<string, Book[]>();
 for (const book of finished) {
   const year = book.finished?.slice(0, 4) ?? 'undated';
@@ -22,6 +28,29 @@ for (const book of finished) {
   finishedByYear.get(year)!.push(book);
 }
 const years = [...finishedByYear.entries()].sort(([a], [b]) => a === 'undated' ? 1 : b === 'undated' ? -1 : b.localeCompare(a));
+for (const [, books] of years) books.sort((a, b) => (b.finished ?? '').localeCompare(a.finished ?? ''));
+const datedYears = years.filter(([year]) => year !== 'undated').reverse();
+const undatedCount = finishedByYear.get('undated')?.length ?? 0;
+const maxYearCount = Math.max(1, ...datedYears.map(([, books]) => books.length));
+const yearChart: { label: string; year?: string; count?: number; gap?: boolean }[] = [];
+for (let index = 0; index < datedYears.length; index++) {
+  const [year, books] = datedYears[index];
+  const previous = Number(datedYears[index - 1]?.[0]);
+  if (index > 0 && Number(year) - previous > 1) {
+    const start = previous + 1;
+    const end = Number(year) - 1;
+    yearChart.push({ label: start === end ? String(start) : `${start}–${String(end).slice(-2)}`, gap: true });
+  }
+  yearChart.push({ label: year, year, count: books.length });
+}
+const formats = new Map<string, number>();
+for (const book of finished) {
+  const format = book.format?.trim() || 'Unspecified';
+  formats.set(format, (formats.get(format) ?? 0) + 1);
+}
+const formatCounts = [...formats.entries()].sort(([, a], [, b]) => b - a);
+const formatColors = ['var(--accent)', 'var(--ink)', 'var(--muted)', 'var(--rule)'];
+const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}`;
 ---
 <!doctype html>
 <html lang="en">
@@ -29,16 +58,85 @@ const years = [...finishedByYear.entries()].sort(([a], [b]) => a === 'undated' ?
   <body>
     <Header />
     <main id="main-content" tabindex="-1" class="interior reading-page">
-      <PageIntro title="Reading" eyebrow="Reading log" description="A shelf of places I've been, and a few I haven't reached yet." />
-      <div class="reading-provenance"><ReadingSource showCoverCredits={false} /></div>
-      {(currently.length > 0 || finished.length > 0) && <section class="reading-now" aria-labelledby="reading-now-title">
-        <div class="current-shelf"><div class="interior-section-head"><h2 id="reading-now-title">On the go</h2><span>{currently.length} {currently.length === 1 ? 'book' : 'books'}</span></div>
-          {currently.length ? <ul class="current-books">{currently.map(book => <li><article class="current-book"><BookCover title={book.title} author={book.author} variant="current" /><div><p class="interior-eyebrow">{book.format ?? 'Currently reading'}</p><h3>{book.title}</h3>{book.author && <p class="current-author">{book.author}</p>}{book.started && <p class="current-started">Started {formatReadingDate(book.started)}</p>}</div></article></li>)}</ul> : <p class="interior-empty">Between books at the moment.</p>}
+      <div class="reading-intro">
+        <PageIntro title="Reading" eyebrow="Reading log" description="A shelf of places I've been, and a few I haven't reached yet." />
+        <div class="reading-summary">
+          <dl class="reading-totals" aria-label="Finished books in this import">
+            <div><dt>Books finished</dt><dd>{finished.length}</dd></div>
+            <div><dt>In {snapshotYear}</dt><dd>{finishedInYear}</dd></div>
+            <div><dt>By ear</dt><dd>{audioCount}</dd></div>
+          </dl>
+          <div class="reading-provenance"><ReadingSource showCoverCredits={false} /></div>
         </div>
-        <aside class="reading-totals" aria-label="Reading totals in this import"><p class="interior-eyebrow">The shelf so far</p><dl><div><dt>Books finished</dt><dd>{finished.length}</dd></div><div><dt>Finished in {snapshotYear}</dt><dd>{finishedInYear}</dd></div><div><dt>Want to read</dt><dd>{wantTo.length}</dd></div></dl></aside>
+      </div>
+
+      {(currently.length > 0 || wantTo.length > 0) && <div class:list={['reading-now', { 'reading-now-single': !currently.length || !wantTo.length }]}>
+        {currently.length > 0 && <section class="current-shelf" aria-labelledby="reading-now-title">
+          <h2 id="reading-now-title" class="reading-sr-only">On the go</h2>
+          <ul class="current-books">
+            {currently.map(book => {
+              const context = findBookSeries(book.title, book.author, series);
+              return <li id={readingAnchor(book.title, book.author, 'current')}><article class="current-book">
+                <BookCover title={book.title} author={book.author} variant="current" />
+                <div class="current-book-copy"><div class="current-topline"><span class="interior-eyebrow">On the go</span>{book.format && <span class="book-format format-pill">{book.format}</span>}</div><h3>{book.title}</h3>{book.author && <p class="current-author">{book.author}</p>}{book.started && <p class="current-started">Started {formatReadingDate(book.started)}</p>}
+                  {context && <div class="current-series"><div><a href={`#series-${context.series.id}`}>{context.series.name} <span aria-hidden="true">↓</span></a><span>Book {context.book.position} of {context.series.total}</span></div><SeriesTrack books={context.series.books} name={context.series.name} compact /><p>{context.series.finishedCount} finished · {context.series.currentCount} reading</p></div>}
+                </div>
+              </article></li>;
+            })}
+          </ul>
+        </section>}
+        {wantTo.length > 0 && <section class="planned-shelf" aria-labelledby="want-title">
+          <div class="reading-card-head"><h2 id="want-title" class="interior-eyebrow">Want to read</h2><span>{bookCount(wantTo.length)}</span></div>
+          <ul class="planned-books">{wantTo.map(book => <li id={readingAnchor(book.title, book.author, 'wanted')}><BookCover title={book.title} author={book.author} variant="small" /><div><h3>{book.title}</h3>{book.author && <p>{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</div></li>)}</ul>
+        </section>}
+      </div>}
+
+      {series.length > 0 && <section class="series-section" aria-labelledby="series-title">
+        <div class="series-section-head"><h2 id="series-title" class="interior-eyebrow">Worlds I’m in</h2><ul class="series-legend" aria-label="Reading status legend"><li class="segment-finished">Finished</li><li class="segment-current">Reading</li><li class="segment-wanted">Want to read</li><li class="segment-unrecorded">Not logged</li></ul></div>
+        {series.map(track => <article class="series-row" id={`series-${track.id}`} aria-labelledby={`series-name-${track.id}`}>
+          <div class="series-identity"><h3 id={`series-name-${track.id}`}><a href={track.sourceUrl}>{track.name} <span aria-hidden="true">↗</span></a></h3><p>{track.author}</p><span>{track.scope}</span>{track.companionFinishedCount > 0 && <p class="series-companions">{track.companionFinishedCount} {track.companionFinishedCount === 1 ? 'companion read' : 'companion reads'}.</p>}</div>
+          <SeriesTrack books={track.books} name={track.name} />
+          <div class="series-total"><strong>{track.finishedCount} of {track.total}</strong><span>finished</span>{track.currentCount > 0 && <span class="series-current-count">{track.currentCount} reading</span>}{track.wantedCount > 0 && <span>{track.wantedCount} to read</span>}</div>
+        </article>)}
+        <p class="series-note">Main books shown. Companion reads count separately. “Not logged” means there is no matching book in this import.</p>
       </section>}
-      {wantTo.length > 0 && <section class="reading-section" aria-labelledby="want-title"><div class="interior-section-head"><h2 id="want-title">Want to read</h2><span>{wantTo.length} books</span></div><ul class="planned-books">{wantTo.map(book => <li><BookCover title={book.title} author={book.author} variant="small" /><div><h3>{book.title}</h3>{book.author && <p>{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</div></li>)}</ul></section>}
-      {finished.length > 0 && <section class="reading-section" aria-labelledby="finished-title"><div class="interior-section-head"><h2 id="finished-title">Finished</h2><span>{finished.length} books</span></div>{years.map(([year, books]) => <section class="reading-year" aria-labelledby={`year-${year}`}><div class="reading-year-label"><h3 id={`year-${year}`}>{year === 'undated' ? 'Undated' : year}</h3><span>{books.length} {books.length === 1 ? 'book' : 'books'}</span></div><ul class="finished-books">{books.map(book => <li><BookCover title={book.title} author={book.author} variant="small" /><div class="finished-book-copy"><h4>{book.title}</h4>{book.author && <p class="book-author">{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</div><div class="book-record">{book.rating != null && <span class="book-rating" aria-label={`Rated ${book.rating} out of 5`}>{book.rating}<small> / 5</small></span>}{book.finished && <span>{formatReadingDate(book.finished)}</span>}</div></li>)}</ul></section>)}</section>}
+
+      {finished.length > 0 && <section class="reading-insights" aria-label="Reading history in this import">
+        <article class="reading-insight" aria-labelledby="year-chart-title">
+          <div class="reading-card-head"><h2 id="year-chart-title" class="interior-eyebrow">Finishes by year</h2></div>
+          {datedYears.length > 0 ? <>
+            <p class="insight-note">Years with recorded finishes.{undatedCount > 0 && <>{' '}{bookCount(undatedCount)} undated.</>}</p>
+            <ol class="year-chart">{yearChart.map(entry => <li class:list={{ 'snapshot-year': entry.year === snapshotYear, 'year-chart-gap': entry.gap }}>{entry.gap ? <div aria-label={`${entry.label}: no dated finishes in this import`}><span class="chart-gap-mark" aria-hidden="true">···</span><span class="year-chart-label">{entry.label}</span></div> : <a href={`#year-${entry.year}`} aria-label={`${entry.year}: ${bookCount(entry.count!)} finished. Jump to books.`}><span class="year-chart-count">{entry.count}</span><span class="year-chart-bar" style={`--bar-height: ${140 * entry.count! / maxYearCount}px`} aria-hidden="true"></span><span class="year-chart-label">{entry.label}</span></a>}</li>)}</ol>
+          </> : <p class="insight-note">Finish dates aren't recorded for these books yet.</p>}
+        </article>
+        <article class="reading-insight format-insight" aria-labelledby="format-title">
+          <h2 id="format-title" class="interior-eyebrow">How I read</h2>
+          <p class="format-summary">{audioCount} of {finished.length} <span>by ear.</span></p>
+          <div class="format-bar" aria-hidden="true">{formatCounts.map(([, count], index) => <span style={`flex: ${count}; --format-color: ${formatColors[index % formatColors.length]}`}></span>)}</div>
+          <dl class="format-legend">{formatCounts.map(([format, count], index) => <div style={`--format-color: ${formatColors[index % formatColors.length]}`}><dt><span aria-hidden="true"></span>{format}</dt><dd>{count}</dd></div>)}</dl>
+        </article>
+      </section>}
+
+      {finished.length > 0 && <section class="reading-section" aria-labelledby="finished-title">
+        <div class="interior-section-head"><h2 id="finished-title">Finished · {bookCount(finished.length)}</h2><span>Grouped by finish year</span></div>
+        <nav class="reading-year-nav" aria-label="Jump to reading year">{years.map(([year, books]) => <a href={`#year-${year}`} aria-label={`${year === 'undated' ? 'Undated' : year}: ${bookCount(books.length)}. Jump to books.`}>{year === 'undated' ? 'Undated' : year}<span>{books.length}</span></a>)}</nav>
+        <table class="finished-table">
+          <caption class="reading-sr-only">Finished books, grouped by finish year</caption>
+          <colgroup><col class="title-column" /><col class="author-column" /><col class="format-column" /><col class="rating-column" /><col class="date-column" /></colgroup>
+          <thead><tr><th scope="col">Title</th><th scope="col">Author</th><th scope="col">Format</th><th scope="col">Rating</th><th scope="col">Finished</th></tr></thead>
+          {years.map(([year, books]) => <tbody aria-labelledby={`year-${year}`}>
+            <tr class="reading-year-heading"><th colspan="5" scope="colgroup"><h3 id={`year-${year}`}>{year === 'undated' ? 'Undated' : year}</h3>{' '}<span>{bookCount(books.length)}</span></th></tr>
+            {books.map(book => <tr class="finished-book" id={readingAnchor(book.title, book.author, 'finished')}>
+              <th scope="row" class="finished-title"><div class="finished-title-inner"><BookCover title={book.title} author={book.author} variant="small" /><span>{book.title}</span></div></th>
+              <td class="book-author">{book.author}</td>
+              <td class="book-format">{book.format}</td>
+              <td class="book-rating">{book.rating != null ? <span class="rating-dots" role="img" aria-label={`Rated ${book.rating} out of 5`} title={`${book.rating} / 5`}>{[0, 1, 2, 3, 4].map(index => <span aria-hidden="true" style={`--rating-fill: ${Math.max(0, Math.min(1, book.rating! - index)) * 100}%`}></span>)}</span> : <span class="reading-sr-only">Not rated</span>}</td>
+              <td class="book-finished">{book.finished ? formatReadingDate(book.finished) : <span class="reading-sr-only">Date not recorded</span>}</td>
+            </tr>)}
+          </tbody>)}
+        </table>
+        <p class="reading-log-note">Ratings only where I gave one. Some finish dates are recorded only by year.</p>
+      </section>}
       {currently.length === 0 && finished.length === 0 && wantTo.length === 0 && <p class="interior-empty">No books in this snapshot yet.</p>}
       {(currently.length > 0 || finished.length > 0 || wantTo.length > 0) && <CoverCredits />}
     </main>

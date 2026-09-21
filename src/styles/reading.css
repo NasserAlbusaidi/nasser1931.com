@@ -1,57 +1,193 @@
-.reading-provenance { border-top: 1px solid var(--rule); padding-bottom: .75rem; }
-.reading-now { display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr); gap: 2.5rem; }
-.current-shelf { background: var(--surface); border: 1px solid var(--rule); border-top: 2px solid var(--accent); padding: 0 2rem 2rem; }
-.current-shelf .interior-section-head { border-top: 0; }
-.current-books { list-style: none; padding: 0; margin: 1.5rem 0 0; }
-.current-books li + li { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 1.5rem; }
-.current-books .interior-eyebrow { margin-bottom: 1rem; }
-.current-book { display: grid; grid-template-columns: minmax(100px, 180px) minmax(0, 1fr); align-items: center; gap: 2rem; }
-.current-books h3 { font-family: var(--font-prose); font-size: var(--text-heading); font-weight: 400; line-height: 1.25; letter-spacing: -.035em; max-width: 17ch; overflow-wrap: anywhere; }
-.current-author { font-size: var(--text-lead); color: var(--muted); margin: 1rem 0 0; }
-.current-started { font-size: var(--text-label); color: var(--muted); margin: 1rem 0 0; }
-.reading-totals { padding: 1rem 0; }
-.reading-totals > p { margin: 0 0 1rem; }
-.reading-totals dl { margin: 0; }
-.reading-totals dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--rule); padding: .75rem 0; }
+.reading-intro { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 3rem; align-items: end; border-bottom: 1px solid var(--rule); margin-bottom: 3.5rem; }
+.reading-summary { padding-bottom: 2.5rem; }
+.reading-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin: 0; }
+.reading-totals > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; align-items: start; gap: .5rem; }
 .reading-totals dt { color: var(--muted); font-size: var(--text-label); }
-.reading-totals dd { margin: 0; font-size: var(--text-heading); font-weight: 350; line-height: 1.2; }
-.reading-section { margin-top: 3.5rem; }
-.planned-books { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
-.planned-books > li { display: grid; grid-template-columns: 80px minmax(0, 1fr); align-items: start; gap: 1.25rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; }
-.planned-books h3 { font-family: var(--font-prose); font-size: var(--text-lead); line-height: 1.5; font-weight: 400; overflow-wrap: anywhere; }
-.planned-books p { color: var(--muted); font-size: var(--text-body); margin: .6rem 0 .35rem; }
-.book-format { color: var(--muted); font-family: var(--font-mono); font-size: var(--text-label); }
-.reading-year { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 4fr); gap: 2rem; margin-top: 1.5rem; }
-.reading-year-label { padding-top: 1.25rem; }
-.reading-year-label h3 { font-size: var(--text-heading); color: var(--accent); font-weight: 350; }
-.reading-year-label > span { display: block; font-size: var(--text-label); color: var(--muted); margin-top: .35rem; }
-.finished-books { list-style: none; padding: 0; margin: 0; }
-.finished-books li { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); }
-.finished-books h4 { font-size: var(--text-lead); font-weight: 450; line-height: 1.4; letter-spacing: -.015em; overflow-wrap: anywhere; }
-.book-author { color: var(--muted); font-size: var(--text-body); margin: .35rem 0 .15rem; }
-.book-record { display: flex; flex-direction: column; align-items: end; gap: .4rem; color: var(--muted); font-size: var(--text-label); line-height: 1.6; padding-top: .15rem; }
-.book-rating { color: var(--ink); font-size: var(--text-body); }
-.book-rating small { color: var(--muted); font-size: var(--text-label); }
-@media (max-width: 1000px) { .current-book { grid-template-columns: 130px minmax(0, 1fr); gap: 1.25rem; } }
-@media (max-width: 900px) { .reading-now { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } .current-shelf { padding-inline: 1.5rem; } }
-@media (max-width: 720px) {
-  .reading-now, .planned-books, .reading-year { grid-template-columns: minmax(0, 1fr); }
-  .reading-now { gap: 1rem; }
-  .reading-totals { padding-block: .5rem; }
-  .current-books { margin-top: 1rem; }
-  .current-shelf { padding: 0 1.25rem 1.5rem; }
-  .reading-section { margin-top: 2.5rem; }
-  .planned-books { gap: 1rem; }
-  .reading-year { gap: .5rem; }
-  .reading-year-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem; }
-  .reading-year-label h3 { font-size: var(--text-title); }
-  .finished-books li { grid-template-columns: 56px minmax(0, 1fr); gap: .5rem 1rem; align-items: start; }
-  .finished-books .book-cover { grid-row: 1 / 3; }
-  .book-record { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: space-between; }
+.reading-totals dd { margin: 0; font-size: var(--text-display); font-weight: 350; line-height: 1; letter-spacing: -.035em; }
+.reading-totals > div:nth-child(2) dd { color: var(--accent); }
+.reading-page .reading-provenance .reading-source { margin: 1rem 0 0; }
+.reading-now { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 2rem; }
+.reading-now-single { grid-template-columns: minmax(0, 1fr); }
+.current-shelf, .planned-shelf, .reading-insight { background: var(--surface); border: 1px solid var(--rule); padding: 2rem; min-width: 0; }
+.current-shelf { display: flex; align-items: center; }
+.reading-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .5rem 1rem; }
+.reading-card-head > h2 { margin: 0; }
+.reading-card-head > span { color: var(--muted); font-size: var(--text-label); }
+.current-books { list-style: none; padding: 0; margin: 0; width: 100%; }
+.current-books li + li { border-top: 1px solid var(--rule); padding-top: 1.75rem; margin-top: 1.75rem; }
+.current-book { display: grid; grid-template-columns: minmax(0, 180px) minmax(0, 1fr); align-items: center; gap: 2rem; }
+.current-book-copy { min-width: 0; }
+.current-topline { display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; margin-bottom: 1.25rem; }
+.current-books h3 { font-size: var(--text-heading); font-weight: 400; line-height: 1.1; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.current-author { font-size: var(--text-body); color: var(--muted); margin: .8rem 0 0; }
+.current-started { font-size: var(--text-label); color: var(--muted); margin: 1rem 0 0; }
+.book-format { color: var(--muted); font-family: var(--font-mono); font-size: var(--text-label); line-height: 1.5; }
+.format-pill { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: .15rem .6rem; }
+.current-series { margin-top: 2rem; }
+.current-series > div:first-child { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .2rem .75rem; font-size: var(--text-label); }
+.current-series a { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; text-decoration: none; }
+.current-series > div:first-child > span { color: var(--muted); }
+.current-series p { color: var(--muted); font-size: var(--text-label); margin: .75rem 0 0; }
+.series-mini-track { display: flex; gap: .25rem; }
+.series-mini-track > span { flex: 1; height: 4px; }
+.planned-books { list-style: none; margin: 1.25rem 0 0; padding: 0; }
+.planned-books > li { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: start; gap: 1rem; border-top: 1px solid var(--rule); padding-block: 1rem; }
+.planned-books > li:last-child { padding-bottom: 0; }
+.planned-books h3 { font-size: var(--text-lead); line-height: 1.3; font-weight: 400; overflow-wrap: anywhere; }
+.planned-books p { color: var(--muted); font-size: var(--text-label); margin: .4rem 0; }
+.series-section { margin-top: 4.5rem; }
+.series-section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 2rem; padding-bottom: 1.25rem; }
+.series-section-head h2 { margin: 0; }
+.series-legend { display: flex; flex-wrap: wrap; list-style: none; gap: .5rem 1.25rem; padding: 0; margin: 0; color: var(--muted); font-size: var(--text-label); }
+.series-legend li { display: flex; align-items: center; gap: .5rem; }
+.series-legend li::before { content: ''; width: 16px; height: 4px; background: var(--segment-color); }
+.segment-finished { --segment-color: var(--ink); }
+.segment-current { --segment-color: var(--accent); }
+.segment-wanted { --segment-color: var(--accent); }
+.segment-unrecorded { --segment-color: var(--rule); }
+.series-legend .segment-wanted::before { background: transparent; border: 1px dashed var(--accent); }
+.series-mini-track > span, .series-segment { background: var(--segment-color); }
+.series-mini-track > .segment-wanted, .segment-wanted .series-segment { background: transparent; border: 1px dashed var(--accent); }
+.series-row { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) 6rem; gap: 2rem; align-items: start; padding-block: 1.5rem; border-top: 1px solid var(--rule); }
+.series-identity { min-width: 0; }
+.series-identity h3 { font-size: var(--text-lead); line-height: 1.3; font-weight: 400; }
+.series-identity h3 a { display: inline-flex; gap: .6rem; align-items: center; min-height: 44px; text-decoration: none; }
+.series-identity h3 a span { font-size: var(--text-label); color: var(--muted); }
+.series-identity p, .series-identity > span { color: var(--muted); font-size: var(--text-label); line-height: 1.55; margin: .2rem 0 0; }
+.series-identity > span { display: block; }
+.series-identity p.series-companions { margin-top: .6rem; }
+.series-track-scroll { min-width: 0; overflow-x: auto; padding-block: .4rem; }
+.series-track { display: grid; grid-template-columns: repeat(var(--series-books), minmax(0, 1fr)); gap: .4rem; padding: 0; margin: 0; list-style: none; }
+.series-track > li { min-width: 0; }
+.series-book { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: .6rem; min-height: 44px; padding: .55rem .15rem; font-size: var(--text-label); line-height: 1.4; text-decoration: none; }
+.series-book:focus-visible { outline-offset: -2px; }
+.series-segment { display: block; height: 4px; flex: 0 0 auto; }
+.series-book-title { overflow-wrap: anywhere; }
+.segment-current .series-book-title, .segment-wanted .series-book-title { color: var(--accent); }
+.segment-unrecorded .series-book-title { color: var(--muted); }
+.series-total { padding-top: .9rem; display: flex; flex-direction: column; gap: .25rem; align-items: end; font-size: var(--text-label); color: var(--muted); }
+.series-total strong { font-size: var(--text-title); font-weight: 400; color: var(--ink); line-height: 1.2; white-space: nowrap; }
+.series-total .series-current-count { color: var(--accent); }
+.series-note { color: var(--muted); font-size: var(--text-label); border-top: 1px solid var(--rule); padding-top: 1rem; margin: 0; }
+.reading-insights { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 4rem; }
+.reading-insight { display: flex; flex-direction: column; }
+.insight-note { font-size: var(--text-label); color: var(--muted); margin: .5rem 0 1rem; }
+.year-chart { display: flex; align-items: end; gap: 1rem; list-style: none; margin: auto 0 0; padding: 1rem 0 0; }
+.year-chart > li { flex: 1; min-width: 0; }
+.year-chart a, .year-chart-gap > div { min-height: 44px; display: flex; flex-direction: column; align-items: center; gap: .5rem; text-decoration: none; padding: .5rem 0; }
+.year-chart a:hover { background: var(--mark); }
+.year-chart-count { font-size: var(--text-body); }
+.year-chart-bar { display: block; height: var(--bar-height); width: min(100%, 4rem); min-height: 2px; background: var(--muted); }
+.year-chart-label { font-family: var(--font-mono); font-size: var(--text-label); color: var(--muted); white-space: nowrap; }
+.chart-gap-mark { display: flex; align-items: center; justify-content: center; height: 70px; color: var(--muted); font-size: var(--text-title); letter-spacing: .15em; }
+.year-chart-gap { flex: 1.1 !important; }
+.snapshot-year .year-chart-bar { background: var(--accent); }
+.snapshot-year .year-chart-count, .snapshot-year .year-chart-label { color: var(--accent); }
+.format-summary { font-size: var(--text-heading); font-weight: 350; letter-spacing: -.035em; line-height: 1.2; margin: 1.25rem 0 2rem; }
+.format-summary > span { color: var(--muted); }
+.format-bar { display: flex; gap: 3px; height: 12px; margin-top: auto; }
+.format-bar > span { background: var(--format-color); }
+.format-legend { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin: 1.25rem 0 0; }
+.format-legend > div { display: flex; flex-direction: column; gap: .4rem; }
+.format-legend dt { font-size: var(--text-label); color: var(--muted); display: flex; align-items: center; gap: .4rem; }
+.format-legend dt > span { width: 6px; height: 6px; flex-shrink: 0; background: var(--format-color); }
+.format-legend dd { margin: 0; padding-left: .75rem; font-size: var(--text-body); }
+.reading-section { margin-top: 4.5rem; }
+.reading-year-nav { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; padding-bottom: .5rem; }
+.reading-year-nav a { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .35rem .65rem; margin-left: -.65rem; font-size: var(--text-label); text-decoration: none; }
+.reading-year-nav a > span { color: var(--muted); }
+.finished-table { table-layout: fixed; margin: 0; font-size: var(--text-label); }
+.finished-table .title-column { width: 39%; }
+.finished-table .author-column { width: 24%; }
+.finished-table .format-column { width: 11%; }
+.finished-table .rating-column { width: 11%; }
+.finished-table .date-column { width: 15%; }
+.finished-table thead th { font: var(--text-label)/1.5 var(--font-mono); color: var(--muted); letter-spacing: .04em; padding: 1rem 1rem 1rem 0; border-bottom: 1px solid var(--rule); }
+.finished-table thead th:last-child { text-align: right; padding-right: 0; }
+.reading-year-heading th { padding: 1.75rem 0 .9rem; border-bottom: 1px solid var(--rule); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.reading-year-heading h3 { display: inline; font-size: var(--text-title); font-weight: 400; }
+.reading-year-heading th > span { font-size: var(--text-label); color: var(--muted); margin-left: .75rem; }
+.finished-book > th, .finished-book > td { vertical-align: middle; padding: .4rem 1rem .4rem 0; border-bottom: 1px solid var(--rule); }
+.finished-title { font: 400 var(--text-body)/1.4 var(--font-ui); text-transform: none; letter-spacing: -.01em; color: var(--ink); }
+.finished-title-inner { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: .85rem; }
+.finished-title-inner > span { overflow-wrap: anywhere; }
+.book-author { color: var(--muted); font-size: var(--text-label); line-height: 1.5; overflow-wrap: anywhere; }
+.finished-book .book-format { font-size: var(--text-label); overflow-wrap: anywhere; }
+.book-rating { white-space: nowrap; }
+.rating-dots { display: inline-flex; align-items: center; gap: 4px; }
+.rating-dots > span { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(to right, var(--accent) var(--rating-fill), var(--rule) var(--rating-fill)); }
+.finished-book .book-finished { text-align: right; color: var(--muted); font-size: var(--text-label); padding-right: 0; }
+.reading-log-note { color: var(--muted); font-size: var(--text-label); margin: 1.25rem 0 0; }
+.reading-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 1100px) {
+  .reading-intro { gap: 2rem; }
+  .reading-totals { gap: 1rem; }
+  .reading-totals dd { font-size: var(--text-heading); }
+  .reading-now { grid-template-columns: minmax(0, 1fr); }
+  .planned-books { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  .series-row { grid-template-columns: 14rem minmax(0, 1fr) 5rem; gap: 1.25rem; }
+  .series-track { grid-template-columns: repeat(var(--series-books), minmax(3.5rem, 1fr)); }
+  .reading-insight { padding: 1.5rem; }
+  .format-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .format-legend > div { flex-direction: row; justify-content: space-between; }
+  .finished-table .title-column { width: 34%; }
+  .finished-table .author-column { width: 23%; }
+  .finished-table .format-column { width: 13%; }
+  .finished-table .rating-column { width: 12%; }
+  .finished-table .date-column { width: 18%; }
 }
-@media (max-width: 540px) {
-  .current-book { grid-template-columns: 100px minmax(0, 1fr); gap: 1rem; }
-  .current-books h3 { font-size: var(--text-title); }
-  .current-author { font-size: var(--text-body); }
-  .planned-books > li { grid-template-columns: 64px minmax(0, 1fr); gap: 1rem; }
+@media (max-width: 800px) {
+  .reading-intro { grid-template-columns: minmax(0, 1fr); gap: 0; margin-bottom: 2rem; }
+  .reading-summary { padding-bottom: 1.5rem; max-width: 32rem; }
+  .reading-insights { grid-template-columns: minmax(0, 1fr); }
+  .year-chart { max-width: 32rem; width: 100%; }
+  .series-row { grid-template-columns: minmax(0, 1fr) 6rem; gap: .5rem 1.5rem; }
+  .series-track-scroll { grid-column: 1 / -1; grid-row: 2; }
+  .series-track { grid-template-columns: repeat(var(--series-books), minmax(4.5rem, 1fr)); }
+  .series-total { grid-column: 2; grid-row: 1; }
+  .series-identity > span { display: inline; }
+  .series-identity .series-companions { display: inline; margin-left: .5rem; }
+  .series-section, .reading-section { margin-top: 3rem; }
+  .finished-table { display: block; }
+  .finished-table colgroup { display: none; }
+  .finished-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .finished-table tbody { display: block; }
+  .reading-year-heading { display: block; }
+  .reading-year-heading th { display: block; border-bottom: 0; }
+  .finished-book { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .15rem .75rem; padding-block: .85rem; border-top: 1px solid var(--rule); }
+  .finished-book > th, .finished-book > td { padding: 0; border: 0; }
+  .finished-book .finished-title { grid-column: 1 / -1; }
+  .finished-title-inner { grid-template-columns: 28px minmax(0, 1fr); }
+  .finished-book .book-author { grid-column: 1 / -1; margin-left: 2.6rem; }
+  .finished-book .book-format { grid-column: 1; margin-left: 2.6rem; padding-top: .25rem; }
+  .finished-book .book-rating { grid-column: 2; align-self: center; }
+  .finished-book .book-finished { grid-column: 1 / -1; text-align: left; margin-left: 2.6rem; }
+}
+@media (max-width: 600px) {
+  .current-shelf, .planned-shelf, .reading-insight { padding: 1.25rem; }
+  .reading-now, .reading-insights { gap: 1rem; }
+  .current-book { grid-template-columns: 100px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+  .current-book-copy { display: contents; }
+  .current-topline { grid-column: 2; margin-bottom: 0; align-self: start; }
+  .current-book > .book-cover { grid-row: 1 / 4; }
+  .current-books h3 { grid-column: 2; font-size: var(--text-title); }
+  .current-author { grid-column: 2; margin: 0; }
+  .current-started { grid-column: 2; margin: 0; }
+  .current-series { grid-column: 1 / -1; margin-top: 0; }
+  .planned-books { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .planned-books h3 { font-size: var(--text-body); }
+  .series-legend { gap: .5rem 1rem; }
+  .series-row { gap: .5rem 1rem; }
+  .series-identity h3 { font-size: var(--text-lead); }
+  .series-total strong { font-size: var(--text-lead); }
+  .reading-insights { margin-top: 2.5rem; }
+  .year-chart { gap: .35rem; }
+  .year-chart-label { font-family: var(--font-ui); }
+  .reading-year-nav { gap: .25rem 1rem; }
+}
+@media (max-width: 380px) {
+  .current-book { grid-template-columns: 80px minmax(0, 1fr); gap: 1rem; }
+  .current-author { font-size: var(--text-label); }
+  .series-row { grid-template-columns: minmax(0, 1fr) 5rem; }
+  .year-chart-gap { flex: 1.5 !important; }
 }

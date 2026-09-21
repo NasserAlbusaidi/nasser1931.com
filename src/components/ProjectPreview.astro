@@ -4,21 +4,22 @@ import ledger from '../assets/projects/rihla-ledger-en.png';
 import settlement from '../assets/projects/rihla-settle-en.png';
 import bureau from '../assets/projects/einstein-repo-hero.png';
 import study from '../../public/paper/figures/fig1_hero_landscape.png';
-interface Props { project: string; compact?: boolean; }
-const { project, compact = false } = Astro.props;
+interface Props { project: string; compact?: boolean; variant?: 'default' | 'showcase' | 'card'; }
+const { project, compact = false, variant = 'default' } = Astro.props;
+const appSizes = variant === 'showcase' ? '(max-width: 720px) 38vw, 260px' : '(max-width: 720px) 38vw, 240px';
 ---
-{project === 'rihla' && <figure class:list={['project-preview', 'app-preview', { compact }]}>
+{project === 'rihla' && <figure class:list={['project-preview', 'app-preview', `preview-${variant}`, { compact }]}>
   <div class="app-screens">
-    <Image src={ledger} alt="Rihla demo: a group trip ledger with shared expenses and balances." widths={[240, 400, 600]} sizes="(max-width: 720px) 38vw, 240px" format="webp" quality={85} loading="lazy" />
-    <Image src={settlement} alt="Rihla demo: settling the group's balances with three transfers." widths={[240, 400, 600]} sizes="(max-width: 720px) 38vw, 240px" format="webp" quality={85} loading="lazy" />
+    <Image src={ledger} alt="Rihla demo: a group trip ledger with shared expenses and balances." widths={[240, 400, 600]} sizes={appSizes} format="webp" quality={85} loading="lazy" />
+    <Image src={settlement} alt="Rihla demo: settling the group's balances with three transfers." widths={[240, 400, 600]} sizes={appSizes} format="webp" quality={85} loading="lazy" />
   </div>
   <figcaption>Rihla · Demo screens</figcaption>
 </figure>}
-{project === 'einsteins-travel-bureau' && <figure class:list={['project-preview', 'bureau-preview', { compact }]}>
+{project === 'einsteins-travel-bureau' && <figure class:list={['project-preview', 'bureau-preview', `preview-${variant}`, { compact }]}>
   <Image src={bureau} alt="Einstein’s Travel Bureau: a vintage travel desk with a star map and destinations across spacetime." widths={[480, 800, 1200, 1440]} sizes="(max-width: 720px) 90vw, 600px" format="webp" quality={85} loading="lazy" />
   <figcaption>Einstein’s Travel Bureau · The travel desk</figcaption>
 </figure>}
-{project === 'silent-creep' && <figure class="project-preview study-preview">
+{project === 'silent-creep' && <figure class:list={['project-preview', 'study-preview', `preview-${variant}`]}>
   <Image src={study} alt="The Silent Creep study figure: weight trend and training expenditure across four phases from 2022 to 2026." widths={[480, 800, 1200]} sizes="(max-width: 720px) 90vw, 600px" format="webp" quality={90} loading="lazy" />
   <figcaption>The Silent Creep · Study data, 2022–2026</figcaption>
 </figure>}
@@ -29,5 +30,22 @@ const { project, compact = false } = Astro.props;
   .compact .app-screens img { width: min(43%, 155px); }
   .bureau-preview img, .study-preview img { width: 100%; border: 1px solid var(--rule); }
   figcaption { font-size: var(--text-label); color: var(--muted); margin-top: .75rem; }
-  @media (max-width: 720px) { .app-screens { gap: .75rem; padding: 1rem .5rem; } }
+  /* Screens bleed to the desktop panel edge without determining its height. */
+  .preview-showcase { position: relative; margin: 0 0 calc(-1 * var(--showcase-inset, 0px)); min-width: 0; min-height: 0; overflow: hidden; }
+  .preview-showcase .app-screens { position: absolute; inset: 0 0 auto; border: 0; background: transparent; padding: 0; align-items: start; gap: 1.5rem; }
+  .preview-showcase .app-screens img { width: min(calc((100% - 1.5rem) / 2), 260px); flex: 0 0 auto; box-shadow: 0 1.5rem 3rem #00000030; }
+  .preview-showcase .app-screens img + img { margin-top: 3.75rem; }
+  .preview-showcase figcaption { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .preview-card { margin: 0; }
+  .preview-card img { width: 100%; height: 13rem; object-fit: cover; object-position: top; border: 0; }
+  .study-preview.preview-card img { object-fit: contain; background: #f4f1ea; padding: .75rem; }
+  .preview-card figcaption { font-size: var(--text-label); line-height: 1.5; }
+  @media (max-width: 720px) {
+    .app-screens { gap: .75rem; padding: 1rem .5rem; }
+    .preview-showcase { position: static; margin: 0; overflow: visible; }
+    .preview-showcase .app-screens { position: static; gap: .75rem; }
+    .preview-showcase .app-screens img { width: min(calc((100% - .75rem) / 2), 240px); }
+    .preview-showcase .app-screens img + img { margin-top: 1.5rem; }
+    .preview-showcase figcaption { position: static; width: auto; height: auto; margin: 1rem 0 0; overflow: visible; clip-path: none; white-space: normal; text-align: center; }
+  }
 </style>

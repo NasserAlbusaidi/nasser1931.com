@@ -1,0 +1,22 @@
+---
+import { readingAnchor } from '../lib/reading-anchor';
+interface Segment { title: string; position: number; status: 'finished' | 'current' | 'wanted' | 'unrecorded'; matchedTitle?: string | null; matchedAuthor?: string | null; }
+interface Props { books: Segment[]; name: string; compact?: boolean; }
+const { books, name, compact = false } = Astro.props;
+const labels = { finished: 'Finished', current: 'Reading now', wanted: 'Want to read', unrecorded: 'Not logged' };
+---
+{compact ? <div class="series-mini-track" aria-hidden="true">{books.map(book => <span class={`segment-${book.status}`}></span>)}</div> :
+  <div class="series-track-scroll">
+    <ol class="series-track" aria-label={`${name} reading progress`} style={`--series-books: ${books.length}`}>
+      {books.map(book => {
+        const logged = book.status !== 'unrecorded' && book.matchedTitle;
+        const Tag = logged ? 'a' : 'span';
+        const label = `${book.position}. ${logged ? book.title : `Book ${book.position}`} — ${labels[book.status]}`;
+        return <li class={`segment-${book.status}`}><Tag class="series-book" href={logged ? `#${readingAnchor(book.matchedTitle!, book.matchedAuthor ?? null, book.status)}` : undefined} aria-label={logged ? label : undefined} title={label}>
+          <span class="series-segment" aria-hidden="true"></span><span class="series-book-title" aria-hidden="true">{logged ? book.title : book.position}</span>
+          {!logged && <span class="reading-sr-only">{label}</span>}
+        </Tag></li>;
+      })}
+    </ol>
+  </div>
+}

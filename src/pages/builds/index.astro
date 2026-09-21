@@ -2,8 +2,11 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
-import buildsData from '../../data/builds.json';
 import ProjectPreview from '../../components/ProjectPreview.astro';
+import buildsData from '../../data/builds.json';
+import coach from '../../data/coach.json';
+import bank from '../../data/workout-bank.json';
+import { buildPublicForecast } from '../../lib/public-coach.mjs';
 import '../../styles/work.css';
 
 type Build = (typeof buildsData.builds)[number];
@@ -11,92 +14,143 @@ const builds = buildsData.builds;
 const selectedSlugs = ['rihla', 'silent-creep', 'einsteins-travel-bureau', 'coach-engine'];
 const selected = selectedSlugs.flatMap(slug => builds.filter(build => build.slug === slug));
 const moreProjects = builds.filter(build => !selectedSlugs.includes(build.slug));
-const projectStories: Record<string, { lead: string; detail: string; category: string }> = {
+const sourceCount = builds.filter(build => build.repo).length;
+const forecast = buildPublicForecast(coach, bank);
+const recommendation = forecast[0];
+const projectStories: Record<string, { lead: string; detail: string; category: string; facts: [string, string][] }> = {
+  rihla: {
+    lead: 'For the plans we make together.',
+    detail: 'Groups, events, and shared expenses in one app. Designed to work offline, with fewer transfers needed to settle up.',
+    category: 'Everyday life · App',
+    facts: [['Platforms', 'iOS · Android'], ['Works', 'Offline-first']],
+  },
   'silent-creep': {
     lead: 'What actually changed over 1,300 days?',
-    detail: 'A study of my own training, food intake, and body weight. Six tests, a Bayesian model, and a record long enough to question my assumptions.',
-    category: 'Personal research',
+    detail: 'A study of my own training, food intake, and body weight, with a record long enough to question my assumptions.',
+    category: 'Personal research · Study',
+    facts: [['Method', 'Six tests · Bayesian model'], ['Span', '2022–2026']],
   },
-	rihla: {
-		lead: 'For the plans we make together.',
-		detail: 'Groups, events, and shared expenses in one app. Designed to work offline, with fewer transfers needed to settle up.',
-		category: 'Everyday life',
-	},
-	'coach-engine': {
-		lead: 'A little more context before the next ride.',
-		detail: 'A cycling briefing that turns recovery signals into a workout suggestion. The public page shares the recommendation and a provisional four-day outlook.',
-		category: 'Software × cycling',
-	},
-	'einsteins-travel-bureau': {
-		lead: 'A travel agency for spacetime.',
-		detail: 'A time-dilation sandbox with brochures, boarding passes, and a multi-observer laboratory. Special and general relativity do the maths behind the trip.',
-		category: 'An experiment in physics',
-	},
+  'einsteins-travel-bureau': {
+    lead: 'A travel agency for spacetime.',
+    detail: 'Plan a trip near the speed of light and see how differently time passes. Real physics behind an imaginary travel desk.',
+    category: 'Physics · Experiment',
+    facts: [['Physics', 'Special and general relativity'], ['Inside', 'Brochures · boarding passes · a lab']],
+  },
+  'coach-engine': {
+    lead: 'A coach I can look inside.',
+    detail: 'A rule-based engine combines my cycling schedule with recovery inputs to select the next session. The public page shares the recommendation and a provisional outlook.',
+    category: 'Software × cycling',
+    facts: [['Output', 'Recommendation · four-day outlook'], ['Updates', 'When a new snapshot arrives']],
+  },
 };
 const shortDescriptions: Record<string, string> = {
-	'macrofactor-mcp': 'A local tool connecting nutrition and training data.',
-	mizan: 'A local dashboard for Claude Code and Codex usage.',
-	nasser1931: 'This personal website, built with Astro and Firebase.',
-	'readiness-engine': 'A training-readiness score delivered to your calendar.',
-	'invoice-ar': 'Arabic and English invoice PDFs from JSON.',
-	'claude-md': 'A configuration guide and template for Claude Code.',
-	omanclimate: 'A climate atlas for Oman built from public datasets.',
-	'silent-creep': 'A personal study of training, eating, and weight.',
-	'bite-pos': 'Open-source restaurant software for menus, kitchen orders, and payments.',
-	inventory: 'Warehouse stock movements, sales, and financial tracking.',
+  'macrofactor-mcp': 'Connects my nutrition and training data in one local tool.',
+  mizan: 'A local dashboard for Claude Code and Codex usage.',
+  nasser1931: 'This personal website, built with Astro and Firebase.',
+  'readiness-engine': 'A training-readiness score delivered to your calendar.',
+  'invoice-ar': 'Arabic and English invoice PDFs from JSON.',
+  'claude-md': 'A configuration guide and template for Claude Code.',
+  omanclimate: 'A climate atlas for Oman built from public datasets.',
+  'bite-pos': 'Restaurant software for menus, kitchen orders, and payments.',
+  inventory: 'Warehouse stock movements, sales, and financial tracking.',
 };
-// Prefer the live/site link; fall back to the repo. Null on both → non-link row.
-const hrefFor = (b: Build) => b.url ?? b.repo ?? null;
+const groupDefinitions = [
+  { id: 'training-data', title: 'Training & data', description: 'Pipes and models for the numbers my rides, meals, and surroundings produce.', slugs: ['macrofactor-mcp', 'readiness-engine', 'omanclimate'] },
+  { id: 'workbench', title: 'The workbench', description: 'Things I built to make building easier, this site included.', slugs: ['mizan', 'claude-md', 'nasser1931'] },
+  { id: 'business-software', title: 'Business software', description: 'Restaurant, warehouse, and invoicing tools with their source available.', slugs: ['bite-pos', 'inventory', 'invoice-ar'] },
+];
+const groupedSlugs = groupDefinitions.flatMap(group => group.slugs);
+const projectGroups = groupDefinitions.map(group => ({ ...group, projects: group.slugs.flatMap(slug => moreProjects.filter(project => project.slug === slug)) }));
+const ungroupedProjects = moreProjects.filter(project => !groupedSlugs.includes(project.slug));
+if (ungroupedProjects.length) projectGroups.push({ id: 'other-projects', title: 'Other projects', description: 'More things I have made and shared.', slugs: ungroupedProjects.map(project => project.slug), projects: ungroupedProjects });
+const hrefFor = (build: Build) => build.url ?? build.repo ?? null;
 const storesFor = (build: Build) => 'stores' in build ? build.stores ?? [] : [];
 const isExternal = (href: string) => /^https?:\/\//.test(href);
 const destinationLabel = (build: Build) => build.slug === 'silent-creep' ? 'Read the study' : build.slug === 'einsteins-travel-bureau' ? 'Explore the bureau' : build.url ? (build.slug === 'coach-engine' ? 'Read the briefing' : 'View project') : 'View source';
-const projectGroups = [
-	{ id: 'more-projects', title: 'Tools & open source', projects: moreProjects },
-];
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead
-			title="Projects — Nasser Al Busaidi"
-			description="Software for everyday life, cycling, and curious experiments. Projects by Nasser Al Busaidi."
-		/>
-	</head>
-	<body>
-		<Header />
-		<main id="main-content" tabindex="-1" class="work-page">
-			<header class="work-intro">
-				<div><p class="work-eyebrow">Built out of curiosity</p><h1>Projects<span>.</span></h1><p class="work-deck">Personal apps, a study of my own training, and experiments worth sharing.</p></div>
-				<div class="work-inventory"><span class="work-eyebrow">Project log</span><span>{builds.length} projects</span><p>Apps, research, and open source.</p></div>
-			</header>
+  <head><BaseHead title="Projects — Nasser Al Busaidi" description="Software for everyday life, cycling, and curious experiments. Projects by Nasser Al Busaidi." /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="work-page">
+      <header class="work-intro">
+        <div><p class="work-eyebrow">Built out of curiosity</p><h1>Projects<span>.</span></h1><p class="work-deck">Personal apps, a study of my own training, and experiments worth sharing.</p></div>
+        <dl class="work-inventory">
+          <div><dt>Projects</dt><dd>{builds.length}</dd></div>
+          <div><dt>In focus</dt><dd>{selected.length}</dd></div>
+          <div><dt>Source links</dt><dd>{sourceCount}</dd></div>
+        </dl>
+      </header>
 
-			<section class="work-selected" aria-labelledby="selected-title">
-				<div class="work-section-heading"><h2 id="selected-title">A closer look</h2><span>Selected projects</span></div>
-				{selected.map((project) => {
-					const story = projectStories[project.slug];
-					const href = hrefFor(project);
-					const stores = storesFor(project);
-					const external = href && isExternal(href);
-					return <article class:list={['work-feature', `work-feature-${project.slug}`]} id={project.slug} aria-labelledby={`${project.slug}-title`}>
-						<div class="work-feature-identity"><div><p class="work-eyebrow">{story.category}</p><h3 id={`${project.slug}-title`}>{project.name}</h3><div class="work-project-meta"><span class="work-status">{project.label}</span></div></div></div>
-						<div class="work-feature-story"><ProjectPreview project={project.slug} /><p class="work-project-lead">{story.lead}</p><p class="work-project-description">{story.detail}</p><div class="work-feature-footer"><span class="work-stack">{project.stack.join(' · ')}</span><div class="work-destinations">{stores.length > 0 ? <div class="work-store-links">{stores.map(store => <a class="work-project-link" href={store.url} target="_blank" rel="noopener">{store.label}<span aria-hidden="true">↗</span><span class="work-sr-only"> (opens in a new tab)</span></a>)}</div> : href && <a class="work-project-link" href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>{destinationLabel(project)}<span aria-hidden="true">{external ? '↗' : '→'}</span>{external && <span class="work-sr-only"> (opens in a new tab)</span>}</a>}{project.url && project.repo && <a class="work-source-link" href={project.repo} target="_blank" rel="noopener">View source<span class="work-sr-only"> (opens in a new tab)</span></a>}</div></div></div>
-					</article>;
-				})}
-			</section>
+      <section class="work-selected" aria-labelledby="selected-title">
+        <div class="work-section-heading"><h2 id="selected-title">A closer look</h2><span>{selected.length} selected projects</span></div>
+        <div class="work-showcases">
+          {selected.map((project, index) => {
+            const story = projectStories[project.slug];
+            const href = hrefFor(project);
+            const stores = storesFor(project);
+            const external = href && isExternal(href);
+            return <article class:list={['work-feature', `work-feature-${project.slug}`, { 'work-feature-reversed': index % 2 === 1 }]} id={project.slug} aria-labelledby={`${project.slug}-title`}>
+              <div class="work-feature-visual">
+                {project.slug === 'coach-engine' ? <div class="work-coach-preview">
+                  {recommendation ? <>
+                    <p class="work-eyebrow">Recorded recommendation</p>
+                    <time class="work-coach-date" datetime={recommendation.date}>{recommendation.label}</time>
+                    <p class="work-coach-title">{recommendation.title}<span>.</span></p>
+                    <p class="work-coach-description">{recommendation.description}</p>
+                    {recommendation.duration && <p class="work-coach-duration">{recommendation.duration} min session</p>}
+                    <div class="work-coach-outlook">
+                      <p class="work-eyebrow">Four-day outlook</p>
+                      <ol>{forecast.map(day => <li class:list={{ 'is-recorded': !day.projected }}>
+                        <time datetime={day.date}>{day.label}</time><strong>{day.title}</strong><span>{day.projected ? 'Projected' : 'Recorded'}</span>
+                      </li>)}</ol>
+                      <p class="work-coach-note">Future sessions are provisional.</p>
+                    </div>
+                  </> : <p class="work-coach-description">The latest recommendation is unavailable. The project and its briefing are still here.</p>}
+                </div> : <ProjectPreview project={project.slug} />}
+              </div>
+              <div class="work-feature-story">
+                <p class="work-eyebrow">{story.category}</p><span class="work-status">{project.label}</span>
+                <h3 id={`${project.slug}-title`}>{project.name}</h3>
+                <p class="work-project-lead">{story.lead}</p><p class="work-project-description">{story.detail}</p>
+                <dl class="work-project-facts">
+                  <div><dt>Stack</dt><dd>{project.stack.join(' · ')}</dd></div>
+                  {story.facts.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}
+                </dl>
+                <div class="work-destinations">
+                  {stores.length > 0 ? <div class="work-store-links">{stores.map(store => <a class="work-project-link work-store-link" href={store.url} target="_blank" rel="noopener">{store.label}<span aria-hidden="true">↗</span><span class="work-sr-only"> (opens in a new tab)</span></a>)}</div> : href && <a class="work-project-link work-primary-link" href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>{destinationLabel(project)}<span aria-hidden="true">{external ? '↗' : '→'}</span>{external && <span class="work-sr-only"> (opens in a new tab)</span>}</a>}
+                  {project.url && project.repo && <a class="work-source-link" href={project.repo} target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="work-sr-only"> (opens in a new tab)</span></a>}
+                </div>
+              </div>
+            </article>;
+          })}
+        </div>
+      </section>
 
-			{projectGroups.map(group => group.projects.length > 0 && <section class="work-project-group" aria-labelledby={`${group.id}-title`}>
-				<div class="work-section-heading"><h2 id={`${group.id}-title`}>{group.title}</h2><span>{group.projects.length} projects</span></div>
-				<ul class="work-project-list">{group.projects.map(project => {
-					const href = hrefFor(project);
-					const external = href && isExternal(href);
-					const Tag = href ? 'a' : 'div';
-					return <li id={project.slug}><Tag class="work-project-row" href={href ?? undefined} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
-						<div class="work-row-title"><h3>{project.name}</h3>{project.stack.length > 0 && <span class="work-stack">{project.stack.join(' · ')}</span>}</div><p class="work-row-description">{shortDescriptions[project.slug] ?? project.summary}</p><div class="work-row-end"><span class="work-status">{project.label}</span>{href && <span class="work-row-destination">{destinationLabel(project)} <span aria-hidden="true">{external ? '↗' : '→'}</span>{external && <span class="work-sr-only"> (opens in a new tab)</span>}</span>}</div>
-					</Tag></li>;
-				})}</ul>
-			</section>)}
-		</main>
-		<Footer />
-	</body>
+      {moreProjects.length > 0 && <section class="work-tools" aria-labelledby="tools-title">
+        <div class="work-section-heading"><h2 id="tools-title">Tools & open source</h2><span>{moreProjects.length} projects, grouped by what they’re for</span></div>
+        <nav class="work-category-links" aria-label="Project categories">{projectGroups.filter(group => group.projects.length).map(group => <a href={`#${group.id}`}>{group.title}<span aria-hidden="true">↓</span></a>)}</nav>
+        {projectGroups.map(group => group.projects.length > 0 && <section class="work-project-group" id={group.id} aria-labelledby={`${group.id}-title`}>
+          <div class="work-group-intro"><h3 id={`${group.id}-title`}>{group.title}</h3><p>{group.description}</p></div>
+          <ul class="work-project-list">{group.projects.map(project => {
+            const href = project.repo ?? project.url;
+            const external = href && isExternal(href);
+            const Tag = href ? 'a' : 'div';
+            return <li id={project.slug}><Tag class="work-tool-card" href={href ?? undefined} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+              <span class="work-tool-kind">{project.label}</span><h4>{project.name}</h4><p>{shortDescriptions[project.slug] ?? project.summary}</p>
+              <div class="work-tool-footer"><span class="work-stack">{project.stack.join(' · ')}</span>{href && <span class="work-tool-destination">{project.repo ? 'Source' : 'Visit'} <span aria-hidden="true">{external ? '↗' : '→'}</span>{external && <span class="work-sr-only"> (opens in a new tab)</span>}</span>}</div>
+            </Tag></li>;
+          })}</ul>
+        </section>)}
+      </section>}
+
+      <aside class="work-source-invitation" aria-labelledby="source-title">
+        <div><h2 id="source-title">Curious how something works?</h2><p>The source for almost everything here is public.</p></div>
+        <a class="work-project-link work-primary-link" href="https://github.com/NasserAlbusaidi" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span><span class="work-sr-only"> (opens in a new tab)</span></a>
+      </aside>
+    </main>
+    <Footer />
+  </body>
 </html>

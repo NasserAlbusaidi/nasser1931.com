@@ -1,0 +1,101 @@
+[
+  {
+    "id": "the-expanse",
+    "name": "The Expanse",
+    "author": "James S. A. Corey",
+    "authorAliases": ["James S.A. Corey", "James SA Corey"],
+    "scope": "9 main novels",
+    "sourceUrl": "https://www.hachettebookgroup.com/series/james-s-a-corey/the-expanse/",
+    "verifiedAt": "2026-09-21",
+    "books": [
+      { "title": "Leviathan Wakes" },
+      { "title": "Caliban's War" },
+      { "title": "Abaddon's Gate" },
+      { "title": "Cibola Burn" },
+      { "title": "Nemesis Games" },
+      { "title": "Babylon's Ashes" },
+      { "title": "Persepolis Rising" },
+      { "title": "Tiamat's Wrath" },
+      { "title": "Leviathan Falls" }
+    ],
+    "companions": [
+      { "title": "Drive", "kind": "short story" },
+      { "title": "The Butcher of Anderson Station", "kind": "novelette" },
+      { "title": "Gods of Risk", "kind": "novella" }
+    ],
+    "companionScope": "Selected short fiction; excluded from main-novel progress."
+  },
+  {
+    "id": "bobiverse",
+    "name": "Bobiverse",
+    "author": "Dennis E. Taylor",
+    "authorAliases": ["Dennis E Taylor"],
+    "scope": "6 published books",
+    "sourceUrl": "https://www.audible.com/series/Bobiverse-Audiobooks/B01M1RDL6W",
+    "additionalSourceUrls": ["https://www.audible.com/about/newsroom/audibles-bobiverse-series-to-return-with-the-infinite-extent"],
+    "verifiedAt": "2026-09-21",
+    "books": [
+      { "title": "We Are Legion (We Are Bob)", "titleAliases": ["We Are Legion"] },
+      { "title": "For We Are Many" },
+      { "title": "All These Worlds" },
+      { "title": "Heaven's River" },
+      { "title": "Not Till We Are Lost" },
+      { "title": "The Infinite Extent" }
+    ]
+  },
+  {
+    "id": "a-song-of-ice-and-fire",
+    "name": "A Song of Ice and Fire",
+    "author": "George R. R. Martin",
+    "authorAliases": ["George R.R. Martin", "George RR Martin"],
+    "scope": "5 published main novels",
+    "sourceUrl": "https://www.penguinrandomhouse.com/series/SOO/a-song-of-ice-and-fire/",
+    "verifiedAt": "2026-09-21",
+    "books": [
+      { "title": "A Game of Thrones" },
+      { "title": "A Clash of Kings" },
+      { "title": "A Storm of Swords" },
+      { "title": "A Feast for Crows" },
+      { "title": "A Dance with Dragons" }
+    ],
+    "companions": [
+      {
+        "title": "A Knight of the Seven Kingdoms",
+        "kind": "prequel collection",
+        "sourceUrl": "https://georgerrmartin.com/grrm_book/knight-of-the-seven-kingdoms/"
+      },
+      {
+        "title": "Fire & Blood",
+        "titleAliases": ["Fire and Blood", "Fire & Blood: 300 Years Before a Game of Thrones"],
+        "kind": "companion history",
+        "sourceUrl": "https://georgerrmartin.com/grrm_book/fire-and-blood/"
+      },
+      {
+        "title": "The World of Ice & Fire",
+        "titleAliases": ["The World of Ice and Fire"],
+        "author": "George R. R. Martin, Elio M. García Jr., Linda Antonsson",
+        "authorAliases": ["Linda Antonsson, Elio M. García Jr., George R.R. Martin"],
+        "kind": "companion history",
+        "sourceUrl": "https://georgerrmartin.com/grrm_book/the-world-of-ice-and-fire/"
+      }
+    ],
+    "companionScope": "Selected companion books; excluded from main-novel progress."
+  },
+  {
+    "id": "dune",
+    "name": "Dune",
+    "author": "Frank Herbert",
+    "scope": "Frank Herbert's original 6 novels",
+    "sourceUrl": "https://www.penguinrandomhouse.com/series/AU8/dune/",
+    "additionalSourceUrls": ["https://www.penguinrandomhouse.com/books/667073/frank-herberts-dune-saga-6-book-boxed-set-by-frank-herbert/"],
+    "verifiedAt": "2026-09-21",
+    "books": [
+      { "title": "Dune" },
+      { "title": "Dune Messiah" },
+      { "title": "Children of Dune" },
+      { "title": "God Emperor of Dune" },
+      { "title": "Heretics of Dune" },
+      { "title": "Chapterhouse: Dune" }
+    ]
+  }
+]
