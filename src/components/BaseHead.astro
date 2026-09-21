@@ -3,26 +3,34 @@ import '../styles/global.css';
 import '@fontsource-variable/outfit/index.css';
 import '@fontsource-variable/literata/index.css';
 import '@fontsource-variable/literata/wght-italic.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
 import type { ImageMetadata } from 'astro';
-import FallbackImage from '../assets/og-fallback.jpg';
 import { SITE_TITLE } from '../consts';
 
 interface Props {
 	title: string;
 	description: string;
-	image?: ImageMetadata | { src: string };
+	image?: ImageMetadata | { src: string } | null;
 	ogType?: 'website' | 'article';
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage, ogType = 'website' } = Astro.props;
+const { title, description, ogType = 'website' } = Astro.props;
+const sectionPreviews: Record<string, string> = {
+  '/': '/social/home.jpg', '/builds': '/social/projects.jpg',
+  '/coach': '/social/coach.jpg', '/field': '/social/life.jpg',
+  '/reading': '/social/reading.jpg', '/stupidshit': '/social/notes.jpg',
+};
+const route = Astro.url.pathname.replace(/\/$/, '') || '/';
+const image = Astro.props.image !== undefined ? Astro.props.image : sectionPreviews[route] ? { src: sectionPreviews[route] } : null;
+const imageURL = image ? new URL(image.src, Astro.site) : null;
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="color-scheme" content="light dark" />
+<meta name="color-scheme" content="dark" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
@@ -34,13 +42,13 @@ const { title, description, image = FallbackImage, ogType = 'website' } = Astro.
 <!-- FOUC-safe theme boot — runs before <body> paints -->
 <script is:inline>
 	(function () {
-		try {
-			var saved = localStorage.getItem('np-theme');
-			var dark = saved !== 'light';
-			document.documentElement.classList.toggle('dark', dark);
-		} catch (_) {
-			/* no-op */
-		}
+		var theme = 'dark';
+		try { if (localStorage.getItem('np-theme') === 'light') theme = 'light'; } catch (_) {}
+		var root = document.documentElement;
+		root.classList.toggle('dark', theme === 'dark');
+		root.classList.toggle('light', theme === 'light');
+		root.style.colorScheme = theme;
+		document.querySelector('meta[name="color-scheme"]').setAttribute('content', theme);
 	})();
 </script>
 
@@ -55,14 +63,14 @@ const { title, description, image = FallbackImage, ogType = 'website' } = Astro.
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={ogType} />
 <meta property="og:site_name" content={SITE_TITLE} />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image.src, Astro.url)} />
+{imageURL && <meta property="og:image" content={imageURL} />}
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:card" content={imageURL ? 'summary_large_image' : 'summary'} />
+<meta property="twitter:url" content={canonicalURL} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+{imageURL && <meta property="twitter:image" content={imageURL} />}

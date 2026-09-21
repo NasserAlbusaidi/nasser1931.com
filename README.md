@@ -6,9 +6,9 @@
 
 Personal home of [Nasser Al Busaidi](https://nasser1931.com): software, cycling, experiments, and reading. Astro static build, deployed to Firebase Hosting. **Personal observatory** — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
 
-The space-centric homepage opens with an original planetary horizon, then presents Nasser’s selected work, a dated cycling snapshot, actual notes, and the reading shelf. Rihla leads the work section; the coach preview comes from the same engine as the full briefing. Research is off the homepage for now, with the paper retained at `/paper`. Existing data and publishing pipelines are preserved.
+The homepage pairs Earth artwork with selected projects, a dated cycling recommendation, the training log, and five books. Rihla links to the App Store and Google Play; The Silent Creep and Einstein’s Travel Bureau are featured. Welcome posts stay in Notes and Life without occupying the homepage.
 
-The remaining pages extend the observatory: Work is a project log, Notes a journal, Life a dated training snapshot and field notes, and Reading a shelf grouped by reading status and year. The coach puts date selection and its recommendation first, with recorded signals alongside. Article pages and the archived paper retain readable long-form typography.
+The public coach is a read-only recommendation and four-day outlook. No operator controls, raw wellness payloads, or diagnostic reasoning are shipped to the browser. Source snapshots still exist in this public repository and its history. Section-specific social cards and responsive Astro images are included.
 
 ## Stack
 
@@ -33,8 +33,8 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship
 ## Site map
 
 ```
-/             personal introduction, selected work, life, notes, reading
-/builds       Work — complete project index
+/             personal introduction, selected projects, life, reading
+/builds       Projects — apps, research, and open source
 /paper        field report — long-form
 /field        Life — training snapshot and field notes
 /stupidshit   Notes — one-off ideas and oddities

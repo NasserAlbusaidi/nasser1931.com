@@ -45,14 +45,7 @@ const TYPE_MAP = {
 	WeightTraining: 'workout'
 };
 
-// Canonical TrainingPeaks bands. User asked for 3-bucket translation.
-const formBucket = (tsb) => {
-	if (tsb === null || tsb === undefined || Number.isNaN(tsb)) return null;
-	if (tsb > 5) return 'fresh';
-	if (tsb < -10) return 'fatigued';
-	return 'neutral';
-};
-
+// Recovery interpretation belongs to the coach engine; the public pulse shows activity volume.
 const main = async () => {
 	const after14 = isoDate(daysAgo(14));
 
@@ -107,7 +100,6 @@ const main = async () => {
 
 	const snapshot = {
 		updated: new Date().toISOString(),
-		form: formBucket(form_tsb),
 		form_tsb,
 		weekly_hours,
 		weekly_tss,
@@ -132,7 +124,7 @@ const main = async () => {
 
 	fs.writeFileSync(outPath, JSON.stringify(snapshot, null, 2) + '\n');
 	console.log(`Wrote ${outPath}`);
-	console.log(`form=${snapshot.form} (TSB ${form_tsb}) · ${weekly_hours}h · TSS ${weekly_tss} · ${recent.length} sessions`);
+	console.log(`${weekly_hours}h · TSS ${weekly_tss} · ${recent.length} sessions`);
 };
 
 main().catch((e) => {

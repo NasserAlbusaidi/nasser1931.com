@@ -1,0 +1,33 @@
+---
+import { Image } from 'astro:assets';
+import ledger from '../assets/projects/rihla-ledger-en.png';
+import settlement from '../assets/projects/rihla-settle-en.png';
+import bureau from '../assets/projects/einstein-repo-hero.png';
+import study from '../../public/paper/figures/fig1_hero_landscape.png';
+interface Props { project: string; compact?: boolean; }
+const { project, compact = false } = Astro.props;
+---
+{project === 'rihla' && <figure class:list={['project-preview', 'app-preview', { compact }]}>
+  <div class="app-screens">
+    <Image src={ledger} alt="Rihla demo: a group trip ledger with shared expenses and balances." widths={[240, 400, 600]} sizes="(max-width: 720px) 38vw, 240px" format="webp" quality={85} loading="lazy" />
+    <Image src={settlement} alt="Rihla demo: settling the group's balances with three transfers." widths={[240, 400, 600]} sizes="(max-width: 720px) 38vw, 240px" format="webp" quality={85} loading="lazy" />
+  </div>
+  <figcaption>Rihla · Demo screens</figcaption>
+</figure>}
+{project === 'einsteins-travel-bureau' && <figure class:list={['project-preview', 'bureau-preview', { compact }]}>
+  <Image src={bureau} alt="Einstein’s Travel Bureau: a vintage travel desk with a star map and destinations across spacetime." widths={[480, 800, 1200, 1440]} sizes="(max-width: 720px) 90vw, 600px" format="webp" quality={85} loading="lazy" />
+  <figcaption>Einstein’s Travel Bureau · The travel desk</figcaption>
+</figure>}
+{project === 'silent-creep' && <figure class="project-preview study-preview">
+  <Image src={study} alt="The Silent Creep study figure: weight trend and training expenditure across four phases from 2022 to 2026." widths={[480, 800, 1200]} sizes="(max-width: 720px) 90vw, 600px" format="webp" quality={90} loading="lazy" />
+  <figcaption>The Silent Creep · Study data, 2022–2026</figcaption>
+</figure>}
+<style>
+  .project-preview { margin: 1.75rem 0; }
+  .app-screens { display: flex; justify-content: center; gap: 1.25rem; padding: 1.5rem; background: var(--bg); border: 1px solid var(--rule); }
+  .app-screens img { width: min(43%, 210px); height: auto; border-radius: 1.25rem; border: 1px solid var(--rule); box-shadow: 0 .75rem 2rem #00000018; }
+  .compact .app-screens img { width: min(43%, 155px); }
+  .bureau-preview img, .study-preview img { width: 100%; border: 1px solid var(--rule); }
+  figcaption { font-size: var(--text-label); color: var(--muted); margin-top: .75rem; }
+  @media (max-width: 720px) { .app-screens { gap: .75rem; padding: 1rem .5rem; } }
+</style>

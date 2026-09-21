@@ -21,7 +21,7 @@ const backHref = eyebrow === 'Life' ? '/field' : '/stupidshit';
           <p class="entry-summary">{summary}</p>
         </header>
         <div class="entry-prose"><slot /></div>
-        <footer class="entry-foot"><span>Nasser Al Busaidi</span><a href={backHref}>Back to {eyebrow.toLowerCase()} <span aria-hidden="true">↗</span></a></footer>
+        <footer class="entry-foot"><span>Nasser Al Busaidi</span><a href={backHref}><span aria-hidden="true">←</span> Back to {eyebrow.toLowerCase()}</a></footer>
       </article>
     </main>
     <Footer />
@@ -30,25 +30,25 @@ const backHref = eyebrow === 'Life' ? '/field' : '/stupidshit';
 <style>
   .entry-page { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 1rem; }
   .entry-head { border-bottom: 1px solid var(--rule); margin-bottom: 2.5rem; padding-bottom: 2.5rem; }
-  .entry-back { display: inline-block; font-size: .875rem; color: var(--muted); text-decoration: none; padding-block: .5rem; margin-bottom: 2rem; }
+  .entry-back { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-label); color: var(--muted); text-decoration: none; padding-block: .5rem; margin-bottom: 2rem; }
   .entry-back:hover { background: transparent; color: var(--accent); }
-  .entry-meta { display: flex; flex-wrap: wrap; gap: .75rem; font-family: var(--font-mono); font-size: .8125rem; color: var(--muted); margin-bottom: 1.25rem; }
+  .entry-meta { display: flex; flex-wrap: wrap; gap: .75rem; font-family: var(--font-mono); font-size: var(--text-label); color: var(--muted); margin-bottom: 1.25rem; }
   .entry-meta > span { color: var(--accent); }
-  h1 { font-size: clamp(2.2rem, 5.8vw, 4.75rem); font-weight: 350; line-height: 1.08; letter-spacing: -.045em; max-width: 18ch; overflow-wrap: anywhere; }
-  .entry-summary { color: var(--muted); font-size: 1.25rem; line-height: 1.6; max-width: 50ch; margin: 1.5rem 0 0; }
-  .entry-prose { max-width: 680px; margin: 0 auto; font-family: var(--font-prose); font-size: 1.125rem; line-height: 1.8; overflow-wrap: anywhere; }
+  h1 { font-size: var(--text-display); font-weight: 350; line-height: 1.08; letter-spacing: -.045em; max-width: 18ch; overflow-wrap: anywhere; }
+  .entry-summary { color: var(--muted); font-size: var(--text-lead); line-height: 1.6; max-width: 50ch; margin: 1.5rem 0 0; }
+  .entry-prose { max-width: 680px; margin: 0 auto; font-family: var(--font-prose); font-size: var(--text-lead); line-height: 1.8; overflow-wrap: anywhere; }
   .entry-prose :global(p) { margin-bottom: 1.25em; }
-  .entry-prose :global(h2) { font-size: 1.875rem; line-height: 1.25; font-weight: 450; margin: 2em 0 .7em; }
-  .entry-prose :global(h3) { font-size: 1.4rem; line-height: 1.35; font-weight: 450; margin: 1.75em 0 .7em; }
+  .entry-prose :global(h2) { font-size: var(--text-heading); line-height: 1.25; font-weight: 450; margin: 2em 0 .7em; }
+  .entry-prose :global(h3) { font-size: var(--text-title); line-height: 1.35; font-weight: 450; margin: 1.75em 0 .7em; }
   .entry-prose :global(ul), .entry-prose :global(ol) { padding-left: 1.5em; margin: 1.25em 0; }
   .entry-prose :global(ul) { list-style: disc; }
   .entry-prose :global(ol) { list-style: decimal; }
   .entry-prose :global(li) { margin: .4em 0; }
   .entry-prose :global(blockquote) { border-color: var(--accent); color: var(--muted); }
-  .entry-prose :global(pre) { overflow-x: auto; font-size: .875rem; }
+  .entry-prose :global(pre) { overflow-x: auto; font-size: var(--text-label); }
   .entry-prose :global(table) { display: block; overflow-x: auto; }
-  .entry-prose :global(.stats) { font-family: var(--font-mono); font-size: .875rem; color: var(--muted); border: 1px solid var(--rule); background: var(--surface); padding: 1.25rem; margin-block: 1.5rem; }
-  .entry-foot { max-width: 680px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: .875rem; color: var(--muted); }
-  .entry-foot a { padding-block: .5rem; text-decoration: none; }
-  @media (max-width: 720px) { .entry-page { padding: 1.5rem 1.25rem 1rem; } .entry-head { padding-bottom: 2rem; } .entry-back { margin-bottom: 1.5rem; } .entry-summary { font-size: 1.125rem; } .entry-prose { font-size: 1rem; line-height: 1.8; } }
+  .entry-prose :global(.stats) { font-family: var(--font-mono); font-size: var(--text-label); color: var(--muted); border: 1px solid var(--rule); background: var(--surface); padding: 1.25rem; margin-block: 1.5rem; }
+  .entry-foot { max-width: 680px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: var(--text-label); color: var(--muted); }
+  .entry-foot a { min-height: 44px; display: inline-flex; align-items: center; gap: .5rem; padding-block: .5rem; text-decoration: none; }
+  @media (max-width: 720px) { .entry-page { padding: 1.5rem 1.25rem 1rem; } .entry-head { padding-bottom: 2rem; } .entry-back { margin-bottom: 1.5rem; } .entry-summary { font-size: var(--text-lead); } .entry-prose { font-size: var(--text-body); line-height: 1.8; } }
 </style>

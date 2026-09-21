@@ -1,0 +1,29 @@
+[
+  {
+    "caveat": "Demo first names and expense amounts are visible; no email, phone, credential, private account or identifiable face appears.",
+    "height": 2742,
+    "description": "Authentic dark-theme in-app ledger capture: Salalah Khareef Trip, OMR balance, members and expenses",
+    "width": 1233,
+    "file": "rihla-ledger-en.png",
+    "source": "https://raw.githubusercontent.com/NasserAlbusaidi/Rihla/ca4422c4f2c506014a780a0fcbe0b063a92ebbe5/docs/design/store-assets/raw-screens/en/ledger.png",
+    "provenance": "Official repo README describes raw-screens as raw in-app captures, captured using Firebase and Android emulators with seeded demo group"
+  },
+  {
+    "caveat": "Demo first names Khalid, Sara, Maha and Nasser plus OMR amounts appear; no private account data or faces.",
+    "height": 2742,
+    "description": "Authentic dark-theme in-app settle-up capture: three transfers to settle demo trip",
+    "width": 1233,
+    "file": "rihla-settle-en.png",
+    "source": "https://raw.githubusercontent.com/NasserAlbusaidi/Rihla/ca4422c4f2c506014a780a0fcbe0b063a92ebbe5/docs/design/store-assets/raw-screens/en/settle_up.png",
+    "provenance": "Same official raw in-app demo capture set"
+  },
+  {
+    "caveat": "No identifiable people or private information.",
+    "height": 900,
+    "description": "Official real website UI screenshot: vintage bureau masthead, illustrated interactive atlas and start of destination brochure cards",
+    "width": 1440,
+    "file": "einstein-repo-hero.png",
+    "source": "https://raw.githubusercontent.com/NasserAlbusaidi/einsteins-travel-bureau/e88b313941c15ef651a2eb634f53032661cae336/docs/hero.png",
+    "provenance": "Official repository README embeds this as The Bureau Wall-Map atlas of relativistic itineraries with destination cards"
+  }
+]

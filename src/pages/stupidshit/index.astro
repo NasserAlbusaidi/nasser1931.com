@@ -14,9 +14,9 @@ const journal = entries.map(entry => ({ ...entry.data, href: `/stupidshit/${entr
   <body>
     <Header />
     <main id="main-content" tabindex="-1" class="interior">
-      <PageIntro title="Notes" eyebrow="02 / Notes & observations" description="Small ideas, oddities, and things worth writing down." meta={`${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`} />
+      <PageIntro title="Notes" eyebrow="Notes & observations" description="Small ideas, oddities, and things worth writing down." meta={`${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`} />
       <section aria-labelledby="journal-title">
-        <div class="interior-section-head"><h2 id="journal-title">The notebook</h2><a href="/rss.xml">Follow via RSS <span aria-hidden="true">↗</span></a></div>
+        <div class="interior-section-head"><h2 id="journal-title">The notebook</h2><a href="/rss.xml">Follow via RSS <span aria-hidden="true">→</span></a></div>
         {entries.length ? <EntryIndex entries={journal} /> : <p class="interior-empty">No notes here yet. The next odd idea will have a home.</p>}
       </section>
     </main>

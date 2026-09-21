@@ -36,7 +36,7 @@ const {
 	share = true,
 } = fm;
 
-const ogImage = image ? { src: image } : undefined;
+const ogImage = { src: image ?? '/paper/figures/fig1_hero_landscape.png' };
 ---
 
 <!doctype html>
@@ -50,7 +50,7 @@ const ogImage = image ? { src: image } : undefined;
 		<main id="main-content" tabindex="-1">
 			<article>
 				<header class="paper-head">
-					<a class="paper-back" href="/builds#archive-title">← Work archive</a>
+					<a class="paper-back" href="/builds#silent-creep">← All projects</a>
 					<p class="label">{eyebrow}</p>
 					<h1 class="paper-title">{title}</h1>
 					{subtitle && <p class="paper-subtitle">{subtitle}</p>}
@@ -167,7 +167,7 @@ const ogImage = image ? { src: image } : undefined;
 				letter-spacing: .1em;
 				color: var(--accent);
 			}
-			.paper-back { display: inline-block; font-size: .875rem; color: var(--muted); text-decoration: none; margin-bottom: 2rem; padding-block: .5rem; }
+			.paper-back { display: inline-flex; align-items: center; min-height: 44px; font-size: .875rem; color: var(--muted); text-decoration: none; margin-bottom: 2rem; padding-block: .5rem; }
 
 			.paper-title {
 				font-size: clamp(2.5rem, 7vw, 5.5rem);

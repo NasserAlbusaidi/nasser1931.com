@@ -1,0 +1,28 @@
+---
+import { getBookCover } from '../lib/book-covers';
+interface Props { title: string; author: string | null; variant?: 'shelf' | 'current' | 'small'; }
+const { title, author, variant = 'shelf' } = Astro.props;
+const cover = getBookCover(title, author);
+---
+<div class:list={['book-cover', `book-cover-${variant}`, { 'book-cover-missing': !cover }]} aria-hidden="true">
+  {cover && <img data-book-cover src={cover.sourceUrl} width={cover.width} height={cover.height} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />}
+  <span class="cover-unavailable">No cover</span>
+</div>
+<style>
+  .book-cover { width: 100%; aspect-ratio: 2 / 3; display: flex; align-items: end; justify-content: start; }
+  .book-cover img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 2px; box-shadow: 0 .3rem 1rem #00000024; }
+  .book-cover-shelf { max-width: 180px; margin-bottom: 1.25rem; }
+  .book-cover-current { max-width: 180px; }
+  .book-cover-small { max-width: 80px; align-items: start; }
+  .cover-unavailable { display: none; }
+  .book-cover-missing { align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--rule); box-shadow: none; }
+  .book-cover-missing img { display: none; }
+  .book-cover-missing .cover-unavailable { display: block; padding: .5rem; text-align: center; font-size: var(--text-label); color: var(--muted); }
+</style>
+<script>
+  document.querySelectorAll<HTMLImageElement>('img[data-book-cover]').forEach(image => {
+    const missing = () => image.parentElement?.classList.add('book-cover-missing');
+    image.addEventListener('error', missing, { once: true });
+    if (image.complete && image.naturalWidth === 0) missing();
+  });
+</script>

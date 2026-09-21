@@ -1,67 +1,34 @@
----
-// Light <-> dark toggle. Boot script in BaseHead applies html.dark before
-// paint to avoid FOUC. Persists to localStorage key "np-theme".
----
-
-<button
-	type="button"
-	id="theme-toggle"
-	aria-label="Toggle color theme"
-	aria-pressed="false"
-	title="Toggle theme"
->
-	<span class="toggle-word toggle-dark">Dark</span>
-	<span class="toggle-word toggle-light">Light</span>
+<button type="button" id="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
+  <span class="toggle-dark" aria-hidden="true">Dark</span>
+  <span class="toggle-light" aria-hidden="true">Light</span>
 </button>
-
 <style>
-	#theme-toggle {
-		font-family: var(--font-ui);
-		font-size: 14px;
-		font-weight: 500;
-		background: transparent;
-		border: 0;
-		border-radius: 0;
-		padding: .5rem .75rem;
-		min-height: 44px;
-		min-width: 60px;
-		color: var(--muted);
-		cursor: pointer;
-		transition: color 70ms ease-out, background-color 70ms ease-out;
-	}
-
-	#theme-toggle:hover {
-		color: var(--on-mark);
-		background: var(--mark);
-	}
-
-	#theme-toggle:focus-visible {
-		outline: 2px solid var(--ink);
-		outline-offset: 2px;
-	}
-
-	/* Show the mode you'd switch to. */
-	.toggle-dark { display: inline; }
-	.toggle-light { display: none; }
-	:global(html.dark) .toggle-dark { display: none; }
-	:global(html.dark) .toggle-light { display: inline; }
+  #theme-toggle { font: 400 var(--text-label)/1.4 var(--font-ui); background: transparent; color: var(--ink); border: 1px solid var(--rule); border-radius: 2rem; padding: .5rem 1rem; min-height: 44px; min-width: 72px; }
+  #theme-toggle:hover { background: var(--mark); }
+  .toggle-dark { display: none; }
+  .toggle-light { display: inline; }
+  :global(html.light) .toggle-dark { display: inline; }
+  :global(html.light) .toggle-light { display: none; }
 </style>
-
 <script is:inline>
-	(function () {
-		var btn = document.getElementById('theme-toggle');
-		if (!btn) return;
-		btn.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
-		btn.addEventListener('click', function () {
-			var root = document.documentElement;
-			var nowDark = !root.classList.contains('dark');
-			root.classList.toggle('dark', nowDark);
-			btn.setAttribute('aria-pressed', String(nowDark));
-			try {
-				localStorage.setItem('np-theme', nowDark ? 'dark' : 'light');
-			} catch (_) {
-				/* no-op */
-			}
-		});
-	})();
+  (function () {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    var root = document.documentElement;
+    function label() {
+      var action = root.classList.contains('light') ? 'Switch to dark theme' : 'Switch to light theme';
+      btn.setAttribute('aria-label', action);
+      btn.setAttribute('title', action);
+    }
+    label();
+    btn.addEventListener('click', function () {
+      var theme = root.classList.contains('light') ? 'dark' : 'light';
+      root.classList.toggle('dark', theme === 'dark');
+      root.classList.toggle('light', theme === 'light');
+      root.style.colorScheme = theme;
+      document.querySelector('meta[name="color-scheme"]').setAttribute('content', theme);
+      try { localStorage.setItem('np-theme', theme); } catch (_) {}
+      label();
+    });
+  })();
 </script>

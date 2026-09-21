@@ -4,34 +4,36 @@
 .current-shelf .interior-section-head { border-top: 0; }
 .current-books { list-style: none; padding: 0; margin: 1.5rem 0 0; }
 .current-books li + li { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 1.5rem; }
-.current-books .interior-eyebrow { color: var(--accent); margin-bottom: 1rem; }
-.current-books h3 { font-family: var(--font-prose); font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 400; line-height: 1.25; letter-spacing: -.035em; max-width: 17ch; overflow-wrap: anywhere; }
-.current-author { font-size: 1.125rem; color: var(--muted); margin: 1rem 0 0; }
-.current-started { font-size: .875rem; color: var(--muted); margin: 1rem 0 0; }
+.current-books .interior-eyebrow { margin-bottom: 1rem; }
+.current-book { display: grid; grid-template-columns: minmax(100px, 180px) minmax(0, 1fr); align-items: center; gap: 2rem; }
+.current-books h3 { font-family: var(--font-prose); font-size: var(--text-heading); font-weight: 400; line-height: 1.25; letter-spacing: -.035em; max-width: 17ch; overflow-wrap: anywhere; }
+.current-author { font-size: var(--text-lead); color: var(--muted); margin: 1rem 0 0; }
+.current-started { font-size: var(--text-label); color: var(--muted); margin: 1rem 0 0; }
 .reading-totals { padding: 1rem 0; }
 .reading-totals > p { margin: 0 0 1rem; }
 .reading-totals dl { margin: 0; }
 .reading-totals dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--rule); padding: .75rem 0; }
-.reading-totals dt { color: var(--muted); font-size: .875rem; }
-.reading-totals dd { margin: 0; font-size: 2.1rem; font-weight: 350; line-height: 1.2; }
+.reading-totals dt { color: var(--muted); font-size: var(--text-label); }
+.reading-totals dd { margin: 0; font-size: var(--text-heading); font-weight: 350; line-height: 1.2; }
 .reading-section { margin-top: 3.5rem; }
 .planned-books { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
-.planned-books > li { border-left: 2px solid var(--rule); padding: 1rem 0 1rem 1.5rem; }
-.planned-books h3 { font-family: var(--font-prose); font-size: 1.25rem; line-height: 1.5; font-weight: 400; overflow-wrap: anywhere; }
-.planned-books p { color: var(--muted); font-size: 1rem; margin: .6rem 0 .35rem; }
-.book-format { color: var(--muted); font-family: var(--font-mono); font-size: .75rem; }
+.planned-books > li { display: grid; grid-template-columns: 80px minmax(0, 1fr); align-items: start; gap: 1.25rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; }
+.planned-books h3 { font-family: var(--font-prose); font-size: var(--text-lead); line-height: 1.5; font-weight: 400; overflow-wrap: anywhere; }
+.planned-books p { color: var(--muted); font-size: var(--text-body); margin: .6rem 0 .35rem; }
+.book-format { color: var(--muted); font-family: var(--font-mono); font-size: var(--text-label); }
 .reading-year { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 4fr); gap: 2rem; margin-top: 1.5rem; }
 .reading-year-label { padding-top: 1.25rem; }
-.reading-year-label h3 { font-size: 2rem; color: var(--accent); font-weight: 350; }
-.reading-year-label > span { display: block; font-size: .8125rem; color: var(--muted); margin-top: .35rem; }
+.reading-year-label h3 { font-size: var(--text-heading); color: var(--accent); font-weight: 350; }
+.reading-year-label > span { display: block; font-size: var(--text-label); color: var(--muted); margin-top: .35rem; }
 .finished-books { list-style: none; padding: 0; margin: 0; }
-.finished-books li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); }
-.finished-books h4 { font-size: 1.2rem; font-weight: 450; line-height: 1.4; letter-spacing: -.015em; overflow-wrap: anywhere; }
-.book-author { color: var(--muted); font-size: 1rem; margin: .35rem 0 .15rem; }
-.book-record { display: flex; flex-direction: column; align-items: end; gap: .4rem; color: var(--muted); font-size: .8125rem; line-height: 1.6; padding-top: .15rem; }
-.book-rating { color: var(--ink); font-size: 1rem; }
-.book-rating small { color: var(--muted); font-size: .8125rem; }
-@media (max-width: 900px) { .reading-now { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.5rem; } .current-shelf { padding-inline: 1.5rem; } }
+.finished-books li { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); }
+.finished-books h4 { font-size: var(--text-lead); font-weight: 450; line-height: 1.4; letter-spacing: -.015em; overflow-wrap: anywhere; }
+.book-author { color: var(--muted); font-size: var(--text-body); margin: .35rem 0 .15rem; }
+.book-record { display: flex; flex-direction: column; align-items: end; gap: .4rem; color: var(--muted); font-size: var(--text-label); line-height: 1.6; padding-top: .15rem; }
+.book-rating { color: var(--ink); font-size: var(--text-body); }
+.book-rating small { color: var(--muted); font-size: var(--text-label); }
+@media (max-width: 1000px) { .current-book { grid-template-columns: 130px minmax(0, 1fr); gap: 1.25rem; } }
+@media (max-width: 900px) { .reading-now { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } .current-shelf { padding-inline: 1.5rem; } }
 @media (max-width: 720px) {
   .reading-now, .planned-books, .reading-year { grid-template-columns: minmax(0, 1fr); }
   .reading-now { gap: 1rem; }
@@ -42,7 +44,14 @@
   .planned-books { gap: 1rem; }
   .reading-year { gap: .5rem; }
   .reading-year-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem; }
-  .reading-year-label h3 { font-size: 1.6rem; }
-  .finished-books li { grid-template-columns: minmax(0, 1fr); gap: .65rem; }
-  .book-record { flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: space-between; }
+  .reading-year-label h3 { font-size: var(--text-title); }
+  .finished-books li { grid-template-columns: 56px minmax(0, 1fr); gap: .5rem 1rem; align-items: start; }
+  .finished-books .book-cover { grid-row: 1 / 3; }
+  .book-record { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: space-between; }
+}
+@media (max-width: 540px) {
+  .current-book { grid-template-columns: 100px minmax(0, 1fr); gap: 1rem; }
+  .current-books h3 { font-size: var(--text-title); }
+  .current-author { font-size: var(--text-body); }
+  .planned-books > li { grid-template-columns: 64px minmax(0, 1fr); gap: 1rem; }
 }

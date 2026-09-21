@@ -5,9 +5,9 @@ const today = new Date();
 <footer class="site-footer">
 	<div class="inner">
 		<p class="meta">
-			<span class="muted">Muscat, Oman</span>
-			<span class="dot">/</span>
 			<a href="https://github.com/NasserAlbusaidi">github</a>
+			<span class="dot">/</span>
+			<a href="https://www.linkedin.com/in/nasser-albusaidi-308642113/">linkedin</a>
 			<span class="dot">/</span>
 			<a href="mailto:nasserbusaidi@gmail.com">email</a>
 			<span class="dot">/</span>
@@ -25,11 +25,12 @@ const today = new Date();
 	.site-footer {
 		margin-top: 4rem;
 		border-top: 1px solid var(--rule);
-		padding: 1.5rem 1.5rem 2.5rem;
+		padding: 1.5rem 0 2.5rem;
 	}
 
 	.inner {
-		max-width: calc(var(--container-wide) - 3rem);
+		max-width: var(--container-wide);
+        padding-inline: var(--gutter);
 		margin: 0 auto;
 		display: flex;
 		justify-content: space-between;
@@ -42,11 +43,11 @@ const today = new Date();
 		margin: 0;
 		font-family: var(--font-ui);
 		font-feature-settings: "tnum" 1;
-		font-size: 14px;
+		font-size: var(--text-label);
 		line-height: 1.5;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		gap: .75rem;
 		align-items: center;
 	}
 
@@ -60,7 +61,9 @@ const today = new Date();
 	}
 
 	.meta a {
-		padding-block: .5rem;
+		padding: .5rem;
+        margin-inline: -.5rem;
+        display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px;
 		color: var(--muted);
 		text-decoration: none;
 	}

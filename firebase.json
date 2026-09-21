@@ -10,7 +10,7 @@
     "trailingSlash": false,
     "headers": [
       {
-        "source": "**/*.@(js|css|webp|woff2)",
+        "source": "**/*.@(js|css|webp|avif|woff2)",
         "headers": [
           {
             "key": "Cache-Control",

@@ -1,8 +1,5 @@
 ---
 import data from '../data/training.json';
-const form = data.form ?? 'neutral';
-const tsb = data.form_tsb;
-const displayTsb = tsb == null ? '—' : `${tsb > 0 ? '+' : ''}${Math.round(tsb)}`;
 const snapshotDate = new Date(data.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Muscat' });
 const formatDuration = (min: number | null) => min == null ? '' : min < 60 ? `${min} min` : `${Math.floor(min / 60)}h ${min % 60}m`;
 ---
@@ -10,7 +7,6 @@ const formatDuration = (min: number | null) => min == null ? '' : min < 60 ? `${
   <dl class="pulse-stats">
     <div><dt>Hours / last 7 days</dt><dd>{data.weekly_hours.toFixed(1)}</dd></div>
     <div><dt><abbr title="Training Stress Score">TSS</abbr> / last 7 days</dt><dd>{data.weekly_tss}</dd></div>
-    <div><dt>Form / <abbr title="Training Stress Balance">TSB</abbr></dt><dd>{displayTsb}<small>{form}</small></dd></div>
   </dl>
   <details class="recent-sessions" open><summary>Recent sessions <span aria-hidden="true">+</span></summary><ul>{data.recent.map((activity) => <li><time datetime={activity.date}>{new Date(`${activity.date}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}</time><span>{activity.name}</span><span class="session-duration">{[formatDuration(activity.duration_min), activity.distance_km != null ? `${activity.distance_km.toFixed(1)} km` : ''].filter(Boolean).join(' · ')}</span></li>)}</ul></details>
   <p class="snapshot-date">Snapshot <time datetime={data.updated}>{snapshotDate}</time><span data-snapshot={data.updated}></span></p>
@@ -25,21 +21,21 @@ const formatDuration = (min: number | null) => min == null ? '' : min < 60 ? `${
   });
 </script>
 <style>
-  .pulse-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .pulse-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
   .pulse-stats > div { display: flex; flex-direction: column-reverse; justify-content: end; gap: .4rem; padding: 1.25rem .6rem 1.25rem 0; }
   .pulse-stats > div + div { border-left: 1px solid var(--rule); padding-left: 1rem; }
-  dt { font-size: .875rem; color: var(--muted); }
-  dd { margin: 0; font-family: var(--font-display); font-size: 2.5rem; font-weight: 350; line-height: 1.15; display: flex; flex-wrap: wrap; gap: .25rem; align-items: baseline; }
-  dd small { font-family: var(--font-ui); font-weight: 400; font-size: .75rem; }
+  dt { font-size: var(--text-label); color: var(--muted); }
+  dd { margin: 0; font-family: var(--font-display); font-size: var(--text-heading); font-weight: 350; line-height: 1.15; display: flex; flex-wrap: wrap; gap: .25rem; align-items: baseline; }
+  dd small { font-family: var(--font-ui); font-weight: 400; font-size: var(--text-label); }
   abbr { text-decoration: none; }
-  summary { cursor: pointer; padding-block: 1rem; font-size: 1rem; }
-  summary > span { float: right; font-size: 1.2rem; line-height: 1.1; }
+  summary { cursor: pointer; padding-block: 1rem; font-size: var(--text-body); }
+  summary > span { float: right; font-size: var(--text-lead); line-height: 1.1; }
   details[open] summary > span { transform: rotate(45deg); }
   summary:hover { text-decoration: underline; text-underline-offset: 4px; }
   ul { list-style: none; padding: 0; margin: 0 0 .75rem; }
-  li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .35rem .75rem; padding-block: .85rem; border-top: 1px solid var(--rule); font-size: 1rem; }
-  time, .session-duration { font-size: .8125rem; color: var(--muted); }
+  li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .35rem .75rem; padding-block: .85rem; border-top: 1px solid var(--rule); font-size: var(--text-body); }
+  time, .session-duration { font-size: var(--text-label); color: var(--muted); }
   .session-duration { grid-column: 2; }
-  .snapshot-date { font-size: .75rem; color: var(--muted); margin: 0 0 1rem; }
+  .snapshot-date { font-size: var(--text-label); color: var(--muted); margin: 0 0 1rem; }
   @media (max-width: 540px) { .pulse-stats { grid-template-columns: minmax(0, 1fr); } .pulse-stats > div { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .85rem 0; } .pulse-stats > div + div { border-left: 0; border-top: 1px solid var(--rule); padding-left: 0; } }
 </style>

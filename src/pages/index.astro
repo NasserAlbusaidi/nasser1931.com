@@ -1,41 +1,33 @@
 ---
-import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
+import Earth from '../assets/earth-arabia.png';
+import ProjectPreview from '../components/ProjectPreview.astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import ReadingSource from '../components/ReadingSource.astro';
+import BookCover from '../components/BookCover.astro';
 import { formatReadingDate } from '../lib/reading-date';
 import reading from '../data/reading.json';
 import training from '../data/training.json';
 import builds from '../data/builds.json';
 import coach from '../data/coach.json';
 import bank from '../data/workout-bank.json';
-import { classifyState, getScheduleContext, pickWorkout } from '../scripts/cycling-engine.mjs';
+import { buildPublicForecast } from '../lib/public-coach.mjs';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/home.css';
 
-// Use the same dated snapshot and recommendation engine as /coach.
-let workout: { name: string; duration: number | null } | null = null;
-try {
-  const context = getScheduleContext(new Date(`${coach._today}T00:00:00Z`));
-  const state = classifyState(coach.wellness ?? {});
-  const pick = pickWorkout(state.state, context, bank, coach.computed ?? {});
-  workout = {
-    name: pick.workoutKey === null ? (context.slot === 'group_ride' ? 'Group ride day' : 'Rest day') : (pick.workout?.name ?? 'View briefing'),
-    duration: pick.workout?.duration_min ?? null,
-  };
-} catch { /* Keep the project accessible even without a valid snapshot. */ }
-
-const [field, notes] = await Promise.all([getCollection('field'), getCollection('stupidshit')]);
-const entries = [...field.map(entry => ({ ...entry, section: 'field', label: 'Life' })), ...notes.map(entry => ({ ...entry, section: 'stupidshit', label: 'Notes' }))]
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
-const books = (reading.currently_reading.length ? reading.currently_reading : reading.finished).slice(0, 2);
+const forecast = buildPublicForecast(coach, bank);
+const workout = forecast[0];
+const books = [...reading.currently_reading, ...reading.finished]
+  .filter((book, index, all) => all.findIndex(other => other.title === book.title && other.author === book.author) === index)
+  .slice(0, 5);
 const ride = training.recent.find(activity => activity.type === 'bike');
 const rihla = builds.builds.find(build => build.slug === 'rihla');
-const shortProjects = builds.builds.filter(build => ['macrofactor-mcp', 'mizan'].includes(build.slug));
+const shortProjects = ['silent-creep', 'einsteins-travel-bureau'].flatMap(slug => builds.builds.filter(build => build.slug === slug));
 const summaries: Record<string, string> = {
-  'macrofactor-mcp': 'A local tool connecting nutrition and training data.',
-  'mizan': 'A local dashboard for Claude Code and Codex usage.',
+  'silent-creep': 'A 1,300-day study of my own training, eating, and weight. Built with Python and PyMC.',
+  'einsteins-travel-bureau': 'Plan a trip near the speed of light and see how differently time passes.',
 };
 const date = (value: string | Date) => {
   const parsed = value instanceof Date ? value : new Date(value);
@@ -51,81 +43,75 @@ const duration = (minutes: number | null) => minutes == null ? null : `${Math.fl
     <Header />
     <main id="main-content" tabindex="-1" class="home">
       <section class="introduction" aria-labelledby="intro-title">
-        <picture class="space-scene" aria-hidden="true">
-          <source media="(max-width: 720px)" srcset="/images/earth-orbit-v2-small.webp 800w, /images/earth-orbit-v2.webp 1254w" sizes="44rem" />
-          <img src="/images/earth-orbit-v2.webp" alt="" width="1254" height="1254" fetchpriority="high" />
-        </picture>
         <div class="intro-content">
-        <div class="intro-stage">
-        <div class="intro-copy">
-          <p class="eyebrow"><span aria-hidden="true">✦</span> A personal observatory</p>
-          <h1 id="intro-title">Nasser<br /><span>Al Busaidi<span class="name-stop">.</span></span></h1>
-          <p class="intro-line">I build software, ride bikes,<br class="desktop-break" /> and get curious about the details.</p>
-          <p class="intro-description">A small corner of the universe for the things I make, the roads I ride, and the worlds I get lost in.</p>
-          <div class="intro-links"><a class="text-link" href="#work">Explore my work <span aria-hidden="true">↓</span></a><a class="quiet-link" href="mailto:nasserbusaidi@gmail.com">Say hello</a></div>
-        </div>
-        <div class="orbit-location"><span>Home base</span><strong>Muscat, Oman</strong></div>
-        </div>
-        <div class="horizon-caption"><span>An imagined view of Earth</span><a href="#work">Explore below <span aria-hidden="true">↓</span></a></div>
+          <div class="intro-copy">
+            <p class="eyebrow">A personal observatory</p>
+            <h1 id="intro-title">Nasser<br /><span>Al Busaidi<span class="name-stop">.</span></span></h1>
+            <p class="intro-line">I build software, ride bikes,<br class="desktop-break" /> and get curious about the details.</p>
+            <p class="intro-description">Senior software engineer. This is my personal home for side projects and life outside work.</p>
+            <div class="intro-links"><a class="text-link" href="#work">Explore my projects <span aria-hidden="true">↓</span></a><a class="quiet-link" href="mailto:nasserbusaidi@gmail.com">Say hello</a></div>
+          </div>
+          <figure class="home-world">
+            <Picture src={Earth} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 640, 960, 1254]} sizes="(max-width: 720px) 90vw, (min-width: 1360px) 640px, 48vw" quality={75} loading="eager" fetchpriority="high" />
+            <figcaption><span class="eyebrow">Home base</span><span>Muscat, Oman</span><small>An imagined view of Earth, facing Arabia</small></figcaption>
+          </figure>
         </div>
       </section>
       <div class="home-content">
         <aside class="margin-note" aria-label="A few things about me">
-          <div class="orbit-intro"><span class="margin-number">In my orbit</span><p>Software. Long rides.<br />Other worlds.</p></div>
-          <div class="context-item"><span>On the workbench</span><a href="#rihla">Rihla — for the plans we make together <span aria-hidden="true">↓</span></a></div>
-          {books[0] && <div class="context-item"><span>{reading.currently_reading.length ? 'On the go' : 'From the reading shelf'}</span><a href="/reading">{books[0].title} <span aria-hidden="true">↗</span></a></div>}
+          <div class="orbit-intro"><span class="eyebrow">Currently</span><p>A few things I’m spending time on.</p></div>
+          <div class="context-item"><span class="eyebrow">Recently shipped</span><a href="#rihla">Rihla — on iOS and Android <span aria-hidden="true">↓</span></a></div>
+          {books[0] && <div class="context-item"><span class="eyebrow">{reading.currently_reading.length ? 'On the go' : 'From the reading shelf'}</span><a href="/reading">{books[0].title} <span aria-hidden="true">→</span></a></div>}
         </aside>
 
       <section id="work" class="work-section" aria-labelledby="work-title">
-        <div class="section-heading"><h2 id="work-title"><span class="section-index" aria-hidden="true">01 /</span> Selected work</h2><a class="quiet-link" href="/builds">All projects <span aria-hidden="true">↗</span></a></div>
+        <div class="section-heading"><h2 id="work-title">Selected projects</h2><a class="quiet-link" href="/builds">All projects <span aria-hidden="true">→</span></a></div>
         <div class="featured-work">
           <article id="rihla" class="rihla-feature">
-            <a class="project-link" href={rihla?.url ?? rihla?.repo ?? '/builds'}>
-              <div class="project-topline"><span class="eyebrow">Software × everyday life</span><span class="project-number">01</span></div>
+            <div class="project-link">
+              <div class="project-topline"><span class="eyebrow">Software × everyday life</span></div>
               <h3>{rihla?.name ?? 'Rihla'}</h3>
               <p class="project-deck">For the plans you make together.</p>
-              <ul class="rihla-details">
-                <li><span class="rihla-marker" aria-hidden="true">01</span><span>Groups<small>Your people, in one place.</small></span></li>
-                <li><span class="rihla-marker" aria-hidden="true">02</span><span>Events<small>Something to look forward to.</small></span></li>
-                <li><span class="rihla-marker" aria-hidden="true">03</span><span>Shared expenses<small>Fewer transfers to settle up.</small></span></li>
-              </ul>
+              <ProjectPreview project="rihla" compact />
               <p class="rihla-description">An app for organising life with other people. Built to work offline.</p>
-              <div class="project-bottom"><span>{rihla?.stack.join(' · ')}{rihla?.status === 'wip' && ' · In progress'}</span><span class="project-action">Explore Rihla <span aria-hidden="true">↗</span></span></div>
-            </a>
+              <div class="project-bottom"><span>{rihla?.stack.join(' · ')} · iOS & Android</span><div class="project-actions"><div class="project-store-links">{rihla?.stores?.map(store => <a class="project-action" href={store.url}>{store.label} <span aria-hidden="true">↗</span></a>)}</div>{rihla?.repo && <a class="project-source" href={rihla.repo}>View source</a>}</div></div>
+            </div>
           </article>
           <article class="coach-feature">
             <a class="project-link" href="/coach">
-              <div class="project-topline"><span class="eyebrow">Software × cycling</span><span class="project-number">02</span></div>
-              <h3>A coach I can<br /> <em>look inside.</em></h3>
+              <div class="project-topline"><span class="eyebrow">Software × cycling</span></div>
+              <h3>Coach engine</h3>
+              <p class="project-deck">A coach I can look inside.</p>
               <p class="coach-description">A cycling briefing that turns recovery signals into a workout suggestion. Built around my own training.</p>
               <div class="briefing-preview">
                 <span class="eyebrow">From the briefing{coachDate && ` · ${coachDate}`}</span>
-                {workout ? <><strong>{workout.name}</strong>{workout.duration && <span class="workout-duration">{workout.duration}<small>minutes</small></span>}</> : <strong>Explore the cycling coach</strong>}
+                {workout ? <><strong>{workout.title}</strong><p class="briefing-description">{workout.description}</p>{workout.duration && <span class="workout-duration">{workout.duration}<small>minutes</small></span>}<ul class="briefing-outlook" aria-label="Next three days">{forecast.slice(1).map(day => <li><span>{day.label}</span><span>{day.title}</span></li>)}</ul><span class="briefing-projection-note">Upcoming sessions are provisional.</span></> : <strong>Explore the cycling coach</strong>}
               </div>
-              <div class="project-bottom"><span>Python · JavaScript</span><span class="project-action">Explore the coach <span aria-hidden="true">↗</span></span></div>
+              <div class="project-bottom"><span>Python · JavaScript</span><span class="project-action">Explore the coach <span aria-hidden="true">→</span></span></div>
             </a>
           </article>
         </div>
         <div class="more-work">
-          {shortProjects.map((project, index) => <a href={project.url ?? project.repo ?? '/builds'} class="small-project"><span class="small-project-number">0{index + 3}</span><div><h3>{project.name}</h3><p>{summaries[project.slug]}</p><span class="small-project-meta">{project.stack.join(' · ')}{project.status === 'wip' && ' · In progress'}</span></div><span class="small-project-arrow" aria-hidden="true">↗</span></a>)}
+          {shortProjects.map(project => <a href={project.url ?? project.repo ?? '/builds'} class="small-project"><div class="small-project-heading"><h3>{project.name}</h3><span class="small-project-arrow" aria-hidden="true">{project.url?.startsWith('/') ? '→' : '↗'}</span></div><p>{summaries[project.slug]}</p><ProjectPreview project={project.slug} compact /><span class="small-project-meta">{project.stack.join(' · ')}</span></a>)}
         </div>
       </section>
 
       <section class="life-section" id="life" aria-labelledby="life-title">
-        <div class="life-copy"><p class="eyebrow">02 / Back on Earth</p><h2 id="life-title">Out for<br /><em>the long ride.</em></h2><p>Cycling, strength sessions, and a reason to close the laptop.</p><a class="text-link" href="/field">Notes from life <span aria-hidden="true">↗</span></a></div>
+        <div class="life-copy"><p class="eyebrow">Cycling</p><h2 id="life-title">Out for<br /><em>the long ride.</em></h2><p>Cycling, strength sessions, and a reason to close the laptop.</p><a class="text-link" href="/field">View the training log <span aria-hidden="true">→</span></a></div>
         <div class="ride-note">
           <span class="eyebrow">Field log / Last recorded ride</span>
-          {ride ? <><div class="ride-distance">{ride.distance_km ?? '—'}<span>km</span></div><p class="ride-name">{ride.name}</p><p class="ride-meta"><time datetime={ride.date}>{date(ride.date)}</time>{ride.duration_min != null && <span>{duration(ride.duration_min)}</span>}</p></> : <p class="ride-name">No ride in this snapshot.</p>}
+          {ride ? <><div class="ride-distance">{ride.distance_km != null && <>{ride.distance_km}<span>km</span></>}</div><p class="ride-name">{ride.name}</p><p class="ride-meta"><time datetime={ride.date}>{date(ride.date)}</time>{ride.duration_min != null && <span>{duration(ride.duration_min)}</span>}</p></> : <p class="ride-name">No ride in this snapshot.</p>}
           <div class="life-footnote"><span>{training.weekly_hours} hours of training in the recorded week</span><span>Updated <time datetime={training.updated}>{date(training.updated)}</time></span></div>
-          <a class="life-connection" href="/coach">The training behind the tool <span aria-hidden="true">↗</span></a>
+          <a class="life-connection" href="/coach">The training behind the tool <span aria-hidden="true">→</span></a>
         </div>
       </section>
 
-      <div class="notebook-grid">
-        <section aria-labelledby="notes-title" class="notes-section"><div class="section-heading"><h2 id="notes-title">Notes & observations</h2><a class="quiet-link" href="/stupidshit">More notes <span aria-hidden="true">↗</span></a></div><ul class="note-list">{entries.map(entry => <li><a href={`/${entry.section}/${entry.id}/`}><span class="note-meta">{entry.label} <span aria-hidden="true">/</span> <time datetime={entry.data.date.toISOString()}>{date(entry.data.date)}</time></span><h3>{entry.data.title}</h3><p>{entry.data.summary}</p><span class="note-arrow" aria-hidden="true">↗</span></a></li>)}</ul></section>
-        <section aria-labelledby="reading-title" class="reading-section"><div class="section-heading"><h2 id="reading-title">On the shelf</h2><a class="quiet-link" href="/reading">Reading list <span aria-hidden="true">↗</span></a></div><p class="shelf-intro">A few other worlds to get lost in.</p><ul class="shelf-list">{books.map(book => <li><span class="book-author">{book.author}</span><h3>{book.title}</h3><div class="book-detail"><span>{book.status}{book.finished ? ` · ${formatReadingDate(book.finished)}` : ''}</span>{book.rating !== null && <span aria-label={`Rated ${book.rating} out of 5`}>{book.rating}/5</span>}</div></li>)}</ul><ReadingSource /></section>
-      </div>
-      <div class="closing-note"><p>Something here sparked a thought?</p><a href="mailto:nasserbusaidi@gmail.com">I’d like to hear it. <span aria-hidden="true">↗</span></a></div>
+      <section aria-labelledby="reading-title" class="reading-section">
+        <div class="section-heading"><h2 id="reading-title">On the shelf</h2><a class="quiet-link" href="/reading">Reading list <span aria-hidden="true">→</span></a></div>
+        <p class="shelf-intro">Currently reading, followed by recent finishes.</p>
+        <ul class="shelf-list">{books.map(book => <li><BookCover title={book.title} author={book.author} /><span class="book-author">{book.author}</span><h3>{book.title}</h3><div class="book-detail"><span>{book.status}{book.finished ? ` · ${formatReadingDate(book.finished)}` : ''}</span>{book.rating !== null && <span aria-label={`Rated ${book.rating} out of 5`}>{book.rating}/5</span>}</div></li>)}</ul><ReadingSource />
+      </section>
+      <div class="closing-note"><p>Something here sparked a thought?</p><a href="mailto:nasserbusaidi@gmail.com">I’d like to hear it.</a></div>
       </div>
     </main>
     <Footer />

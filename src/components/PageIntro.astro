@@ -6,10 +6,10 @@ const { title, description, meta, eyebrow = 'From the observatory' } = Astro.pro
 <header class="page-intro"><div><p class="intro-eyebrow">{eyebrow}</p><h1>{title}<span>.</span></h1><p class="intro-description">{description}</p></div>{meta && <span class="page-intro-meta">{meta}</span>}</header>
 <style>
   .page-intro { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.5rem 3rem; padding: 3.5rem 0 3rem; }
-  .intro-eyebrow { font-family: var(--font-mono); font-size: .75rem; line-height: 1.7; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1rem; }
-  h1 { font-size: clamp(3.5rem, 9vw, 7.5rem); font-weight: 350; line-height: 1; letter-spacing: -.055em; margin: 0; overflow-wrap: anywhere; }
+  .intro-eyebrow { margin: 0 0 1rem; }
+  h1 { font-size: var(--text-hero); font-weight: 350; line-height: 1; letter-spacing: -.055em; margin: 0; overflow-wrap: anywhere; }
   h1 span { color: var(--accent); }
-  .intro-description { font-size: clamp(1.125rem, 2vw, 1.4rem); line-height: 1.55; color: var(--muted); max-width: 39ch; margin: 1.3rem 0 0; }
-  .page-intro-meta { font-family: var(--font-mono); font-size: .8125rem; color: var(--muted); border-left: 1px solid var(--rule); padding: .5rem 0 .5rem 1.5rem; max-width: 24ch; }
-  @media (max-width: 720px) { .page-intro { padding: 2.25rem 0; gap: 1.25rem; } h1 { font-size: clamp(3rem, 14vw, 6rem); } .page-intro-meta { border: 0; padding: 0; max-width: none; } }
+  .intro-description { font-size: var(--text-lead); line-height: 1.55; color: var(--muted); max-width: 39ch; margin: 1.3rem 0 0; }
+  .page-intro-meta { font-family: var(--font-mono); font-size: var(--text-label); color: var(--muted); border-left: 1px solid var(--rule); padding: .5rem 0 .5rem 1.5rem; max-width: 24ch; }
+  @media (max-width: 720px) { .page-intro { padding: 2.25rem 0; gap: 1.25rem; } h1 { font-size: var(--text-hero); } .page-intro-meta { border: 0; padding: 0; max-width: none; } }
 </style>
