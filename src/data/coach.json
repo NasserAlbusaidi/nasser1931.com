@@ -50,7 +50,7 @@
       "source_activity": {
         "id": "i188710688",
         "date": "2026-09-21",
-        "name": "FTP Test 20min (trainer)",
+        "name": "Zwift-FTP Test 20min",
         "classification": {
           "model_version": "furnace-ride-load-v1",
           "thresholds": {
@@ -90,7 +90,7 @@
             "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
           ],
           "context": {
-            "name": "FTP Test 20min (trainer)",
+            "name": "Zwift-FTP Test 20min",
             "recorded_tss": 73.0,
             "duration_min": 56.1,
             "intensity_factor": 0.886,
@@ -109,7 +109,7 @@
       {
         "id": "i188710688",
         "date": "2026-09-21",
-        "name": "FTP Test 20min (trainer)",
+        "name": "Zwift-FTP Test 20min",
         "model_version": "furnace-ride-load-v1",
         "thresholds": {
           "intensity_hard_if": 0.85,
@@ -148,7 +148,7 @@
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
         ],
         "context": {
-          "name": "FTP Test 20min (trainer)",
+          "name": "Zwift-FTP Test 20min",
           "recorded_tss": 73.0,
           "duration_min": 56.1,
           "intensity_factor": 0.886,
@@ -524,7 +524,7 @@
       "id": "i188710688",
       "date": "2026-09-21",
       "type": "VirtualRide",
-      "name": "FTP Test 20min (trainer)",
+      "name": "Zwift-FTP Test 20min",
       "intent": null,
       "if": 0.8861386,
       "tss": 73,
@@ -578,7 +578,7 @@
           "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
         ],
         "context": {
-          "name": "FTP Test 20min (trainer)",
+          "name": "Zwift-FTP Test 20min",
           "recorded_tss": 73.0,
           "duration_min": 56.1,
           "intensity_factor": 0.886,
@@ -1042,7 +1042,7 @@
     "error_type": null,
     "last_success_as_of": "2026-09-21"
   },
-  "_fetched_at": "2026-09-21T03:49:09",
+  "_fetched_at": "2026-09-21T12:13:34",
   "_today": "2026-09-21",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
