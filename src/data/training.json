@@ -1,9 +1,16 @@
 {
-  "updated": "2026-09-21T21:54:56.923Z",
-  "form_tsb": -4.8,
-  "weekly_hours": 5.2,
-  "weekly_tss": 193,
+  "updated": "2026-09-22T11:23:45.793Z",
+  "form_tsb": -6.3,
+  "weekly_hours": 5.7,
+  "weekly_tss": 200,
   "recent": [
+    {
+      "date": "2026-09-22",
+      "type": "workout",
+      "name": "06:00 / Upper pull / existing programme",
+      "distance_km": null,
+      "duration_min": 53
+    },
     {
       "date": "2026-09-20",
       "type": "workout",
@@ -17,13 +24,6 @@
       "name": "Friday Long / Group Ride",
       "distance_km": 100.1,
       "duration_min": 182
-    },
-    {
-      "date": "2026-09-16",
-      "type": "workout",
-      "name": "Morning Weight Training",
-      "distance_km": null,
-      "duration_min": 55
     }
   ]
 }
