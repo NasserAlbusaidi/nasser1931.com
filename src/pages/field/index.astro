@@ -7,15 +7,16 @@ import PageIntro from '../../components/PageIntro.astro';
 import EntryIndex from '../../components/EntryIndex.astro';
 import HomePulse from '../../components/HomePulse.astro';
 import training from '../../data/training.json';
-import raceData from '../../data/races.json';
+import RaceSplitBar from '../../components/RaceSplitBar.astro';
+import { races, raceStatus, pace, transitions, personalBests, raceStats, clock } from '../../lib/races';
 const entries = (await getCollection('field')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const journal = entries.map(entry => ({ ...entry.data, href: `/field/${entry.id}/` }));
 // last_ride is chosen from a wider window than `recent`; older snapshots lack it.
 const ride = ('last_ride' in training ? training.last_ride : null) ?? training.recent.find(activity => activity.type === 'bike');
 const formatDate = (date: string) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
-type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; note?: string | null; splits: { leg: string; time: string; seconds: number }[] };
-const races = (raceData.races as Race[]).slice().sort((a, b) => b.date.localeCompare(a.date));
-const raceStatus = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not start' };
+const stats = raceStats(races);
+const bests = personalBests(races);
+const legSummary = (race: typeof races[number]) => race.splits.map(split => `${split.leg} ${split.time}`).join(', ');
 const formatDuration = (minutes: number | null) => minutes == null ? null : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 ---
 <!doctype html>
@@ -37,13 +38,21 @@ const formatDuration = (minutes: number | null) => minutes == null ? null : `${M
       </section>
       {races.length > 0 && <section id="races" class="life-races" aria-labelledby="races-title">
         <div class="interior-section-head"><h2 id="races-title">Races</h2><span>{races.length} {races.length === 1 ? 'race' : 'races'}</span></div>
-        <ol class="race-list">{races.map(race => <li>
+        <dl class="race-stats">
+          <div><dt>Finished</dt><dd>{stats.finished}{stats.finished !== stats.entered && <small>of {stats.entered}</small>}</dd></div>
+          <div><dt>Time racing</dt><dd>{clock(stats.racing)}</dd></div>
+          {stats.longest && <div><dt>Longest</dt><dd class="race-stat-text">{stats.longest.name} <small>{stats.longest.total}</small></dd></div>}
+          {stats.weeks != null && stats.longest && <div><dt>First triathlon to {stats.longest.name}</dt><dd>{stats.weeks}<small>weeks</small></dd></div>}
+        </dl>
+        <ol class="race-list">{races.map(race => { const tx = transitions(race); const legs = race.splits.filter(split => !/^T\d$/i.test(split.leg)); return <li>
           <time datetime={race.date}>{formatDate(race.date)}</time>
-          <div class="race-list-main"><h3>{race.name}</h3><p>{race.kind}{race.distance && ` · ${race.distance}`}</p>{race.note && <p>{race.note}</p>}
-            {race.splits.length > 0 && <dl>{race.splits.map(split => <div><dt>{split.leg}</dt><dd>{split.time}</dd></div>)}</dl>}
+          <div class="race-list-main"><h3>{race.name}{bests.has(race) && <span class="race-pb">PB</span>}</h3><p>{race.kind}{race.distance && ` · ${race.distance}`}</p>{race.note && <p>{race.note}</p>}
+            {race.splits.length > 1 && <RaceSplitBar splits={race.splits} label={legSummary(race)} />}
+            {legs.length > 0 && <dl class="race-legs">{legs.map(split => <div><dt>{split.leg}</dt><dd>{split.time}{pace(split) && <span>{pace(split)}</span>}</dd></div>)}</dl>}
+            {tx && <p class="race-transitions">Transitions {clock(tx.seconds)} · {(tx.share * 100).toFixed(1)}% of the race</p>}
           </div>
           <p class:list={['race-list-result', { 'race-list-muted': race.status !== 'finished' || !race.total }]}>{race.status === 'finished' ? race.total ?? 'Finished' : raceStatus[race.status]}</p>
-        </li>)}</ol>
+        </li>; })}</ol>
       </section>}
       <section class="life-journal" aria-labelledby="life-journal-title">
         <div class="interior-section-head"><h2 id="life-journal-title">Field notes</h2><span>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span></div>
@@ -68,11 +77,29 @@ const formatDuration = (minutes: number | null) => minutes == null ? null : `${M
   .race-list time { font: var(--text-label)/1.6 var(--font-mono); color: var(--muted); }
   .race-list h3 { font-size: var(--text-title); font-weight: 400; line-height: 1.3; }
   .race-list-main p { color: var(--muted); font-size: var(--text-label); margin: .35rem 0 0; }
-  .race-list dl { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin: .85rem 0 0; font: var(--text-label)/1.5 var(--font-mono); }
-  .race-list dt { display: inline; color: var(--muted); }
-  .race-list dd { display: inline; margin: 0 0 0 .4rem; }
+  .race-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 1rem; border-block: 1px solid var(--rule); }
+  .race-stats div { padding: 1.1rem 1.25rem 1.1rem 0; min-width: 0; }
+  .race-stats div + div { border-left: 1px solid var(--rule); padding-left: 1.25rem; }
+  .race-stats dt { font: var(--text-label)/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .race-stats dd { margin: .4rem 0 0; font-size: var(--text-heading); font-weight: 350; letter-spacing: -.03em; line-height: 1.1; }
+  .race-stats dd small { font-size: var(--text-body); color: var(--muted); letter-spacing: 0; margin-left: .3rem; }
+  .race-stats .race-stat-text { font-size: var(--text-title); line-height: 1.25; }
+  .race-stats .race-stat-text small { display: block; margin: .2rem 0 0; font-family: var(--font-mono); }
+  .race-list-main { min-width: 0; }
+  .race-list-main :global(.race-splits) { max-width: 36rem; }
+  .race-pb { font: var(--text-label)/1 var(--font-mono); letter-spacing: .08em; color: var(--accent); border: 1px solid currentColor; border-radius: 2px; padding: .2rem .35rem; margin-left: .6rem; vertical-align: middle; }
+  .race-legs { display: flex; flex-wrap: wrap; gap: .5rem 1.75rem; margin: .5rem 0 0; font: var(--text-label)/1.5 var(--font-mono); }
+  .race-legs dt { color: var(--muted); }
+  .race-legs dd { margin: 0; }
+  .race-legs dd span { display: block; color: var(--muted); }
+  .race-list-main .race-transitions { font-family: var(--font-mono); margin-top: .75rem; }
+  @media (max-width: 900px) {
+    .race-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .race-stats div + div:nth-child(3) { border-left: 0; padding-left: 0; }
+    .race-stats div:nth-child(n + 3) { border-top: 1px solid var(--rule); }
+  }
   .race-list-result { font: var(--text-lead)/1.3 var(--font-mono); color: var(--accent); margin: 0; }
   .race-list-muted { color: var(--muted); font-size: var(--text-body); }
   @media (max-width: 900px) { .life-log { grid-template-columns: minmax(0, 1fr); } .latest-ride { padding: 2rem; } .life-snapshot { border-left: 0; border-top: 1px solid var(--rule); } }
-  @media (max-width: 540px) { .latest-ride, .life-snapshot { padding: 1.5rem 1.25rem; } .life-journal, .life-races { margin-top: 2.5rem; } .race-list li { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; } .race-list time { grid-column: 1 / -1; } }
+  @media (max-width: 540px) { .latest-ride, .life-snapshot { padding: 1.5rem 1.25rem; } .life-journal, .life-races { margin-top: 2.5rem; } .race-list li { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; } .race-list time { grid-row: 1; } .race-list-result { grid-row: 1; grid-column: 2; } .race-list-main { grid-column: 1 / -1; } .race-legs { column-gap: 1.25rem; } }
 </style>

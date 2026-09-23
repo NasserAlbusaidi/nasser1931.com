@@ -199,7 +199,7 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
 
 ## Races
 
-The homepage Race log card and `/field#races` read two files. `src/data/races.json` is a curated record of past races with results taken from recorded intervals.icu activities (date, name, kind, distance, status finished/dnf/dns, total, splits). Edit it by hand after a race; never invent times or placings. `src/data/next-race.json` is written by the pulse bot. The countdown is recomputed in the browser so it doesn't go stale between deploys. `/coach` and its engine, snapshots, and workflow were removed on 23 September 2026 (Project Furnace replaced them); `firebase.json` 301-redirects `/coach` to `/field`.
+The homepage Race log card and `/field#races` read two files. `src/data/races.json` is a curated record of past races with results taken from recorded intervals.icu activities (date, name, kind, distance, status finished/dnf/dns, total, splits). A swim/bike/run split may carry `km`, the course distance (or the distance actually covered, noted), which `src/lib/races.ts` turns into pace; watch GPS swim distances read short, so don't use them. The same module computes transition time, the stats strip, and PB tags (shown only once a race kind has two finishes). `RaceSplitBar.astro` draws the leg bar on both the card and `/field#races`. Edit races.json by hand after a race; never invent times or placings. `src/data/next-race.json` is written by the pulse bot. The countdown is recomputed in the browser so it doesn't go stale between deploys. `/coach` and its engine, snapshots, and workflow were removed on 23 September 2026 (Project Furnace replaced them); `firebase.json` 301-redirects `/coach` to `/field`.
 
 ## firebase.json
 

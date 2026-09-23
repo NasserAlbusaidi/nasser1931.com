@@ -1,14 +1,12 @@
 ---
 // Homepage card for races: the next race on the calendar (from the pulse bot's
 // next-race.json) and a curated record of past results (races.json).
-import races from '../data/races.json';
 import nextRace from '../data/next-race.json';
+import RaceSplitBar from './RaceSplitBar.astro';
+import { races as results, raceStatus as status } from '../lib/races';
 
-type Split = { leg: string; time: string; seconds: number };
-type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; note?: string | null; splits: Split[] };
 type NextRace = { date: string; name: string; priority: string; distance_km: number | null } | null;
 
-const results = (races.races as Race[]).slice().sort((a, b) => b.date.localeCompare(a.date));
 const finished = results.filter(race => race.status === 'finished');
 const latest = finished[0] ?? null;
 const upcoming = (nextRace as { race: NextRace }).race;
@@ -20,7 +18,6 @@ const labelledSplits = latest ? latest.splits.filter(split => split.seconds / sp
 const others = results.length - finished.length;
 const summary = !finished.length ? 'Races I have entered, and what is next.'
   : `${finished.length} ${finished.length === 1 ? 'finish' : 'finishes'} so far` + (others ? `, and ${others} that didn’t go to plan.` : '.');
-const status = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not start' };
 ---
 <article class="supporting-project race-card" aria-labelledby="race-title">
   <div class="race-preview">
@@ -36,7 +33,7 @@ const status = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not star
       <div class="race-latest-head"><span class="eyebrow">Latest result</span><time datetime={latest.date}>{fmt(latest.date)}</time></div>
       <p class="race-latest-name">{latest.name} <span>{latest.total}</span></p>
       {latest.splits.length > 0 && <>
-        <div class="race-splits" aria-hidden="true">{latest.splits.map(split => <span class:list={['race-split', `race-split-${split.leg.toLowerCase().replace(/[^a-z0-9]+/g, '')}`]} style={`flex-grow:${split.seconds}`} title={`${split.leg} ${split.time}`}></span>)}</div>
+        <RaceSplitBar splits={latest.splits} />
         <dl class="race-split-list">{labelledSplits.map(split => <div><dt>{split.leg}</dt><dd>{split.time}</dd></div>)}</dl>
       </>}
     </div>}
@@ -65,11 +62,6 @@ const status = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not star
   .race-latest { border-top: 1px solid var(--rule); padding-top: 1rem; }
   .race-latest-head { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-label); color: var(--muted); }
   .race-latest-name span { font-family: var(--font-mono); font-size: var(--text-body); color: var(--accent); margin-left: .35rem; white-space: nowrap; }
-  .race-splits { display: flex; gap: 2px; height: 8px; margin: .85rem 0 .6rem; }
-  .race-split { flex-basis: 0; min-width: 3px; background: var(--muted); border-radius: 1px; }
-  .race-split-swim { background: #5B9BD5; }
-  .race-split-bike { background: var(--accent); }
-  .race-split-run { background: #7FB77E; }
   .race-split-list { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin: 0; font: var(--text-label)/1.4 var(--font-mono); }
   .race-split-list dt { color: var(--muted); display: inline; }
   .race-split-list dd { display: inline; margin: 0 0 0 .4rem; }
