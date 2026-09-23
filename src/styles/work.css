@@ -52,22 +52,6 @@
 .work-page .work-feature-visual .study-preview { padding: 2rem 1.25rem; }
 .work-page .work-feature-visual .study-preview img { width: 100%; height: auto; border: 0; }
 .work-page .work-feature-visual .study-preview figcaption { padding: 1rem .25rem 0; font-family: var(--font-prose); font-style: italic; }
-.work-coach-preview { width: 100%; padding: 2.75rem; }
-.work-coach-preview > .work-eyebrow { margin: 0 0 .5rem; }
-.work-coach-date { font-family: var(--font-mono); color: var(--muted); font-size: var(--text-label); }
-.work-coach-title { font-size: var(--text-heading); font-weight: 350; line-height: 1.12; letter-spacing: -.035em; margin: 1rem 0; }
-.work-coach-title > span { color: var(--accent); }
-.work-coach-description { font-size: var(--text-body); color: var(--muted); line-height: 1.65; max-width: 48ch; margin: 0; }
-.work-coach-duration { font-family: var(--font-mono); font-size: var(--text-label); margin: .75rem 0 0; }
-.work-coach-outlook { border-top: 1px solid var(--rule); margin-top: 2rem; padding-top: 1.25rem; }
-.work-coach-outlook > .work-eyebrow { margin: 0 0 .75rem; }
-.work-coach-outlook ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-.work-coach-outlook li { display: flex; flex-direction: column; gap: .35rem; min-width: 0; padding: .85rem; border: 1px solid var(--rule); }
-.work-coach-outlook li.is-recorded { border-color: var(--accent); }
-.work-coach-outlook time, .work-coach-outlook li > span { font-size: var(--text-label); color: var(--muted); }
-.work-coach-outlook time { font-family: var(--font-mono); }
-.work-coach-outlook strong { font-size: var(--text-body); line-height: 1.4; font-weight: 450; overflow-wrap: anywhere; }
-.work-coach-note { font-size: var(--text-label); color: var(--muted); margin: .75rem 0 0; }
 
 .work-tools { margin-top: 5rem; }
 .work-category-links { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; margin: 0 0 .75rem; }
@@ -98,7 +82,7 @@ a.work-tool-card:hover h4, a.work-tool-card:hover .work-tool-destination { color
   .work-inventory { gap: 1.5rem; }
   .work-inventory dd { font-size: var(--text-heading); }
   .work-feature, .work-feature-reversed { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .work-feature-story, .work-coach-preview { padding: 2rem; }
+  .work-feature-story { padding: 2rem; }
   .work-page .work-feature-visual .app-screens { height: 27rem; gap: 1rem; padding-inline: 1rem; }
   .work-project-group { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
   .work-group-intro p { max-width: 55ch; }
@@ -106,10 +90,9 @@ a.work-tool-card:hover h4, a.work-tool-card:hover .work-tool-destination { color
 @media (max-width: 850px) {
   .work-intro { grid-template-columns: minmax(0, 1fr); }
   .work-inventory { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
-  .work-feature-story, .work-coach-preview { padding: 1.5rem; }
+  .work-feature-story { padding: 1.5rem; }
   .work-project-facts > div { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
   .work-project-facts dd { text-align: left; }
-  .work-coach-outlook ol { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 720px) {
   .work-intro { gap: 1.75rem; padding: 2.5rem 0 0; border-bottom: 0; }
@@ -130,8 +113,6 @@ a.work-tool-card:hover h4, a.work-tool-card:hover .work-tool-destination { color
   .work-destinations > .work-project-link, .work-store-links, .work-destinations > .work-source-link { width: 100%; }
   .work-store-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
   .work-store-link { padding-inline: .4rem; gap: .5rem; }
-  .work-coach-preview { padding: 1.5rem 1.25rem; }
-  .work-coach-outlook ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .work-tools { margin-top: 3.5rem; }
   .work-project-list { grid-template-columns: minmax(0, 1fr); }
   .work-tool-card { padding: 1.25rem; }
@@ -141,5 +122,4 @@ a.work-tool-card:hover h4, a.work-tool-card:hover .work-tool-destination { color
 @media (max-width: 380px) {
   .work-page .work-feature-visual .app-screens { height: 18rem; padding-inline: .75rem; gap: .75rem; }
   .work-store-links { grid-template-columns: minmax(0, 1fr); }
-  .work-coach-outlook ol { grid-template-columns: minmax(0, 1fr); }
 }

@@ -19,7 +19,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, ogType = 'website' } = Astro.props;
 const sectionPreviews: Record<string, string> = {
   '/': '/social/home.jpg', '/builds': '/social/projects.jpg',
-  '/coach': '/social/coach.jpg', '/field': '/social/life.jpg',
+  '/field': '/social/life.jpg',
   '/reading': '/social/reading.jpg', '/stupidshit': '/social/notes.jpg',
 };
 const route = Astro.url.pathname.replace(/\/$/, '') || '/';

@@ -66,7 +66,7 @@ html.light {
 @media (max-width: 380px) { :root { --text-hero: 3rem; } }
 
 /* One label treatment across every page. */
-.eyebrow, .work-eyebrow, .intro-eyebrow, .interior-eyebrow, .coach-eyebrow,
+.eyebrow, .work-eyebrow, .intro-eyebrow, .interior-eyebrow,
 .section-heading h2, .work-section-heading h2, .interior-section-head h2 {
   font-family: var(--font-mono); font-size: var(--text-label); font-weight: 400;
   color: var(--muted); letter-spacing: .08em; text-transform: uppercase; line-height: 1.7;

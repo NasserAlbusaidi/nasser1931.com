@@ -1,0 +1,112 @@
+---
+// Homepage shelf: a stats strip plus books drawn as spines. The book being
+// read is pulled out by default; hovering or focusing another spine pulls
+// that one out instead. Colours come from the cached cover when available.
+import reading from '../data/reading.json';
+import BookCover from './BookCover.astro';
+import { getBookCover } from '../lib/book-covers';
+import { readingAnchor } from '../lib/reading-anchor';
+import { formatReadingDate } from '../lib/reading-date';
+
+type Book = { title: string; author: string | null; status: string | null; rating: number | null; format: string | null; started: string | null; finished: string | null; progress?: number | null; pages?: number | null; cover_url?: string | null };
+const current: Book[] = reading.currently_reading ?? [];
+const finished: Book[] = reading.finished ?? [];
+const dated = finished.filter(book => book.finished).sort((a, b) => (b.finished ?? '').localeCompare(a.finished ?? ''));
+const shelf = [...current.map(book => ({ book, state: 'current' as const })), ...dated.map(book => ({ book, state: 'finished' as const }))].slice(0, 20);
+
+const year = reading.updated.slice(0, 4);
+const thisYear = finished.filter(book => book.finished?.startsWith(year)).length;
+const authorCounts = new Map<string, number>();
+for (const book of finished) if (book.author) authorCounts.set(book.author, (authorCounts.get(book.author) ?? 0) + 1);
+const [topAuthor, topCount] = [...authorCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0] ?? [null, 0];
+const withFormat = finished.filter(book => book.format);
+const audioShare = withFormat.length ? Math.round(100 * withFormat.filter(book => /audio/i.test(book.format ?? '')).length / withFormat.length) : null;
+
+const hash = (text: string) => [...text].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+const PALETTE = ['#2B3A55', '#5B3A29', '#1F4B43', '#6B2E3A', '#3D3561', '#7A5A1E', '#2F4F6F', '#4A4A3A'];
+const luminance = (hex: string) => {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => c <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);
+  return .2126 * r + .7152 * g + .0722 * b;
+};
+const spineStyle = (book: Book) => {
+  const cover = getBookCover(book.title, book.author, book.cover_url);
+  const color = cover?.color ?? PALETTE[hash(book.title) % PALETTE.length];
+  const ink = luminance(color) > .35 ? '#10151F' : '#F4F1EA';
+  const height = book.pages ? Math.min(100, Math.max(74, 60 + book.pages / 25)) : 78 + (hash(book.title + (book.author ?? '')) % 23);
+  return `--spine:${color};--spine-ink:${ink};--spine-h:${height.toFixed(0)}%`;
+};
+const describe = (book: Book, state: 'current' | 'finished') => state === 'current'
+  ? `Reading${book.progress != null ? ` · ${book.progress}%` : ''}`
+  : `Finished · ${formatReadingDate(book.finished)}`;
+---
+<dl class="shelf-stats">
+  <div><dt>Finished in {year}</dt><dd>{thisYear}</dd></div>
+  <div><dt>Finished, all time</dt><dd>{finished.length}</dd></div>
+  {topAuthor && <div><dt>Most read</dt><dd class="shelf-stat-text">{topAuthor} <small>{topCount} books</small></dd></div>}
+  {audioShare !== null && <div><dt>By ear</dt><dd>{audioShare}<small>%</small></dd></div>}
+</dl>
+<div class="spine-shelf">
+  <ul class="spines" aria-label="Recent books">
+    {shelf.map(({ book, state }, index) => <li class:list={['spine', { 'is-open': index === 0 }]} style={spineStyle(book)}>
+      <a href={`/reading#${readingAnchor(book.title, book.author, state)}`} aria-label={`${book.title}${book.author ? ` by ${book.author}` : ''}. ${describe(book, state)}`}>
+        <span class="spine-face" aria-hidden="true"><span class="spine-title">{book.title}</span>{book.author && <span class="spine-author">{book.author.split(' ').at(-1)}</span>}</span>
+        <span class="spine-open" aria-hidden="true">
+          <BookCover title={book.title} author={book.author} coverUrl={book.cover_url} variant="small" />
+          <span class="spine-meta"><strong>{book.title}</strong>{book.author && <span>{book.author}</span>}<em>{describe(book, state)}</em>{state === 'current' && book.progress != null && <span class="shelf-progress"><progress max="100" value={book.progress}>{book.progress}%</progress></span>}</span>
+        </span>
+      </a>
+    </li>)}
+  </ul>
+</div>
+<style>
+  .shelf-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 2rem; border-block: 1px solid var(--rule); }
+  .shelf-stats div { padding: 1.1rem 1.25rem 1.1rem 0; min-width: 0; }
+  .shelf-stats div + div { border-left: 1px solid var(--rule); padding-left: 1.25rem; }
+  .shelf-stats dt { font: var(--text-label)/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .shelf-stats dd { margin: .4rem 0 0; font-size: var(--text-heading); font-weight: 350; letter-spacing: -.03em; line-height: 1.1; }
+  .shelf-stats dd small { font-size: var(--text-body); color: var(--muted); letter-spacing: 0; margin-left: .2rem; }
+  .shelf-stats .shelf-stat-text { font-size: var(--text-title); line-height: 1.25; overflow-wrap: anywhere; }
+  .shelf-stats .shelf-stat-text small { display: block; margin: .2rem 0 0; }
+
+  .spine-shelf { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; padding-bottom: .25rem; }
+  .spines { list-style: none; margin: 0; padding: 0; display: flex; align-items: flex-end; gap: 4px; height: 20rem; min-width: min-content; border-bottom: 3px solid var(--rule); }
+  .spine { flex: 0 0 3.1rem; min-width: 0; overflow: hidden; height: var(--spine-h); transition: flex-basis .35s ease, height .35s ease; }
+  .spine a { display: flex; height: 100%; color: var(--spine-ink); background: var(--spine); border-radius: 3px 3px 0 0; overflow: hidden; text-decoration: none; box-shadow: inset -6px 0 0 #0000001f, inset 1px 0 0 #ffffff1a; outline-offset: 3px; }
+  .spine-face { flex: 0 0 3.1rem; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: .75rem; min-height: 0; padding: .9rem 0 .75rem; writing-mode: vertical-rl; }
+  .spine-title { font-size: var(--text-body); font-weight: 450; letter-spacing: .01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .spine-author { font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; opacity: .75; white-space: nowrap; }
+  .spine-open { display: flex; flex-direction: column; gap: .75rem; padding: 1rem 1rem 1rem .25rem; min-width: 0; width: 10.5rem; opacity: 0; transition: opacity .2s ease; }
+  .spine-open :global(.book-cover-small) { max-width: 6.5rem; }
+  .spine-meta { display: flex; flex-direction: column; gap: .25rem; font-size: var(--text-label); line-height: 1.35; min-width: 0; }
+  .spine-meta strong { font-size: var(--text-body); font-weight: 500; overflow-wrap: anywhere; }
+  .spine-meta span, .spine-meta em { opacity: .8; font-style: normal; }
+  .shelf-progress { margin-top: .35rem; opacity: 1 !important; }
+  .shelf-progress progress { appearance: none; display: block; width: 100%; height: 4px; border: 0; background: color-mix(in srgb, var(--spine-ink) 25%, transparent); }
+  .shelf-progress progress::-webkit-progress-bar { background: color-mix(in srgb, var(--spine-ink) 25%, transparent); }
+  .shelf-progress progress::-webkit-progress-value { background: var(--spine-ink); }
+  .shelf-progress progress::-moz-progress-bar { background: var(--spine-ink); }
+
+  .spine.is-open, .spine:hover, .spine:focus-within { flex-basis: 14rem; height: 100%; }
+  .spine.is-open .spine-open, .spine:hover .spine-open, .spine:focus-within .spine-open { opacity: 1; }
+  /* Only one book out at a time: another spine under the pointer or focus puts the default back. */
+  .spines:has(.spine:hover, .spine:focus-within) .spine.is-open:not(:hover, :focus-within) { flex-basis: 3.1rem; height: var(--spine-h); }
+  .spines:has(.spine:hover, .spine:focus-within) .spine.is-open:not(:hover, :focus-within) .spine-open { opacity: 0; }
+
+  @media (max-width: 900px) {
+    .shelf-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .shelf-stats div + div:nth-child(3) { border-left: 0; padding-left: 0; }
+    .shelf-stats div:nth-child(n + 3) { border-top: 1px solid var(--rule); }
+  }
+  @media (max-width: 600px) {
+    .spines { height: 17rem; }
+    .spine, .spine-face { flex-basis: 2.75rem; }
+    .spine.is-open, .spine:hover, .spine:focus-within { flex-basis: 12.5rem; }
+    .spines:has(.spine:hover, .spine:focus-within) .spine.is-open:not(:hover, :focus-within) { flex-basis: 2.75rem; }
+    .spine-open { width: 9.5rem; padding: .85rem .85rem .85rem .15rem; }
+    .spine-open :global(.book-cover-small) { max-width: 5rem; }
+    .shelf-stats dd { font-size: var(--text-title); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spine, .spine-open { transition: none; }
+  }
+</style>

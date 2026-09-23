@@ -40,13 +40,15 @@ npm run dev:paper                                    # dev + chokidar watcher sy
 npm run sync-paper                                   # one-shot mirror of the paper + figures from ProjecrFurnance
 npm run refresh-pulse                                # fetch latest training data from intervals.icu, write src/data/training.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
 npm run refresh-reading                              # fetch reading list from Notion, write src/data/reading.json (needs NOTION_TOKEN env var)
+npm run sync-hardcover                               # pull the shelf + progress from Hardcover (needs HARDCOVER_TOKEN; HARDCOVER_TAKEOVER=1 to replace another source)
+npm run cache-covers                                 # mirror every referenced cover into public/covers + src/data/cover-cache.json (needs open network)
 npm run sync-posts                                   # fetch Published posts from Notion, write src/content/{stupidshit,field}/*.md (needs NOTION_TOKEN; defaults to known Posts db)
 npm run generate-og                                  # regenerate src/assets/og-fallback.jpg (one-shot; re-run when the OG look changes)
 gh workflow run refresh-pulse.yml                    # easier: run the same refresh on CI; commits + pushes only on diff
 gh workflow run sync-paper.yml                       # manually trigger the project-furnace → /paper sync (also runs every 30min, plus instant via webhook from project-furnace)
 gh workflow run sync-reading.yml                     # manually trigger the Notion → /reading sync (also runs every 6h)
 gh workflow run sync-posts.yml                       # manually trigger the Notion → posts sync (also runs every 30min)
-gh workflow run refresh-coach.yml                    # manually trigger the project-furnace → /coach sync (also runs every 6h)
+gh workflow run sync-hardcover.yml                   # Hardcover → /reading sync + cover cache (also runs every 6h); add -f takeover=true once to switch from StoryGraph
 npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
@@ -69,7 +71,7 @@ For one-off manual deploys, the legacy command above still works — useful for 
 src/
 ├── consts.ts                  ← SITE_TITLE, SITE_DESCRIPTION
 ├── pages/
-│   ├── index.astro            ← home page, features Rihla and the cycling coach
+│   ├── index.astro            ← home page, features Rihla and the race log
 │   ├── paper/
 │   │   └── index.md           ← /paper (synced from endurance-license/study.md)
 │   ├── field/                 ← /field index + dynamic [...slug] route
@@ -123,7 +125,7 @@ gh workflow run sync-paper.yml  # easier: run the same sync on CI; commits + pus
 - All section H2s have `margin-top: 2.4em` for clear section breaks.
 
 `src/pages/index.astro`:
-- The homepage features Rihla with separate App Store and Google Play links plus a secondary source link. The coach card uses one link; do not nest anchors. The Silent Creep and Einstein’s Travel Bureau are also featured. The coach feature uses the same public recommendation helper as `/coach`.
+- The homepage features Rihla with separate App Store and Google Play links plus a secondary source link. The race card (`RaceCard.astro`) uses one link; do not nest anchors. The Silent Creep and Einstein’s Travel Bureau are also featured.
 
 Share button (Paper layout):
 - `Paper.astro` ships an inline-JS share button under the prose. Uses `navigator.share()` when available, falls back to `navigator.clipboard.writeText()` with a "link copied" status. Disable per-page by passing `share: false` in frontmatter.
@@ -144,7 +146,7 @@ Both records must be at the apex. In Route 53, **leave the Name field empty** to
 
 ## The training pulse
 
-The home page renders a dated ride summary, and `/field` (Life) renders the last recorded ride, trailing seven-day totals, and the available recent sessions using HomePulse, sourced from `src/data/training.json`. The JSON is a committed snapshot — visitors get whatever was last pushed.
+The home page renders a dated ride summary, and `/field` (Life) renders the last recorded ride, trailing seven-day totals, and the available recent sessions using HomePulse, sourced from `src/data/training.json`. The JSON is a committed snapshot — visitors get whatever was last pushed. `last_ride` is picked from a 30-day activity window, separately from the capped `recent` list, so a run of gym sessions can't make the site claim there was no ride. The same script writes `src/data/next-race.json` from intervals.icu RACE_A/B/C calendar events (name, date, priority, distance only; never the event description).
 
 - **Source:** intervals.icu API (which is fed by Garmin → intervals.icu sync).
 - **Refresh:** `.github/workflows/refresh-pulse.yml` runs on cron `0 */6 * * *` plus `workflow_dispatch`. The script (`scripts/refresh-pulse.mjs`) fetches the last 14 days of activities + wellness, writes `src/data/training.json`, and the workflow commits + pushes **only if the snapshot diff is non-empty** — so quiet days don't trigger a redeploy.
@@ -156,7 +158,9 @@ The home page renders a dated ride summary, and `/field` (Life) renders the last
 
 ## The reading list
 
-**Current source: StoryGraph CSV import for `nasser1931`.** `scripts/import-storygraph.mjs` accepts an official export and writes the existing reading snapshot schema plus source metadata. Run `npm run import-storygraph -- <export.csv> nasser1931`. CSV files stay outside Git; private tags, reviews, and signed download links must never be committed. Import preserves year/month-only dates, and the pages use `formatReadingDate` so a year is not displayed as an invented January date. `ReadingSource.astro` identifies the export source and import date. This is not unattended live sync.
+**Target source: Hardcover.** `scripts/sync-hardcover.mjs` reads the user's library from the Hardcover GraphQL API (`HARDCOVER_TOKEN` secret, from hardcover.app/account/api) and writes `src/data/reading.json` with `source: "hardcover"`, adding `progress` (percent), `pages`, and `cover_url` to each book. `.github/workflows/sync-hardcover.yml` runs every 6h. It will not replace a snapshot owned by another source unless run once with `-f takeover=true` (`HARDCOVER_TAKEOVER=1`), it no-ops without a token, and it refuses to write an empty library. The same workflow runs `scripts/cache-covers.mjs`, which mirrors covers into `public/covers/` (400px WebP) and records dimensions plus a dominant colour in `src/data/cover-cache.json`. The cloud dev container cannot reach the cover hosts or Hardcover; both scripts run in CI.
+
+**Until the takeover: StoryGraph CSV import for `nasser1931`.** `scripts/import-storygraph.mjs` accepts an official export and writes the existing reading snapshot schema plus source metadata. Run `npm run import-storygraph -- <export.csv> nasser1931`. CSV files stay outside Git; private tags, reviews, and signed download links must never be committed. Import preserves year/month-only dates, and the pages use `formatReadingDate` so a year is not displayed as an invented January date. `ReadingSource.astro` identifies the export source and import date. This is not unattended live sync.
 
 `refresh-reading.mjs` checks snapshot ownership before credentials or network calls and skips a non-Notion source. Do not remove that guard or reintroduce a rebasing bot push that could replay stale Notion changes over an imported snapshot. To intentionally return to Notion, explicitly switch the snapshot source as part of that task.
 
@@ -193,19 +197,9 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
 - **Concurrency:** shares the `bot-pushes-main` concurrency group with the other sync workflows; commit author is `posts-bot <bot@nasser1931.com>`.
 - **Setup:** done once on 2026-05-15 — db created, integration access inherited from "🎯 Personal" parent, default db id baked into the script, `NOTION_TOKEN` already a GH secret. Day-to-day: open the Posts db in Notion, write a row, set Status=Published, then either wait ≤30min for cron or run `gh workflow run sync-posts.yml` to ship now.
 
-## The coach briefing
+## Races
 
-`/coach` is a read-only daily recommendation and four-day outlook, calculated at build time from `src/data/coach.json` and `src/data/workout-bank.json`. `src/lib/public-coach.mjs` exports an explicit allowlist of recommendation fields. The browser receives neither the engine nor source snapshots.
-
-- **Source of truth:** `NasserAlbusaidi/project-furnace` (private) at `tools/intervalsicu/` — `pull_state.py` writes the state snapshot, `workout_bank.py` is the bank module (`WORKOUT_LIBRARY` is the merged workout library), `pick_workout.py` is the canonical engine. `src/scripts/cycling-engine.mjs` is a faithful JS port of `pick_workout.py` (same thresholds, same v1 → v2 rule order). The HTML artifact at `tools/intervalsicu/cycling_coach_artifact.html` has its own simplified mini-bank — ignore for porting; the canonical Python is the reference.
-- **Auto-sync:** `.github/workflows/refresh-coach.yml` runs cron `0 */6 * * *` plus `workflow_dispatch` plus `repository_dispatch[coach-update,bank-update]`. Sparse-clones project-furnace via `PAPER_REPO_SSH_KEY`, runs `pull_state.py` with `INTERVALS_API_KEY` + `INTERVALS_ATHLETE_ID`, dumps `workout_bank.py` → JSON, commits + builds + deploys *only when the diff is non-empty*.
-- **Concurrency:** shares `bot-pushes-main` with sync-paper, refresh-pulse, sync-reading, sync-posts. Commit author is `coach-bot <bot@nasser1931.com>`.
-- **Secrets (GitHub Actions):** `PAPER_REPO_SSH_KEY` (deploy key, shared with sync-paper), `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID` — all already configured for the existing workflows.
-- **Manual refresh:** `gh workflow run refresh-coach.yml`.
-- **4-day outlook:** Dates anchor to `coach._today`. Recorded recommendations use the canonical engine; future days assume AMBER and run v1 only. Render static content with native disclosures and explicit Recorded/Projected labels. Do not add browser input overrides, wellness panels, diagnostic narratives, raw data scripts, or operator/calendar commands. See the public boundary below.
-- **Deferred work:**
-  - **Engine duplication.** `src/scripts/cycling-engine.mjs` mirrors `pick_workout.py`. When the Python rules change (thresholds, override rules, slot logic), update the JS module too. Long-term: extract a shared `cycling_engine.mjs` in project-furnace and sync it down via the paper pattern, so there's one canonical engine.
-  - **Workout-bank webhook.** The workflow already accepts `repository_dispatch[bank-update]`; the project-furnace-side fire (mirroring `notify-site.yml`'s `paper-update`) is the remaining piece for sub-minute bank-edit propagation.
+The homepage Race log card and `/field#races` read two files. `src/data/races.json` is a curated record of past races with results taken from recorded intervals.icu activities (date, name, kind, distance, status finished/dnf/dns, total, splits). Edit it by hand after a race; never invent times or placings. `src/data/next-race.json` is written by the pulse bot. The countdown is recomputed in the browser so it doesn't go stale between deploys. `/coach` and its engine, snapshots, and workflow were removed on 23 September 2026 (Project Furnace replaced them); `firebase.json` 301-redirects `/coach` to `/field`.
 
 ## firebase.json
 
@@ -218,7 +212,3 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
 ## Outstanding cleanups
 
 - `www.nasser1931.com` is not configured. Add a redirect in Firebase or a Route 53 record (covered above in DNS records).
-
-## Public coach boundary
-
-The user chose recommendations and outlook only on 21 September 2026. Keep engine calls in Astro frontmatter and pass only the explicit fields from `src/lib/public-coach.mjs` into the page. Do not restore operator controls, wellness JSON, recovery state, diagnostic reasoning/warnings, or raw health metrics. `/field` shows activity volume, not a second form classification. Public Git snapshots/history remain accessible; removing UI is not history removal.

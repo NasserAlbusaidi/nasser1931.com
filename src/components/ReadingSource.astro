@@ -5,11 +5,12 @@ interface Props { showCoverCredits?: boolean; }
 const { showCoverCredits = true } = Astro.props;
 const source: { source?: string; source_method?: string; profile_url?: string; updated: string } = data;
 const storygraph = source.source === 'storygraph';
-const profile = source.profile_url && /^https:\/\/app\.thestorygraph\.com\/profile\/[a-z0-9_]{3,30}$/.test(source.profile_url) ? source.profile_url : null;
+const hardcover = source.source === 'hardcover';
+const profile = source.profile_url && /^https:\/\/(app\.thestorygraph\.com\/profile\/[a-z0-9_]{3,30}|hardcover\.app\/@[A-Za-z0-9_-]{2,40})$/.test(source.profile_url) ? source.profile_url : null;
 const imported = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(source.updated));
 ---
 <p class="reading-source">
-  {storygraph ? <><span>From a {profile ? <a href={profile}>StoryGraph</a> : 'StoryGraph'} export</span><span aria-hidden="true"> · </span><span>Imported <time datetime={source.updated}>{imported}</time></span></> : <span>Shelf updated <time datetime={source.updated}>{imported}</time></span>}
+  {hardcover ? <><span>Synced from {profile ? <a href={profile}>Hardcover</a> : 'Hardcover'}</span><span aria-hidden="true"> · </span><span>Updated <time datetime={source.updated}>{imported}</time></span></> : storygraph ? <><span>From a {profile ? <a href={profile}>StoryGraph</a> : 'StoryGraph'} export</span><span aria-hidden="true"> · </span><span>Imported <time datetime={source.updated}>{imported}</time></span></> : <span>Shelf updated <time datetime={source.updated}>{imported}</time></span>}
 </p>
 {showCoverCredits && <CoverCredits />}
 <style>

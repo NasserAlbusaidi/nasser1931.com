@@ -13,6 +13,8 @@
     "refresh-paper-log": "node scripts/refresh-paper-log.mjs",
     "refresh-reading": "node scripts/refresh-reading.mjs",
     "import-storygraph": "node scripts/import-storygraph.mjs",
+    "sync-hardcover": "node scripts/sync-hardcover.mjs",
+    "cache-covers": "node scripts/cache-covers.mjs",
     "sync-posts": "node scripts/sync-posts.mjs",
     "generate-og": "node scripts/generate-og-fallback.mjs",
     "build": "astro build",

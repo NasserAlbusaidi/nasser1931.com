@@ -4,19 +4,14 @@ import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ProjectPreview from '../../components/ProjectPreview.astro';
 import buildsData from '../../data/builds.json';
-import coach from '../../data/coach.json';
-import bank from '../../data/workout-bank.json';
-import { buildPublicForecast } from '../../lib/public-coach.mjs';
 import '../../styles/work.css';
 
 type Build = (typeof buildsData.builds)[number];
 const builds = buildsData.builds;
-const selectedSlugs = ['rihla', 'silent-creep', 'einsteins-travel-bureau', 'coach-engine'];
+const selectedSlugs = ['rihla', 'silent-creep', 'einsteins-travel-bureau'];
 const selected = selectedSlugs.flatMap(slug => builds.filter(build => build.slug === slug));
 const moreProjects = builds.filter(build => !selectedSlugs.includes(build.slug));
 const sourceCount = builds.filter(build => build.repo).length;
-const forecast = buildPublicForecast(coach, bank);
-const recommendation = forecast[0];
 const projectStories: Record<string, { lead: string; detail: string; category: string; facts: [string, string][] }> = {
   rihla: {
     lead: 'For the plans we make together.',
@@ -35,12 +30,6 @@ const projectStories: Record<string, { lead: string; detail: string; category: s
     detail: 'Plan a trip near the speed of light and see how differently time passes. Real physics behind an imaginary travel desk.',
     category: 'Physics · Experiment',
     facts: [['Physics', 'Special and general relativity'], ['Inside', 'Brochures · boarding passes · a lab']],
-  },
-  'coach-engine': {
-    lead: 'A coach I can look inside.',
-    detail: 'A rule-based engine combines my cycling schedule with recovery inputs to select the next session. The public page shares the recommendation and a provisional outlook.',
-    category: 'Software × cycling',
-    facts: [['Output', 'Recommendation · four-day outlook'], ['Updates', 'When a new snapshot arrives']],
   },
 };
 const shortDescriptions: Record<string, string> = {
@@ -66,7 +55,7 @@ if (ungroupedProjects.length) projectGroups.push({ id: 'other-projects', title: 
 const hrefFor = (build: Build) => build.url ?? build.repo ?? null;
 const storesFor = (build: Build) => 'stores' in build ? build.stores ?? [] : [];
 const isExternal = (href: string) => /^https?:\/\//.test(href);
-const destinationLabel = (build: Build) => build.slug === 'silent-creep' ? 'Read the study' : build.slug === 'einsteins-travel-bureau' ? 'Explore the bureau' : build.url ? (build.slug === 'coach-engine' ? 'Read the briefing' : 'View project') : 'View source';
+const destinationLabel = (build: Build) => build.slug === 'silent-creep' ? 'Read the study' : build.slug === 'einsteins-travel-bureau' ? 'Explore the bureau' : build.url ? 'View project' : 'View source';
 ---
 
 <!doctype html>
@@ -94,22 +83,7 @@ const destinationLabel = (build: Build) => build.slug === 'silent-creep' ? 'Read
             const external = href && isExternal(href);
             return <article class:list={['work-feature', `work-feature-${project.slug}`, { 'work-feature-reversed': index % 2 === 1 }]} id={project.slug} aria-labelledby={`${project.slug}-title`}>
               <div class="work-feature-visual">
-                {project.slug === 'coach-engine' ? <div class="work-coach-preview">
-                  {recommendation ? <>
-                    <p class="work-eyebrow">Recorded recommendation</p>
-                    <time class="work-coach-date" datetime={recommendation.date}>{recommendation.label}</time>
-                    <p class="work-coach-title">{recommendation.title}<span>.</span></p>
-                    <p class="work-coach-description">{recommendation.description}</p>
-                    {recommendation.duration && <p class="work-coach-duration">{recommendation.duration} min session</p>}
-                    <div class="work-coach-outlook">
-                      <p class="work-eyebrow">Four-day outlook</p>
-                      <ol>{forecast.map(day => <li class:list={{ 'is-recorded': !day.projected }}>
-                        <time datetime={day.date}>{day.label}</time><strong>{day.title}</strong><span>{day.projected ? 'Projected' : 'Recorded'}</span>
-                      </li>)}</ol>
-                      <p class="work-coach-note">Future sessions are provisional.</p>
-                    </div>
-                  </> : <p class="work-coach-description">The latest recommendation is unavailable. The project and its briefing are still here.</p>}
-                </div> : <ProjectPreview project={project.slug} />}
+                <ProjectPreview project={project.slug} />
               </div>
               <div class="work-feature-story">
                 <p class="work-eyebrow">{story.category}</p><span class="work-status">{project.label}</span>

@@ -1,12 +1,12 @@
 ---
 import { getBookCover } from '../lib/book-covers';
-interface Props { title: string; author: string | null; variant?: 'shelf' | 'current' | 'small'; }
-const { title, author, variant = 'shelf' } = Astro.props;
-const cover = getBookCover(title, author);
+interface Props { title: string; author: string | null; coverUrl?: string | null; variant?: 'shelf' | 'current' | 'small'; }
+const { title, author, coverUrl = null, variant = 'shelf' } = Astro.props;
+const cover = getBookCover(title, author, coverUrl);
 ---
 <div class:list={['book-cover', `book-cover-${variant}`, { 'book-cover-missing': !cover }]} aria-hidden="true">
-  {cover && <img data-book-cover src={cover.sourceUrl} width={cover.width} height={cover.height} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />}
-  <span class="cover-unavailable">No cover</span>
+  {cover && <img data-book-cover src={cover.src} width={cover.width} height={cover.height} alt="" loading="lazy" decoding="async" referrerpolicy={cover.local ? undefined : 'no-referrer'} />}
+  <span class="cover-unavailable"><span>{title}</span>{author && <small>{author}</small>}</span>
 </div>
 <style>
   .book-cover { width: 100%; aspect-ratio: 2 / 3; display: flex; align-items: end; justify-content: start; }
@@ -17,7 +17,9 @@ const cover = getBookCover(title, author);
   .cover-unavailable { display: none; }
   .book-cover-missing { align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--rule); box-shadow: none; }
   .book-cover-missing img { display: none; }
-  .book-cover-missing .cover-unavailable { display: block; padding: .5rem; text-align: center; font-size: var(--text-label); color: var(--muted); }
+  .book-cover-missing .cover-unavailable { display: flex; flex-direction: column; gap: .4rem; padding: .75rem; text-align: center; font-size: var(--text-label); line-height: 1.3; color: var(--ink); overflow-wrap: anywhere; }
+  .cover-unavailable small { color: var(--muted); font-size: inherit; }
+  .book-cover-small.book-cover-missing .cover-unavailable small { display: none; }
 </style>
 <script>
   document.querySelectorAll<HTMLImageElement>('img[data-book-cover]').forEach(image => {

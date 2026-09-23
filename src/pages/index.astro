@@ -6,25 +6,20 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import ReadingSource from '../components/ReadingSource.astro';
-import BookCover from '../components/BookCover.astro';
-import { formatReadingDate } from '../lib/reading-date';
+import ShelfSpines from '../components/ShelfSpines.astro';
+import RaceCard from '../components/RaceCard.astro';
 import reading from '../data/reading.json';
 import training from '../data/training.json';
 import builds from '../data/builds.json';
-import coach from '../data/coach.json';
-import bank from '../data/workout-bank.json';
-import { buildPublicForecast } from '../lib/public-coach.mjs';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/home.css';
 
-const forecast = buildPublicForecast(coach, bank);
-const workout = forecast[0];
 const books = [...reading.currently_reading, ...reading.finished]
   .filter((book, index, all) => all.findIndex(other => other.title === book.title && other.author === book.author) === index)
   .slice(0, 5);
-const ride = training.recent.find(activity => activity.type === 'bike');
+// last_ride is chosen from a wider window than `recent`; older snapshots lack it.
+const ride = ('last_ride' in training ? training.last_ride : null) ?? training.recent.find(activity => activity.type === 'bike');
 const strength = training.recent.find(activity => activity.type === 'workout');
-const nextSession = forecast.slice(1).find(day => day.kind !== 'rest');
 const rihla = builds.builds.find(build => build.slug === 'rihla');
 const shortProjects = ['silent-creep', 'einsteins-travel-bureau'].flatMap(slug => builds.builds.filter(build => build.slug === slug));
 const summaries: Record<string, string> = {
@@ -35,7 +30,6 @@ const date = (value: string | Date) => {
   const parsed = value instanceof Date ? value : new Date(value);
   return Number.isFinite(parsed.getTime()) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed) : null;
 };
-const coachDate = date(coach._today);
 const duration = (minutes: number | null) => minutes == null ? null : minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 ---
 <!doctype html>
@@ -87,17 +81,7 @@ const duration = (minutes: number | null) => minutes == null ? null : minutes < 
           </article>
 
           <div class="supporting-projects">
-            <article class="supporting-project coach-card" aria-labelledby="coach-title">
-              <div class="briefing-preview">
-                <div class="briefing-stamp"><span class="eyebrow">Recorded briefing</span>{coachDate && <time datetime={coach._today}>{coachDate}</time>}</div>
-                <strong>{workout?.title ?? 'Recommendation unavailable'}</strong>
-                <p>{workout?.description ?? 'There is no recommendation in this snapshot.'}</p>
-                {workout?.duration && <span class="briefing-duration">{duration(workout.duration)}</span>}
-                {nextSession && <div class="briefing-next"><span class="eyebrow">Next planned · {nextSession.label}</span><span>{nextSession.title}</span><small>Provisional</small></div>}
-              </div>
-              <div class="supporting-copy"><p class="eyebrow">Software × cycling</p><h3 id="coach-title">Coach engine</h3><p class="project-description">A coach I can look inside. A daily recommendation and a view of the next few days.</p></div>
-              <div class="project-bottom"><span>Python · JavaScript</span><a href="/coach">Open the briefing <span aria-hidden="true">→</span></a></div>
-            </article>
+            <RaceCard />
             {shortProjects.map(project => <article class="supporting-project" aria-labelledby={`home-${project.slug}`}>
               <ProjectPreview project={project.slug} variant="card" />
               <div class="supporting-copy"><p class="eyebrow">{project.slug === 'silent-creep' ? 'Personal research · Published' : 'An experiment in physics'}</p><h3 id={`home-${project.slug}`}>{project.name}</h3><p class="project-description">{summaries[project.slug]}</p></div>
@@ -118,8 +102,8 @@ const duration = (minutes: number | null) => minutes == null ? null : minutes < 
 
         <section aria-labelledby="reading-title" class="reading-section">
           <div class="section-heading"><h2 id="reading-title">On the shelf</h2><a class="quiet-link" href="/reading">Reading list <span aria-hidden="true">→</span></a></div>
-          <p class="shelf-intro">Currently reading, followed by recent finishes.</p>
-          <ul class="shelf-list">{books.map(book => <li><BookCover title={book.title} author={book.author} /><span class="book-author">{book.author}</span><h3>{book.title}</h3><div class="book-detail"><span>{book.status}{book.finished ? ` · ${formatReadingDate(book.finished)}` : ''}</span>{book.rating !== null && <span aria-label={`Rated ${book.rating} out of 5`}>{book.rating}/5</span>}</div></li>)}</ul><ReadingSource />
+          <p class="shelf-intro">What I’m reading now, then the most recent finishes.</p>
+          <ShelfSpines /><ReadingSource />
         </section>
         <div class="closing-note"><p>Something here sparked a thought?</p><a class="home-button primary" href="mailto:nasserbusaidi@gmail.com">Say hello <span aria-hidden="true">→</span></a></div>
       </div>

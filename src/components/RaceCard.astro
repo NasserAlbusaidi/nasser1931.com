@@ -1,0 +1,79 @@
+---
+// Homepage card for races: the next race on the calendar (from the pulse bot's
+// next-race.json) and a curated record of past results (races.json).
+import races from '../data/races.json';
+import nextRace from '../data/next-race.json';
+
+type Split = { leg: string; time: string; seconds: number };
+type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; splits: Split[] };
+type NextRace = { date: string; name: string; priority: string; distance_km: number | null } | null;
+
+const results = (races.races as Race[]).slice().sort((a, b) => b.date.localeCompare(a.date));
+const finished = results.filter(race => race.status === 'finished');
+const latest = finished[0] ?? null;
+const upcoming = (nextRace as { race: NextRace }).race;
+const fmt = (value: string, opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }) => new Intl.DateTimeFormat('en-GB', { ...opts, timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
+const daysUntil = (value: string) => Math.max(0, Math.round((Date.parse(`${value}T00:00:00Z`) - Date.now()) / 86400000));
+const splitTotal = latest ? latest.splits.reduce((sum, split) => sum + split.seconds, 0) : 0;
+// Transitions are drawn in the bar but too short to label.
+const labelledSplits = latest ? latest.splits.filter(split => split.seconds / splitTotal > 0.04) : [];
+const others = results.length - finished.length;
+const summary = !finished.length ? 'Races I have entered, and what is next.'
+  : `${finished.length} ${finished.length === 1 ? 'finish' : 'finishes'} so far` + (others ? `, and ${others} that didn’t go to plan.` : '.');
+const status = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not start' };
+---
+<article class="supporting-project race-card" aria-labelledby="race-title">
+  <div class="race-preview">
+    {upcoming ? <div class="race-next">
+      <span class="eyebrow">Next race · {fmt(upcoming.date)}</span>
+      <p class="race-countdown"><span data-race-date={upcoming.date}>{daysUntil(upcoming.date)}</span> <small>days to go</small></p>
+      <strong>{upcoming.name}</strong>
+    </div> : <div class="race-next race-next-none">
+      <span class="eyebrow">Next race</span>
+      <strong>Not on the calendar yet</strong>
+    </div>}
+    {latest && <div class="race-latest">
+      <div class="race-latest-head"><span class="eyebrow">Latest result</span><time datetime={latest.date}>{fmt(latest.date)}</time></div>
+      <p class="race-latest-name">{latest.name} <span>{latest.total}</span></p>
+      {latest.splits.length > 0 && <>
+        <div class="race-splits" aria-hidden="true">{latest.splits.map(split => <span class:list={['race-split', `race-split-${split.leg.toLowerCase().replace(/[^a-z0-9]+/g, '')}`]} style={`flex-grow:${split.seconds}`} title={`${split.leg} ${split.time}`}></span>)}</div>
+        <dl class="race-split-list">{labelledSplits.map(split => <div><dt>{split.leg}</dt><dd>{split.time}</dd></div>)}</dl>
+      </>}
+    </div>}
+  </div>
+  <div class="supporting-copy">
+    <p class="eyebrow">Life · Racing</p>
+    <h3 id="race-title">Race log</h3>
+    <p class="project-description">{summary}</p>
+    {results.length > 1 && <ol class="race-history">{results.slice(0, 4).map(race => <li><time datetime={race.date}>{fmt(race.date, { month: 'short', year: 'numeric' })}</time><span>{race.name}</span><span>{race.status === 'finished' ? race.total : status[race.status]}</span></li>)}</ol>}
+  </div>
+  <div class="project-bottom"><span>Swim · Bike · Run</span><a href="/field#races">All races <span aria-hidden="true">→</span></a></div>
+</article>
+<script>
+  // The build-time count goes stale between deploys; recompute in the browser.
+  document.querySelectorAll<HTMLElement>('[data-race-date]').forEach(element => {
+    const days = Math.round((Date.parse(`${element.dataset.raceDate}T00:00:00Z`) - Date.now()) / 86400000);
+    element.textContent = String(Math.max(0, days));
+  });
+</script>
+<style>
+  .race-preview { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.25rem; border: 1px solid var(--rule); background: var(--bg); min-height: 16rem; }
+  .race-next strong, .race-latest-name { display: block; font-size: var(--text-title); font-weight: 400; line-height: 1.25; margin: .35rem 0 0; }
+  .race-next-none strong { color: var(--muted); font-size: var(--text-body); }
+  .race-countdown { margin: .5rem 0 0; font-size: var(--text-display); font-weight: 300; line-height: 1; letter-spacing: -.05em; color: var(--accent); }
+  .race-countdown small { font: var(--text-label)/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .race-latest { border-top: 1px solid var(--rule); padding-top: 1rem; }
+  .race-latest-head { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-label); color: var(--muted); }
+  .race-latest-name span { font-family: var(--font-mono); font-size: var(--text-body); color: var(--accent); margin-left: .35rem; white-space: nowrap; }
+  .race-splits { display: flex; gap: 2px; height: 8px; margin: .85rem 0 .6rem; }
+  .race-split { flex-basis: 0; min-width: 3px; background: var(--muted); border-radius: 1px; }
+  .race-split-swim { background: #5B9BD5; }
+  .race-split-bike { background: var(--accent); }
+  .race-split-run { background: #7FB77E; }
+  .race-split-list { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin: 0; font: var(--text-label)/1.4 var(--font-mono); }
+  .race-split-list dt { color: var(--muted); display: inline; }
+  .race-split-list dd { display: inline; margin: 0 0 0 .4rem; }
+  .race-history { list-style: none; margin: 1rem 0 0; padding: 0; font-size: var(--text-label); }
+  .race-history li { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; gap: .75rem; padding: .45rem 0; border-top: 1px solid var(--rule); }
+  .race-history time, .race-history li > span:last-child { font-family: var(--font-mono); color: var(--muted); }
+</style>

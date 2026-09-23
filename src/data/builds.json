@@ -1,19 +1,6 @@
 {
-  "updated": "2026-09-21",
+  "updated": "2026-09-23",
   "builds": [
-    {
-      "slug": "coach-engine",
-      "name": "Coach engine",
-      "summary": "Daily cycling-coach engine — classifies recovery state from wellness signals and picks today's workout from a workout library. Public recommendations and outlook on /coach.",
-      "stack": [
-        "Python",
-        "JavaScript"
-      ],
-      "url": "/coach",
-      "repo": null,
-      "featured": true,
-      "label": "Daily recommendation"
-    },
     {
       "slug": "silent-creep",
       "name": "The Silent Creep",
@@ -67,7 +54,7 @@
     {
       "slug": "nasser1931",
       "name": "nasser1931.com",
-      "summary": "This personal site. Live training summaries, a cycling coach, published research, and a StoryGraph reading shelf.",
+      "summary": "This personal site. Live training summaries, race results, published research, and a reading shelf.",
       "stack": [
         "Astro",
         "Firebase"
