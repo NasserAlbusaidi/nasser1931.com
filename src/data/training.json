@@ -1,9 +1,16 @@
 {
-  "updated": "2026-09-22T21:10:39.498Z",
-  "form_tsb": -5.8,
-  "weekly_hours": 5.7,
-  "weekly_tss": 200,
+  "updated": "2026-09-23T04:30:40.367Z",
+  "form_tsb": -6.3,
+  "weekly_hours": 6,
+  "weekly_tss": 204,
   "recent": [
+    {
+      "date": "2026-09-23",
+      "type": "workout",
+      "name": "Strength",
+      "distance_km": null,
+      "duration_min": 21
+    },
     {
       "date": "2026-09-22",
       "type": "workout",
@@ -17,13 +24,6 @@
       "name": "Strength",
       "distance_km": null,
       "duration_min": 50
-    },
-    {
-      "date": "2026-09-18",
-      "type": "bike",
-      "name": "Friday Long / Group Ride",
-      "distance_km": 100.1,
-      "duration_min": 182
     }
   ]
 }
