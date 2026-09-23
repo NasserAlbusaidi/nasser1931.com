@@ -1,0 +1,17 @@
+---
+// Proportional swim / transition / bike / run bar for one race.
+import type { Split } from '../lib/races';
+interface Props { splits: Split[]; label?: string }
+const { splits, label } = Astro.props;
+const legClass = (leg: string) => `race-split-${leg.toLowerCase().replace(/[^a-z0-9]+/g, '')}`;
+---
+{splits.length > 0 && <div class="race-splits" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : 'true'}>
+  {splits.map(split => <span class:list={['race-split', legClass(split.leg)]} style={`flex-grow:${split.seconds}`} title={`${split.leg} ${split.time}`}></span>)}
+</div>}
+<style>
+  .race-splits { display: flex; gap: 2px; height: 8px; margin: .85rem 0 .6rem; }
+  .race-split { flex-basis: 0; min-width: 3px; background: var(--muted); border-radius: 1px; }
+  .race-split-swim { background: #5B9BD5; }
+  .race-split-bike { background: var(--accent); }
+  .race-split-run { background: #7FB77E; }
+</style>
