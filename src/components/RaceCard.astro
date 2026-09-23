@@ -5,7 +5,7 @@ import races from '../data/races.json';
 import nextRace from '../data/next-race.json';
 
 type Split = { leg: string; time: string; seconds: number };
-type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; splits: Split[] };
+type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; note?: string | null; splits: Split[] };
 type NextRace = { date: string; name: string; priority: string; distance_km: number | null } | null;
 
 const results = (races.races as Race[]).slice().sort((a, b) => b.date.localeCompare(a.date));
@@ -45,7 +45,7 @@ const status = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not star
     <p class="eyebrow">Life · Racing</p>
     <h3 id="race-title">Race log</h3>
     <p class="project-description">{summary}</p>
-    {results.length > 1 && <ol class="race-history">{results.slice(0, 4).map(race => <li><time datetime={race.date}>{fmt(race.date, { month: 'short', year: 'numeric' })}</time><span>{race.name}</span><span>{race.status === 'finished' ? race.total : status[race.status]}</span></li>)}</ol>}
+    {results.length > 1 && <ol class="race-history">{results.slice(0, 4).map(race => <li><time datetime={race.date}>{fmt(race.date, { month: 'short', year: 'numeric' })}</time><span>{race.name}</span><span>{race.status === 'finished' ? race.total ?? 'Finished' : status[race.status]}</span></li>)}</ol>}
   </div>
   <div class="project-bottom"><span>Swim · Bike · Run</span><a href="/field#races">All races <span aria-hidden="true">→</span></a></div>
 </article>

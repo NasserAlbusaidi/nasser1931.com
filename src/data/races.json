@@ -1,3 +1,73 @@
 {
-  "races": []
+  "source": "Recorded intervals.icu activities (Garmin multisport legs), checked 2026-09-23. Swim distances are watch GPS and read short.",
+  "races": [
+    {
+      "date": "2026-02-14",
+      "name": "Muscat 70.3",
+      "kind": "Half-distance triathlon",
+      "distance": "1.9 km swim · 90 km bike · 21.1 km run",
+      "status": "finished",
+      "total": "6:19:13",
+      "note": null,
+      "splits": [
+        { "leg": "Swim", "time": "43:35", "seconds": 2615 },
+        { "leg": "T1", "time": "8:44", "seconds": 524 },
+        { "leg": "Bike", "time": "2:58:55", "seconds": 10735 },
+        { "leg": "T2", "time": "7:27", "seconds": 447 },
+        { "leg": "Run", "time": "2:20:32", "seconds": 8432 }
+      ]
+    },
+    {
+      "date": "2026-01-31",
+      "name": "Athiba Triathlon",
+      "kind": "Olympic-distance triathlon",
+      "distance": "40 km bike · 10 km run",
+      "status": "finished",
+      "total": "2:39:25",
+      "note": null,
+      "splits": [
+        { "leg": "Swim", "time": "25:47", "seconds": 1547 },
+        { "leg": "T1", "time": "4:13", "seconds": 253 },
+        { "leg": "Bike", "time": "1:09:25", "seconds": 4165 },
+        { "leg": "T2", "time": "1:56", "seconds": 116 },
+        { "leg": "Run", "time": "58:04", "seconds": 3484 }
+      ]
+    },
+    {
+      "date": "2026-01-24",
+      "name": "OMSwim",
+      "kind": "Open-water swim",
+      "distance": "2.5 km course",
+      "status": "finished",
+      "total": "59:12",
+      "note": null,
+      "splits": []
+    },
+    {
+      "date": "2025-12-20",
+      "name": "Qurum Aquathlon",
+      "kind": "Aquathlon",
+      "distance": "10 km run",
+      "status": "finished",
+      "total": null,
+      "note": "Run leg only recorded: 52:14",
+      "splits": []
+    },
+    {
+      "date": "2025-11-15",
+      "name": "Al Bustan Sprint Triathlon",
+      "kind": "Sprint triathlon",
+      "distance": "21 km bike · 5 km run",
+      "status": "finished",
+      "total": "1:46:43",
+      "note": null,
+      "splits": [
+        { "leg": "Swim", "time": "29:49", "seconds": 1789 },
+        { "leg": "T1", "time": "3:00", "seconds": 180 },
+        { "leg": "Bike", "time": "40:02", "seconds": 2402 },
+        { "leg": "T2", "time": "1:11", "seconds": 71 },
+        { "leg": "Run", "time": "32:41", "seconds": 1961 }
+      ]
+    }
+  ]
 }

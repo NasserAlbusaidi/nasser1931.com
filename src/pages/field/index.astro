@@ -13,7 +13,7 @@ const journal = entries.map(entry => ({ ...entry.data, href: `/field/${entry.id}
 // last_ride is chosen from a wider window than `recent`; older snapshots lack it.
 const ride = ('last_ride' in training ? training.last_ride : null) ?? training.recent.find(activity => activity.type === 'bike');
 const formatDate = (date: string) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
-type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; splits: { leg: string; time: string; seconds: number }[] };
+type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; note?: string | null; splits: { leg: string; time: string; seconds: number }[] };
 const races = (raceData.races as Race[]).slice().sort((a, b) => b.date.localeCompare(a.date));
 const raceStatus = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not start' };
 const formatDuration = (minutes: number | null) => minutes == null ? null : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
@@ -39,10 +39,10 @@ const formatDuration = (minutes: number | null) => minutes == null ? null : `${M
         <div class="interior-section-head"><h2 id="races-title">Races</h2><span>{races.length} {races.length === 1 ? 'race' : 'races'}</span></div>
         <ol class="race-list">{races.map(race => <li>
           <time datetime={race.date}>{formatDate(race.date)}</time>
-          <div class="race-list-main"><h3>{race.name}</h3><p>{race.kind}{race.distance && ` · ${race.distance}`}</p>
+          <div class="race-list-main"><h3>{race.name}</h3><p>{race.kind}{race.distance && ` · ${race.distance}`}</p>{race.note && <p>{race.note}</p>}
             {race.splits.length > 0 && <dl>{race.splits.map(split => <div><dt>{split.leg}</dt><dd>{split.time}</dd></div>)}</dl>}
           </div>
-          <p class:list={['race-list-result', { 'race-list-muted': race.status !== 'finished' }]}>{race.status === 'finished' && race.total ? race.total : raceStatus[race.status]}</p>
+          <p class:list={['race-list-result', { 'race-list-muted': race.status !== 'finished' || !race.total }]}>{race.status === 'finished' ? race.total ?? 'Finished' : raceStatus[race.status]}</p>
         </li>)}</ol>
       </section>}
       <section class="life-journal" aria-labelledby="life-journal-title">
