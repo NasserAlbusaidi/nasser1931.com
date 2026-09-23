@@ -1,20 +1,20 @@
 {
   "wellness": {
-    "date": "2026-09-22",
-    "hrv": 46.0,
-    "sleep_hours": 5.57,
-    "sleep_score": 63.0,
+    "date": "2026-09-23",
+    "hrv": 48.0,
+    "sleep_hours": 6.74,
+    "sleep_score": 73.0,
     "sleep_quality": 3,
     "training_readiness": null,
-    "rhr": 57,
+    "rhr": 52,
     "avg_sleeping_hr": null,
     "body_battery": null,
-    "ctl": 36.967953,
-    "atl": 43.24518,
-    "ramp_rate": 1.6922455,
-    "ctl_load": 0.0,
-    "atl_load": 11.0,
-    "weight": 77.47,
+    "ctl": 37.03929,
+    "atl": 43.34566,
+    "ramp_rate": 0.8524666,
+    "ctl_load": 40.0,
+    "atl_load": 44.0,
+    "weight": 77.22,
     "fatigue": null,
     "stress": null,
     "soreness": null,
@@ -25,85 +25,22 @@
     "tsb": -6.3,
     "tsb_category": "productive",
     "ramp_rate_category": "low",
-    "days_since_hard": 1,
-    "days_since_intensity_hard": 1,
-    "days_since_load_hard": 4,
-    "days_since_recovery_costly": 1,
+    "days_since_hard": 2,
+    "days_since_intensity_hard": 2,
+    "days_since_load_hard": 5,
+    "days_since_recovery_costly": 2,
     "days_since_unknown_ride_load": null,
-    "days_since_long": 4,
+    "days_since_long": 5,
     "days_since_vo2": null,
     "quality_load_guard": {
-      "status": "BLOCK",
+      "status": "CLEAR",
       "window_days": 2,
-      "days_since": 1,
-      "trigger": "INTENSITY_HARD",
+      "days_since": null,
+      "trigger": "NO_BLOCKING_RIDE_IN_WINDOW",
       "reason_codes": [
-        "IF_AT_OR_ABOVE_0_85",
-        "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-        "QUALITY_INTENT_FROM_NAME",
-        "RECORDED_TSS_USED_UNADJUSTED",
-        "DURATION_AVAILABLE",
-        "HR_AVAILABLE",
-        "VI_AVAILABLE",
-        "HEAT_CONTEXT_MISSING"
+        "NO_BLOCKING_RIDE_IN_2_DAY_WINDOW"
       ],
-      "source_activity": {
-        "id": "i188710688",
-        "date": "2026-09-21",
-        "name": "Zwift-FTP Test 20min",
-        "classification": {
-          "model_version": "furnace-ride-load-v1",
-          "thresholds": {
-            "intensity_hard_if": 0.85,
-            "load_hard_tss": 150.0,
-            "load_hard_duration_min": 180.0,
-            "combined_load_tss": 120.0,
-            "combined_load_duration_min": 120.0,
-            "variable_ride_vi": 1.15,
-            "group_ride_vi": 1.08,
-            "hot_ride_c": 33.0
-          },
-          "intent": "quality",
-          "intent_source": "name",
-          "intensity_hard": true,
-          "intensity_hard_status": "HARD",
-          "load_hard": false,
-          "load_hard_status": "NOT_HARD",
-          "recovery_costly": true,
-          "recovery_costly_status": "COSTLY",
-          "quality_blocking": true,
-          "quality_guard_status": "BLOCK",
-          "reason_codes": [
-            "IF_AT_OR_ABOVE_0_85",
-            "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES",
-            "QUALITY_INTENT_FROM_NAME",
-            "RECORDED_TSS_USED_UNADJUSTED",
-            "DURATION_AVAILABLE",
-            "HR_AVAILABLE",
-            "VI_AVAILABLE",
-            "HEAT_CONTEXT_MISSING"
-          ],
-          "intensity_reason_codes": [
-            "IF_AT_OR_ABOVE_0_85"
-          ],
-          "load_reason_codes": [
-            "TSS_AND_DURATION_BELOW_LOAD_HARD_RULES"
-          ],
-          "context": {
-            "name": "Zwift-FTP Test 20min",
-            "recorded_tss": 73.0,
-            "duration_min": 56.1,
-            "intensity_factor": 0.886,
-            "variability_index": 1.119,
-            "average_hr_bpm": 150,
-            "max_hr_bpm": 189,
-            "hr_available": true,
-            "heat_c": null,
-            "wind_adjustment_applied": false,
-            "causal_injury_inference": false
-          }
-        }
-      }
+      "source_activity": null
     },
     "ride_load_classifications": [
       {
@@ -456,13 +393,13 @@
   },
   "annual_cycling": {
     "year": 2026,
-    "as_of": "2026-09-22",
+    "as_of": "2026-09-23",
     "distance_km": 3390.85,
     "activity_count": 83,
     "metric": "Unique Ride and VirtualRide distance by Intervals activity ID",
     "source_status": "FRESH",
     "stale": false,
-    "last_success_as_of": "2026-09-22"
+    "last_success_as_of": "2026-09-23"
   },
   "recent_activities": [
     {
@@ -913,10 +850,10 @@
     "stale": false,
     "error_code": null,
     "error_type": null,
-    "last_success_as_of": "2026-09-22"
+    "last_success_as_of": "2026-09-23"
   },
-  "_fetched_at": "2026-09-22T20:59:10",
-  "_today": "2026-09-22",
+  "_fetched_at": "2026-09-23T03:45:09",
+  "_today": "2026-09-23",
   "_source": "intervals.icu /wellness + /activities",
   "_wellness_lookback_days": 7,
   "_activity_lookback_days": 14
