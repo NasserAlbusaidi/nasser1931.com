@@ -7,10 +7,15 @@ import PageIntro from '../../components/PageIntro.astro';
 import EntryIndex from '../../components/EntryIndex.astro';
 import HomePulse from '../../components/HomePulse.astro';
 import training from '../../data/training.json';
+import raceData from '../../data/races.json';
 const entries = (await getCollection('field')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const journal = entries.map(entry => ({ ...entry.data, href: `/field/${entry.id}/` }));
-const ride = training.recent.find(activity => activity.type === 'bike');
+// last_ride is chosen from a wider window than `recent`; older snapshots lack it.
+const ride = ('last_ride' in training ? training.last_ride : null) ?? training.recent.find(activity => activity.type === 'bike');
 const formatDate = (date: string) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
+type Race = { date: string; name: string; kind: string; distance: string; status: 'finished' | 'dnf' | 'dns'; total: string | null; note?: string | null; splits: { leg: string; time: string; seconds: number }[] };
+const races = (raceData.races as Race[]).slice().sort((a, b) => b.date.localeCompare(a.date));
+const raceStatus = { finished: 'Finished', dnf: 'Did not finish', dns: 'Did not start' };
 const formatDuration = (minutes: number | null) => minutes == null ? null : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 ---
 <!doctype html>
@@ -21,7 +26,7 @@ const formatDuration = (minutes: number | null) => minutes == null ? null : `${M
     <main id="main-content" tabindex="-1" class="interior">
       <PageIntro title="Life" eyebrow="Cycling & life" description="Long rides, strength sessions, and reasons to close the laptop." meta="Muscat, Oman" />
       <section aria-labelledby="training-title">
-        <div class="interior-section-head"><h2 id="training-title">From the training log</h2><a href="/coach">Cycling briefing <span aria-hidden="true">→</span></a></div>
+        <div class="interior-section-head"><h2 id="training-title">From the training log</h2></div>
         <div class="life-log">
           <article class="latest-ride" aria-labelledby="latest-ride-title">
             <p class="interior-eyebrow">Last recorded ride</p>
@@ -30,6 +35,16 @@ const formatDuration = (minutes: number | null) => minutes == null ? null : `${M
           <div class="life-snapshot"><HomePulse /></div>
         </div>
       </section>
+      {races.length > 0 && <section id="races" class="life-races" aria-labelledby="races-title">
+        <div class="interior-section-head"><h2 id="races-title">Races</h2><span>{races.length} {races.length === 1 ? 'race' : 'races'}</span></div>
+        <ol class="race-list">{races.map(race => <li>
+          <time datetime={race.date}>{formatDate(race.date)}</time>
+          <div class="race-list-main"><h3>{race.name}</h3><p>{race.kind}{race.distance && ` · ${race.distance}`}</p>{race.note && <p>{race.note}</p>}
+            {race.splits.length > 0 && <dl>{race.splits.map(split => <div><dt>{split.leg}</dt><dd>{split.time}</dd></div>)}</dl>}
+          </div>
+          <p class:list={['race-list-result', { 'race-list-muted': race.status !== 'finished' || !race.total }]}>{race.status === 'finished' ? race.total ?? 'Finished' : raceStatus[race.status]}</p>
+        </li>)}</ol>
+      </section>}
       <section class="life-journal" aria-labelledby="life-journal-title">
         <div class="interior-section-head"><h2 id="life-journal-title">Field notes</h2><span>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span></div>
         {entries.length ? <EntryIndex entries={journal} /> : <p class="interior-empty">No field notes yet. More to write after the next ride.</p>}
@@ -47,7 +62,17 @@ const formatDuration = (minutes: number | null) => minutes == null ? null : `${M
   .latest-ride h3 { font-size: var(--text-title); font-weight: 400; line-height: 1.3; }
   .life-ride-meta { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; color: var(--muted); font-size: var(--text-label); margin-top: 1rem; }
   .life-snapshot { padding: 2rem; border-left: 1px solid var(--rule); }
-  .life-journal { margin-top: 3.5rem; }
+  .life-journal, .life-races { margin-top: 3.5rem; }
+  .race-list { list-style: none; margin: 0; padding: 0; }
+  .race-list li { display: grid; grid-template-columns: 11rem minmax(0, 1fr) auto; gap: 1.5rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); align-items: start; }
+  .race-list time { font: var(--text-label)/1.6 var(--font-mono); color: var(--muted); }
+  .race-list h3 { font-size: var(--text-title); font-weight: 400; line-height: 1.3; }
+  .race-list-main p { color: var(--muted); font-size: var(--text-label); margin: .35rem 0 0; }
+  .race-list dl { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin: .85rem 0 0; font: var(--text-label)/1.5 var(--font-mono); }
+  .race-list dt { display: inline; color: var(--muted); }
+  .race-list dd { display: inline; margin: 0 0 0 .4rem; }
+  .race-list-result { font: var(--text-lead)/1.3 var(--font-mono); color: var(--accent); margin: 0; }
+  .race-list-muted { color: var(--muted); font-size: var(--text-body); }
   @media (max-width: 900px) { .life-log { grid-template-columns: minmax(0, 1fr); } .latest-ride { padding: 2rem; } .life-snapshot { border-left: 0; border-top: 1px solid var(--rule); } }
-  @media (max-width: 540px) { .latest-ride, .life-snapshot { padding: 1.5rem 1.25rem; } .life-journal { margin-top: 2.5rem; } }
+  @media (max-width: 540px) { .latest-ride, .life-snapshot { padding: 1.5rem 1.25rem; } .life-journal, .life-races { margin-top: 2.5rem; } .race-list li { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; } .race-list time { grid-column: 1 / -1; } }
 </style>

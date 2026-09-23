@@ -13,7 +13,7 @@ import { readingAnchor } from '../../lib/reading-anchor';
 import { formatReadingDate } from '../../lib/reading-date';
 import '../../styles/reading.css';
 
-type Book = { title: string; author: string | null; status: string | null; rating: number | null; format: string | null; genres: string[]; started: string | null; finished: string | null; };
+type Book = { title: string; author: string | null; status: string | null; rating: number | null; format: string | null; genres: string[]; started: string | null; finished: string | null; progress?: number | null; pages?: number | null; cover_url?: string | null; };
 const currently: Book[] = data.currently_reading ?? [];
 const finished: Book[] = data.finished ?? [];
 const wantTo: Book[] = data.want_to_read ?? [];
@@ -77,8 +77,9 @@ const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}
             {currently.map(book => {
               const context = findBookSeries(book.title, book.author, series);
               return <li id={readingAnchor(book.title, book.author, 'current')}><article class="current-book">
-                <BookCover title={book.title} author={book.author} variant="current" />
+                <BookCover title={book.title} author={book.author} coverUrl={book.cover_url} variant="current" />
                 <div class="current-book-copy"><div class="current-topline"><span class="interior-eyebrow">On the go</span>{book.format && <span class="book-format format-pill">{book.format}</span>}</div><h3>{book.title}</h3>{book.author && <p class="current-author">{book.author}</p>}{book.started && <p class="current-started">Started {formatReadingDate(book.started)}</p>}
+                  {book.progress != null && <div class="current-progress"><div class="current-progress-label"><span>{book.progress}% read</span>{book.pages && <span>{Math.round(book.pages * book.progress / 100)} of {book.pages} pages</span>}</div><progress max="100" value={book.progress} aria-label={`${book.title}: ${book.progress}% read`}>{book.progress}%</progress></div>}
                   {context && <div class="current-series"><div><a href={`#series-${context.series.id}`}>{context.series.name} <span aria-hidden="true">↓</span></a><span>Book {context.book.position} of {context.series.total}</span></div><SeriesTrack books={context.series.books} name={context.series.name} compact /><p>{context.series.finishedCount} finished · {context.series.currentCount} reading</p></div>}
                 </div>
               </article></li>;
@@ -87,7 +88,7 @@ const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}
         </section>}
         {wantTo.length > 0 && <section class="planned-shelf" aria-labelledby="want-title">
           <div class="reading-card-head"><h2 id="want-title" class="interior-eyebrow">Want to read</h2><span>{bookCount(wantTo.length)}</span></div>
-          <ul class="planned-books">{wantTo.map(book => <li id={readingAnchor(book.title, book.author, 'wanted')}><BookCover title={book.title} author={book.author} variant="small" /><div><h3>{book.title}</h3>{book.author && <p>{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</div></li>)}</ul>
+          <ul class="planned-books">{wantTo.map(book => <li id={readingAnchor(book.title, book.author, 'wanted')}><BookCover title={book.title} author={book.author} coverUrl={book.cover_url} variant="small" /><div><h3>{book.title}</h3>{book.author && <p>{book.author}</p>}{book.format && <span class="book-format">{book.format}</span>}</div></li>)}</ul>
         </section>}
       </div>}
 
@@ -127,7 +128,7 @@ const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}
           {years.map(([year, books]) => <tbody aria-labelledby={`year-${year}`}>
             <tr class="reading-year-heading"><th colspan="5" scope="colgroup"><h3 id={`year-${year}`}>{year === 'undated' ? 'Undated' : year}</h3>{' '}<span>{bookCount(books.length)}</span></th></tr>
             {books.map(book => <tr class="finished-book" id={readingAnchor(book.title, book.author, 'finished')}>
-              <th scope="row" class="finished-title"><div class="finished-title-inner"><BookCover title={book.title} author={book.author} variant="small" /><span>{book.title}</span></div></th>
+              <th scope="row" class="finished-title"><div class="finished-title-inner"><BookCover title={book.title} author={book.author} coverUrl={book.cover_url} variant="small" /><span>{book.title}</span></div></th>
               <td class="book-author">{book.author}</td>
               <td class="book-format">{book.format}</td>
               <td class="book-rating">{book.rating != null ? <span class="rating-dots" role="img" aria-label={`Rated ${book.rating} out of 5`} title={`${book.rating} / 5`}>{[0, 1, 2, 3, 4].map(index => <span aria-hidden="true" style={`--rating-fill: ${Math.max(0, Math.min(1, book.rating! - index)) * 100}%`}></span>)}</span> : <span class="reading-sr-only">Not rated</span>}</td>

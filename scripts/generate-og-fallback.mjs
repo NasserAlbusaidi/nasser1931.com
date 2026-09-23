@@ -27,7 +27,6 @@ function drawText(str, size, x, y, fill) {
 
 const cards = [
   ['projects', 'Projects.', 'Apps, research, and experiments worth sharing.', '/builds'],
-  ['coach', 'Cycling coach.', 'A daily recommendation. A four-day outlook.', '/coach'],
   ['life', 'Life.', 'Long rides, strength sessions, and the training log.', '/field'],
   ['reading', 'On the shelf.', 'Currently reading and recently finished.', '/reading'],
   ['notes', 'Notes.', 'Small ideas, oddities, and things worth writing down.', '/stupidshit'],

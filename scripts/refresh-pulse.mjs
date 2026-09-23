@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Pulls a snapshot of recent training from intervals.icu and writes
-// src/data/training.json. Idempotent — only writes when content changes.
+// src/data/training.json, plus the next race on the calendar to
+// src/data/next-race.json. Idempotent — only writes when content changes.
 //
 // Env: INTERVALS_API_KEY, INTERVALS_ATHLETE_ID
 // Debug: PULSE_DEBUG=1 to dump raw payload shapes.
@@ -45,12 +46,15 @@ const TYPE_MAP = {
 	WeightTraining: 'workout'
 };
 
-// Recovery interpretation belongs to the coach engine; the public pulse shows activity volume.
+// The public pulse shows activity volume, not recovery interpretation.
 const main = async () => {
 	const after14 = isoDate(daysAgo(14));
+	// Activities reach further back than wellness so a gym-heavy stretch
+	// can't push the latest ride out of the snapshot.
+	const after30 = isoDate(daysAgo(30));
 
 	const [activities, wellness] = await Promise.all([
-		fetchJSON(`${BASE}/athlete/${ATHLETE_ID}/activities?oldest=${after14}&limit=200`),
+		fetchJSON(`${BASE}/athlete/${ATHLETE_ID}/activities?oldest=${after30}&limit=200`),
 		fetchJSON(`${BASE}/athlete/${ATHLETE_ID}/wellness?oldest=${after14}`)
 	]);
 
@@ -63,17 +67,21 @@ const main = async () => {
 		console.error(JSON.stringify(a[0], null, 2));
 	}
 
-	const recent = (activities || [])
+	const toSession = (a) => ({
+		date: (a.start_date_local || '').split('T')[0],
+		type: TYPE_MAP[a.type] || 'workout',
+		name: a.name || 'Session',
+		distance_km: a.distance ? Number((a.distance / 1000).toFixed(1)) : null,
+		duration_min: a.moving_time ? Math.round(a.moving_time / 60) : null
+	});
+	const sessions = (activities || [])
 		.filter((a) => ALLOWED_TYPES.has(a.type))
-		.sort((a, b) => (b.start_date_local || '').localeCompare(a.start_date_local || ''))
-		.slice(0, 3)
-		.map((a) => ({
-			date: (a.start_date_local || '').split('T')[0],
-			type: TYPE_MAP[a.type] || 'workout',
-			name: a.name || 'Session',
-			distance_km: a.distance ? Number((a.distance / 1000).toFixed(1)) : null,
-			duration_min: a.moving_time ? Math.round(a.moving_time / 60) : null
-		}));
+		.sort((a, b) => (b.start_date_local || '').localeCompare(a.start_date_local || ''));
+	const recent = sessions.slice(0, 3).map(toSession);
+	// Picked from the full window, not from `recent`: three gym sessions in a
+	// row would otherwise hide the ride and the site would claim there was none.
+	const rideActivity = sessions.find((a) => a.type === 'Ride');
+	const last_ride = rideActivity ? toSession(rideActivity) : null;
 
 	const since7 = daysAgo(7).getTime();
 	const last7 = (activities || []).filter((a) => {
@@ -103,8 +111,43 @@ const main = async () => {
 		form_tsb,
 		weekly_hours,
 		weekly_tss,
-		recent
+		recent,
+		last_ride
 	};
+
+	// Next race: the earliest RACE_A/B/C event within a year. Only public fields
+	// are kept (no event description, which can hold private notes). A failed
+	// lookup leaves the previous file alone rather than failing the pulse.
+	try {
+		const today = isoDate(new Date());
+		const inAYear = isoDate(daysAgo(-365));
+		const events = await fetchJSON(`${BASE}/athlete/${ATHLETE_ID}/events?oldest=${today}&newest=${inAYear}&category=RACE_A,RACE_B,RACE_C`);
+		const next = (events || [])
+			.filter((e) => /^RACE_/.test(e.category || '') && (e.start_date_local || '') >= today)
+			.sort((a, b) => (a.start_date_local || '').localeCompare(b.start_date_local || ''))[0];
+		const race = next
+			? {
+					date: next.start_date_local.split('T')[0],
+					name: next.name || 'Race',
+					priority: next.category.replace('RACE_', ''),
+					distance_km: next.distance ? Number((next.distance / 1000).toFixed(1)) : null
+				}
+			: null;
+		const racePath = path.resolve('src/data/next-race.json');
+		const raceJSON = JSON.stringify({ race }, null, '\t') + '\n';
+		let prevRace = null;
+		try {
+			prevRace = fs.readFileSync(racePath, 'utf8');
+		} catch {
+			// first run
+		}
+		if (prevRace !== raceJSON) {
+			fs.writeFileSync(racePath, raceJSON);
+			console.log(`Next race: ${race ? `${race.name} on ${race.date}` : 'none scheduled'}`);
+		}
+	} catch (error) {
+		console.warn(`Next-race lookup failed; keeping the previous file. ${error.message}`);
+	}
 
 	const outPath = path.resolve('src/data/training.json');
 	fs.mkdirSync(path.dirname(outPath), { recursive: true });

@@ -6,9 +6,9 @@
 
 Personal home of [Nasser Al Busaidi](https://nasser1931.com): software, cycling, experiments, and reading. Astro static build, deployed to Firebase Hosting. **Personal observatory** — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
 
-The homepage pairs Earth artwork with selected projects, a dated cycling recommendation, the training log, and five books. Rihla links to the App Store and Google Play; The Silent Creep and Einstein’s Travel Bureau are featured. Welcome posts stay in Notes and Life without occupying the homepage.
+The homepage pairs Earth artwork with selected projects, a race log, the training log, and a bookshelf. Rihla links to the App Store and Google Play; The Silent Creep and Einstein’s Travel Bureau are featured. Welcome posts stay in Notes and Life without occupying the homepage.
 
-The public coach is a read-only recommendation and four-day outlook. No operator controls, raw wellness payloads, or diagnostic reasoning are shipped to the browser. Source snapshots still exist in this public repository and its history. Section-specific social cards and responsive Astro images are included.
+Section-specific social cards and responsive Astro images are included.
 
 ## Stack
 
@@ -36,10 +36,9 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship
 /             personal introduction, selected projects, life, reading
 /builds       Projects — apps, research, and open source
 /paper        field report — long-form
-/field        Life — training snapshot and field notes
+/field        Life — training snapshot, races, and field notes
 /stupidshit   Notes — one-off ideas and oddities
 /reading      books, by year
-/coach        cycling briefing and workout details
 ```
 
 ## Files of interest

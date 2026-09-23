@@ -1,22 +1,32 @@
-name: Refresh training pulse
+name: Sync reading list from Hardcover + cache covers
+
+# Hardcover → src/data/reading.json (live progress), then mirror every cover
+# the shelf references into public/covers/. Commits + deploys only on diff.
+#
+# First switch from the StoryGraph snapshot:
+#   gh workflow run sync-hardcover.yml -f takeover=true
+# After that the scheduled runs keep it fresh. Without HARDCOVER_TOKEN the
+# Hardcover step is a no-op and only the cover cache runs.
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '15 */6 * * *'
   workflow_dispatch:
+    inputs:
+      takeover:
+        description: 'Replace the current (StoryGraph/Notion) snapshot with Hardcover'
+        type: boolean
+        default: false
 
-# Serialize with sync-paper so two bots never race to push to main.
 concurrency:
   group: bot-pushes-main
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      committed: ${{ steps.commit.outputs.committed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,25 +42,28 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Refresh pulse
+      - name: Sync from Hardcover
         env:
-          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
-          INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
-        run: node scripts/refresh-pulse.mjs
+          HARDCOVER_TOKEN: ${{ secrets.HARDCOVER_TOKEN }}
+          HARDCOVER_TAKEOVER: ${{ inputs.takeover && '1' || '' }}
+        run: node scripts/sync-hardcover.mjs
+
+      - name: Cache covers
+        run: node scripts/cache-covers.mjs
 
       - name: Commit if changed
         id: commit
         run: |
-          git config user.name "pulse-bot"
+          git config user.name "reading-bot"
           git config user.email "bot@nasser1931.com"
-          git add src/data/training.json src/data/next-race.json
+          git add src/data/reading.json src/data/cover-cache.json public/covers
           if git diff --cached --quiet; then
             echo "No changes — skipping commit and deploy."
             echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "chore: refresh training pulse"
-          git pull --rebase origin main
+          git commit -m "chore: sync reading list from Hardcover"
+          # Fail a stale push rather than rebasing old data over a newer snapshot.
           git push
           echo "committed=true" >> "$GITHUB_OUTPUT"
 

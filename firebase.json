@@ -27,6 +27,18 @@
           }
         ]
       }
+    ],
+    "redirects": [
+      {
+        "source": "/coach",
+        "destination": "/field",
+        "type": 301
+      },
+      {
+        "source": "/coach/**",
+        "destination": "/field",
+        "type": 301
+      }
     ]
   }
 }
