@@ -62,7 +62,12 @@ jobs:
             echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "chore: sync reading list from Hardcover"
+          # Name the commit after what changed: shelf data, covers, or both.
+          if git diff --cached --quiet -- src/data/reading.json; then
+            git commit -m "chore: cache book covers"
+          else
+            git commit -m "chore: sync reading list from Hardcover"
+          fi
           # Fail a stale push rather than rebasing old data over a newer snapshot.
           git push
           echo "committed=true" >> "$GITHUB_OUTPUT"

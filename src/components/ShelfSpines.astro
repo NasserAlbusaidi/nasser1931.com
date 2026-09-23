@@ -31,7 +31,9 @@ const luminance = (hex: string) => {
 const spineStyle = (book: Book) => {
   const cover = getBookCover(book.title, book.author, book.cover_url);
   const color = cover?.color ?? PALETTE[hash(book.title) % PALETTE.length];
-  const ink = luminance(color) > .35 ? '#10151F' : '#F4F1EA';
+  // Whichever text colour contrasts more with this spine.
+  const contrast = (a: string, b: string) => { const [x, y] = [luminance(a), luminance(b)]; return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const ink = contrast(color, '#10151F') >= contrast(color, '#F4F1EA') ? '#10151F' : '#F4F1EA';
   const height = book.pages ? Math.min(100, Math.max(74, 60 + book.pages / 25)) : 78 + (hash(book.title + (book.author ?? '')) % 23);
   return `--spine:${color};--spine-ink:${ink};--spine-h:${height.toFixed(0)}%`;
 };
@@ -71,7 +73,7 @@ const describe = (book: Book, state: 'current' | 'finished') => state === 'curre
   .spine-shelf { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; padding-bottom: .25rem; }
   .spines { list-style: none; margin: 0; padding: 0; display: flex; align-items: flex-end; gap: 4px; height: 20rem; min-width: min-content; border-bottom: 3px solid var(--rule); }
   .spine { flex: 0 0 3.1rem; min-width: 0; overflow: hidden; height: var(--spine-h); transition: flex-basis .35s ease, height .35s ease; }
-  .spine a { display: flex; height: 100%; color: var(--spine-ink); background: var(--spine); border-radius: 3px 3px 0 0; overflow: hidden; text-decoration: none; box-shadow: inset -6px 0 0 #0000001f, inset 1px 0 0 #ffffff1a; outline-offset: 3px; }
+  .spine a { display: flex; height: 100%; color: var(--spine-ink); background: var(--spine); border-radius: 3px 3px 0 0; overflow: hidden; text-decoration: none; box-shadow: inset -6px 0 0 #0000001f, inset 1px 0 0 #ffffff1a, inset 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent); outline-offset: 3px; }
   .spine-face { flex: 0 0 3.1rem; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: .75rem; min-height: 0; padding: .9rem 0 .75rem; writing-mode: vertical-rl; }
   .spine-title { font-size: var(--text-body); font-weight: 450; letter-spacing: .01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .spine-author { font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; opacity: .75; white-space: nowrap; }
