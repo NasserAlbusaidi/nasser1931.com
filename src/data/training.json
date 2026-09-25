@@ -1,13 +1,13 @@
 {
-  "updated": "2026-09-25T11:39:29.778Z",
-  "form_tsb": -40.4,
+  "updated": "2026-09-25T17:01:52.961Z",
+  "form_tsb": -24.6,
   "weekly_hours": 5.7,
   "weekly_tss": 251,
   "recent": [
     {
       "date": "2026-09-25",
       "type": "bike",
-      "name": "As Seeb Road Cycling",
+      "name": "Furnace / Endurance 180 min",
       "distance_km": 102.7,
       "duration_min": 218
     },
@@ -29,7 +29,7 @@
   "last_ride": {
     "date": "2026-09-25",
     "type": "bike",
-    "name": "As Seeb Road Cycling",
+    "name": "Furnace / Endurance 180 min",
     "distance_km": 102.7,
     "duration_min": 218
   }
