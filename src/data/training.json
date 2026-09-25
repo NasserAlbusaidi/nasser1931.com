@@ -1,9 +1,16 @@
 {
-  "updated": "2026-09-24T21:25:20.925Z",
-  "form_tsb": -15.4,
-  "weekly_hours": 5.1,
-  "weekly_tss": 193,
+  "updated": "2026-09-25T11:39:29.778Z",
+  "form_tsb": -40.4,
+  "weekly_hours": 5.7,
+  "weekly_tss": 251,
   "recent": [
+    {
+      "date": "2026-09-25",
+      "type": "bike",
+      "name": "As Seeb Road Cycling",
+      "distance_km": 102.7,
+      "duration_min": 218
+    },
     {
       "date": "2026-09-23",
       "type": "workout",
@@ -17,20 +24,13 @@
       "name": "06:00 / Upper pull / existing programme",
       "distance_km": null,
       "duration_min": 53
-    },
-    {
-      "date": "2026-09-20",
-      "type": "workout",
-      "name": "Strength",
-      "distance_km": null,
-      "duration_min": 50
     }
   ],
   "last_ride": {
-    "date": "2026-09-18",
+    "date": "2026-09-25",
     "type": "bike",
-    "name": "Friday Long / Group Ride",
-    "distance_km": 100.1,
-    "duration_min": 182
+    "name": "As Seeb Road Cycling",
+    "distance_km": 102.7,
+    "duration_min": 218
   }
 }
