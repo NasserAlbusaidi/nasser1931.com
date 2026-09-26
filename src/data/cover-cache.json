@@ -1,4 +1,202 @@
 {
+  "https://assets.hardcover.app/book_mappings/7332349/5249dbcbc118ae4ea68c37295c8386f96c341c95.jpeg": {
+    "path": "/covers/67cf3a9bb16a.webp",
+    "width": 400,
+    "height": 640,
+    "color": "#346845"
+  },
+  "https://assets.hardcover.app/book/430976/dfef2030-3801-4d50-9b8b-b543d321cef8.jpg": {
+    "path": "/covers/6d6b64a91004.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#eee0aa"
+  },
+  "https://assets.hardcover.app/books/312460/b054ec07-7893-4f0c-94ef-de4ca2bf47d6.jpg": {
+    "path": "/covers/e80124e87efa.webp",
+    "width": 292,
+    "height": 522,
+    "color": "#ec5725"
+  },
+  "https://assets.hardcover.app/edition/14849723/8fbeaf5167f4c972a60574d05aaf5902cecd7f2c.jpeg": {
+    "path": "/covers/865695559d2a.webp",
+    "width": 323,
+    "height": 500,
+    "color": "#cfc9ca"
+  },
+  "https://assets.hardcover.app/edition/19233232/82c0b2d09b9507231371aa536c374680e65a106a.jpeg": {
+    "path": "/covers/cb264db8c0fc.webp",
+    "width": 378,
+    "height": 500,
+    "color": "#b24919"
+  },
+  "https://assets.hardcover.app/edition/25324831/62863aee-ef50-475f-b5ec-742f9da59115.tiff": {
+    "path": "/covers/817a7fdc98d0.webp",
+    "width": 400,
+    "height": 589,
+    "color": "#443f38"
+  },
+  "https://assets.hardcover.app/edition/30401732/9ec8ea86-352f-441d-bb28-a02aeb9c0625.jpg": {
+    "path": "/covers/8971aee0c575.webp",
+    "width": 400,
+    "height": 612,
+    "color": "#ac3426"
+  },
+  "https://assets.hardcover.app/edition/30402149/2ea453587bfb7daf2061520edecba844d3f1847e.jpeg": {
+    "path": "/covers/b522836c0ac8.webp",
+    "width": 326,
+    "height": 500,
+    "color": "#551411"
+  },
+  "https://assets.hardcover.app/edition/30404045/ca96a39b-0709-4977-baad-86d67d3091be.jpg": {
+    "path": "/covers/5660d334bc4e.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#15511b"
+  },
+  "https://assets.hardcover.app/edition/30615176/581826ac-3db1-4e07-bcd1-351bdb3915e0.jpg": {
+    "path": "/covers/e95261b33d0f.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#545d57"
+  },
+  "https://assets.hardcover.app/edition/30805927/ab716664bcc1d505be08321269dc3420f095b808.jpeg": {
+    "path": "/covers/58251929174f.webp",
+    "width": 327,
+    "height": 500,
+    "color": "#7c807e"
+  },
+  "https://assets.hardcover.app/edition/30805932/284af54a-2341-4914-b831-e5c5b0347662.jpg": {
+    "path": "/covers/d6d5b9bb5fa0.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#113d55"
+  },
+  "https://assets.hardcover.app/edition/31472228/7cf5a512-2bfe-4f43-90a0-51fbcd470695.jpg": {
+    "path": "/covers/78f266f631b8.webp",
+    "width": 400,
+    "height": 591,
+    "color": "#56524a"
+  },
+  "https://assets.hardcover.app/edition/31508299/4043384b-1870-4dae-bd1f-389c98d8f6d9.jpg": {
+    "path": "/covers/15763dfd00fb.webp",
+    "width": 263,
+    "height": 400,
+    "color": "#6c0b0b"
+  },
+  "https://assets.hardcover.app/edition/31546165/5b3fed2c-460d-4ee7-a389-914b04883026.jpg": {
+    "path": "/covers/798b4146450b.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#544e12"
+  },
+  "https://assets.hardcover.app/edition/32944595/a7e36f33-4898-4a24-9ef9-b578b5a258bb.jpg": {
+    "path": "/covers/0167e6990657.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#563e3c"
+  },
+  "https://assets.hardcover.app/edition/33070500/d8f240e3-f054-4a85-a8f8-c0e32e5ceaac.jpg": {
+    "path": "/covers/870df9b5252e.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#561f10"
+  },
+  "https://assets.hardcover.app/edition/8582300/7992542-L.jpg": {
+    "path": "/covers/f051d836f577.webp",
+    "width": 338,
+    "height": 500,
+    "color": "#553711"
+  },
+  "https://assets.hardcover.app/editions/21716111/5323176149970177.jpg": {
+    "path": "/covers/78a41819bd4a.webp",
+    "width": 400,
+    "height": 608,
+    "color": "#dd8e44"
+  },
+  "https://assets.hardcover.app/editions/31227548/998469990702544.jpg": {
+    "path": "/covers/082f546d5993.webp",
+    "width": 400,
+    "height": 713,
+    "color": "#ce354a"
+  },
+  "https://assets.hardcover.app/editions/31469389/7597277688037378.jpg": {
+    "path": "/covers/31862593b536.webp",
+    "width": 333,
+    "height": 500,
+    "color": "#282a53"
+  },
+  "https://assets.hardcover.app/external_data/30192555/5c619426db9dce13752511c3e4dc94eb8528b678.jpeg": {
+    "path": "/covers/e96d4b47c1a0.webp",
+    "width": 316,
+    "height": 475,
+    "color": "#acd608"
+  },
+  "https://assets.hardcover.app/external_data/3125640/a3083d4341470b1f75fc76d73b420d7b210b53a8.jpeg": {
+    "path": "/covers/53a2e21dba86.webp",
+    "width": 98,
+    "height": 98,
+    "color": "#d2b432"
+  },
+  "https://assets.hardcover.app/external_data/38055482/5b6f67eadab9a8d39bd85c9dc1afb0be3dea405c.jpeg": {
+    "path": "/covers/18dcf20bf60e.webp",
+    "width": 312,
+    "height": 500,
+    "color": "#f49938"
+  },
+  "https://assets.hardcover.app/external_data/39781482/2e388752df08a3359387e45b2e6b063f2548e98b.jpeg": {
+    "path": "/covers/e9959372100a.webp",
+    "width": 324,
+    "height": 500,
+    "color": "#9a9999"
+  },
+  "https://assets.hardcover.app/external_data/42454452/f690f0a0ca301c40bf62fd7bfeb47791aec2afc5.jpeg": {
+    "path": "/covers/7fb3ffb9bcf9.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#313335"
+  },
+  "https://assets.hardcover.app/external_data/59040957/85107e0e3bbb8a1f74dce9aca1c21649d0a7c486.jpeg": {
+    "path": "/covers/a2e36ef114a8.webp",
+    "width": 128,
+    "height": 181,
+    "color": "#2e2e38"
+  },
+  "https://assets.hardcover.app/external_data/59379830/9c2bb75bf51699463a8decd3a41cb2c74f6d33e0.jpeg": {
+    "path": "/covers/0877fe6b79e2.webp",
+    "width": 98,
+    "height": 98,
+    "color": "#373d44"
+  },
+  "https://assets.hardcover.app/external_data/59507420/ec1ce4bf55c34acbc25eb44ecc97fe1b2ac10d17.jpeg": {
+    "path": "/covers/35a58390e5eb.webp",
+    "width": 128,
+    "height": 199,
+    "color": "#857368"
+  },
+  "https://assets.hardcover.app/external_data/59520595/b0bc833cdc4121bdb8db78d864a0628bd52323a5.jpeg": {
+    "path": "/covers/adb97b2c15aa.webp",
+    "width": 128,
+    "height": 189,
+    "color": "#123454"
+  },
+  "https://assets.hardcover.app/external_data/59871392/2dbef078d1765dd163bdc82345244e956dba672a.jpeg": {
+    "path": "/covers/2c34a1466a28.webp",
+    "width": 128,
+    "height": 200,
+    "color": "#c4221b"
+  },
+  "https://assets.hardcover.app/external_data/60034216/8c9d46451cde9584afb787e08bcd18d6a86c0a09.jpeg": {
+    "path": "/covers/d8ca2e7523e9.webp",
+    "width": 128,
+    "height": 197,
+    "color": "#516d30"
+  },
+  "https://assets.hardcover.app/external_data/61337380/d0b010bc43a0aa7811bca346dfef07bdd0104f1d.jpeg": {
+    "path": "/covers/bb320a177172.webp",
+    "width": 98,
+    "height": 131,
+    "color": "#13058f"
+  },
   "https://covers.openlibrary.org/b/id/10522898-L.jpg?default=false": {
     "path": "/covers/621a8c97d889.webp",
     "width": 333,

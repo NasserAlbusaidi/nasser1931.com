@@ -1,74 +1,118 @@
 {
-  "source": "storygraph",
-  "source_method": "csv",
-  "profile_url": "https://app.thestorygraph.com/profile/nasser1931",
-  "updated": "2026-09-20T10:32:25.367Z",
+  "source": "hardcover",
+  "source_method": "api",
+  "profile_url": "https://hardcover.app/@nasser",
+  "updated": "2026-09-26T14:23:18.663Z",
   "stats": {
-    "finished_total": 27,
-    "finished_this_year": 14
+    "finished_total": 29,
+    "finished_this_year": 11
   },
   "currently_reading": [
     {
-      "title": "Abaddon's Gate",
-      "author": "James S.A. Corey",
+      "title": "Cibola Burn",
+      "author": "James S. A. Corey",
       "status": "Reading",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 581,
+      "cover_url": "https://assets.hardcover.app/external_data/60034216/8c9d46451cde9584afb787e08bcd18d6a86c0a09.jpeg"
     }
   ],
   "finished": [
     {
-      "title": "Gods of Risk",
-      "author": "James S.A. Corey",
+      "title": "The Churn",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-09-25",
+      "finished": "2026-09-25",
+      "progress": null,
+      "pages": 75,
+      "cover_url": "https://assets.hardcover.app/external_data/59379830/9c2bb75bf51699463a8decd3a41cb2c74f6d33e0.jpeg"
+    },
+    {
+      "title": "Abaddon's Gate",
+      "author": "James S. A. Corey",
       "status": "Finished",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
       "started": "2026-09-17",
-      "finished": "2026-09-17"
+      "finished": "2026-09-24",
+      "progress": null,
+      "pages": 576,
+      "cover_url": "https://assets.hardcover.app/book/430976/dfef2030-3801-4d50-9b8b-b543d321cef8.jpg"
+    },
+    {
+      "title": "Gods of Risk",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-09-17",
+      "finished": "2026-09-17",
+      "progress": null,
+      "pages": null,
+      "cover_url": "https://assets.hardcover.app/edition/8582300/7992542-L.jpg"
     },
     {
       "title": "The Butcher of Anderson Station",
-      "author": "James S.A. Corey",
+      "author": "James S. A. Corey",
       "status": "Finished",
       "rating": null,
-      "format": "Audiobook",
+      "format": "Physical",
       "genres": [],
       "started": "2026-09-17",
-      "finished": "2026-09-17"
+      "finished": "2026-09-17",
+      "progress": null,
+      "pages": 40,
+      "cover_url": "https://assets.hardcover.app/external_data/59520595/b0bc833cdc4121bdb8db78d864a0628bd52323a5.jpeg"
     },
     {
       "title": "Caliban's War",
-      "author": "James S.A. Corey",
+      "author": "James S. A. Corey",
       "status": "Finished",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": "2026-09-16"
+      "finished": "2026-09-16",
+      "progress": null,
+      "pages": 443,
+      "cover_url": "https://assets.hardcover.app/external_data/59507420/ec1ce4bf55c34acbc25eb44ecc97fe1b2ac10d17.jpeg"
     },
     {
       "title": "Drive",
-      "author": "James S.A. Corey",
+      "author": "James S. A. Corey",
       "status": "Finished",
       "rating": null,
-      "format": "Audiobook",
+      "format": "Ebook",
       "genres": [],
       "started": "2026-09-16",
-      "finished": "2026-09-16"
+      "finished": "2026-09-16",
+      "progress": null,
+      "pages": 80,
+      "cover_url": "https://assets.hardcover.app/edition/31472228/7cf5a512-2bfe-4f43-90a0-51fbcd470695.jpg"
     },
     {
       "title": "Leviathan Wakes",
-      "author": "James S.A. Corey",
+      "author": "James S. A. Corey",
       "status": "Finished",
       "rating": 5,
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": "2026-09-06"
+      "finished": "2026-09-06",
+      "progress": null,
+      "pages": 571,
+      "cover_url": "https://assets.hardcover.app/edition/30805932/284af54a-2341-4914-b831-e5c5b0347662.jpg"
     },
     {
       "title": "Dune Messiah",
@@ -78,7 +122,10 @@
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": "2026-08-06"
+      "finished": "2026-08-06",
+      "progress": null,
+      "pages": 304,
+      "cover_url": "https://assets.hardcover.app/external_data/61337380/d0b010bc43a0aa7811bca346dfef07bdd0104f1d.jpeg"
     },
     {
       "title": "Project Hail Mary",
@@ -88,7 +135,10 @@
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": "2026-08-06"
+      "finished": "2026-08-06",
+      "progress": null,
+      "pages": 476,
+      "cover_url": "https://assets.hardcover.app/external_data/3125640/a3083d4341470b1f75fc76d73b420d7b210b53a8.jpeg"
     },
     {
       "title": "All Systems Red",
@@ -98,7 +148,10 @@
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": "2026-08-01"
+      "finished": "2026-08-01",
+      "progress": null,
+      "pages": 176,
+      "cover_url": "https://assets.hardcover.app/edition/30615176/581826ac-3db1-4e07-bcd1-351bdb3915e0.jpg"
     },
     {
       "title": "The Martian",
@@ -108,97 +161,62 @@
       "format": "Audiobook",
       "genres": [],
       "started": "2026-05-01",
-      "finished": "2026-06-07"
-    },
-    {
-      "title": "All These Worlds",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": "2026-04-17",
-      "finished": "2026"
-    },
-    {
-      "title": "For We Are Many",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": null,
-      "finished": "2026"
-    },
-    {
-      "title": "Heaven's River",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": "2026",
-      "finished": "2026"
-    },
-    {
-      "title": "Not Till We Are Lost",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": null,
-      "finished": "2026"
-    },
-    {
-      "title": "We Are Legion",
-      "author": "Dennis E. Taylor",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": null,
-      "finished": "2026"
+      "finished": "2026-06-07",
+      "progress": null,
+      "pages": 385,
+      "cover_url": "https://assets.hardcover.app/editions/21716111/5323176149970177.jpg"
     },
     {
       "title": "Dune",
       "author": "Frank Herbert",
       "status": "Finished",
       "rating": 5,
-      "format": "Audiobook",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": "2025-02-04"
+      "finished": "2025-02-04",
+      "progress": null,
+      "pages": 896,
+      "cover_url": "https://assets.hardcover.app/books/312460/b054ec07-7893-4f0c-94ef-de4ca2bf47d6.jpg"
     },
     {
       "title": "Solaris",
       "author": "Stanisław Lem",
       "status": "Finished",
       "rating": 4,
-      "format": "Paperback",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": "2024-05-08"
+      "finished": "2024-05-08",
+      "progress": null,
+      "pages": 328,
+      "cover_url": "https://assets.hardcover.app/external_data/59040957/85107e0e3bbb8a1f74dce9aca1c21649d0a7c486.jpeg"
     },
     {
-      "title": "Nineteen Eighty-Four",
+      "title": "1984",
       "author": "George Orwell",
       "status": "Finished",
       "rating": null,
-      "format": "Paperback",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": "2024-02-20"
+      "finished": "2024-02-20",
+      "progress": null,
+      "pages": 384,
+      "cover_url": "https://assets.hardcover.app/edition/25324831/62863aee-ef50-475f-b5ec-742f9da59115.tiff"
     },
     {
       "title": "A Clash of Kings",
       "author": "George R.R. Martin",
       "status": "Finished",
       "rating": 4,
-      "format": "Audiobook",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": "2016-10-08"
+      "finished": "2016-10-08",
+      "progress": null,
+      "pages": 776,
+      "cover_url": "https://assets.hardcover.app/edition/30402149/2ea453587bfb7daf2061520edecba844d3f1847e.jpeg"
     },
     {
       "title": "A Game of Thrones",
@@ -208,17 +226,23 @@
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": "2016-08-03"
+      "finished": "2016-08-03",
+      "progress": null,
+      "pages": 694,
+      "cover_url": "https://assets.hardcover.app/external_data/42454452/f690f0a0ca301c40bf62fd7bfeb47791aec2afc5.jpeg"
     },
     {
       "title": "A Dance with Dragons",
       "author": "George R.R. Martin",
       "status": "Finished",
       "rating": null,
-      "format": "Audiobook",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 1016,
+      "cover_url": "https://assets.hardcover.app/edition/30805927/ab716664bcc1d505be08321269dc3420f095b808.jpeg"
     },
     {
       "title": "A Feast for Crows",
@@ -228,37 +252,88 @@
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 1106,
+      "cover_url": "https://assets.hardcover.app/edition/30401732/9ec8ea86-352f-441d-bb28-a02aeb9c0625.jpg"
     },
     {
       "title": "A Knight of the Seven Kingdoms",
       "author": "George R.R. Martin",
       "status": "Finished",
       "rating": null,
-      "format": "Ebook",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 355,
+      "cover_url": "https://assets.hardcover.app/edition/14849723/8fbeaf5167f4c972a60574d05aaf5902cecd7f2c.jpeg"
     },
     {
       "title": "A Storm of Swords",
       "author": "George R.R. Martin",
       "status": "Finished",
       "rating": null,
-      "format": "Audiobook",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 992,
+      "cover_url": "https://assets.hardcover.app/book_mappings/7332349/5249dbcbc118ae4ea68c37295c8386f96c341c95.jpeg"
     },
     {
-      "title": "Fire & Blood: 300 Years Before a Game of Thrones",
+      "title": "All These Worlds",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-04-17",
+      "finished": null,
+      "progress": null,
+      "pages": 282,
+      "cover_url": "https://assets.hardcover.app/edition/33070500/d8f240e3-f054-4a85-a8f8-c0e32e5ceaac.jpg"
+    },
+    {
+      "title": "Fire & Blood",
       "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": null,
+      "format": "Physical",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 706,
+      "cover_url": "https://assets.hardcover.app/edition/31508299/4043384b-1870-4dae-bd1f-389c98d8f6d9.jpg"
+    },
+    {
+      "title": "For We Are Many",
+      "author": "Dennis E. Taylor",
       "status": "Finished",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 320,
+      "cover_url": "https://assets.hardcover.app/edition/31546165/5b3fed2c-460d-4ee7-a389-914b04883026.jpg"
+    },
+    {
+      "title": "Heaven's River",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 632,
+      "cover_url": "https://assets.hardcover.app/edition/30404045/ca96a39b-0709-4977-baad-86d67d3091be.jpg"
     },
     {
       "title": "Jurassic Park",
@@ -268,27 +343,62 @@
       "format": "Ebook",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 466,
+      "cover_url": "https://assets.hardcover.app/editions/31227548/998469990702544.jpg"
+    },
+    {
+      "title": "Not Till We Are Lost",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Ebook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 340,
+      "cover_url": "https://assets.hardcover.app/editions/31469389/7597277688037378.jpg"
     },
     {
       "title": "The Lost World",
       "author": "Michael Crichton",
       "status": "Finished",
       "rating": null,
-      "format": "Paperback",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 90,
+      "cover_url": "https://assets.hardcover.app/external_data/30192555/5c619426db9dce13752511c3e4dc94eb8528b678.jpeg"
     },
     {
-      "title": "The World of Ice & Fire",
-      "author": "Linda Antonsson, Elio M. García Jr., George R.R. Martin",
+      "title": "The World of Ice and Fire: The Untold History of Westeros and the Game of Thrones",
+      "author": "Elio M. García Jr.",
       "status": "Finished",
       "rating": null,
-      "format": "Hardcover",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 338,
+      "cover_url": "https://assets.hardcover.app/edition/19233232/82c0b2d09b9507231371aa536c374680e65a106a.jpeg"
+    },
+    {
+      "title": "We Are Legion",
+      "author": "Dennis E. Taylor",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 299,
+      "cover_url": "https://assets.hardcover.app/external_data/38055482/5b6f67eadab9a8d39bd85c9dc1afb0be3dea405c.jpeg"
     }
   ],
   "want_to_read": [
@@ -300,17 +410,38 @@
       "format": "Audiobook",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": null,
+      "cover_url": "https://assets.hardcover.app/edition/32944595/a7e36f33-4898-4a24-9ef9-b578b5a258bb.jpg"
     },
     {
-      "title": "Three Cups of Tea: One Man's Mission to Promote Peace . . . One School at a Time",
-      "author": "Greg Mortenson, David Oliver Relin",
+      "title": "Three Cups of Tea",
+      "author": "Greg Mortenson",
       "status": "Want to Read",
       "rating": null,
-      "format": "Paperback",
+      "format": "Physical",
       "genres": [],
       "started": null,
-      "finished": null
+      "finished": null,
+      "progress": null,
+      "pages": 349,
+      "cover_url": "https://assets.hardcover.app/external_data/39781482/2e388752df08a3359387e45b2e6b063f2548e98b.jpeg"
+    }
+  ],
+  "dropped": [
+    {
+      "title": "The Da Vinci Code",
+      "author": "Dan Brown",
+      "status": "Dropped",
+      "rating": null,
+      "format": "Ebook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 600,
+      "cover_url": "https://assets.hardcover.app/external_data/59871392/2dbef078d1765dd163bdc82345244e956dba672a.jpeg"
     }
   ]
 }
