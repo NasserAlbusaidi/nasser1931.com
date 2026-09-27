@@ -8,8 +8,10 @@ import Header from '../components/Header.astro';
 import ReadingSource from '../components/ReadingSource.astro';
 import ShelfSpines from '../components/ShelfSpines.astro';
 import RaceCard from '../components/RaceCard.astro';
+import WorldsCard from '../components/WorldsCard.astro';
 import reading from '../data/reading.json';
-import training from '../data/training.json';
+import nextRace from '../data/next-race.json';
+import { races } from '../lib/races';
 import builds from '../data/builds.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/home.css';
@@ -17,20 +19,14 @@ import '../styles/home.css';
 const books = [...reading.currently_reading, ...reading.finished]
   .filter((book, index, all) => all.findIndex(other => other.title === book.title && other.author === book.author) === index)
   .slice(0, 5);
-// last_ride is chosen from a wider window than `recent`; older snapshots lack it.
-const ride = ('last_ride' in training ? training.last_ride : null) ?? training.recent.find(activity => activity.type === 'bike');
-const strength = training.recent.find(activity => activity.type === 'workout');
+const upcoming = (nextRace as { race: { date: string; name: string } | null }).race;
+const latestFinish = races.find(race => race.status === 'finished');
 const rihla = builds.builds.find(build => build.slug === 'rihla');
-const shortProjects = ['silent-creep', 'einsteins-travel-bureau'].flatMap(slug => builds.builds.filter(build => build.slug === slug));
-const summaries: Record<string, string> = {
-  'silent-creep': 'A 1,300-day study of my own training, eating, and weight. Built with Python and PyMC.',
-  'einsteins-travel-bureau': 'Plan a trip near the speed of light and see how differently time passes.',
-};
+const einstein = builds.builds.find(build => build.slug === 'einsteins-travel-bureau');
 const date = (value: string | Date) => {
   const parsed = value instanceof Date ? value : new Date(value);
   return Number.isFinite(parsed.getTime()) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed) : null;
 };
-const duration = (minutes: number | null) => minutes == null ? null : minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 ---
 <!doctype html>
 <html lang="en">
@@ -60,7 +56,8 @@ const duration = (minutes: number | null) => minutes == null ? null : minutes < 
         <aside class="now-strip" aria-label="What I’m up to">
           <div class="now-heading"><span class="eyebrow">Now</span><span>A few things in motion.</span></div>
           <a class="now-item" href="#rihla"><span class="eyebrow">Shipped</span><strong>Rihla — on iOS &amp; Android</strong><span>App Store · Google Play <span aria-hidden="true">↓</span></span></a>
-          {ride && <a class="now-item" href="/field"><span class="eyebrow">Riding</span><strong>{ride.distance_km != null ? `${ride.distance_km} km` : 'The latest ride'}</strong><span>{date(ride.date)}{ride.duration_min != null && ` · ${duration(ride.duration_min)}`} <span aria-hidden="true">→</span></span></a>}
+          {upcoming ? <a class="now-item" href="/races"><span class="eyebrow">Racing next</span><strong>{upcoming.name}</strong><span>{date(upcoming.date)} <span aria-hidden="true">→</span></span></a>
+            : latestFinish && <a class="now-item" href="/races"><span class="eyebrow">Last race</span><strong>{latestFinish.name}{latestFinish.total && ` · ${latestFinish.total}`}</strong><span>{date(latestFinish.date)} <span aria-hidden="true">→</span></span></a>}
           {books[0] && <a class="now-item" href="/reading"><span class="eyebrow">{reading.currently_reading.length ? 'Reading' : 'From the shelf'}</span><strong>{books[0].title}</strong><span>{books[0].author} <span aria-hidden="true">→</span></span></a>}
         </aside>
 
@@ -82,21 +79,12 @@ const duration = (minutes: number | null) => minutes == null ? null : minutes < 
 
           <div class="supporting-projects">
             <RaceCard />
-            {shortProjects.map(project => <article class="supporting-project" aria-labelledby={`home-${project.slug}`}>
-              <ProjectPreview project={project.slug} variant="card" />
-              <div class="supporting-copy"><p class="eyebrow">{project.slug === 'silent-creep' ? 'Personal research · Published' : 'An experiment in physics'}</p><h3 id={`home-${project.slug}`}>{project.name}</h3><p class="project-description">{summaries[project.slug]}</p></div>
-              <div class="project-bottom"><span>{project.stack.join(' · ')}</span><a href={project.url ?? project.repo ?? '/builds'}>{project.slug === 'silent-creep' ? 'Read the study' : 'Try the demo'} <span aria-hidden="true">{project.url?.startsWith('/') ? '→' : '↗'}</span></a></div>
-            </article>)}
-          </div>
-        </section>
-
-        <section class="life-section" id="life" aria-labelledby="life-title">
-          <div class="life-copy"><p class="eyebrow">Life · Cycling</p><h2 id="life-title">Out for<br /><em>the long ride.</em></h2><p>Cycling, strength sessions, and a reason to close the laptop.</p><a class="text-link" href="/field">View the training log <span aria-hidden="true">→</span></a></div>
-          <div class="ride-note">
-            <span class="eyebrow">Last recorded ride</span>
-            {ride ? <><div class="ride-distance">{ride.distance_km != null && <>{ride.distance_km}<span>km</span></>}</div><p class="ride-name">{ride.name}</p><p class="ride-meta"><time datetime={ride.date}>{date(ride.date)}</time>{ride.duration_min != null && <span>{duration(ride.duration_min)}</span>}</p></> : <p class="ride-name">No ride in this snapshot.</p>}
-            <dl class="ride-stats"><div><dt>Hours in recorded week</dt><dd>{training.weekly_hours} <small>h</small></dd></div><div><dt>Training load, same week</dt><dd>{training.weekly_tss} <small>TSS</small></dd></div>{strength && <div><dt>{strength.name} · {date(strength.date)}</dt><dd>{duration(strength.duration_min)}</dd></div>}</dl>
-            <p class="snapshot-date">Snapshot updated <time datetime={training.updated}>{date(training.updated)}</time></p>
+            {einstein && <article class="supporting-project" aria-labelledby="home-einstein">
+              <ProjectPreview project={einstein.slug} variant="card" />
+              <div class="supporting-copy"><p class="eyebrow">An experiment in physics</p><h3 id="home-einstein">{einstein.name}</h3><p class="project-description">Plan a trip near the speed of light and see how differently time passes.</p></div>
+              <div class="project-bottom"><span>{einstein.stack.join(' · ')}</span><a href={einstein.url ?? einstein.repo ?? '/builds'}>Try the demo <span aria-hidden="true">↗</span></a></div>
+            </article>}
+            <WorldsCard />
           </div>
         </section>
 

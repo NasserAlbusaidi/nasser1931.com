@@ -1,4 +1,4 @@
-// Shared race-log helpers for the homepage card and /field#races.
+// Shared race-log helpers for the homepage card and /races.
 import raceData from '../data/races.json';
 
 export type Split = { leg: string; time: string; seconds: number; km?: number };

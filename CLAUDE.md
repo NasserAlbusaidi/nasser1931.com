@@ -4,15 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # nasser1931.com
 
-Personal home for software, cycling, reading, and experiments. Astro static build, deployed to Firebase Hosting. The field report at `/paper` connects the work and training tracks.
+Personal home for software, racing, reading, and experiments. Astro static build, deployed to Firebase Hosting.
 
 ## Design System
 
-Read **DESIGN.md** before visual changes. The current direction is a space-centric personal observatory, requested in September 2026. The homepage uses original fictional planetary artwork, a full Arabia-facing Earth, large Outfit display type, self-hosted IBM Plex Mono labels, seven shared type sizes, dark blue-black surfaces, and amber accents. Preserve the clear personal introduction and visible work, cycling, notes, and reading. Default to dark while honoring saved `np-theme`; the light alternative uses lunar gray. On phones the globe follows the text; never crop the sphere or place small copy over it. Project screenshots come from the real apps, with source provenance recorded in src/assets/projects/sources.json. Decorative numbering is retired. See `src/pages/index.astro` and `src/styles/home.css`. Preserve existing data syncs, URLs, generated paper content, and Firebase architecture.
-
-## Stale sibling docs — don't trust as source of truth
-
-- `TODO.md` is a session-handoff from 2026-04-26. All P0/P1 items in it have long since shipped. Ignore unless cleaning it up.
+Read **DESIGN.md** before visual changes. The current direction is a space-centric personal observatory, requested in September 2026. The homepage uses original fictional planetary artwork, a full Arabia-facing Earth, large Outfit display type, self-hosted IBM Plex Mono labels, seven shared type sizes, dark blue-black surfaces, and amber accents. Preserve the clear personal introduction and visible work, races, notes, and reading. Default to dark while honoring saved `np-theme`; the light alternative uses lunar gray. On phones the globe follows the text; never crop the sphere or place small copy over it. Project screenshots come from the real apps, with source provenance recorded in src/assets/projects/sources.json. Decorative numbering is retired. See `src/pages/index.astro` and `src/styles/home.css`. Preserve existing data syncs, URLs (and the redirects for retired ones), and Firebase architecture.
 
 ## Stack
 
@@ -36,16 +32,14 @@ The Firebase project ID is **`nasser-portfolio`**, not `nasser1931`. A 2026-04-2
 
 ```bash
 npm run dev                                          # local dev server, http://localhost:4321
-npm run dev:paper                                    # dev + chokidar watcher syncing the paper + figures from ProjecrFurnance
-npm run sync-paper                                   # one-shot mirror of the paper + figures from ProjecrFurnance
-npm run refresh-pulse                                # fetch latest training data from intervals.icu, write src/data/training.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
+npm test                                             # node --test: firebase.json redirects + StoryGraph importer
+npm run refresh-next-race                            # write the next intervals.icu race to src/data/next-race.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
 npm run refresh-reading                              # fetch reading list from Notion, write src/data/reading.json (needs NOTION_TOKEN env var)
 npm run sync-hardcover                               # pull the shelf + progress from Hardcover (needs HARDCOVER_TOKEN; HARDCOVER_TAKEOVER=1 to replace another source)
 npm run cache-covers                                 # mirror every referenced cover into public/covers + src/data/cover-cache.json (needs open network)
-npm run sync-posts                                   # fetch Published posts from Notion, write src/content/{stupidshit,field}/*.md (needs NOTION_TOKEN; defaults to known Posts db)
-npm run generate-og                                  # regenerate src/assets/og-fallback.jpg (one-shot; re-run when the OG look changes)
-gh workflow run refresh-pulse.yml                    # easier: run the same refresh on CI; commits + pushes only on diff
-gh workflow run sync-paper.yml                       # manually trigger the project-furnace → /paper sync (also runs every 30min, plus instant via webhook from project-furnace)
+npm run sync-posts                                   # fetch Published posts from Notion, write src/content/stupidshit/*.md (needs NOTION_TOKEN; defaults to known Posts db)
+npm run generate-og                                  # regenerate the section cards in public/social/ (deterministic; re-run when the OG look or a section changes)
+gh workflow run refresh-next-race.yml                # easier: run the same refresh on CI; commits + pushes only on diff
 gh workflow run sync-reading.yml                     # manually trigger the Notion → /reading sync (also runs every 6h)
 gh workflow run sync-posts.yml                       # manually trigger the Notion → posts sync (also runs every 30min)
 gh workflow run sync-hardcover.yml                   # Hardcover → /reading sync + cover cache (also runs every 6h); add -f takeover=true once to switch from StoryGraph
@@ -71,67 +65,40 @@ For one-off manual deploys, the legacy command above still works — useful for 
 src/
 ├── consts.ts                  ← SITE_TITLE, SITE_DESCRIPTION
 ├── pages/
-│   ├── index.astro            ← home page, features Rihla and the race log
-│   ├── paper/
-│   │   └── index.md           ← /paper (synced from endurance-license/study.md)
-│   ├── field/                 ← /field index + dynamic [...slug] route
+│   ├── index.astro            ← home page: Rihla, then Race log / Einstein / Worlds I'm in cards, then the shelf
+│   ├── builds/                ← /builds (Projects)
+│   ├── races/                 ← /races race log
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
-│   └── reading/               ← /reading stub
+│   └── reading/               ← /reading
 ├── content/
-│   ├── field/                 ← /field entries (zod schema: title, summary, date, optional stats {swim,bike,run,total,power,hr,distance}, optional notion_id)
 │   └── stupidshit/            ← /stupidshit entries (zod schema: title, summary, date, optional tags[], optional notion_id)
 ├── layouts/
-│   ├── Entry.astro            ← shared layout for /field + /stupidshit entries
-│   └── Paper.astro            ← long-form layout for /paper
+│   └── Entry.astro            ← layout for /stupidshit entries
 ├── components/
-│   ├── Header.astro           ← nav: Projects / Notes / Life / Reading + theme toggle
+│   ├── Header.astro           ← nav: Projects / Notes / Races / Reading + theme toggle
+│   ├── RaceCard.astro         ← homepage race card
+│   ├── WorldsCard.astro       ← homepage series card (from reading-series.json + the shelf)
 │   ├── Footer.astro
 │   ├── BaseHead.astro
 │   ├── HeaderLink.astro
 │   ├── ThemeToggle.astro      ← light/dark toggle (FOUC-safe boot in BaseHead)
 │   └── FormattedDate.astro
-public/
-└── paper/
-    └── figures/               ← PNG figures (synced from endurance-license/figures/)
 ```
 
-## The paper
+## Retired sections
 
-Single-source paper rendered at `/paper`.
+Removed on 27 September 2026 at the owner's request; see the redirects under firebase.json.
 
-- **Source of truth:** `NasserAlbusaidi/project-furnace` (private repo) at `paper/endurance-license/study.md` plus its sibling `figures/` directory. **Canonical edit flow: commit + push to project-furnace; CI auto-syncs to this repo.** Do NOT hand-edit `src/pages/paper/index.md` — it's a generated artifact and will be overwritten by the next sync.
-- **Auto-sync:** `.github/workflows/sync-paper.yml` runs every 30 minutes (cron `*/30 * * * *`), plus `workflow_dispatch` and `repository_dispatch[paper-update]` (left wired for a future webhook from project-furnace if 30min lag is too slow). It checks out project-furnace via the `PAPER_REPO_SSH_KEY` deploy key, runs `sync-paper` + `refresh-paper-log`, then commits + builds + deploys *only when the diff is non-empty*. Frontmatter (title, subtitle, byline, eyebrow, OG image) is hard-coded in `scripts/sync-paper.mjs`.
-- **Editing log:** Visible at the foot of `/paper`. The 8 most recent commits to `paper/**` in project-furnace, sourced from `src/data/paper-log.json` (written by `scripts/refresh-paper-log.mjs`). The byline gets a "last edited Xh ago · N commits this week" stamp; the paper editing log retains its relative timestamp. All relative timestamps recompute in the browser from `data-iso` so static HTML doesn't show a stale build-time value.
-- **Local fallback (offline editing):** `npm run sync-paper` still works against `~/Desktop/Personal/ProjecrFurnance` (which is a local clone of project-furnace). Use this for previewing changes before pushing — but the canonical publish path is push-to-project-furnace, not local sync + commit-here.
-- **Concurrency:** sync-paper, refresh-pulse, and sync-reading all share `concurrency.group: bot-pushes-main` so the three bots never race to push to main. Each also `git pull --rebase origin main` before push as belt-and-suspenders.
-- **Webhook from project-furnace:** `.github/workflows/notify-site.yml` lives in project-furnace and fires `repository_dispatch[paper-update]` to this repo on every push that touches `paper/**`. That cuts sync latency from up-to-30min to ~10s. Auth is via `SITE_DISPATCH_TOKEN` secret in project-furnace, currently set to a copy of the user's gh CLI token (full repo+workflow scope). For a tighter security posture, swap for a fine-grained PAT scoped to nasser1931.com only with Actions:write — but for a solo private repo this is fine.
-
-Workflow (local, mostly for offline editing):
-
-```bash
-npm run dev:paper        # astro dev + watcher; figure changes in local ProjecrFurnance auto-sync and HMR-reload
-npm run sync-paper       # one-shot sync of the paper + figures from local ProjecrFurnance
-npm run refresh-paper-log  # rebuild src/data/paper-log.json from local ProjecrFurnance git log
-PAPER_SOURCE=/some/other/path npm run sync-paper  # override the source dir
-gh workflow run sync-paper.yml  # easier: run the same sync on CI; commits + pushes only on diff
-```
+- **Life (`/field`) and the training pulse.** The ride snapshot, `HomePulse`, `training.json`, the `field` content collection, and the Life nav link are gone. Races moved to `/races`.
+- **The Silent Creep (`/paper`).** The study, its figures, the paper log, and the `sync-paper` workflow are gone. The study stays private in `NasserAlbusaidi/project-furnace`. Do not re-add a sync from that repo without the owner asking.
 
 ## Layout details
 
-`src/layouts/Paper.astro`:
-- Reading column: 720px max-width, 1.05rem / 1.7 line-height (long-form prose).
-- Figures break out wider via `figure { margin-left: 50%; transform: translateX(-50%); width: min(var(--container-figure), calc(100vw - 2.5rem)); }` (`--container-figure` is 1080px).
-- Captions render via `<figcaption>` styled italic gray; the `Figure N.` prefix is bolded.
-- All section H2s have `margin-top: 2.4em` for clear section breaks.
-
 `src/pages/index.astro`:
-- The homepage features Rihla with separate App Store and Google Play links plus a secondary source link. The race card (`RaceCard.astro`) uses one link; do not nest anchors. The Silent Creep and Einstein’s Travel Bureau are also featured.
-
-Share button (Paper layout):
-- `Paper.astro` ships an inline-JS share button under the prose. Uses `navigator.share()` when available, falls back to `navigator.clipboard.writeText()` with a "link copied" status. Disable per-page by passing `share: false` in frontmatter.
+- The homepage features Rihla with separate App Store and Google Play links plus a secondary source link. Below it, three supporting cards: Race log (`RaceCard.astro`), Einstein’s Travel Bureau, and Worlds I’m in (`WorldsCard.astro`). Each card uses one link; do not nest anchors.
 
 OG fallback image:
-- `BaseHead.astro` maps the homepage and section routes to distinct images in `public/social/`. `npm run generate-og` regenerates the five section typography cards. The homepage has generated Earth artwork. Article pages use their own image when supplied and otherwise omit inherited images.
+- `BaseHead.astro` maps the homepage and section routes to distinct images in `public/social/`. `npm run generate-og` regenerates the four section typography cards (projects, races, reading, notes). The homepage has generated Earth artwork. Article pages use their own image when supplied and otherwise omit inherited images.
 
 ## DNS records (Route 53, hosted zone `nasser1931.com.`)
 
@@ -144,17 +111,14 @@ Both records must be at the apex. In Route 53, **leave the Name field empty** to
 
 `www.nasser1931.com` is **not configured**. Visitors typing `www` will fail. To add: re-add the custom domain in Firebase with the "redirect www → apex" option, or add a manual record in Route 53.
 
-## The training pulse
+## The race bot
 
-The home page renders a dated ride summary, and `/field` (Life) renders the last recorded ride, trailing seven-day totals, and the available recent sessions using HomePulse, sourced from `src/data/training.json`. The JSON is a committed snapshot — visitors get whatever was last pushed. `last_ride` is picked from a 30-day activity window, separately from the capped `recent` list, so a run of gym sessions can't make the site claim there was no ride. The same script writes `src/data/next-race.json` from intervals.icu RACE_A/B/C calendar events (name, date, priority, distance only; never the event description).
+`scripts/refresh-next-race.mjs` writes `src/data/next-race.json` from intervals.icu RACE_A/B/C calendar events (name, date, priority, distance only; never the event description, which can hold private notes).
 
-- **Source:** intervals.icu API (which is fed by Garmin → intervals.icu sync).
-- **Refresh:** `.github/workflows/refresh-pulse.yml` runs on cron `0 */6 * * *` plus `workflow_dispatch`. The script (`scripts/refresh-pulse.mjs`) fetches the last 14 days of activities + wellness, writes `src/data/training.json`, and the workflow commits + pushes **only if the snapshot diff is non-empty** — so quiet days don't trigger a redeploy.
-- **Form translation:** TSB = CTL − ATL. `> +5` → `fresh`, `−10..+5` → `neutral`, `< −10` → `fatigued`. Standard TrainingPeaks bands.
-- **Component:** `src/components/HomePulse.astro` renders trailing seven-day hours/TSS and recorded form, plus a recent-session disclosure that starts open. Keep the absolute snapshot date visible; a `data-snapshot` span adds relative age in the browser. The recent list is capped, not the full training history.
+- **Refresh:** `.github/workflows/refresh-next-race.yml` runs on cron `0 */6 * * *` plus `workflow_dispatch`, and commits + deploys **only if the file changed**. A failed lookup fails the run; it does not overwrite the file.
 - **Secrets (GitHub Actions):** `INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID`. Local credential mirror lives in `~/Desktop/Personal/Portfolio/.env` under the `VITE_INTERVALS_*` names — the script reads either prefix.
-- **Manual refresh:** `gh workflow run refresh-pulse.yml` is the simplest path. Locally you can also `bash -c 'set -a; source ~/Desktop/Personal/Portfolio/.env; set +a; npm run refresh-pulse'`.
-- **The pulse-bot commit author** (`pulse-bot <bot@nasser1931.com>`) is harmless — these commits are auto-generated and only ever touch `src/data/training.json`.
+- **Concurrency:** the bots share `concurrency.group: bot-pushes-main` and `git pull --rebase origin main` before push, so two never race to push to main.
+- **Commit author:** `race-bot <bot@nasser1931.com>`. Older `pulse-bot` commits in history are from the retired training pulse.
 
 ## The reading list
 
@@ -175,23 +139,23 @@ The previous `/reading` source used `src/data/reading.json`, synced from a Notio
 
 ## Writing posts from Notion (no-code authoring)
 
-Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no commits, no IDE. The pipeline mirrors Published rows of a Notion database into markdown files in the matching content collection on every sync.
+Posts on `/stupidshit` can be authored entirely in Notion — no commits, no IDE. The pipeline mirrors Published rows of a Notion database into markdown files in the stupidshit content collection on every sync.
 
 - **Notion database schema (required columns):**
   - `Title` — title
   - `Summary` — rich_text (used for the index card blurb + meta description)
   - `Date` — date (drives sort + the filename prefix `<date>-<slug>.md`)
   - `Status` — select: `Draft` | `Published` (only `Published` rows are written; flipping to Draft removes the file on next sync)
-  - `Collection` — select: `stupidshit` | `field` (defaults to `stupidshit` if unset)
+  - `Collection` — select, optional. `field` is retired: such rows publish to `stupidshit` with a warning in the sync log.
   - `Slug` — rich_text, optional (auto-derived from Title if blank)
-  - `Tags` — multi_select, optional (only applied for `stupidshit` posts)
+  - `Tags` — multi_select, optional
 - **Body:** any Notion block content — paragraphs, headings (H1–H3), bulleted/numbered/toggle lists, to-dos, quotes, callouts (rendered as blockquotes with leading emoji), code blocks (language preserved), dividers, images, embeds, bookmarks. Rich-text annotations (bold, italic, strikethrough, inline code, links) are preserved.
 - **Images:** Notion-hosted images expire on a ~1h signed URL, so the sync downloads each image to `public/posts/<slug>/<sha1>.<ext>` and rewrites the markdown to point at the stable local path. Captions become the alt text.
 - **Posts database:** `https://www.notion.so/8274ed5c50304f20a598bf7bb30d7d3f` (Posts, db id `8274ed5c50304f20a598bf7bb30d7d3f`), sibling of Reading List under "🎯 Personal" — so the same internal integration that backs the reading-list sync already has access. The id is hardcoded as the default in `scripts/sync-posts.mjs`; `NOTION_POSTS_DB` env override only needed if it ever moves.
 - **Sync workflow:** `.github/workflows/sync-posts.yml` runs cron `*/30 * * * *` plus `workflow_dispatch` plus `repository_dispatch[post-update]` (left wired for a future webhook). It calls `scripts/sync-posts.mjs` with `NOTION_TOKEN`, then commits + builds + deploys only when the diff is non-empty.
-- **Reconciliation:** each generated file carries `notion_id: "<page uuid>"` in its frontmatter. On each sync the script scans both content dirs for that field, builds a `notion_id → file` map, and:
+- **Reconciliation:** each generated file carries `notion_id: "<page uuid>"` in its frontmatter. On each sync the script scans the content dir for that field, builds a `notion_id → file` map, and:
   - rewrites the file in place when content changes
-  - moves it (delete old, write new) when slug/date/collection changes
+  - moves it (delete old, write new) when slug/date changes
   - deletes the file when the page is unpublished or removed in Notion
   Hand-authored markdown files without a `notion_id` are left alone — the two authoring modes coexist safely.
 - **Concurrency:** shares the `bot-pushes-main` concurrency group with the other sync workflows; commit author is `posts-bot <bot@nasser1931.com>`.
@@ -199,7 +163,7 @@ Posts on `/field` and `/stupidshit` can be authored entirely in Notion — no co
 
 ## Races
 
-The homepage Race log card and `/field#races` read two files. `src/data/races.json` is a curated record of past races with results taken from recorded intervals.icu activities (date, name, kind, distance, status finished/dnf/dns, total, splits). A swim/bike/run split may carry `km`, the course distance (or the distance actually covered, noted), which `src/lib/races.ts` turns into pace; watch GPS swim distances read short, so don't use them. The same module computes transition time, the stats strip, and PB tags (shown only once a race kind has two finishes). `RaceSplitBar.astro` draws the leg bar on both the card and `/field#races`. Edit races.json by hand after a race; never invent times or placings. `src/data/next-race.json` is written by the pulse bot. The countdown is recomputed in the browser so it doesn't go stale between deploys. `/coach` and its engine, snapshots, and workflow were removed on 23 September 2026 (Project Furnace replaced them); `firebase.json` 301-redirects `/coach` to `/field`.
+The homepage Race log card and `/races` read two files. `src/data/races.json` is a curated record of past races with results taken from recorded intervals.icu activities (date, name, kind, distance, status finished/dnf/dns, total, splits). A swim/bike/run split may carry `km`, the course distance (or the distance actually covered, noted), which `src/lib/races.ts` turns into pace; watch GPS swim distances read short, so don't use them. The same module computes transition time, the stats strip, and PB tags (shown only once a race kind has two finishes). `RaceSplitBar.astro` draws the leg bar on both the card and `/races`. Edit races.json by hand after a race; never invent times or placings. `src/data/next-race.json` is written by the race bot (see below). The countdown is recomputed in the browser so it doesn't go stale between deploys. `/coach` and its engine, snapshots, and workflow were removed on 23 September 2026 (Project Furnace replaced them); `firebase.json` 301-redirects `/coach` to `/races`.
 
 ## firebase.json
 
@@ -207,7 +171,9 @@ The homepage Race log card and `/field#races` read two files. `src/data/races.js
 - `*.html` → `max-age=0, must-revalidate` (always fresh)
 - `*.{js,css,webp,avif,woff2}` → `max-age=31536000, immutable` (Astro's hashed assets)
 
-`cleanUrls: true` means `/paper` works (no `.html` suffix needed).
+`cleanUrls: true` means `/races` works (no `.html` suffix needed).
+
+Redirects (all 301, one hop, checked by `scripts/redirects.test.mjs`): `/field`, `/field/**`, `/coach`, `/coach/**` → `/races`; `/paper`, `/paper/**` → `/builds`. Add a row to that test when you retire a route.
 
 ## Outstanding cleanups
 

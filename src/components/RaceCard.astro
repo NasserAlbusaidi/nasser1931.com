@@ -1,5 +1,5 @@
 ---
-// Homepage card for races: the next race on the calendar (from the pulse bot's
+// Homepage card for races: the next race on the calendar (from the race bot's
 // next-race.json) and a curated record of past results (races.json).
 import nextRace from '../data/next-race.json';
 import RaceSplitBar from './RaceSplitBar.astro';
@@ -39,12 +39,12 @@ const summary = !finished.length ? 'Races I have entered, and what is next.'
     </div>}
   </div>
   <div class="supporting-copy">
-    <p class="eyebrow">Life · Racing</p>
+    <p class="eyebrow">Outside the screen · Racing</p>
     <h3 id="race-title">Race log</h3>
     <p class="project-description">{summary}</p>
     {results.length > 1 && <ol class="race-history">{results.slice(0, 4).map(race => <li><time datetime={race.date}>{fmt(race.date, { month: 'short', year: 'numeric' })}</time><span>{race.name}</span><span>{race.status === 'finished' ? race.total ?? 'Finished' : status[race.status]}</span></li>)}</ol>}
   </div>
-  <div class="project-bottom"><span>Swim · Bike · Run</span><a href="/field#races">All races <span aria-hidden="true">→</span></a></div>
+  <div class="project-bottom"><span>Swim · Bike · Run</span><a href="/races">All races <span aria-hidden="true">→</span></a></div>
 </article>
 <script>
   // The build-time count goes stale between deploys; recompute in the browser.
