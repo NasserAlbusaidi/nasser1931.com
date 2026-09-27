@@ -6,7 +6,7 @@
     "authorAliases": ["James S.A. Corey", "James SA Corey"],
     "scope": "9 main novels",
     "sourceUrl": "https://www.hachettebookgroup.com/series/james-s-a-corey/the-expanse/",
-    "verifiedAt": "2026-09-21",
+    "verifiedAt": "2026-09-27",
     "books": [
       { "title": "Leviathan Wakes" },
       { "title": "Caliban's War" },
@@ -21,7 +21,8 @@
     "companions": [
       { "title": "Drive", "kind": "short story" },
       { "title": "The Butcher of Anderson Station", "kind": "novelette" },
-      { "title": "Gods of Risk", "kind": "novella" }
+      { "title": "Gods of Risk", "kind": "novella" },
+      { "title": "The Churn", "kind": "novella" }
     ],
     "companionScope": "Selected short fiction; excluded from main-novel progress."
   },
@@ -72,9 +73,9 @@
       },
       {
         "title": "The World of Ice & Fire",
-        "titleAliases": ["The World of Ice and Fire"],
+        "titleAliases": ["The World of Ice and Fire", "The World of Ice and Fire: The Untold History of Westeros and the Game of Thrones"],
         "author": "George R. R. Martin, Elio M. García Jr., Linda Antonsson",
-        "authorAliases": ["Linda Antonsson, Elio M. García Jr., George R.R. Martin"],
+        "authorAliases": ["Linda Antonsson, Elio M. García Jr., George R.R. Martin", "Elio M. García Jr."],
         "kind": "companion history",
         "sourceUrl": "https://georgerrmartin.com/grrm_book/the-world-of-ice-and-fire/"
       }
