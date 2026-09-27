@@ -1,0 +1,48 @@
+---
+// The order a series was actually read in, companions included. Same-day
+// reads share a step because the record doesn't say which came first.
+import { readingRoute } from '../lib/reading-series.mjs';
+import { readingAnchor } from '../lib/reading-anchor';
+import { formatReadingDate } from '../lib/reading-date';
+interface Props { track: Parameters<typeof readingRoute>[0]; }
+const { track } = Astro.props;
+const { steps, current, undated } = readingRoute(track);
+const shown = steps.length + (current.length ? 1 : 0) >= 2;
+---
+{shown && <div class="series-route">
+  <p class="series-route-label" id={`route-${track.id}`}>The order I read it</p>
+  <div class="series-route-scroll">
+    <ol aria-labelledby={`route-${track.id}`}>
+      {steps.map(step => <li>
+        <p class="route-when"><time datetime={step.date}>{formatReadingDate(step.date)}</time>{step.gap && <span>{step.gap} later</span>}</p>
+        <ul class="route-reads">{step.reads.map(read => <li class:list={{ 'route-companion': read.companion }}>
+          <a href={`#${readingAnchor(read.matchedTitle, read.matchedAuthor, 'finished')}`}>{read.title}</a>{read.companion && read.kind && <small>{read.kind}</small>}
+        </li>)}</ul>
+      </li>)}
+      {current.length > 0 && <li class="route-now">
+        <p class="route-when"><span>Reading now</span></p>
+        <ul class="route-reads">{current.map(read => <li><a href={`#${readingAnchor(read.matchedTitle, read.matchedAuthor, 'current')}`}>{read.title}</a></li>)}</ul>
+      </li>}
+    </ol>
+  </div>
+  {undated > 0 && <p class="series-route-note">{undated} more {undated === 1 ? 'read has' : 'reads have'} no finish date.</p>}
+</div>}
+<style>
+  .series-route { grid-column: 1 / -1; min-width: 0; }
+  .series-route-label { font: var(--text-label)/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 .75rem; }
+  .series-route-scroll { overflow-x: auto; }
+  .series-route ol { display: flex; list-style: none; margin: 0; padding: 0; }
+  .series-route ol > li { position: relative; flex: 1 0 9.5rem; max-width: 16rem; padding: 1.1rem 1.25rem .25rem 0; border-top: 1px solid var(--rule); }
+  .series-route ol > li::before { content: ''; position: absolute; top: -4px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
+  .series-route ol > li.route-now::before { background: var(--accent); }
+  .series-route ol > li:last-child { border-top-color: transparent; }
+  .route-when { display: flex; flex-direction: column; gap: .1rem; margin: 0 0 .5rem; font: var(--text-label)/1.4 var(--font-mono); }
+  .route-when span { color: var(--muted); }
+  .route-now .route-when span { color: var(--accent); }
+  .route-reads { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .35rem; font-size: var(--text-label); line-height: 1.4; }
+  .route-reads a { text-decoration: none; }
+  .route-reads a:hover { background: transparent; color: var(--accent); }
+  .route-companion a { color: var(--muted); }
+  .route-reads small { display: block; font-family: var(--font-mono); color: var(--muted); }
+  .series-route-note { color: var(--muted); font-size: var(--text-label); margin: .75rem 0 0; }
+</style>

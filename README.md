@@ -21,8 +21,8 @@ Section-specific social cards and responsive Astro images are included.
 
 ```sh
 npm run dev              # local dev — http://localhost:4321
-npm test                 # node --test: redirects + StoryGraph importer
-npm run import-storygraph -- <export.csv> nasser1931  # refresh reading from an official StoryGraph export
+npm test                 # node --test: redirects, reading series, StoryGraph importer
+npm run sync-hardcover   # refresh reading from Hardcover (needs HARDCOVER_TOKEN; CI runs it every 6h)
 npm run build            # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship
 ```
@@ -49,12 +49,14 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship
 - `src/components/ThemeToggle.astro` — light/dark toggle (FOUC-safe boot in `BaseHead.astro`)
 - `firebase.json` — 301s for retired routes (`/field`, `/coach` → `/races`; `/paper` → `/builds`), checked by `scripts/redirects.test.mjs`
 
-## Reading from StoryGraph
+## Reading
 
-The reading snapshot now comes from `nasser1931` on StoryGraph. It is an **export import**, not an automatic account connection: StoryGraph's public API remains on its long-term roadmap, and this account's profile is Community-only.
+The shelf syncs from [Hardcover](https://hardcover.app/@nasser) every 6 hours (`sync-hardcover.yml`), with covers cached by `cache-covers.mjs`. `src/data/reading-series.json` lists the series catalogues that drive "Worlds I'm in" and the reading order per series.
 
-To refresh, open [Export your library](https://app.thestorygraph.com/user-export), generate and download a new CSV, then run `npm run import-storygraph -- "C:/path/to/export.csv" nasser1931`. The importer validates the file before writing, preserves partial read dates and decimal ratings, and excludes reviews, custom tags, owned-only records, and DNF books. Keep the raw export outside the repository. No password, cookie, or signed download URL belongs in source control.
+### StoryGraph fallback
 
-`src/data/reading.json` records `source: "storygraph"`, the public profile URL, and import time. The old Notion refresh exits without changes while another source owns the snapshot, so its scheduled workflow does not overwrite this import. An older workflow run also fails a stale push instead of rebasing old Notion data over a source switch. Publishing an updated snapshot still follows the site's existing separately authorized deployment workflow.
+A StoryGraph export can still replace the shelf by hand. Running it hands ownership of the snapshot to StoryGraph; the Hardcover sync then waits until it runs once with `-f takeover=true`. To import, open [Export your library](https://app.thestorygraph.com/user-export), generate and download a new CSV, then run `npm run import-storygraph -- "C:/path/to/export.csv" nasser1931`. The importer validates the file before writing, preserves partial read dates and decimal ratings, and excludes reviews, custom tags, owned-only records, and DNF books. Keep the raw export outside the repository. No password, cookie, or signed download URL belongs in source control.
 
-Validation: `node --test scripts/import-storygraph.test.mjs`.
+After an import, `src/data/reading.json` records `source: "storygraph"`, the public profile URL, and import time. The old Notion refresh exits without changes while another source owns the snapshot, so its scheduled workflow does not overwrite this import. An older workflow run also fails a stale push instead of rebasing old Notion data over a source switch. Publishing an updated snapshot still follows the site's existing separately authorized deployment workflow.
+
+Validation: `npm test`.

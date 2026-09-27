@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildReadingSeries, findBookSeries } from '../src/lib/reading-series.mjs';
+import { buildReadingSeries, findBookSeries, gapBetween, readingRoute } from '../src/lib/reading-series.mjs';
 
-const book = (title, author) => ({ title, author });
+const book = (title, author, finished = null) => ({ title, author, finished });
 const getSeries = (reading, id) => buildReadingSeries(reading).find(series => series.id === id);
 
 test('current imported books and companions do not inflate main-novel completion', () => {
@@ -85,4 +85,56 @@ test('companion author aliases match joint authors without changing novel denomi
   assert.equal(fire.total, 5);
   assert.equal(fire.companionFinishedCount, 2);
   assert.equal(findBookSeries('Fire & Blood', 'George R.R. Martin', [fire]), null);
+});
+
+test('Hardcover titles for companions match the catalogue', () => {
+  const expanse = getSeries({ finished: [book('The Churn', 'James S. A. Corey')] }, 'the-expanse');
+  assert.equal(expanse.companionFinishedCount, 1);
+  assert.equal(expanse.finishedCount, 0);
+  const fire = getSeries({ finished: [
+    book('The World of Ice and Fire: The Untold History of Westeros and the Game of Thrones', 'Elio M. García Jr.'),
+  ] }, 'a-song-of-ice-and-fire');
+  assert.equal(fire.companionFinishedCount, 1);
+});
+
+for (const [from, to, expected] of [
+  ['2026-09-16', '2026-09-17', '1 day'],
+  ['2026-09-06', '2026-09-16', '10 days'],
+  ['2026-09-01', '2026-09-22', '3 weeks'],
+  ['2016-08-03', '2016-10-08', '2 months'],
+  ['2025-02-04', '2026-08-06', '18 months'],
+  ['2016-08-03', '2024-02-20', '8 years'],
+  ['2016', '2016-10-08', null],
+  ['2026-09', '2026-10-01', null],
+  ['2026-09-16', '2026-09-16', null],
+  [null, '2026-09-16', null],
+]) {
+  test(`gap ${from} → ${to} is ${expected}`, () => assert.equal(gapBetween(from, to), expected));
+}
+
+test('route orders reads by finish date, groups same-day reads, and ends with the current book', () => {
+  const corey = 'James S. A. Corey';
+  const track = getSeries({
+    finished: [
+      book("Abaddon's Gate", corey, '2026-09-24'),
+      book('Drive', corey, '2026-09-16'),
+      book('Leviathan Wakes', corey, '2026-09-06'),
+      book("Caliban's War", corey, '2026-09-16'),
+      book('Gods of Risk', corey, null),
+    ],
+    currently_reading: [book('Cibola Burn', corey)],
+  }, 'the-expanse');
+  const route = readingRoute(track);
+  assert.deepEqual(route.steps.map(step => [step.date, step.gap, step.reads.map(read => [read.title, read.companion])]), [
+    ['2026-09-06', null, [['Leviathan Wakes', false]]],
+    ['2026-09-16', '10 days', [["Caliban's War", false], ['Drive', true]]],
+    ['2026-09-24', '8 days', [["Abaddon's Gate", false]]],
+  ]);
+  assert.deepEqual(route.current.map(read => read.title), ['Cibola Burn']);
+  assert.equal(route.undated, 1);
+});
+
+test('route never counts wanted or unlogged books, and an empty shelf has no route', () => {
+  const route = readingRoute(getSeries({ want_to_read: [book('Dune', 'Frank Herbert', '2026-01-01')] }, 'dune'));
+  assert.deepEqual(route, { steps: [], current: [], undated: 0 });
 });

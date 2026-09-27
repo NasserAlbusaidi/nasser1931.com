@@ -8,6 +8,7 @@ import ReadingSource from '../../components/ReadingSource.astro';
 import BookCover from '../../components/BookCover.astro';
 import CoverCredits from '../../components/CoverCredits.astro';
 import SeriesTrack from '../../components/SeriesTrack.astro';
+import SeriesRoute from '../../components/SeriesRoute.astro';
 import { buildReadingSeries, findBookSeries } from '../../lib/reading-series.mjs';
 import { readingAnchor } from '../../lib/reading-anchor';
 import { formatReadingDate } from '../../lib/reading-date';
@@ -98,8 +99,9 @@ const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}
           <div class="series-identity"><h3 id={`series-name-${track.id}`}><a href={track.sourceUrl}>{track.name} <span aria-hidden="true">↗</span></a></h3><p>{track.author}</p><span>{track.scope}</span>{track.companionFinishedCount > 0 && <p class="series-companions">{track.companionFinishedCount} {track.companionFinishedCount === 1 ? 'companion read' : 'companion reads'}.</p>}</div>
           <SeriesTrack books={track.books} name={track.name} />
           <div class="series-total"><strong>{track.finishedCount} of {track.total}</strong><span>finished</span>{track.currentCount > 0 && <span class="series-current-count">{track.currentCount} reading</span>}{track.wantedCount > 0 && <span>{track.wantedCount} to read</span>}</div>
+          <SeriesRoute track={track} />
         </article>)}
-        <p class="series-note">Main books shown. Companion reads count separately. “Not logged” means there is no matching book in this import.</p>
+        <p class="series-note">Main books shown. Companion reads count separately and appear in the reading order. “Not logged” means there is no matching book on the shelf.</p>
       </section>}
 
       {finished.length > 0 && <section class="reading-insights" aria-label="Reading history in this import">
