@@ -59,24 +59,7 @@
 .supporting-copy .eyebrow { margin-bottom: .65rem; }
 .supporting-copy h3 { font-size: var(--text-title); font-weight: 400; line-height: 1.25; }
 .supporting-project .project-bottom { margin-top: auto; }
-.life-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3.5rem; border: 1px solid var(--rule); background: var(--surface); margin-block: 5rem; padding: 3.5rem; }
-.life-copy { display: flex; flex-direction: column; align-items: start; }
-.life-copy > .eyebrow { margin-bottom: 1.5rem; }
-.life-copy h2 { font-size: var(--text-display); font-weight: 350; line-height: 1.05; letter-spacing: -.04em; }
-.life-copy h2 em { font-style: normal; color: var(--muted); }
-.life-copy > p:not(.eyebrow) { color: var(--muted); margin: 1.5rem 0; max-width: 32ch; }
-.life-copy .text-link { margin-top: auto; }
-.ride-note { padding-left: 3.5rem; border-left: 1px solid var(--rule); min-width: 0; }
-.ride-distance { font-weight: 350; font-size: var(--text-hero); letter-spacing: -.055em; color: var(--accent); line-height: 1.15; margin: .5rem 0; }
-.ride-distance > span { color: var(--muted); font-size: var(--text-lead); letter-spacing: 0; margin-left: .5rem; }
-.ride-name { font-size: var(--text-lead); margin-bottom: .35rem; }
-.ride-meta { display: flex; flex-wrap: wrap; gap: .25rem 1rem; font-size: var(--text-label); color: var(--muted); }
-.ride-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; border-top: 1px solid var(--rule); margin: 1.5rem 0 0; padding-top: 1.25rem; }
-.ride-stats > div { display: flex; flex-direction: column-reverse; justify-content: end; gap: .25rem; }
-.ride-stats dt { font-size: var(--text-label); color: var(--muted); line-height: 1.5; }
-.ride-stats dd { font-size: var(--text-title); margin: 0; white-space: nowrap; }
-.ride-stats small { font-size: var(--text-label); color: var(--muted); }
-.snapshot-date { color: var(--muted); font-size: var(--text-label); margin: 1rem 0 0; }
+.reading-section { margin-top: 5rem; }
 .shelf-intro { color: var(--muted); margin: 0 0 1.5rem; }
 .closing-note { border-top: 1px solid var(--rule); margin-top: 4rem; padding-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
 .closing-note p { font-size: var(--text-heading); line-height: 1.25; font-weight: 350; margin: 0; letter-spacing: -.03em; }
@@ -89,18 +72,12 @@
   .rihla-showcase { --showcase-inset: 2.5rem; gap: 2rem; }
   .supporting-projects { column-gap: 1rem; }
   .supporting-project { padding: 1.25rem; }
-  .life-section { gap: 2rem; padding: 2.5rem; }
-  .ride-note { padding-left: 2rem; }
-  .ride-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ride-stats > div:last-child { grid-column: 1 / -1; }
 }
 @media (max-width: 900px) {
   .intro-content { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .home-world { width: 100%; max-width: 32rem; justify-self: center; }
   .supporting-projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .supporting-project:last-child { grid-column: 1 / -1; margin-top: 1rem; }
-  .life-copy h2 { font-size: var(--text-heading); }
-  .ride-distance { font-size: var(--text-display); }
 }
 @media (max-width: 720px) {
   .introduction { padding-block: 2.5rem 2rem; }
@@ -118,19 +95,16 @@
   .rihla-showcase > .project-preview { grid-column: 1; grid-row: auto; }
   .rihla-copy h3 { margin-top: 1.25rem; }
   .rihla-actions { grid-column: 1; }
-  .supporting-projects, .life-section { grid-template-columns: minmax(0, 1fr); }
+  .supporting-projects { grid-template-columns: minmax(0, 1fr); }
   .supporting-project:last-child { grid-column: auto; }
   .supporting-project + .supporting-project { margin-top: 1rem; }
   .supporting-project { padding: 1.5rem; }
-  .life-section { margin-block: 3rem; padding: 1.5rem; gap: 2rem; }
-  .life-copy h2 { font-size: var(--text-display); }
-  .ride-note { border-left: 0; border-top: 1px solid var(--rule); padding: 1.5rem 0 0; }
-  .ride-stats { gap: 1rem; }
+  .reading-section { margin-top: 3rem; }
   .closing-note { margin-top: 3rem; padding-top: 2rem; }
 }
 @media (max-width: 380px) {
   .home-button { padding-inline: .9rem; }
   .rihla-showcase { --showcase-inset: 1.25rem; }
-  .supporting-project, .life-section { padding: 1.25rem; }
+  .supporting-project { padding: 1.25rem; }
 }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }

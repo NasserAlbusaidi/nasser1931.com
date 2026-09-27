@@ -4,9 +4,9 @@
 
 **[nasser1931.com →](https://nasser1931.com)**
 
-Personal home of [Nasser Al Busaidi](https://nasser1931.com): software, cycling, experiments, and reading. Astro static build, deployed to Firebase Hosting. **Personal observatory** — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
+Personal home of [Nasser Al Busaidi](https://nasser1931.com): software, racing, experiments, and reading. Astro static build, deployed to Firebase Hosting. **Personal observatory** — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
 
-The homepage pairs Earth artwork with selected projects, a race log, the training log, and a bookshelf. Rihla links to the App Store and Google Play; The Silent Creep and Einstein’s Travel Bureau are featured. Welcome posts stay in Notes and Life without occupying the homepage.
+The homepage pairs Earth artwork with selected projects, a race log, the series on the shelf, and a bookshelf. Rihla links to the App Store and Google Play; Einstein’s Travel Bureau is featured. The welcome post stays in Notes without occupying the homepage.
 
 Section-specific social cards and responsive Astro images are included.
 
@@ -21,8 +21,7 @@ Section-specific social cards and responsive Astro images are included.
 
 ```sh
 npm run dev              # local dev — http://localhost:4321
-npm run dev:paper        # dev + chokidar watcher syncing v1/figures from ProjecrFurnance (sic)
-npm run sync-paper       # one-shot sync of paper receipts + figures
+npm test                 # node --test: redirects + StoryGraph importer
 npm run import-storygraph -- <export.csv> nasser1931  # refresh reading from an official StoryGraph export
 npm run build            # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship
@@ -33,10 +32,9 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship
 ## Site map
 
 ```
-/             personal introduction, selected projects, life, reading
-/builds       Projects — apps, research, and open source
-/paper        field report — long-form
-/field        Life — training snapshot, races, and field notes
+/             personal introduction, selected projects, races, reading
+/builds       Projects — apps, tools, and open source
+/races        race log with splits, paces, and transitions
 /stupidshit   Notes — one-off ideas and oddities
 /reading      books, by year
 ```
@@ -45,12 +43,11 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship
 
 - `src/styles/global.css` — design tokens (CSS vars + Tailwind 4 `@theme`)
 - `src/styles/home.css` — observatory homepage and responsive composition
-- `src/pages/index.astro` — introduction, featured work, cycling, notes, and reading
+- `src/pages/index.astro` — introduction, featured work, races, series, and reading
 - `src/components/PageIntro.astro` — shared section-index introduction
-- `src/layouts/Paper.astro` — long-form layout for the paper
-- `src/layouts/Entry.astro` — layout shared by `/field` and `/stupidshit` entries
+- `src/layouts/Entry.astro` — layout for `/stupidshit` entries
 - `src/components/ThemeToggle.astro` — light/dark toggle (FOUC-safe boot in `BaseHead.astro`)
-- `scripts/sync-paper.mjs` — mirrors `study-v1.md` + figures from `~/Desktop/Personal/ProjecrFurnance/paper/` (sic — the directory really is spelled that way)
+- `firebase.json` — 301s for retired routes (`/field`, `/coach` → `/races`; `/paper` → `/builds`), checked by `scripts/redirects.test.mjs`
 
 ## Reading from StoryGraph
 

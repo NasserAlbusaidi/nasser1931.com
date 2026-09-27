@@ -41,8 +41,8 @@ jobs:
         run: |
           git config user.name "posts-bot"
           git config user.email "bot@nasser1931.com"
-          mkdir -p public/posts src/content/stupidshit src/content/field
-          git add src/content/stupidshit src/content/field public/posts
+          mkdir -p public/posts src/content/stupidshit
+          git add src/content/stupidshit public/posts
           if git diff --cached --quiet; then
             echo "No changes — skipping commit and deploy."
             echo "committed=false" >> "$GITHUB_OUTPUT"

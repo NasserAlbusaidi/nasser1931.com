@@ -8,7 +8,7 @@ import '../../styles/work.css';
 
 type Build = (typeof buildsData.builds)[number];
 const builds = buildsData.builds;
-const selectedSlugs = ['rihla', 'silent-creep', 'einsteins-travel-bureau'];
+const selectedSlugs = ['rihla', 'einsteins-travel-bureau'];
 const selected = selectedSlugs.flatMap(slug => builds.filter(build => build.slug === slug));
 const moreProjects = builds.filter(build => !selectedSlugs.includes(build.slug));
 const sourceCount = builds.filter(build => build.repo).length;
@@ -18,12 +18,6 @@ const projectStories: Record<string, { lead: string; detail: string; category: s
     detail: 'Groups, events, and shared expenses in one app. Designed to work offline, with fewer transfers needed to settle up.',
     category: 'Everyday life · App',
     facts: [['Platforms', 'iOS · Android'], ['Works', 'Offline-first']],
-  },
-  'silent-creep': {
-    lead: 'What actually changed over 1,300 days?',
-    detail: 'A study of my own training, food intake, and body weight, with a record long enough to question my assumptions.',
-    category: 'Personal research · Study',
-    facts: [['Method', 'Six tests · Bayesian model'], ['Span', '2022–2026']],
   },
   'einsteins-travel-bureau': {
     lead: 'A travel agency for spacetime.',
@@ -55,7 +49,7 @@ if (ungroupedProjects.length) projectGroups.push({ id: 'other-projects', title: 
 const hrefFor = (build: Build) => build.url ?? build.repo ?? null;
 const storesFor = (build: Build) => 'stores' in build ? build.stores ?? [] : [];
 const isExternal = (href: string) => /^https?:\/\//.test(href);
-const destinationLabel = (build: Build) => build.slug === 'silent-creep' ? 'Read the study' : build.slug === 'einsteins-travel-bureau' ? 'Explore the bureau' : build.url ? 'View project' : 'View source';
+const destinationLabel = (build: Build) => build.slug === 'einsteins-travel-bureau' ? 'Explore the bureau' : build.url ? 'View project' : 'View source';
 ---
 
 <!doctype html>
@@ -65,7 +59,7 @@ const destinationLabel = (build: Build) => build.slug === 'silent-creep' ? 'Read
     <Header />
     <main id="main-content" tabindex="-1" class="work-page">
       <header class="work-intro">
-        <div><p class="work-eyebrow">Built out of curiosity</p><h1>Projects<span>.</span></h1><p class="work-deck">Personal apps, a study of my own training, and experiments worth sharing.</p></div>
+        <div><p class="work-eyebrow">Built out of curiosity</p><h1>Projects<span>.</span></h1><p class="work-deck">Personal apps, tools for my own data, and experiments worth sharing.</p></div>
         <dl class="work-inventory">
           <div><dt>Projects</dt><dd>{builds.length}</dd></div>
           <div><dt>In focus</dt><dd>{selected.length}</dd></div>

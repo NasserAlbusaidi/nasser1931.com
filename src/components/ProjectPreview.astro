@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import ledger from '../assets/projects/rihla-ledger-en.png';
 import settlement from '../assets/projects/rihla-settle-en.png';
 import bureau from '../assets/projects/einstein-repo-hero.png';
-import study from '../../public/paper/figures/fig1_hero_landscape.png';
 interface Props { project: string; compact?: boolean; variant?: 'default' | 'showcase' | 'card'; }
 const { project, compact = false, variant = 'default' } = Astro.props;
 const appSizes = variant === 'showcase' ? '(max-width: 720px) 38vw, 260px' : '(max-width: 720px) 38vw, 240px';
@@ -19,16 +18,12 @@ const appSizes = variant === 'showcase' ? '(max-width: 720px) 38vw, 260px' : '(m
   <Image src={bureau} alt="Einstein’s Travel Bureau: a vintage travel desk with a star map and destinations across spacetime." widths={[480, 800, 1200, 1440]} sizes="(max-width: 720px) 90vw, 600px" format="webp" quality={85} loading="lazy" />
   <figcaption>Einstein’s Travel Bureau · The travel desk</figcaption>
 </figure>}
-{project === 'silent-creep' && <figure class:list={['project-preview', 'study-preview', `preview-${variant}`]}>
-  <Image src={study} alt="The Silent Creep study figure: weight trend and training expenditure across four phases from 2022 to 2026." widths={[480, 800, 1200]} sizes="(max-width: 720px) 90vw, 600px" format="webp" quality={90} loading="lazy" />
-  <figcaption>The Silent Creep · Study data, 2022–2026</figcaption>
-</figure>}
 <style>
   .project-preview { margin: 1.75rem 0; }
   .app-screens { display: flex; justify-content: center; gap: 1.25rem; padding: 1.5rem; background: var(--bg); border: 1px solid var(--rule); }
   .app-screens img { width: min(43%, 210px); height: auto; border-radius: 1.25rem; border: 1px solid var(--rule); box-shadow: 0 .75rem 2rem #00000018; }
   .compact .app-screens img { width: min(43%, 155px); }
-  .bureau-preview img, .study-preview img { width: 100%; border: 1px solid var(--rule); }
+  .bureau-preview img { width: 100%; border: 1px solid var(--rule); }
   figcaption { font-size: var(--text-label); color: var(--muted); margin-top: .75rem; }
   /* Screens bleed to the desktop panel edge without determining its height. */
   .preview-showcase { position: relative; margin: 0 0 calc(-1 * var(--showcase-inset, 0px)); min-width: 0; min-height: 0; overflow: hidden; }
@@ -38,7 +33,6 @@ const appSizes = variant === 'showcase' ? '(max-width: 720px) 38vw, 260px' : '(m
   .preview-showcase figcaption { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .preview-card { margin: 0; }
   .preview-card img { width: 100%; height: 13rem; object-fit: cover; object-position: top; border: 0; }
-  .study-preview.preview-card img { object-fit: contain; background: #f4f1ea; padding: .75rem; }
   .preview-card figcaption { font-size: var(--text-label); line-height: 1.5; }
   @media (max-width: 720px) {
     .app-screens { gap: .75rem; padding: 1rem .5rem; }

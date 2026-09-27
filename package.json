@@ -7,10 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "dev:paper": "concurrently -n astro,paper -c blue,magenta \"npm:dev\" \"node scripts/watch-paper.mjs\"",
-    "sync-paper": "node scripts/sync-paper.mjs",
-    "refresh-pulse": "node scripts/refresh-pulse.mjs",
-    "refresh-paper-log": "node scripts/refresh-paper-log.mjs",
+    "refresh-next-race": "node scripts/refresh-next-race.mjs",
     "refresh-reading": "node scripts/refresh-reading.mjs",
     "import-storygraph": "node scripts/import-storygraph.mjs",
     "sync-hardcover": "node scripts/sync-hardcover.mjs",
@@ -18,6 +15,7 @@
     "sync-posts": "node scripts/sync-posts.mjs",
     "generate-og": "node scripts/generate-og-fallback.mjs",
     "build": "astro build",
+    "test": "node --test",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -41,8 +39,6 @@
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
-    "chokidar": "^4.0.3",
-    "concurrently": "^9.1.2",
     "csv-parse": "^7.0.2"
   }
 }

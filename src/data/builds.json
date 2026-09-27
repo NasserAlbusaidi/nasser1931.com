@@ -1,19 +1,6 @@
 {
-  "updated": "2026-09-23",
+  "updated": "2026-09-27",
   "builds": [
-    {
-      "slug": "silent-creep",
-      "name": "The Silent Creep",
-      "summary": "1,300-day N=1 study: did training earn caloric license, or did intake quietly drift +387 kcal/day? Six guardrails, all the data.",
-      "stack": [
-        "Python",
-        "PyMC"
-      ],
-      "url": "/paper",
-      "repo": null,
-      "featured": true,
-      "label": "Published study"
-    },
     {
       "slug": "macrofactor-mcp",
       "name": "macrofactor-mcp",
@@ -54,7 +41,7 @@
     {
       "slug": "nasser1931",
       "name": "nasser1931.com",
-      "summary": "This personal site. Live training summaries, race results, published research, and a reading shelf.",
+      "summary": "This personal site. Projects, a race log, and a reading shelf synced from Hardcover.",
       "stack": [
         "Astro",
         "Firebase"

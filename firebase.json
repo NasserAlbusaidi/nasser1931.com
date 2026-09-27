@@ -30,13 +30,33 @@
     ],
     "redirects": [
       {
+        "source": "/field",
+        "destination": "/races",
+        "type": 301
+      },
+      {
+        "source": "/field/**",
+        "destination": "/races",
+        "type": 301
+      },
+      {
         "source": "/coach",
-        "destination": "/field",
+        "destination": "/races",
         "type": 301
       },
       {
         "source": "/coach/**",
-        "destination": "/field",
+        "destination": "/races",
+        "type": 301
+      },
+      {
+        "source": "/paper",
+        "destination": "/builds",
+        "type": 301
+      },
+      {
+        "source": "/paper/**",
+        "destination": "/builds",
         "type": 301
       }
     ]

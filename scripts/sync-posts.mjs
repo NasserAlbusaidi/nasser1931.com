@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Pulls posts from a Notion database and writes them into the Astro
-// content collections (src/content/field or src/content/stupidshit).
+// stupidshit content collection (src/content/stupidshit).
 //
 // Notion database schema (required):
 //   Title       (title)
@@ -8,14 +8,15 @@
 //   Summary     (rich_text)
 //   Date        (date)
 //   Status      (select: Draft | Published)   only Published rows are written
-//   Collection  (select: stupidshit | field)  defaults to stupidshit
+//   Collection  (select: stupidshit)  optional; the retired `field` value
+//               falls back to stupidshit with a warning
 //   Tags        (multi_select, optional)
 //
 // Env: NOTION_TOKEN     internal integration token
 //      NOTION_POSTS_DB  database id (uuid)
 //
 // Side effects:
-//   - writes/overwrites files in src/content/{collection}/<date>-<slug>.md
+//   - writes/overwrites files in src/content/stupidshit/<date>-<slug>.md
 //   - downloads Notion-hosted images into public/posts/<slug>/ and rewrites
 //     markdown to point at the local copy
 //   - removes locally any file whose notion_id is no longer Published
@@ -41,8 +42,9 @@ const HEADERS = {
 	'Content-Type': 'application/json',
 };
 
-const ALLOWED_COLLECTIONS = new Set(['stupidshit', 'field']);
-const DEFAULT_COLLECTION = 'stupidshit';
+const COLLECTION = 'stupidshit';
+// Life (/field) was retired in September 2026; its posts now land in Notes.
+const RETIRED_COLLECTIONS = new Set(['field']);
 
 // ---------- Notion API helpers ----------
 
@@ -288,11 +290,8 @@ const main = async () => {
 	const pages = await queryDatabase();
 	console.log(`Notion returned ${pages.length} Published page(s).`);
 
-	const existing = {
-		stupidshit: scanExisting('stupidshit'),
-		field: scanExisting('field'),
-	};
-	const seen = { stupidshit: new Set(), field: new Set() };
+	const existing = scanExisting(COLLECTION);
+	const seen = new Set();
 	const seenSlugs = new Set();
 
 	let wrote = 0;
@@ -308,7 +307,9 @@ const main = async () => {
 		const slug = slugRaw ? slugify(slugRaw) : slugify(title);
 		const tags = propMulti(props.Tags);
 		const rawCollection = propSelect(props.Collection);
-		const collection = ALLOWED_COLLECTIONS.has(rawCollection) ? rawCollection : DEFAULT_COLLECTION;
+		if (RETIRED_COLLECTIONS.has(rawCollection)) {
+			console.warn(`"${title}" has retired Collection=${rawCollection}; publishing it to ${COLLECTION}.`);
+		}
 		const notionId = page.id;
 
 		const blocks = await fetchChildren(page.id);
@@ -317,10 +318,10 @@ const main = async () => {
 		const content = `${frontmatter}\n\n${body}\n`;
 
 		const filename = `${date}-${slug}.md`;
-		const targetPath = path.resolve('src/content', collection, filename);
+		const targetPath = path.resolve('src/content', COLLECTION, filename);
 		ensureDir(path.dirname(targetPath));
 
-		const existingPath = existing.stupidshit.get(notionId) || existing.field.get(notionId);
+		const existingPath = existing.get(notionId);
 
 		if (existingPath && existingPath !== targetPath) {
 			fs.unlinkSync(existingPath);
@@ -335,17 +336,15 @@ const main = async () => {
 			wrote++;
 		}
 
-		seen[collection].add(notionId);
+		seen.add(notionId);
 		seenSlugs.add(slug);
 	}
 
 	let removed = 0;
-	for (const col of ['stupidshit', 'field']) {
-		for (const [id, filePath] of existing[col]) {
-			if (!seen[col].has(id) && !seen[col === 'stupidshit' ? 'field' : 'stupidshit'].has(id)) {
-				fs.unlinkSync(filePath);
-				removed++;
-			}
+	for (const [id, filePath] of existing) {
+		if (!seen.has(id)) {
+			fs.unlinkSync(filePath);
+			removed++;
 		}
 	}
 
