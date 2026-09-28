@@ -30,10 +30,26 @@ const date = (value: string | Date) => {
   const parsed = value instanceof Date ? value : new Date(value);
   return Number.isFinite(parsed.getTime()) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed) : null;
 };
+// Tells search engines which Nasser Al Busaidi this site belongs to. Only facts
+// the site already states: name, role, city, and the footer profiles.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', '@id': 'https://nasser1931.com/#website', url: 'https://nasser1931.com/', name: SITE_TITLE, publisher: { '@id': 'https://nasser1931.com/#person' } },
+    {
+      '@type': 'Person', '@id': 'https://nasser1931.com/#person', name: 'Nasser Al Busaidi', url: 'https://nasser1931.com/',
+      jobTitle: 'Senior software engineer', address: { '@type': 'PostalAddress', addressLocality: 'Muscat', addressCountry: 'OM' },
+      sameAs: ['https://github.com/NasserAlbusaidi', 'https://www.linkedin.com/in/nasser-albusaidi-308642113/'],
+    },
+  ],
+};
 ---
 <!doctype html>
 <html lang="en">
-  <head><BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} /></head>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
   <body>
     <Header />
     <main id="main-content" tabindex="-1" class="home">

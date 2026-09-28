@@ -116,7 +116,7 @@ OG fallback image:
 
 Both records must be at the apex. In Route 53, **leave the Name field empty** to mean apex — typing `nasser1931.com` causes Route 53 to append the zone, producing `nasser1931.com.nasser1931.com`.
 
-`www.nasser1931.com` is **not configured**. Visitors typing `www` will fail. To add: re-add the custom domain in Firebase with the "redirect www → apex" option, or add a manual record in Route 53.
+`www.nasser1931.com` works: Firebase 301-redirects it to the apex (checked 28 September 2026). Its Route 53 record is not listed in the table above.
 
 ## The race bot
 
@@ -189,10 +189,7 @@ The homepage Race log card and `/races` read two files. `src/data/races.json` is
 - `*.html` → `max-age=0, must-revalidate` (always fresh)
 - `*.{js,css,webp,avif,woff2}` → `max-age=31536000, immutable` (Astro's hashed assets)
 
-`cleanUrls: true` means `/races` works (no `.html` suffix needed).
+`cleanUrls: true` means `/races` works (no `.html` suffix needed). `trailingSlash: false` 301s `/races/` to `/races`, so `astro.config.mjs` sets `trailingSlash: 'never'` and the RSS feed passes `trailingSlash: false`; canonical, sitemap, and feed URLs then point at the served page, not a redirect. `scripts/redirects.test.mjs` checks both settings.
 
 Redirects (all 301, one hop, checked by `scripts/redirects.test.mjs`): `/field`, `/field/**`, `/coach`, `/coach/**` → `/races`; `/paper`, `/paper/**` → `/builds`. Add a row to that test when you retire a route.
 
-## Outstanding cleanups
-
-- `www.nasser1931.com` is not configured. Add a redirect in Firebase or a Route 53 record (covered above in DNS records).

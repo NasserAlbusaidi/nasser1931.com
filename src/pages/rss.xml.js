@@ -10,7 +10,7 @@ export async function GET(context) {
 			title: entry.data.title,
 			pubDate: entry.data.date,
 			description: entry.data.summary,
-			link: `/stupidshit/${entry.id}/`,
+			link: `/stupidshit/${entry.id}`,
 			categories: ['stupidshit', ...(entry.data.tags ?? [])],
 		})),
 	].sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
@@ -19,6 +19,7 @@ export async function GET(context) {
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
 		site: context.site,
+		trailingSlash: false,
 		items,
 	});
 }
