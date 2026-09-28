@@ -12,4 +12,7 @@ exposure:
   iso: 2500
   focal_mm: 14
 stack: "unknown"
+timelapse:
+  poster: ./poster.jpg
+  frames: 318
 ---
