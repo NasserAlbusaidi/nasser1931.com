@@ -56,7 +56,7 @@ The dev server can keep serving an `.astro` component's old `<style>` block afte
 
 Repo: https://github.com/NasserAlbusaidi/nasser1931.com
 
-- **Push to `main`** → GitHub Actions runs `npm ci && npm run build` and deploys to Firebase Hosting live channel (`nasser1931.com`).
+- **Push to `main`** → GitHub Actions runs `npm ci && npm run build` and deploys to Firebase Hosting live channel (`nasser1931.com`). Runs share `concurrency.group: firebase-live-deploy`, so a slow older deploy can never land after a newer one. The bots deploy live inline from their own workflows (their `GITHUB_TOKEN` pushes do not trigger this one), so they are not in that group.
 - **Open a PR** → Action deploys to a Firebase preview channel and posts the URL as a PR comment. Channel auto-expires after 7 days.
 - Workflow files live in `.github/workflows/firebase-hosting-{merge,pull-request}.yml`. Secret: `FIREBASE_SERVICE_ACCOUNT_NASSER_PORTFOLIO`.
 

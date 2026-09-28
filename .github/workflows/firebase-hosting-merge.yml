@@ -6,6 +6,13 @@ on:
       - main
   workflow_dispatch:
 
+# Serialize live deploys so an older build never lands after a newer one.
+# GitHub keeps one pending run per group, so a newer push replaces a queued
+# older one; a deploy already running is never cancelled mid-upload.
+concurrency:
+  group: firebase-live-deploy
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
