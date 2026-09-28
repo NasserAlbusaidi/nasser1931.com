@@ -7,6 +7,7 @@ import BookCover from './BookCover.astro';
 import { getBookCover } from '../lib/book-covers';
 import { readingAnchor } from '../lib/reading-anchor';
 import { formatReadingDate } from '../lib/reading-date';
+import { FALLBACK_SPINES, spineColors } from '../lib/spine-colors.mjs';
 
 type Book = { title: string; author: string | null; status: string | null; rating: number | null; format: string | null; started: string | null; finished: string | null; progress?: number | null; pages?: number | null; cover_url?: string | null };
 const current: Book[] = reading.currently_reading ?? [];
@@ -23,19 +24,11 @@ const withFormat = finished.filter(book => book.format);
 const audioShare = withFormat.length ? Math.round(100 * withFormat.filter(book => /audio/i.test(book.format ?? '')).length / withFormat.length) : null;
 
 const hash = (text: string) => [...text].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
-const PALETTE = ['#2B3A55', '#5B3A29', '#1F4B43', '#6B2E3A', '#3D3561', '#7A5A1E', '#2F4F6F', '#4A4A3A'];
-const luminance = (hex: string) => {
-  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => c <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);
-  return .2126 * r + .7152 * g + .0722 * b;
-};
 const spineStyle = (book: Book) => {
   const cover = getBookCover(book.title, book.author, book.cover_url);
-  const color = cover?.color ?? PALETTE[hash(book.title) % PALETTE.length];
-  // Whichever text colour contrasts more with this spine.
-  const contrast = (a: string, b: string) => { const [x, y] = [luminance(a), luminance(b)]; return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
-  const ink = contrast(color, '#10151F') >= contrast(color, '#F4F1EA') ? '#10151F' : '#F4F1EA';
+  const { spine, ink } = spineColors(cover?.color ?? FALLBACK_SPINES[hash(book.title) % FALLBACK_SPINES.length]);
   const height = book.pages ? Math.min(100, Math.max(74, 60 + book.pages / 25)) : 78 + (hash(book.title + (book.author ?? '')) % 23);
-  return `--spine:${color};--spine-ink:${ink};--spine-h:${height.toFixed(0)}%`;
+  return `--spine:${spine};--spine-ink:${ink};--spine-h:${height.toFixed(0)}%`;
 };
 const describe = (book: Book, state: 'current' | 'finished') => state === 'current'
   ? `Reading${book.progress != null ? ` · ${book.progress}%` : ''}`
@@ -50,11 +43,12 @@ const describe = (book: Book, state: 'current' | 'finished') => state === 'curre
 <div class="spine-shelf">
   <ul class="spines" aria-label="Recent books">
     {shelf.map(({ book, state }, index) => <li class:list={['spine', { 'is-open': index === 0 }]} style={spineStyle(book)}>
-      <a href={`/reading#${readingAnchor(book.title, book.author, state)}`} aria-label={`${book.title}${book.author ? ` by ${book.author}` : ''}. ${describe(book, state)}`}>
+      {/* The link is named by its open face, so its accessible name contains the visible text. */}
+      <a href={`/reading#${readingAnchor(book.title, book.author, state)}`}>
         <span class="spine-face" aria-hidden="true"><span class="spine-title">{book.title}</span>{book.author && <span class="spine-author">{book.author.split(' ').at(-1)}</span>}</span>
-        <span class="spine-open" aria-hidden="true">
+        <span class="spine-open">
           <BookCover title={book.title} author={book.author} coverUrl={book.cover_url} variant="small" />
-          <span class="spine-meta"><strong>{book.title}</strong>{book.author && <span>{book.author}</span>}<em>{describe(book, state)}</em>{state === 'current' && book.progress != null && <span class="shelf-progress"><progress max="100" value={book.progress}>{book.progress}%</progress></span>}</span>
+          <span class="spine-meta"><strong>{book.title}</strong>{book.author && <span>{book.author}</span>}<em>{describe(book, state)}</em>{state === 'current' && book.progress != null && <span class="shelf-progress" aria-hidden="true"><progress max="100" value={book.progress}>{book.progress}%</progress></span>}</span>
         </span>
       </a>
     </li>)}
