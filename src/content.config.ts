@@ -33,6 +33,12 @@ const sky = defineCollection({
 		}).partial().optional(),
 		// A frame count, or "unknown" for a stack whose count was not recorded.
 		stack: z.union([z.number().int().min(2), z.literal('unknown')]).optional(),
+		// A timelapse.mp4 beside index.md, its first frame as the poster, and the
+		// number of source frames it was built from.
+		timelapse: z.object({
+			poster: image(),
+			frames: z.number().int().min(2),
+		}).optional(),
 	}),
 });
 

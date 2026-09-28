@@ -11,6 +11,9 @@
 .sky-facts dt { font: var(--text-label)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
 .sky-facts dd { margin: .2rem 0 0; font-size: var(--text-body); overflow-wrap: anywhere; }
 .sky-facts dd.mono { font-size: var(--text-label); }
+.sky-timelapse { margin: 2rem 0 0; }
+.sky-timelapse video { display: block; width: 100%; height: auto; background: #05080e; border: 1px solid var(--rule); }
+.sky-timelapse figcaption { margin-top: .75rem; font-size: var(--text-label); color: var(--muted); }
 .sky-note { color: var(--muted); font-size: var(--text-label); margin: 3rem 0 0; }
 
 @media (max-width: 900px) { .sky-entry-copy { grid-template-columns: minmax(0, 1fr); } }

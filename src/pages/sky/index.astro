@@ -13,6 +13,14 @@ const latest = photos[0];
 const ogImage = latest ? await getImage({ src: latest.data.photo, width: 1200, format: 'jpg', quality: 85 }) : undefined;
 const day = (date: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
 const description = 'Night-sky photos from dark places. Capture details come from the camera files.';
+// Vite hashes each timelapse into /_astro/, so it can be cached as immutable.
+const videos = import.meta.glob<string>('/src/content/sky/*/timelapse.mp4', { query: '?url', import: 'default', eager: true });
+const timelapses = new Map(await Promise.all(photos.filter(({ data }) => data.timelapse).map(async ({ id, data }) => {
+  const src = videos[`/src/content/sky/${id}/timelapse.mp4`];
+  if (!src) throw new Error(`sky entry ${id} declares a timelapse but has no timelapse.mp4`);
+  const poster = await getImage({ src: data.timelapse!.poster, width: 1920, format: 'webp', quality: 80 });
+  return [id, { src, poster: poster.src, frames: data.timelapse!.frames }] as const;
+})));
 ---
 <!doctype html>
 <html lang="en">
@@ -35,6 +43,10 @@ const description = 'Night-sky photos from dark places. Capture details come fro
               {captureLine(data) && <div><dt>Capture</dt><dd class="mono">{captureLine(data)}</dd></div>}
             </dl>
           </div>
+          {timelapses.has(id) && <figure class="sky-timelapse">
+            <video src={timelapses.get(id)!.src} poster={timelapses.get(id)!.poster} width="1920" height="1280" controls loop playsinline preload="none" aria-label={`${data.title}, timelapse`}></video>
+            <figcaption class="mono">Timelapse · {timelapses.get(id)!.frames} frames</figcaption>
+          </figure>}
         </article>)}
       </section> : <p class="interior-empty">No photos here yet. The next clear night will fix that.</p>}
       <p class="sky-note">Exposure values describe a single frame. Stacked images combine many frames of the same sky.</p>
