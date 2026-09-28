@@ -9,12 +9,14 @@ const hardcover = source.source === 'hardcover';
 const profile = source.profile_url && /^https:\/\/(app\.thestorygraph\.com\/profile\/[a-z0-9_]{3,30}|hardcover\.app\/@[A-Za-z0-9_-]{2,40})$/.test(source.profile_url) ? source.profile_url : null;
 const imported = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(source.updated));
 ---
-<p class="reading-source">
+<p class:list={["reading-source", { "with-credits": showCoverCredits }]}>
   {hardcover ? <><span>Synced from {profile ? <a href={profile}>Hardcover</a> : 'Hardcover'}</span><span aria-hidden="true"> · </span><span>Updated <time datetime={source.updated}>{imported}</time></span></> : storygraph ? <><span>From a {profile ? <a href={profile}>StoryGraph</a> : 'StoryGraph'} export</span><span aria-hidden="true"> · </span><span>Imported <time datetime={source.updated}>{imported}</time></span></> : <span>Shelf updated <time datetime={source.updated}>{imported}</time></span>}
 </p>
 {showCoverCredits && <CoverCredits />}
 <style>
   .reading-source { font-size: var(--text-label); color: var(--muted); margin: 1rem 0 1.5rem; line-height: 1.7; }
+  /* The cover credit continues this note, so no paragraph gap between them. */
+  .reading-source.with-credits { margin-bottom: 0; }
   .reading-source a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .35rem; margin: -.5rem -.35rem; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
   .reading-source a:hover { color: var(--on-mark); }
 </style>

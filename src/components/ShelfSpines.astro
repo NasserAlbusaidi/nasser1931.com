@@ -62,7 +62,8 @@ const describe = (book: Book, state: 'current' | 'finished') => state === 'curre
 </div>
 <style>
   .shelf-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 2rem; border-block: 1px solid var(--rule); }
-  .shelf-stats div { padding: 1.1rem 1.25rem 1.1rem 0; min-width: 0; }
+  /* Subgrid rows keep values level when a label wraps to two lines. */
+  .shelf-stats div { display: grid; grid-row: span 2; grid-template-rows: subgrid; align-content: start; padding: 1.1rem 1.25rem 1.1rem 0; min-width: 0; }
   .shelf-stats div + div { border-left: 1px solid var(--rule); padding-left: 1.25rem; }
   .shelf-stats dt { font: var(--text-label)/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
   .shelf-stats dd { margin: .4rem 0 0; font-size: var(--text-heading); font-weight: 350; letter-spacing: -.03em; line-height: 1.1; }

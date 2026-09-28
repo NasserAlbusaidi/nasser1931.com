@@ -7,7 +7,7 @@
 .intro-copy > .eyebrow { margin-bottom: 1.75rem; }
 .intro-copy h1 { font-size: var(--text-hero); font-weight: 350; line-height: .98; letter-spacing: -.055em; }
 .name-stop { color: var(--accent); }
-.intro-line { margin: 2.25rem 0 .9rem; font-size: var(--text-title); line-height: 1.4; max-width: 35ch; }
+.intro-line { margin: 2.25rem 0 .9rem; font-size: var(--text-title); line-height: 1.4; max-width: 35ch; text-wrap: balance; }
 .intro-description { max-width: 46ch; color: var(--muted); font-size: var(--text-body); line-height: 1.7; }
 .intro-links { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 2rem; }
 .home-button { display: inline-flex; align-items: center; justify-content: center; gap: .75rem; min-height: 48px; padding: .75rem 1.25rem; border: 1px solid var(--rule); color: var(--ink); font-size: var(--text-body); }
@@ -62,7 +62,7 @@
 .reading-section { margin-top: 5rem; }
 .shelf-intro { color: var(--muted); margin: 0 0 1.5rem; }
 .closing-note { border-top: 1px solid var(--rule); margin-top: 4rem; padding-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
-.closing-note p { font-size: var(--text-heading); line-height: 1.25; font-weight: 350; margin: 0; letter-spacing: -.03em; }
+.closing-note p { font-size: var(--text-heading); line-height: 1.25; font-weight: 350; margin: 0; letter-spacing: -.03em; text-wrap: balance; }
 @media (max-width: 1100px) {
   .intro-content { gap: 1.5rem; min-height: 32rem; }
   .now-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -95,6 +95,8 @@
   .rihla-showcase > .project-preview { grid-column: 1; grid-row: auto; }
   .rihla-copy h3 { margin-top: 1.25rem; }
   .rihla-actions { grid-column: 1; }
+  .project-store-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .project-store-links .home-button { padding-inline: .4rem; gap: .5rem; }
   .supporting-projects { grid-template-columns: minmax(0, 1fr); }
   .supporting-project:last-child { grid-column: auto; }
   .supporting-project + .supporting-project { margin-top: 1rem; }
@@ -104,6 +106,7 @@
 }
 @media (max-width: 380px) {
   .home-button { padding-inline: .9rem; }
+  .project-store-links { grid-template-columns: minmax(0, 1fr); }
   .rihla-showcase { --showcase-inset: 1.25rem; }
   .supporting-project { padding: 1.25rem; }
 }

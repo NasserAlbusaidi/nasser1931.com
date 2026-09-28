@@ -174,7 +174,7 @@
   .current-book-copy { display: contents; }
   .current-topline { grid-column: 2; margin-bottom: 0; align-self: start; }
   .current-book > .book-cover { grid-row: 1 / 4; }
-  .current-progress { grid-column: 2; }
+  .current-progress { grid-column: 1 / -1; margin-top: 0; max-width: none; }
   .current-books h3 { grid-column: 2; font-size: var(--text-title); }
   .current-author { grid-column: 2; margin: 0; }
   .current-started { grid-column: 2; margin: 0; }
