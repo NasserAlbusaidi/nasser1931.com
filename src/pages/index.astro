@@ -9,6 +9,8 @@ import ReadingSource from '../components/ReadingSource.astro';
 import ShelfSpines from '../components/ShelfSpines.astro';
 import RaceCard from '../components/RaceCard.astro';
 import WorldsCard from '../components/WorldsCard.astro';
+import SkyClosing from '../components/SkyClosing.astro';
+import { getCollection } from 'astro:content';
 import reading from '../data/reading.json';
 import nextRace from '../data/next-race.json';
 import { races } from '../lib/races';
@@ -21,6 +23,7 @@ const books = [...reading.currently_reading, ...reading.finished]
   .slice(0, 5);
 const upcoming = (nextRace as { race: { date: string; name: string } | null }).race;
 const latestFinish = races.find(race => race.status === 'finished');
+const latestSky = (await getCollection('sky')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())[0];
 const rihla = builds.builds.find(build => build.slug === 'rihla');
 const einstein = builds.builds.find(build => build.slug === 'einsteins-travel-bureau');
 const date = (value: string | Date) => {
@@ -93,7 +96,8 @@ const date = (value: string | Date) => {
           <p class="shelf-intro">What I’m reading now, then the most recent finishes.</p>
           <ShelfSpines /><ReadingSource />
         </section>
-        <div class="closing-note"><p>Something here sparked a thought?</p><a class="home-button primary" href="mailto:nasserbusaidi@gmail.com">Say hello <span aria-hidden="true">→</span></a></div>
+        {latestSky ? <SkyClosing photo={latestSky} />
+          : <div class="closing-note"><p>Something here sparked a thought?</p><a class="home-button primary" href="mailto:nasserbusaidi@gmail.com">Say hello <span aria-hidden="true">→</span></a></div>}
       </div>
     </main>
     <Footer />

@@ -1,0 +1,53 @@
+---
+// Homepage closing line over the latest sky photo. The photo stays dark in both
+// themes, so the block sets its own dark palette. Only the headline and button
+// sit on the image, over the sky; the caption sits below it.
+import type { CollectionEntry } from 'astro:content';
+import { Picture } from 'astro:assets';
+import { captureLine } from '../lib/sky.mjs';
+
+interface Props { photo: CollectionEntry<'sky'>; }
+const { photo: { id, data } } = Astro.props;
+const capture = captureLine(data);
+---
+<section class="sky-closing" aria-labelledby="sky-closing-title">
+  <div class="sky-closing-frame">
+    {/* WebP only: AVIF doubled the size of star fields with no visible gain. */}
+    <Picture class="sky-closing-image" src={data.photo} alt={data.alt} formats={['webp']} fallbackFormat="webp" widths={[640, 1200, 1600, 2400]} sizes="(max-width: 1424px) calc(100vw - 2.5rem), 1360px" quality={85} />
+    <div class="sky-closing-copy">
+      <p id="sky-closing-title">Something here sparked a thought?</p>
+      <a class="home-button primary" href="mailto:nasserbusaidi@gmail.com">Say hello <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+  <p class="sky-closing-caption">
+    <a class="sky-closing-name" href={`/sky#${id}`}>{data.title}</a>
+    {capture && <span class="mono">{capture}</span>}
+    <a class="sky-closing-all" href="/sky">All photos <span aria-hidden="true">→</span></a>
+  </p>
+</section>
+<style>
+  .sky-closing { margin-top: 4rem; }
+  .sky-closing-frame {
+    --ink: #EEF2F8; --bg: #080D16; --accent: #E8BD85; --surface: #101824; --rule: #293547; --mark: #263449; --on-mark: #EEF2F8;
+    color-scheme: dark; color: var(--ink); background: #05080e;
+    position: relative; isolation: isolate; overflow: hidden; border: 1px solid var(--rule);
+    min-height: 26rem; aspect-ratio: 21 / 8; display: flex; align-items: flex-start; padding: 3rem;
+  }
+  .sky-closing-frame :global(picture), .sky-closing-frame::after { position: absolute; inset: 0; }
+  .sky-closing-frame :global(picture) { z-index: -2; }
+  .sky-closing-frame :global(.sky-closing-image) { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+  .sky-closing-frame::after { content: ''; z-index: -1; background: linear-gradient(to bottom, #080d16cc, #080d1600 55%); }
+  .sky-closing-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .sky-closing-copy p { font-size: var(--text-heading); line-height: 1.25; font-weight: 350; letter-spacing: -.03em; margin: 0; max-width: 18ch; text-wrap: balance; }
+  .sky-closing-caption { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1.25rem; margin: .5rem 0 0; font-size: var(--text-label); color: var(--muted); }
+  .sky-closing-caption a { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; }
+  .sky-closing-caption a:hover { background: transparent; color: var(--accent); }
+  .sky-closing-name { color: var(--ink); font-size: var(--text-body); }
+  .sky-closing-all { margin-left: auto; font-size: var(--text-body); }
+  @media (max-width: 720px) {
+    .sky-closing { margin-top: 3rem; }
+    .sky-closing-frame { aspect-ratio: auto; min-height: 30rem; padding: 1.5rem; }
+    .sky-closing-frame :global(.sky-closing-image) { object-position: center 40%; }
+    .sky-closing-all { margin-left: 0; }
+  }
+</style>

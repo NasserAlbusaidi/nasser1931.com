@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import { getImage, Picture } from 'astro:assets';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import { captureLine } from '../../lib/sky.mjs';
+import '../../styles/sky.css';
+
+const photos = (await getCollection('sky')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latest = photos[0];
+const ogImage = latest ? await getImage({ src: latest.data.photo, width: 1200, format: 'jpg', quality: 85 }) : undefined;
+const day = (date: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+const description = 'Night-sky photos from dark places. Capture details come from the camera files.';
+---
+<!doctype html>
+<html lang="en">
+  <head><BaseHead title="Sky — Nasser Al Busaidi" description={description} image={ogImage ? { src: ogImage.src } : undefined} /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="interior">
+      <PageIntro title="Sky" eyebrow="After dark" description={description} meta={`${photos.length} ${photos.length === 1 ? 'photo' : 'photos'}`} />
+      {photos.length ? <section aria-label="Photos" class="sky-list">
+        {photos.map(({ id, data }, index) => <article id={id} class="sky-entry" aria-labelledby={`${id}-title`}>
+          <figure class="sky-photo">
+            <Picture src={data.photo} alt={data.alt} formats={['webp']} fallbackFormat="webp" widths={[800, 1200, 1600, 2400, 3000]} sizes="(max-width: 1424px) calc(100vw - 4rem), 1360px" quality={85} loading={index === 0 ? 'eager' : 'lazy'} />
+          </figure>
+          <div class="sky-entry-copy">
+            <div><p class="eyebrow"><time datetime={data.date.toISOString().slice(0, 10)}>{day(data.date)}</time></p><h2 id={`${id}-title`}>{data.title}</h2></div>
+            <dl class="sky-facts">
+              <div><dt>Location</dt><dd>{data.location}</dd></div>
+              {data.camera && <div><dt>Camera</dt><dd>{data.camera}</dd></div>}
+              {data.lens && <div><dt>Lens</dt><dd>{data.lens}</dd></div>}
+              {captureLine(data) && <div><dt>Capture</dt><dd class="mono">{captureLine(data)}</dd></div>}
+            </dl>
+          </div>
+        </article>)}
+      </section> : <p class="interior-empty">No photos here yet. The next clear night will fix that.</p>}
+      <p class="sky-note">Exposure values describe a single frame. Stacked images combine many frames of the same sky.</p>
+    </main>
+    <Footer />
+  </body>
+</html>
