@@ -18,7 +18,9 @@ const videos = import.meta.glob<string>('/src/content/sky/*/timelapse.mp4', { qu
 const timelapses = new Map(await Promise.all(photos.filter(({ data }) => data.timelapse).map(async ({ id, data }) => {
   const src = videos[`/src/content/sky/${id}/timelapse.mp4`];
   if (!src) throw new Error(`sky entry ${id} declares a timelapse but has no timelapse.mp4`);
-  const poster = await getImage({ src: data.timelapse!.poster, width: 1920, format: 'webp', quality: 80 });
+  // The poster is one URL for every screen and loads with the page, so it stays
+  // small enough not to hold back the photo above it on a phone.
+  const poster = await getImage({ src: data.timelapse!.poster, width: 1280, format: 'webp', quality: 75 });
   return [id, { src, poster: poster.src, frames: data.timelapse!.frames }] as const;
 })));
 ---
@@ -32,7 +34,7 @@ const timelapses = new Map(await Promise.all(photos.filter(({ data }) => data.ti
       {photos.length ? <section aria-label="Photos" class="sky-list">
         {photos.map(({ id, data }, index) => <article id={id} class="sky-entry" aria-labelledby={`${id}-title`}>
           <figure class="sky-photo">
-            <Picture src={data.photo} alt={data.alt} formats={['webp']} fallbackFormat="webp" widths={[800, 1200, 1600, 2400, 3000]} sizes="(max-width: 1424px) calc(100vw - 4rem), 1360px" quality={85} loading={index === 0 ? 'eager' : 'lazy'} />
+            <Picture src={data.photo} alt={data.alt} formats={['webp']} fallbackFormat="webp" widths={[800, 1200, 1600, 2400, 3000]} sizes="(max-width: 1424px) calc(100vw - 4rem), 1360px" quality={85} loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : 'auto'} />
           </figure>
           <div class="sky-entry-copy">
             <div><p class="eyebrow"><time datetime={data.date.toISOString().slice(0, 10)}>{day(data.date)}</time></p><h2 id={`${id}-title`}>{data.title}</h2></div>
