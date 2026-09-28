@@ -39,6 +39,7 @@ npm run sync-hardcover                               # pull the shelf + progress
 npm run cache-covers                                 # mirror every referenced cover into public/covers + src/data/cover-cache.json (needs open network)
 npm run sync-posts                                   # fetch Published posts from Notion, write src/content/stupidshit/*.md (needs NOTION_TOKEN; defaults to known Posts db)
 npm run generate-og                                  # regenerate the section cards in public/social/ (deterministic; re-run when the OG look or a section changes)
+npm run add-photo -- <image> --title "…" --location "…" --exif-from <raw frame> [--stack <n|unknown>] [--alt "…"]  # add a /sky photo (see Sky below)
 gh workflow run refresh-next-race.yml                # easier: run the same refresh on CI; commits + pushes only on diff
 gh workflow run sync-reading.yml                     # manually trigger the Notion → /reading sync (also runs every 6h)
 gh workflow run sync-posts.yml                       # manually trigger the Notion → posts sync (also runs every 30min)
@@ -71,13 +72,16 @@ src/
 │   ├── builds/                ← /builds (Projects)
 │   ├── races/                 ← /races race log
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
+│   ├── sky/                   ← /sky night-sky photos
 │   └── reading/               ← /reading
 ├── content/
-│   └── stupidshit/            ← /stupidshit entries (zod schema: title, summary, date, optional tags[], optional notion_id)
+│   ├── stupidshit/            ← /stupidshit entries (zod schema: title, summary, date, optional tags[], optional notion_id)
+│   └── sky/<slug>/            ← index.md + photo.jpg per sky photo (written by npm run add-photo)
 ├── layouts/
 │   └── Entry.astro            ← layout for /stupidshit entries
 ├── components/
-│   ├── Header.astro           ← nav: Projects / Notes / Races / Reading + theme toggle
+│   ├── Header.astro           ← nav: Projects / Notes / Races / Reading / Sky + theme toggle
+│   ├── SkyClosing.astro       ← homepage closing line over the latest sky photo
 │   ├── RaceCard.astro         ← homepage race card
 │   ├── WorldsCard.astro       ← homepage series card (from reading-series.json + the shelf)
 │   ├── Footer.astro
@@ -98,9 +102,10 @@ Removed on 27 September 2026 at the owner's request; see the redirects under fir
 
 `src/pages/index.astro`:
 - The homepage features Rihla with separate App Store and Google Play links plus a secondary source link. Below it, three supporting cards: Race log (`RaceCard.astro`), Einstein’s Travel Bureau, and Worlds I’m in (`WorldsCard.astro`). Each card uses one link; do not nest anchors.
+- The page closes with `SkyClosing.astro`: the latest sky photo with the "Say hello" line and button on the dark sky, and the title, capture line, and "All photos" link below the image. With no sky photos it falls back to the plain closing note.
 
 OG fallback image:
-- `BaseHead.astro` maps the homepage and section routes to distinct images in `public/social/`. `npm run generate-og` regenerates the four section typography cards (projects, races, reading, notes). The homepage has generated Earth artwork. Article pages use their own image when supplied and otherwise omit inherited images.
+- `BaseHead.astro` maps the homepage and section routes to distinct images in `public/social/`. `npm run generate-og` regenerates the four section typography cards (projects, races, reading, notes). The homepage has generated Earth artwork. `/sky` uses its latest photo, passed from the page with `getImage`. Article pages use their own image when supplied and otherwise omit inherited images.
 
 ## DNS records (Route 53, hosted zone `nasser1931.com.`)
 
@@ -162,6 +167,16 @@ Posts on `/stupidshit` can be authored entirely in Notion — no commits, no IDE
   Hand-authored markdown files without a `notion_id` are left alone — the two authoring modes coexist safely.
 - **Concurrency:** shares the `bot-pushes-main` concurrency group with the other sync workflows; commit author is `posts-bot <bot@nasser1931.com>`.
 - **Setup:** done once on 2026-05-15 — db created, integration access inherited from "🎯 Personal" parent, default db id baked into the script, `NOTION_TOKEN` already a GH secret. Day-to-day: open the Posts db in Notion, write a row, set Status=Published, then either wait ≤30min for cron or run `gh workflow run sync-posts.yml` to ship now.
+
+## Sky
+
+`/sky` shows night-sky photos from the `sky` content collection, newest first. Each entry is `src/content/sky/<date>-<place>/index.md` beside `photo.jpg`.
+
+- **Adding a photo:** `npm run add-photo -- <finished image> --title "…" --location "…" --exif-from <one source RAW/JPG> [--stack <n|unknown>] [--alt "…"]`. Stacked TIFFs carry no capture data, so `--exif-from` reads date, camera, lens, and exposure from one source frame. The date is the camera-local day. The script copies camera and lens names as the EXIF writes them (`SONY ILCE-7M4`); tidy them in `index.md` by hand (`Sony α7 IV`).
+- **Privacy:** the repository is public. The script re-encodes the image (3000px, JPEG) with no EXIF, XMP, or IPTC, and refuses to write if any metadata survives, so GPS and serial numbers never reach Git. `scripts/add-photo.test.mjs` covers this. Originals stay on `D:\Camera`; never commit RAW or TIFF files.
+- **Honest captions:** exposure values describe one frame. `stack` is a recorded frame count, or `"unknown"` for a stack whose count was not kept; leave it out for a single exposure. Never invent a stack count, a location, or a place more precise than the owner gave. Alt text describes only what is visible.
+- **Images:** pages serve WebP only. AVIF doubled the size of star fields with no visible gain (checked 28 September 2026).
+- **Current photo:** Milky Way over Jabal Al Sarah, 13 June 2026, from `D:\Camera\2026\June\output\final2.tif`, capture data from `10960613/DSC07921.ARW`. The stack count was not recorded. The owner also made a timelapse (posted on Instagram, 15 June); its video file was not found on this PC.
 
 ## Races
 
