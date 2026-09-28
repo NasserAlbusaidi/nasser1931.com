@@ -98,8 +98,16 @@ body {
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
+
+/* Short pages keep the footer at the bottom. Auto side margins stop flex
+   items stretching, so the centred header and main need an explicit width. */
+body > .site-header, body > main { width: 100%; }
+body > main { flex: 1 0 auto; }
 
 ::selection {
   background: var(--mark);
@@ -116,6 +124,7 @@ h1, h2, h3, h4 {
   font-weight: 400;
   letter-spacing: -0.035em;
   margin: 0;
+  text-wrap: balance;
 }
 
 h1 {
@@ -157,6 +166,7 @@ h3 {
 
 p {
   margin: 0 0 1em 0;
+  text-wrap: pretty;
 }
 
 a {
