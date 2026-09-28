@@ -45,3 +45,15 @@ for (const retired of ['/field', '/paper', '/coach']) {
 		assert.ok(!existsSync(new URL(`../src/pages${retired}`, import.meta.url)));
 	});
 }
+
+// Firebase 301s /builds/ to /builds. Canonical, sitemap, and RSS URLs come from
+// Astro, so Astro must drop the slash too, or every one of them is a redirect.
+test('Astro URLs match Firebase trailing-slash handling', async () => {
+	const { trailingSlash } = JSON.parse(readFileSync(new URL('../firebase.json', import.meta.url), 'utf8')).hosting;
+	assert.equal(trailingSlash, false);
+	const astroConfig = readFileSync(new URL('../astro.config.mjs', import.meta.url), 'utf8');
+	assert.match(astroConfig, /trailingSlash:\s*'never'/);
+	const rss = readFileSync(new URL('../src/pages/rss.xml.js', import.meta.url), 'utf8');
+	assert.match(rss, /trailingSlash:\s*false/);
+	assert.doesNotMatch(rss, /link: `[^`]*\/`/);
+});

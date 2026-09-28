@@ -6,7 +6,7 @@ import Footer from '../../components/Footer.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import EntryIndex from '../../components/EntryIndex.astro';
 const entries = (await getCollection('stupidshit')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const journal = entries.map(entry => ({ ...entry.data, href: `/stupidshit/${entry.id}/` }));
+const journal = entries.map(entry => ({ ...entry.data, href: `/stupidshit/${entry.id}` }));
 ---
 <!doctype html>
 <html lang="en">
