@@ -48,6 +48,8 @@ npm run build                                        # static output to dist/
 firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI does this on push to main)
 ```
 
+Google Search Console: `https://nasser1931.com/` is a URL-prefix property (added 28 September 2026), verified by the `google-site-verification` meta tag in `BaseHead.astro`. Keep that tag, or the property loses verification. The sitemap submitted there is `sitemap-index.xml`.
+
 A redeploy is the easiest way to invalidate Fastly's edge cache if the site appears stale on the custom domain.
 
 The dev server can keep serving an `.astro` component's old `<style>` block after an edit (seen twice on 28 September 2026; the OneDrive file watcher is the likely cause). After a style edit, confirm the served CSS changed before judging the result; if it did not, restart `npm run dev`.
