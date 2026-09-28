@@ -49,6 +49,8 @@ firebase deploy --only hosting --project nasser-portfolio  # manual ship (CI doe
 
 A redeploy is the easiest way to invalidate Fastly's edge cache if the site appears stale on the custom domain.
 
+The dev server can keep serving an `.astro` component's old `<style>` block after an edit (seen twice on 28 September 2026; the OneDrive file watcher is the likely cause). After a style edit, confirm the served CSS changed before judging the result; if it did not, restart `npm run dev`.
+
 ## Deployment workflow
 
 Repo: https://github.com/NasserAlbusaidi/nasser1931.com
