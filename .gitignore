@@ -30,3 +30,6 @@ firebase-debug.log*
 firestore-debug.log*
 .firebaserc.local
 .gstack/
+
+# local Claude Code preview config
+.claude/launch.json
