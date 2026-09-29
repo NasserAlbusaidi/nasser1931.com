@@ -2,7 +2,7 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-09-29T05:44:47.541Z",
+  "updated": "2026-09-29T12:53:57.968Z",
   "stats": {
     "finished_total": 29,
     "finished_this_year": 11
@@ -414,19 +414,6 @@
       "progress": null,
       "pages": null,
       "cover_url": "https://assets.hardcover.app/edition/32944595/a7e36f33-4898-4a24-9ef9-b578b5a258bb.jpg"
-    },
-    {
-      "title": "Three Cups of Tea",
-      "author": "Greg Mortenson",
-      "status": "Want to Read",
-      "rating": null,
-      "format": "Physical",
-      "genres": [],
-      "started": null,
-      "finished": null,
-      "progress": null,
-      "pages": 349,
-      "cover_url": "https://assets.hardcover.app/external_data/39781482/2e388752df08a3359387e45b2e6b063f2548e98b.jpeg"
     }
   ],
   "dropped": [
