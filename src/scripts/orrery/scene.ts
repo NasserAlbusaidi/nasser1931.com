@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { motion, type Body } from '../../lib/orrery';
+import { focusRadius, motion, type Body } from '../../lib/orrery';
 import * as parts from './bodies';
 import { addLabel } from './labels';
 import type { Info, MoonInfo, Payload, Textures, World } from './types';
@@ -54,7 +54,7 @@ function addMoons(world: World, anchor: THREE.Group, b: Body, t: Textures, label
 
 function addBody(world: World, b: Body, t: Textures, glow: THREE.Texture, labelsEl: HTMLElement, now: number) {
   const anchor = new THREE.Group();
-  anchor.userData = { body: b, angle: b.phase, speed: motion(b.changed, now).speed, radius: b.radius };
+  anchor.userData = { body: b, angle: b.phase, speed: motion(b.changed, now).speed, radius: b.radius, focusRadius: focusRadius(b) };
   world.scene.add(anchor);
   world.anchors.push(anchor);
   if (b.kind === 'sun') {

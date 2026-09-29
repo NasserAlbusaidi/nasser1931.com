@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { HOME_DISTANCE, REST_PHI, REST_THETA, easeInOut, fitView, focusPlace, sphereDistance, type FocusOptions, type FocusPlace, type Reach } from '../../lib/orrery';
+import { HOME_DISTANCE, REST_PHI, REST_THETA, easeInOut, fitView, focusPlace, followStep, sphereDistance, type FocusOptions, type FocusPlace, type Reach } from '../../lib/orrery';
 
 export const FOV = 40;
 const EASE = 0.08;
@@ -50,6 +50,8 @@ export class CameraRig {
   private shiftY = 0;
   private applied = { x: NaN, y: NaN };
   private readonly target = new THREE.Vector3();
+  // Where the body in focus was on the last frame, so the target can move with it (see followStep).
+  private readonly followed = new THREE.Vector3();
   private readonly tmp = new THREE.Vector3();
 
   /** True while a body is in focus or the view is zoomed away from where it rests. */
@@ -151,12 +153,14 @@ export class CameraRig {
   }
 
   /**
-   * Fly in on an object of scene radius `radius`, resting distance from it (never closer than minDistance when
-   * zooming), or further out if it would not otherwise fit the room the card leaves.
+   * Fly in on an object, resting distance from it (never closer than minDistance when zooming), or further out
+   * if it would not otherwise fit the room the card leaves. `radius` is how far it is drawn from its centre in
+   * scene units, a ring included, and is what has to fit that room.
    */
   fly(to: THREE.Object3D, distance: number, minDistance: number, radius: number) {
     this.cancelIntro();
     this.focus = to;
+    to.getWorldPosition(this.followed);
     this.focusBaseDist = distance;
     this.focusMinDist = minDistance;
     this.focusRadius = radius;
@@ -217,8 +221,12 @@ export class CameraRig {
     if (this.intro) this.stepIntro(dt);
     else {
       if (this.focus) {
+        // The body keeps orbiting, so the target rides along with it and only the rest of the distance eases away.
+        // Easing towards its position alone would leave it trailing behind, out of the room planned for it.
         this.focus.getWorldPosition(this.tmp);
-        this.target.lerp(this.tmp, EASE);
+        const next = followStep(this.target, this.followed, this.tmp, EASE);
+        this.target.set(next.x, next.y, next.z);
+        this.followed.copy(this.tmp);
       } else this.target.lerp(this.tmp.set(0, 0, 0), EASE);
       this.shiftX += ((this.focus ? this.place.shiftX : this.restShift) - this.shiftX) * EASE;
       this.shiftY += ((this.focus ? this.place.shiftY : this.restShiftY) - this.shiftY) * EASE;

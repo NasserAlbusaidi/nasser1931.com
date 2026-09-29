@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MAX_MOONS, REST_ELEVATION_DEG, REST_PHI, UNDATED_DAYS, agoLabel, bodyReach, bodySize, buildOrrery, daysSince, earthStartAngle, easeInOut, fitView, focusPlace, latestDate, motion, orbitSpeed, projectBounds, sphereDistance, systemReaches } from '../src/lib/orrery.ts';
+import { MAX_MOONS, REST_ELEVATION_DEG, REST_PHI, UNDATED_DAYS, agoLabel, bodyReach, bodySize, buildOrrery, daysSince, earthStartAngle, easeInOut, fitView, focusPlace, focusRadius, followStep, latestDate, motion, orbitSpeed, projectBounds, sphereDistance, systemReaches } from '../src/lib/orrery.ts';
 
 const near = (actual, expected, epsilon = 1e-9) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} is not within ${epsilon} of ${expected}`);
 const NOW = Date.UTC(2026, 8, 29);
@@ -257,6 +257,58 @@ test('with the card open, a wide window keeps the body left of the card at the o
 	assert.ok(roomy.maxDiameter > 400, `Saturn's 420px disc fits beside the card (${roomy.maxDiameter.toFixed(0)}px)`);
 	const tight = focusPlace(1009, 692, { safeLeft: 506, card: cardAt(1009, 692), ...desktop });
 	assert.ok(tight.shiftY < -50 && tight.maxDiameter < roomy.maxDiameter);
+});
+
+test('a ringed body is fitted by its ring, so the ring, not just the sphere, stays clear of the card and the copy', () => {
+	assert.equal(focusRadius(saturn), bodyReach(saturn));
+	assert.ok(focusRadius(saturn) > 2 * saturn.radius);
+	for (const key of ['sun', 'earth', 'mars', 'notes']) {
+		const body = bodies.find((b) => b.key === key);
+		assert.equal(focusRadius(body), body.radius, `${key}: sphere only, its moons are not counted`);
+	}
+	const closeness = Math.max(2.8, saturn.radius * 5); // what stage.ts asks for
+	const sizes = [...wide, { name: '1280x720 hero', w: 1265, h: 640, safeLeft: 560 }, { name: '901px hero', w: 886, h: 680, safeLeft: 430 }];
+	for (const { name, w, h, safeLeft } of sizes) {
+		const card = cardAt(w, h);
+		const { shiftX, shiftY, maxDiameter } = focusPlace(w, h, { safeLeft, card, ...desktop });
+		// What camera.ts does with it.
+		const dist = Math.max(closeness, sphereDistance(maxDiameter / 2, h, FOV, focusRadius(saturn)));
+		const k = h / 2 / Math.tan((FOV * Math.PI) / 360);
+		const px = (radius) => (k * radius) / Math.sqrt(dist * dist - radius * radius);
+		const ring = px(bodyReach(saturn));
+		assert.ok(2 * ring <= maxDiameter + 1e-6, `${name}: the ring is ${(2 * ring).toFixed(0)}px wide in a room of ${maxDiameter.toFixed(0)}px`);
+		assert.ok(px(saturn.radius) < ring / 2, `${name}: the sphere is well inside the ring`);
+		const cx = w / 2 + shiftX;
+		const cy = h / 2 + shiftY;
+		assert.ok(cx - ring >= safeLeft - 1e-6, `${name}: the ring's left edge ${(cx - ring).toFixed(0)} is under the copy (${safeLeft})`);
+		assert.ok(cx + ring <= card.left || cy + ring + desktop.labelBelowPx <= card.top, `${name}: ring and label are over the card`);
+		assert.ok(cy - ring >= 12 - 1e-6 && cy + ring + desktop.labelBelowPx <= h - desktop.padBottomPx + 1e-6, `${name}: ring and label are inside the free area`);
+	}
+});
+
+test('a camera target follows a body that keeps moving without trailing it, at any frame rate', () => {
+	const ease = 0.08;
+	for (const fps of [10, 20, 60]) {
+		const step = 2.5 / fps; // a body moving at 2.5 units a second along x and z
+		let body = { x: 8, y: 0, z: 0 };
+		let target = { x: 0, y: 0, z: 0 }; // starts 8 units away, as after a fly-in from the overview
+		let eased = { ...target };
+		let previous = body;
+		for (let frame = 0; frame < 240; frame++) {
+			const current = { x: body.x + step, y: body.y, z: body.z + step };
+			target = followStep(target, previous, current, ease);
+			// Easing towards the position alone, which is what it replaced.
+			eased = { x: eased.x + (current.x - eased.x) * ease, y: eased.y, z: eased.z + (current.z - eased.z) * ease };
+			previous = body = current;
+		}
+		const gap = (t) => Math.hypot(t.x - body.x, t.z - body.z);
+		assert.ok(gap(target) < 1e-6, `${fps} fps: ${gap(target)} behind`);
+		near(gap(eased), Math.hypot(step, step) * (1 - ease) / ease, 1e-6); // the old trail
+		assert.ok(gap(eased) > 100 * gap(target) || gap(target) < 1e-6);
+	}
+	// A body that stands still is reached the way it was: a share of the way each frame.
+	const still = followStep({ x: 0, y: 0, z: 0 }, { x: 4, y: 0, z: 0 }, { x: 4, y: 0, z: 0 }, 0.5);
+	assert.deepEqual(still, { x: 2, y: 0, z: 0 });
 });
 
 test('easing starts and ends flat and never overshoots', () => {

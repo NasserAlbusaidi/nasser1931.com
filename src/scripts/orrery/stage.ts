@@ -121,7 +121,8 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
     };
     const open = (info: Info, hit: THREE.Object3D) => {
       showCard(info);
-      if (hit.parent) rig.fly(hit.parent, closeness(info), closest(info), hit.parent.userData.radius);
+      // A moon has only its own radius; a body's fit includes its ring.
+      if (hit.parent) rig.fly(hit.parent, closeness(info), closest(info), hit.parent.userData.focusRadius ?? hit.parent.userData.radius);
     };
     // Back to the whole system: card closed, nothing in focus, zoom reset.
     const overview = () => {

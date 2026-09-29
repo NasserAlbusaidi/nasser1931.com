@@ -123,6 +123,13 @@ export const bodyReach = (body: Pick<Body, 'kind' | 'radius' | 'ring' | 'moons'>
   return body.radius * 1.3;
 };
 
+/**
+ * The radius a body in focus is fitted by: how far it is drawn from its centre. A ringed planet is much wider than
+ * its sphere, so the sphere alone would leave the ring under the copy and the card. Moons are left out on purpose:
+ * counting their orbits would shrink every planet that has any to a speck.
+ */
+export const focusRadius = (body: Pick<Body, 'kind' | 'radius' | 'ring' | 'moons'>) => (body.ring ? bodyReach(body) : body.radius);
+
 export type Reach = { orbit: number; reach: number };
 export const systemReaches = (bodies: Pick<Body, 'kind' | 'radius' | 'ring' | 'moons' | 'orbit'>[]): Reach[] =>
   bodies.map((body) => ({ orbit: body.orbit, reach: bodyReach(body) }));
@@ -208,7 +215,7 @@ export type FocusPlace = {
   /** How far the body's centre sits right of and below the canvas centre, in pixels. */
   shiftX: number;
   shiftY: number;
-  /** The widest the body may be drawn so it and its label stay in the room; Infinity when nothing limits it. */
+  /** The widest the body may be drawn, ring included, so it and its label stay in the room; Infinity when nothing limits it. */
   maxDiameter: number;
 };
 
@@ -240,6 +247,19 @@ export const focusPlace = (w: number, h: number, options: FocusOptions = {}): Fo
     return { shiftX: (left + card.left - CARD_GAP_PX) / 2 - w / 2, shiftY: centerY - h / 2, maxDiameter: toLeft };
   }
   return { shiftX: (left + w - EDGE_PAD_PX) / 2 - w / 2, shiftY: (top + card.top - CARD_GAP_PX - labelBelowPx) / 2 - h / 2, maxDiameter: above };
+};
+
+export type Vec3 = { x: number; y: number; z: number };
+
+/**
+ * One frame of a camera target following a body that keeps moving. The target first moves with the body, then eases
+ * a share `ease` of what is left of the distance to it. Easing towards the body's position alone would trail it by
+ * about `speed * (1 - ease) / ease` per frame for as long as it orbits, so a body placed clear of the card would
+ * drift into it. This way the gap closes to nothing at any frame rate.
+ */
+export const followStep = (target: Vec3, previous: Vec3, current: Vec3, ease: number): Vec3 => {
+  const carried = { x: target.x + current.x - previous.x, y: target.y + current.y - previous.y, z: target.z + current.z - previous.z };
+  return { x: carried.x + (current.x - carried.x) * ease, y: carried.y + (current.y - carried.y) * ease, z: carried.z + (current.z - carried.z) * ease };
 };
 
 /** Smooth start and finish. `t` is clamped to 0..1. */
