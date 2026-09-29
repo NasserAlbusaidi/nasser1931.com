@@ -1,0 +1,97 @@
+---
+// The homepage sections as a solar system. The slotted poster (the static Earth) paints first and stays as the
+// fallback; the WebGL scene loads after first paint and fades in over it. Every destination is also a plain link.
+import { getImage } from 'astro:assets';
+import type { Body, Sky } from '../lib/orrery';
+import earthDay from '../assets/orrery/earth-day.jpg';
+import earthNight from '../assets/orrery/earth-night.jpg';
+import earthClouds from '../assets/orrery/earth-clouds.jpg';
+import mars from '../assets/orrery/mars.jpg';
+import saturn from '../assets/orrery/saturn.jpg';
+import saturnRing from '../assets/orrery/saturn-ring.png';
+import sun from '../assets/orrery/sun.jpg';
+import moon from '../assets/orrery/moon.jpg';
+import rock from '../assets/orrery/rock.jpg';
+
+interface Props { bodies: Body[]; sky: Sky; }
+const { bodies, sky } = Astro.props;
+
+// Hashed under /_astro/, because firebase.json caches .webp for a year. Nothing here may live un-hashed in public/.
+const sources = {
+  earthDay: [earthDay, 2048, 88], earthNight: [earthNight, 1024, 85], earthClouds: [earthClouds, 1024, 82],
+  mars: [mars, 1024, 88], saturn: [saturn, 1024, 88], saturnRing: [saturnRing, 1024, 90],
+  sun: [sun, 512, 88], moon: [moon, 512, 88], rock: [rock, 512, 88],
+} as const;
+const textures = Object.fromEntries(await Promise.all(Object.entries(sources).map(async ([key, [src, width, quality]]) =>
+  [key, (await getImage({ src, format: 'webp', width, quality })).src])));
+// `<` is escaped so no string in the data can close the script tag.
+const payload = JSON.stringify({ bodies, sky, textures }).replace(/</g, '\\u003c');
+const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
+---
+<div class="orrery" data-orrery>
+  <div class="globe-frame orrery-frame">
+    <slot />
+    <div class="orrery-viewport" data-orrery-viewport aria-hidden="true">
+      <div class="orrery-labels" data-orrery-labels></div>
+    </div>
+    <p class="orrery-hint" aria-hidden="true">Drag to turn · click a planet</p>
+  </div>
+  <section class="orrery-card" data-orrery-card aria-label="About this planet" hidden>
+    <button type="button" class="orrery-close" data-orrery-close aria-label="Close">×</button>
+    <p class="orrery-eyebrow" data-orrery-eyebrow></p>
+    <p class="orrery-title" data-orrery-title></p>
+    <ul class="orrery-stats" data-orrery-stats></ul>
+    <p class="orrery-why" data-orrery-why></p>
+    <a class="orrery-open" data-orrery-link href="/">Open</a>
+  </section>
+  <nav class="orrery-links" aria-label="Sections">
+    {destinations.map(destination => <a href={destination.href}>{destination.section}</a>)}
+  </nav>
+  <script type="application/json" data-orrery-data set:html={payload} />
+</div>
+<script>
+  import { mountOrrery } from '../scripts/orrery/boot';
+  mountOrrery();
+</script>
+<style is:global>
+  /* The scene is space, so it keeps its own dark palette in the lunar-gray light theme too. */
+  .orrery { --o-bg: #080d16; --o-deep: #101c2d; --o-ink: #eef2f8; --o-muted: #a6b3c6; --o-rule: #293547; --o-accent: #e8bd85; display: grid; }
+  .orrery > .orrery-frame, .orrery > .orrery-card { grid-row: 1; grid-column: 1; }
+  .orrery .orrery-frame { max-width: 640px; aspect-ratio: 1; }
+  .orrery-viewport { position: absolute; inset: 0; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity .6s ease; border: 1px solid var(--o-rule);
+    background: radial-gradient(ellipse at 50% 50%, var(--o-deep), var(--o-bg) 70%); }
+  .orrery.is-live .orrery-viewport { opacity: 1; pointer-events: auto; }
+  /* pan-y: a vertical swipe scrolls the page, a horizontal drag turns the system. */
+  .orrery-viewport canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: pan-y; user-select: none; }
+  .orrery-viewport canvas.pointing { cursor: pointer; }
+  .orrery-viewport canvas:active { cursor: grabbing; }
+  .orrery-labels { position: absolute; inset: 0; pointer-events: none; }
+  .orrery-label { position: absolute; transform: translate(-50%, 0); white-space: nowrap; text-align: center; color: var(--o-muted); transition: color .15s;
+    font: var(--text-label)/1.3 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; text-shadow: 0 0 6px var(--o-bg), 0 0 2px var(--o-bg); }
+  .orrery .orrery-label small { display: block; color: inherit; font-size: inherit; text-transform: none; letter-spacing: 0; opacity: .8; }
+  .orrery-label.moon { text-transform: none; letter-spacing: 0; }
+  .orrery-label.hot, .orrery-label.active { color: var(--o-accent); }
+  .orrery-hint { position: absolute; left: 1rem; bottom: .75rem; margin: 0; display: none; color: var(--o-muted); pointer-events: none; font: var(--text-label)/1.4 var(--font-mono); }
+  .orrery-card[hidden] { display: none; }
+  .orrery-card { position: relative; z-index: 2; align-self: end; justify-self: end; margin: 1rem; width: min(320px, calc(100% - 2rem)); display: grid; gap: .55rem;
+    padding: 1.1rem 1.2rem 1rem; background: rgba(16, 24, 36, .94); border: 1px solid var(--o-rule); color: var(--o-ink); }
+  .orrery-eyebrow { margin: 0; font: var(--text-label)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--o-muted); }
+  .orrery-title { margin: 0; font-size: var(--text-title); font-weight: 400; letter-spacing: -.02em; line-height: 1.2; }
+  .orrery-stats { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; font: var(--text-label)/1.5 var(--font-mono); color: var(--o-muted); }
+  .orrery-why { margin: 0; padding-top: .55rem; border-top: 1px solid var(--o-rule); color: var(--o-muted); line-height: 1.5; }
+  .orrery .orrery-open { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; color: var(--o-accent); }
+  .orrery .orrery-open:hover { background: transparent; text-decoration: underline; }
+  .orrery-close { position: absolute; top: .25rem; right: .25rem; width: 44px; height: 44px; background: none; border: 0; color: var(--o-muted); font-size: 1.4rem; cursor: pointer; }
+  .orrery-close:hover { color: var(--o-accent); }
+  .orrery-links { grid-row: 2; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .25rem; margin-top: .5rem; }
+  .orrery .orrery-links a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .6rem; color: var(--muted);
+    font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
+  .orrery .orrery-links a:hover { background: transparent; color: var(--accent); }
+  @media (hover: hover) and (pointer: fine) { .orrery.is-live .orrery-hint { display: block; } }
+  /* On phones the card sits under the picture, never over the sphere, and the labels are dropped. */
+  @media (max-width: 600px) {
+    .orrery-labels { display: none; }
+    .orrery > .orrery-card { grid-row: 2; align-self: stretch; justify-self: stretch; width: auto; margin: .75rem 0 0; }
+    .orrery > .orrery-links { grid-row: 3; }
+  }
+</style>

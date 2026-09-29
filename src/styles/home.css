@@ -27,6 +27,7 @@
 .home-world figcaption { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: baseline; gap: .4rem 1rem; margin-top: 1.5rem; }
 .home-world figcaption > span:not(.eyebrow) { font-size: var(--text-lead); }
 .home-world small { grid-column: 1 / -1; text-align: center; font-size: var(--text-label); color: var(--muted); }
+.home-world small a { text-decoration: underline; text-underline-offset: .2em; }
 .now-strip { display: grid; grid-template-columns: .6fr repeat(3, minmax(0, 1fr)); padding-block: 1.5rem; border-block: 1px solid var(--rule); margin-bottom: 5rem; }
 .now-heading, .now-item { display: flex; flex-direction: column; justify-content: center; gap: .3rem; min-width: 0; }
 .now-heading { padding-right: 1.5rem; }

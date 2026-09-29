@@ -10,22 +10,45 @@ import ShelfSpines from '../components/ShelfSpines.astro';
 import RaceCard from '../components/RaceCard.astro';
 import WorldsCard from '../components/WorldsCard.astro';
 import SkyClosing from '../components/SkyClosing.astro';
+import Orrery from '../components/Orrery.astro';
 import { getCollection } from 'astro:content';
 import reading from '../data/reading.json';
 import nextRace from '../data/next-race.json';
 import { races } from '../lib/races';
+import { buildOrrery, latestDate } from '../lib/orrery';
+import { buildReadingSeries } from '../lib/reading-series.mjs';
 import builds from '../data/builds.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/home.css';
 
-const books = [...reading.currently_reading, ...reading.finished]
-  .filter((book, index, all) => all.findIndex(other => other.title === book.title && other.author === book.author) === index)
-  .slice(0, 5);
+const allBooks = [...reading.currently_reading, ...reading.finished]
+  .filter((book, index, all) => all.findIndex(other => other.title === book.title && other.author === book.author) === index);
+const books = allBooks.slice(0, 5);
 const upcoming = (nextRace as { race: { date: string; name: string } | null }).race;
 const latestFinish = races.find(race => race.status === 'finished');
-const latestSky = (await getCollection('sky')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())[0];
+const skyPhotos = (await getCollection('sky')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latestSky = skyPhotos[0];
 const rihla = builds.builds.find(build => build.slug === 'rihla');
 const einstein = builds.builds.find(build => build.slug === 'einsteins-travel-bureau');
+// The solar system: each section's size and speed come from the data it already shows.
+const day = (value: Date) => value.toISOString().slice(0, 10);
+const notes = await getCollection('stupidshit');
+const readingTrack = buildReadingSeries(reading).filter(track => track.finishedCount + track.currentCount > 0).sort((a, b) => b.currentCount - a.currentCount)[0];
+const inProgress = (track: NonNullable<typeof readingTrack>) => track.books.filter(book => book.status === 'current')
+  .reduce((sum, book) => sum + (reading.currently_reading.find(item => item.title === book.matchedTitle)?.progress ?? 0) / 100, 0);
+const nowReading = reading.currently_reading[0];
+const orrery = buildOrrery({
+  projects: { count: builds.builds.length, changed: builds.updated, moons: [rihla, einstein].filter(build => !!build).map(build => ({ name: build.name, note: build.label })) },
+  races: races.map(({ name, date, status }) => ({ name, date, status })),
+  notes: { count: notes.length, changed: latestDate(notes.map(note => day(note.data.date))) },
+  reading: {
+    count: allBooks.length,
+    changed: latestDate(reading.finished.map(book => book.finished)),
+    current: nowReading ? { title: nowReading.title, progress: nowReading.progress } : null,
+    series: readingTrack ? { name: readingTrack.name, total: readingTrack.total, done: readingTrack.finishedCount + inProgress(readingTrack) } : null,
+  },
+  sky: { count: skyPhotos.length, changed: latestSky ? day(latestSky.data.date) : null, latestTitle: latestSky?.data.title ?? null },
+});
 const date = (value: string | Date) => {
   const parsed = value instanceof Date ? value : new Date(value);
   return Number.isFinite(parsed.getTime()) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed) : null;
@@ -63,11 +86,11 @@ const structuredData = {
             <div class="intro-links"><a class="home-button primary" href="#work">Explore projects <span aria-hidden="true">↓</span></a><a class="home-button" href="mailto:nasserbusaidi@gmail.com">Say hello</a></div>
           </div>
           <figure class="home-world">
-            <div class="globe-frame">
+            <Orrery {...orrery}>
               <Picture src={Earth} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 640, 960, 1254]} sizes="(max-width: 600px) 90vw, 540px" quality={75} loading="eager" fetchpriority="high" />
               <span class="muscat-pin" aria-hidden="true"></span><span class="muscat-label" aria-hidden="true">Muscat</span>
-            </div>
-            <figcaption><span class="eyebrow">Home base</span><span>Muscat, Oman</span><small>An imagined view of Earth, facing Arabia</small></figcaption>
+            </Orrery>
+            <figcaption><span class="eyebrow">Home base</span><span>Muscat, Oman</span><small>This site as a solar system. Planet, ring, and sun textures by <a href="https://www.solarsystemscope.com/textures/" rel="noopener">Solar System Scope</a>, CC BY 4.0, based on NASA imagery.</small></figcaption>
           </figure>
         </div>
       </section>

@@ -8,7 +8,7 @@ Personal home for software, racing, reading, and experiments. Astro static build
 
 ## Design System
 
-Read **DESIGN.md** before visual changes. The current direction is a space-centric personal observatory, requested in September 2026. The homepage uses original fictional planetary artwork, a full Arabia-facing Earth, large Outfit display type, self-hosted IBM Plex Mono labels, seven shared type sizes, dark blue-black surfaces, and amber accents. Preserve the clear personal introduction and visible work, races, notes, and reading. Default to dark while honoring saved `np-theme`; the light alternative uses lunar gray. On phones the globe follows the text; never crop the sphere or place small copy over it. Project screenshots come from the real apps, with source provenance recorded in src/assets/projects/sources.json. Decorative numbering is retired. See `src/pages/index.astro` and `src/styles/home.css`. Preserve existing data syncs, URLs (and the redirects for retired ones), and Firebase architecture.
+Read **DESIGN.md** before visual changes. The current direction is a space-centric personal observatory, requested in September 2026. The homepage hero is a three.js orrery: the sections as a solar system on near-black, using Solar System Scope textures (CC BY 4.0, credited in the caption). The static Earth stays as the poster and fallback (see Orrery below). It sits beside large Outfit display type, self-hosted IBM Plex Mono labels, seven shared type sizes, dark blue-black surfaces, and amber accents. Preserve the clear personal introduction and visible work, races, notes, and reading. Default to dark while honoring saved `np-theme`; the light alternative uses lunar gray. On phones the orrery follows the text; never crop the system or place small copy over it (the card opens under it, the labels are dropped). Project screenshots come from the real apps, with source provenance recorded in src/assets/projects/sources.json. Decorative numbering is retired. See `src/pages/index.astro` and `src/styles/home.css`. Preserve existing data syncs, URLs (and the redirects for retired ones), and Firebase architecture.
 
 ## Stack
 
@@ -84,6 +84,7 @@ src/
 ├── components/
 │   ├── Header.astro           ← nav: Projects / Notes / Races / Reading / Sky + theme toggle
 │   ├── SkyClosing.astro       ← homepage closing line over the latest sky photo
+│   ├── Orrery.astro           ← hero solar system: markup, hashed textures, hoisted boot script
 │   ├── RaceCard.astro         ← homepage race card
 │   ├── WorldsCard.astro       ← homepage series card (from reading-series.json + the shelf)
 │   ├── Footer.astro
@@ -92,6 +93,16 @@ src/
 │   ├── ThemeToggle.astro      ← light/dark toggle (FOUC-safe boot in BaseHead)
 │   └── FormattedDate.astro
 ```
+
+## Orrery
+
+`Orrery.astro` wraps the static Earth (`earth-arabia.png`, still `loading="eager" fetchpriority="high"`), which stays as the LCP poster and as the fallback when WebGL throws (logged with `console.error`), `prefers-reduced-motion` is set, or save-data is on. In those cases three.js is never downloaded. Otherwise `src/scripts/orrery/boot.ts` waits for `load` and for the hero to be near view, then dynamically imports the scene, which fades in over the poster. Scene code lives in `src/scripts/orrery/`; the pure rules in `src/lib/orrery.ts` (tested by `scripts/orrery.test.mjs`).
+
+- **Mapping:** Sun → `/`; Earth → Projects (`builds.json`; moons Rihla and Einstein); Mars → Races (`races.ts`; moons are the newest six races); the asteroid rock → Notes; Saturn → Reading (ring arc = progress through the series being read, from `buildReadingSeries` and Hardcover `progress`); Sky is the backdrop card, not a body. Every destination is also a plain link under the picture.
+- **Size:** `0.28 + 0.13·√count` (the Notes rock is fixed). **Speed:** `0.32·(0.14 + 0.86·e^(−days/45))` from days since the section's data last changed: `builds.json` `updated`, the newest race, the newest note, the newest sky photo, the newest full-dated finish on the shelf. It is computed in the browser against `Date.now()` so it stays honest between deploys. A source without a date drifts at the speed of `UNDATED_DAYS` (90); never invent a date.
+- **Textures:** sources in `src/assets/orrery/` (JPG/PNG), served as WebP through `getImage` so they are hashed under `/_astro/`. Nothing goes un-hashed in `public/`, because `firebase.json` caches `.webp` for a year. Colour maps are `SRGBColorSpace`; the ring keeps its alpha channel.
+- **Lights:** the mockup used r128's no-falloff lights; three r186 has only physical ones. `scene.ts` uses decay 0 with intensities scaled by π, then a slightly stronger sun and weaker ambient to match the approved look. If the look drifts after a three upgrade, retune there.
+- **Camera:** hand-rolled orbit (the approved feel), `touch-action: pan-y` so a vertical swipe scrolls the page. Distance is fitted to the canvas shape (`fitDistance`). Earth is turned to face Arabia when the intro settles; it keeps orbiting afterwards.
 
 ## Retired sections
 
