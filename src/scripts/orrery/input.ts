@@ -4,11 +4,13 @@ import { isBody, type Info, type World } from './types';
 
 const DRAG_THRESHOLD_PX = 4;
 const TOUCH_REACH_PX = 28;
-// Two clicks or taps on empty space within this long, and this close, are a double: back to the overview.
-const DOUBLE_MS = 450;
+// Two clicks or taps on empty space within this long, and this close, are a double: back to the overview. Real double
+// taps land 150-350 ms apart; the window leaves room for a slow one, and a finger drifts more than a mouse.
+const DOUBLE_MS = 500;
 const DOUBLE_PX = 32;
-// A tap on empty space while nothing is focused opens the Sky card, after waiting to see whether a second tap follows.
-const SKY_DELAY_MS = 260;
+const DOUBLE_TOUCH_PX = 40;
+// A tap on empty space while nothing is focused opens the Sky card, once no second tap can still make it a double.
+const SKY_DELAY_MS = DOUBLE_MS + 20;
 // Pinch on a trackpad arrives as a wheel event with a small deltaY; a mouse wheel with ctrl held is much larger.
 const WHEEL_ZOOM_RATE = 0.012;
 const WHEEL_STEP_MIN = 0.8;
@@ -79,17 +81,19 @@ export function attachInput(canvas: HTMLCanvasElement, rig: CameraRig, world: Wo
     return Math.hypot(a.x - b.x, a.y - b.y);
   };
 
-  const empty = (ev: PointerEvent) => {
-    const here = { x: ev.clientX, y: ev.clientY, time: ev.timeStamp };
-    const double = lastEmpty && here.time - lastEmpty.time < DOUBLE_MS && Math.hypot(here.x - lastEmpty.x, here.y - lastEmpty.y) < DOUBLE_PX;
+  const isDouble = (ev: PointerEvent) =>
+    !!lastEmpty && ev.timeStamp - lastEmpty.time < DOUBLE_MS
+    && Math.hypot(ev.clientX - lastEmpty.x, ev.clientY - lastEmpty.y) < (ev.pointerType === 'touch' ? DOUBLE_TOUCH_PX : DOUBLE_PX);
+
+  const forgetEmpty = () => {
+    lastEmpty = null;
     clearTimeout(skyTimer);
     skyTimer = undefined;
-    if (double) {
-      lastEmpty = null;
-      handlers.onReset();
-      return;
-    }
-    lastEmpty = here;
+  };
+
+  const empty = (ev: PointerEvent) => {
+    clearTimeout(skyTimer);
+    lastEmpty = { x: ev.clientX, y: ev.clientY, time: ev.timeStamp };
     if (rig.focus) handlers.onEmpty();
     else skyTimer = setTimeout(handlers.onEmpty, SKY_DELAY_MS);
   };
@@ -134,11 +138,16 @@ export function attachInput(canvas: HTMLCanvasElement, rig: CameraRig, world: Wo
     if (pointers.size < 2) pinch = null;
     endDrag();
     if (!wasClick) return;
+    // Decided before looking at what is under the finger: the first tap may have started a fly-back, so a body
+    // can have drifted under the second one. It still belongs to the double, and it must not open the Sky card.
+    if (isDouble(ev)) {
+      forgetEmpty();
+      handlers.onReset();
+      return;
+    }
     const hit = pick(ev);
     if (hit) {
-      lastEmpty = null;
-      clearTimeout(skyTimer);
-      skyTimer = undefined;
+      forgetEmpty();
       handlers.onPick(hit.userData.info, hit);
     } else empty(ev);
   }, opts);

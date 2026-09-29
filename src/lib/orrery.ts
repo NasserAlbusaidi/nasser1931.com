@@ -99,9 +99,11 @@ export const buildOrrery = (input: OrreryInput): { bodies: Body[]; sky: Sky } =>
 };
 
 export const HOME_DISTANCE = 30;
-// The resting camera: a fixed bearing, seen from about 21 degrees above the orbital plane.
+// The resting camera: a fixed bearing, seen from 30 degrees above the orbital plane. Steeper than the 21 it used to
+// be, so the system is a rounder ellipse that fills more of the hero's height instead of a thin one.
+export const REST_ELEVATION_DEG = 30;
 export const REST_THETA = 0.7;
-export const REST_PHI = 1.2;
+export const REST_PHI = Math.PI / 2 - (REST_ELEVATION_DEG * Math.PI) / 180;
 
 // Where the sun may sit, as a share of the canvas width, when text takes the left side.
 const SUN_MIN = 0.6;
@@ -196,6 +198,48 @@ export const fitView = (w: number, h: number, fovDeg: number, reaches: Reach[], 
     else near = mid;
   }
   return { dist: far, centerX, centerY: centerYFor(far).centerY };
+};
+
+export type FocusOptions = FitOptions & {
+  /** The open card's top-left corner on the canvas, when it is laid over it (wide screens); null when it is not. */
+  card?: { left: number; top: number } | null;
+};
+export type FocusPlace = {
+  /** How far the body's centre sits right of and below the canvas centre, in pixels. */
+  shiftX: number;
+  shiftY: number;
+  /** The widest the body may be drawn so it and its label stay in the room; Infinity when nothing limits it. */
+  maxDiameter: number;
+};
+
+// Space kept between the card and a focused body's label, and how much of the room the body may use.
+const CARD_GAP_PX = 24;
+const FOCUS_ROOM = 0.92;
+// Beside the card wins unless above it has clearly more room, so a body does not jump between the two as the card's height changes.
+const BESIDE_PREFERENCE = 0.85;
+
+/**
+ * Where a body in focus goes. Without a card over the canvas it is centred in the free area (right of the copy).
+ * With one, the body and the label under it go to its left, at the same height as before, or above it when that
+ * has clearly more room. `maxDiameter` is what fits there, so a narrow window draws the body smaller instead of
+ * under the card.
+ */
+export const focusPlace = (w: number, h: number, options: FocusOptions = {}): FocusPlace => {
+  const { safeLeft = 0, labelBelowPx = 0, padBottomPx = PLAIN_PAD_PX, card = null } = options;
+  const beside = safeLeft > 0 && safeLeft < w;
+  if (!card) return { shiftX: beside ? (safeLeft + w) / 2 - w / 2 : 0, shiftY: 0, maxDiameter: Infinity };
+  const left = beside ? safeLeft : PLAIN_PAD_PX;
+  const top = PLAIN_PAD_PX;
+  const bottom = h - padBottomPx;
+  const room = (right: number, lowest: number) => Math.max(0, Math.min(right - left, lowest - top - labelBelowPx)) * FOCUS_ROOM;
+  const toLeft = room(card.left - CARD_GAP_PX, bottom);
+  const above = room(w - EDGE_PAD_PX, card.top - CARD_GAP_PX);
+  if (toLeft >= above * BESIDE_PREFERENCE) {
+    const half = toLeft / 2;
+    const centerY = Math.min(bottom - labelBelowPx - half, Math.max(top + half, h / 2));
+    return { shiftX: (left + card.left - CARD_GAP_PX) / 2 - w / 2, shiftY: centerY - h / 2, maxDiameter: toLeft };
+  }
+  return { shiftX: (left + w - EDGE_PAD_PX) / 2 - w / 2, shiftY: (top + card.top - CARD_GAP_PX - labelBelowPx) / 2 - h / 2, maxDiameter: above };
 };
 
 /** Smooth start and finish. `t` is clamped to 0..1. */

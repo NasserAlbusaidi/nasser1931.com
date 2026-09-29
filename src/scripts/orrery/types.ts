@@ -28,4 +28,6 @@ export type World = {
   pickables: THREE.Object3D[];
   labels: LabelSpec[];
   spinners: { obj: THREE.Object3D; speed: number }[];
+  /** The drawn orbit lines and the opacity each has at full strength, so the opening move can fade them in. */
+  orbitLines: { material: THREE.LineBasicMaterial; opacity: number }[];
 };

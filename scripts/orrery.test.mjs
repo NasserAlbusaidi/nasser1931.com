@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MAX_MOONS, REST_PHI, UNDATED_DAYS, agoLabel, bodyReach, bodySize, buildOrrery, daysSince, earthStartAngle, easeInOut, fitView, latestDate, motion, orbitSpeed, projectBounds, sphereDistance, systemReaches } from '../src/lib/orrery.ts';
+import { MAX_MOONS, REST_ELEVATION_DEG, REST_PHI, UNDATED_DAYS, agoLabel, bodyReach, bodySize, buildOrrery, daysSince, earthStartAngle, easeInOut, fitView, focusPlace, latestDate, motion, orbitSpeed, projectBounds, sphereDistance, systemReaches } from '../src/lib/orrery.ts';
 
 const near = (actual, expected, epsilon = 1e-9) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} is not within ${epsilon} of ${expected}`);
 const NOW = Date.UTC(2026, 8, 29);
@@ -171,11 +171,31 @@ test('with text on the left, the whole system fits the free area, and no closer 
 });
 
 test('the outer orbit takes most of the free width, as much as the ring of Saturn allows', () => {
+	// Saturn can be at either side of the orbit, so its ring must fit beyond the orbit line there. However the camera
+	// is tilted, the orbit therefore cannot take more than orbit / (orbit + reach) of the free width.
+	const cap = saturn.orbit / (saturn.orbit + bodyReach(saturn));
 	for (const { name, w, h, safeLeft, heightLimited } of wide) {
 		const { dist } = fitView(w, h, FOV, reaches, REST_PHI, { safeLeft, ...desktop });
 		const orbitWidth = (2 * saturn.orbit * (h / 2 / Math.tan((FOV * Math.PI) / 360))) / dist;
 		const share = orbitWidth / (w - 16 - safeLeft);
 		assert.ok(share > (heightLimited ? 0.5 : 0.68) && share < 0.79, `${name}: ${share.toFixed(3)}`);
+		assert.ok(share <= cap + 1e-9, `${name}: ${share.toFixed(3)} is past the ring's cap ${cap.toFixed(3)}`);
+	}
+});
+
+test('the resting camera looks down at 30 degrees, and that fills more of the hero height than 21 did', () => {
+	assert.equal(REST_ELEVATION_DEG, 30);
+	near(REST_PHI, Math.PI / 2 - (30 * Math.PI) / 180);
+	// How much of the vertical room (between the top padding and the bottom band) the system, labels included, takes.
+	const fill = (w, h, safeLeft, phi) => {
+		const { dist } = fitView(w, h, FOV, reaches, phi, { safeLeft, ...desktop });
+		const b = projectBounds(reaches, dist, FOV, h, phi);
+		return (b.bottom - b.top + desktop.labelBelowPx) / (h - 12 - desktop.padBottomPx);
+	};
+	const before = 1.2; // about 21 degrees up
+	for (const { name, w, h, safeLeft } of wide.filter((size) => !size.heightLimited && size.w > 1100)) {
+		assert.ok(fill(w, h, safeLeft, REST_PHI) > 0.78, `${name}: ${fill(w, h, safeLeft, REST_PHI).toFixed(3)}`);
+		assert.ok(fill(w, h, safeLeft, REST_PHI) > fill(w, h, safeLeft, before) + 0.08, name);
 	}
 });
 
@@ -201,6 +221,42 @@ test('degenerate canvases fall back to the resting distance', () => {
 	assert.deepEqual(fitView(0, 0, FOV, reaches), { dist: 30, centerX: 0, centerY: 0 });
 	assert.equal(fitView(500, 500, FOV, []).dist, 30);
 	assert.equal(fitView(500, 500, FOV, reaches, REST_PHI, { safeLeft: 500 }).centerX, 250);
+});
+
+// A card like the real one: 320px wide, 64px from the right edge, 88px above the bottom, about 316px tall.
+const cardAt = (w, h) => ({ left: w - 64 - 320, top: h - 88 - 316 });
+
+test('a body in focus is centred in the free area when no card is over the canvas', () => {
+	const { shiftX, shiftY, maxDiameter } = focusPlace(1425, 824, { safeLeft: 537, ...desktop });
+	near(shiftX, (537 + 1425) / 2 - 1425 / 2);
+	assert.equal(shiftY, 0);
+	assert.equal(maxDiameter, Infinity);
+	assert.deepEqual(focusPlace(390, 292, { labelBelowPx: 24 }), { shiftX: 0, shiftY: 0, maxDiameter: Infinity });
+});
+
+test('a body in focus and its label stay clear of the card and the copy, at every desktop size', () => {
+	const sizes = [...wide, { name: '1280x720 hero', w: 1265, h: 640, safeLeft: 560 }, { name: '901px hero', w: 886, h: 680, safeLeft: 430 }];
+	for (const { name, w, h, safeLeft } of sizes) {
+		const card = cardAt(w, h);
+		const { shiftX, shiftY, maxDiameter } = focusPlace(w, h, { safeLeft, card, ...desktop });
+		assert.ok(maxDiameter > 60, `${name}: room for a body (${maxDiameter.toFixed(0)}px)`);
+		// The worst case: a body as wide as it may be, and a label as wide as the body and as tall as the room reserved for it.
+		const cx = w / 2 + shiftX;
+		const cy = h / 2 + shiftY;
+		const r = maxDiameter / 2;
+		const block = { left: cx - r, right: cx + r, top: cy - r, bottom: cy + r + desktop.labelBelowPx };
+		const overlapsCard = block.right > card.left && block.bottom > card.top;
+		assert.ok(!overlapsCard, `${name}: body and label overlap the card ${JSON.stringify({ block, card })}`);
+		assert.ok(block.left >= safeLeft - 1e-6 && block.top >= 12 - 1e-6 && block.bottom <= h - desktop.padBottomPx + 1e-6 && block.right <= w + 1e-6, `${name}: inside the free area ${JSON.stringify(block)}`);
+	}
+});
+
+test('with the card open, a wide window keeps the body left of the card at the old height; a narrow one puts it above', () => {
+	const roomy = focusPlace(1425, 824, { safeLeft: 537, card: cardAt(1425, 824), ...desktop });
+	assert.equal(roomy.shiftY, 0);
+	assert.ok(roomy.maxDiameter > 400, `Saturn's 420px disc fits beside the card (${roomy.maxDiameter.toFixed(0)}px)`);
+	const tight = focusPlace(1009, 692, { safeLeft: 506, card: cardAt(1009, 692), ...desktop });
+	assert.ok(tight.shiftY < -50 && tight.maxDiameter < roomy.maxDiameter);
 });
 
 test('easing starts and ends flat and never overshoots', () => {

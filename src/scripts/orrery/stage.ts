@@ -21,6 +21,8 @@ const START_ANGLES: Record<string, number> = { mars: Math.PI / 2, notes: -Math.P
 const POSTER_SPHERE = 0.9;
 // The labels come in once the pull-back is this far along, so none sit on the enlarged Earth.
 const LABELS_AT = 0.55;
+// How fast the orbit lines catch up (per second) when the opening move is cut short.
+const ORBIT_CATCH_UP = 6;
 // Room a label needs under the lowest body: a name and a sub-label on wide screens, the name alone on phones.
 const LABEL_BELOW_PX = 46;
 const LABEL_BELOW_PHONE_PX = 24;
@@ -94,6 +96,7 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
     let clock = -HOLD_SECONDS;
     let motion = 0;
     let introLabels = false;
+    let orbitFade = 0;
     const reaches = systemReaches(payload.bodies);
     const poster = root.querySelector<HTMLElement>('.orrery-poster');
     const overlay = matchMedia(OVERLAY_MEDIA);
@@ -102,20 +105,30 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
     // Where the text ends, measured from the canvas's left edge.
     const textEdge = () => (overlay.matches && avoid ? avoid.getBoundingClientRect().right - viewport.getBoundingClientRect().left + TEXT_GAP_PX : 0);
 
+    const cardEl = part('card');
+    // Where the card starts on the canvas, when it is laid over it (wide screens); a body in focus keeps clear of it.
+    const cardCorner = () => {
+      if (!overlay.matches || !card.isOpen) return null;
+      const at = cardEl.getBoundingClientRect();
+      const canvasBox = viewport.getBoundingClientRect();
+      return { left: at.left - canvasBox.left, top: at.top - canvasBox.top };
+    };
     const showCard = (info: Info) => {
       active = info;
       root.classList.add('has-card');
       card.open(info, Date.now());
+      rig.setCard(cardCorner());
     };
     const open = (info: Info, hit: THREE.Object3D) => {
       showCard(info);
-      if (hit.parent) rig.fly(hit.parent, closeness(info), closest(info));
+      if (hit.parent) rig.fly(hit.parent, closeness(info), closest(info), hit.parent.userData.radius);
     };
     // Back to the whole system: card closed, nothing in focus, zoom reset.
     const overview = () => {
       active = null;
       root.classList.remove('has-card');
       card.close();
+      rig.setCard(null);
       rig.overview();
     };
     // The Overview button shows while a body is in focus or the view is zoomed. If it had focus when it hid, keyboard focus moves on.
@@ -171,12 +184,21 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
       if (!w || !h) return;
       renderer.setSize(w, h, false);
       const beside = overlay.matches;
-      rig.resize(w, h, reaches, { safeLeft: textEdge(), labelBelowPx: phone.matches ? LABEL_BELOW_PHONE_PX : LABEL_BELOW_PX, padBottomPx: beside ? BOTTOM_BAND_PX : undefined });
+      rig.resize(w, h, reaches, { safeLeft: textEdge(), labelBelowPx: phone.matches ? LABEL_BELOW_PHONE_PX : LABEL_BELOW_PX, padBottomPx: beside ? BOTTOM_BAND_PX : undefined, card: cardCorner() });
       resetLabelSizes(world);
       draw();
     };
+    // The orbit lines come in with the pull-back: the first frame is Earth, its moons and the stars, with no line
+    // sweeping across the copy. If the opening move is cut short, they catch up instead of jumping.
+    const fadeOrbits = (dt: number) => {
+      // Eased twice over and squared: still 0 at the start and 1 at the end, but late enough that a line crossing the copy is faint.
+      const target = easeInOut(rig.introProgress) ** 2;
+      orbitFade += (target - orbitFade) * (dt > 0 ? 1 - Math.exp(-dt * ORBIT_CATCH_UP) : 1);
+      for (const line of world.orbitLines) line.material.opacity = line.opacity * orbitFade;
+    };
     const draw = (dt = 0) => {
       rig.update(dt);
+      fadeOrbits(dt);
       renderer.render(world.scene, rig.camera);
       if (introLabels && rig.introProgress >= LABELS_AT) {
         introLabels = false;

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { HOME_DISTANCE, REST_PHI, REST_THETA, easeInOut, fitView, type FitOptions, type Reach } from '../../lib/orrery';
+import { HOME_DISTANCE, REST_PHI, REST_THETA, easeInOut, fitView, focusPlace, sphereDistance, type FocusOptions, type FocusPlace, type Reach } from '../../lib/orrery';
 
 export const FOV = 40;
 const EASE = 0.08;
@@ -34,7 +34,9 @@ export class CameraRig {
   private intro: Intro | null = null;
   private homeDist = HOME_DISTANCE;
   private focusDist = 0;
+  private focusBaseDist = 0;
   private focusMinDist = 0;
+  private focusRadius = 0;
   private zoom = 1;
   private width = 0;
   private height = 0;
@@ -42,7 +44,8 @@ export class CameraRig {
   // so dragging and flying in still turn around the sun and the body in focus.
   private restShift = 0;
   private restShiftY = 0;
-  private focusShift = 0;
+  private place: FocusPlace = { shiftX: 0, shiftY: 0, maxDiameter: Infinity };
+  private layout: FocusOptions = {};
   private shiftX = 0;
   private shiftY = 0;
   private applied = { x: NaN, y: NaN };
@@ -68,11 +71,12 @@ export class CameraRig {
 
   /**
    * Called on every resize. options.safeLeft is how many pixels of the left side text covers (0 when it does not
-   * overlap); the resting distance and the sun's position are fitted to the free area. The user's zoom is kept
+   * overlap); the resting distance and the sun's position are fitted to the free area, and options.card is where a
+   * card open over the canvas begins, which a body in focus keeps clear of. The user's zoom is kept
    * as a share of the new resting distance. A size that has not changed is ignored while the opening move runs,
    * so the observer's first callback cannot cut it short.
    */
-  resize(width: number, height: number, reaches: Reach[], options: FitOptions) {
+  resize(width: number, height: number, reaches: Reach[], options: FocusOptions) {
     if (width === this.width && height === this.height && this.intro) return;
     this.cancelIntro();
     this.width = width;
@@ -82,14 +86,27 @@ export class CameraRig {
     this.homeDist = view.dist;
     this.restShift = view.centerX - width / 2;
     this.restShiftY = view.centerY - height / 2;
-    const safeLeft = options.safeLeft ?? 0;
-    // A body in focus is centred in the free area, not under the text.
-    this.focusShift = safeLeft > 0 && safeLeft < width ? (safeLeft + width) / 2 - width / 2 : 0;
-    this.applyGoal();
-    this.shiftX = this.focus ? this.focusShift : this.restShift;
-    this.shiftY = this.focus ? 0 : this.restShiftY;
+    this.layout = options;
+    this.layoutFocus();
+    this.shiftX = this.focus ? this.place.shiftX : this.restShift;
+    this.shiftY = this.focus ? this.place.shiftY : this.restShiftY;
     this.applied = { x: NaN, y: NaN }; // the aspect changed too, so rebuild the projection
     this.applyShift();
+  }
+
+  // A body in focus is centred in the free area, or in what the card leaves of it, and drawn small enough to fit there.
+  private layoutFocus() {
+    this.place = focusPlace(this.width, this.height, this.layout);
+    const limit = this.place.maxDiameter;
+    const fitDist = limit > 0 && Number.isFinite(limit) && this.focusRadius > 0 ? sphereDistance(limit / 2, this.height, FOV, this.focusRadius) : 0;
+    this.focusDist = Math.max(this.focusBaseDist, fitDist);
+    this.applyGoal();
+  }
+
+  /** Where the card open over the canvas begins, or null when there is none, so a body in focus keeps clear of it. */
+  setCard(card: FocusOptions['card']) {
+    this.layout = { ...this.layout, card };
+    if (this.width) this.layoutFocus();
   }
 
   private applyShift() {
@@ -133,14 +150,18 @@ export class CameraRig {
     this.applyGoal();
   }
 
-  /** Fly in on an object, resting distance from it (never closer than minDistance when zooming). */
-  fly(to: THREE.Object3D, distance: number, minDistance: number) {
+  /**
+   * Fly in on an object of scene radius `radius`, resting distance from it (never closer than minDistance when
+   * zooming), or further out if it would not otherwise fit the room the card leaves.
+   */
+  fly(to: THREE.Object3D, distance: number, minDistance: number, radius: number) {
     this.cancelIntro();
     this.focus = to;
-    this.focusDist = distance;
+    this.focusBaseDist = distance;
     this.focusMinDist = minDistance;
+    this.focusRadius = radius;
     this.zoom = 1;
-    this.applyGoal();
+    this.layoutFocus();
     this.ease = EASE;
   }
 
@@ -199,8 +220,8 @@ export class CameraRig {
         this.focus.getWorldPosition(this.tmp);
         this.target.lerp(this.tmp, EASE);
       } else this.target.lerp(this.tmp.set(0, 0, 0), EASE);
-      this.shiftX += ((this.focus ? this.focusShift : this.restShift) - this.shiftX) * EASE;
-      this.shiftY += ((this.focus ? 0 : this.restShiftY) - this.shiftY) * EASE;
+      this.shiftX += ((this.focus ? this.place.shiftX : this.restShift) - this.shiftX) * EASE;
+      this.shiftY += ((this.focus ? this.place.shiftY : this.restShiftY) - this.shiftY) * EASE;
       this.dist += (this.goalDist - this.dist) * this.ease;
       if (!this.dragging) this.phi += (this.goalPhi - this.phi) * this.ease;
     }

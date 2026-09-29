@@ -60,7 +60,9 @@ function addBody(world: World, b: Body, t: Textures, glow: THREE.Texture, labels
   if (b.kind === 'sun') {
     parts.sun(world, anchor, b, t, glow);
   } else {
-    world.scene.add(parts.orbitLine(b.orbit, b.kind === 'rock'));
+    const line = parts.orbitLine(b.orbit, b.kind === 'rock');
+    world.scene.add(line);
+    world.orbitLines.push({ material: line.material, opacity: line.material.opacity });
     parts.body(world, anchor, b, t, glow);
     if (anchor.userData.pin) addLabel(labelsEl, world, 'Muscat', '', anchor.userData.pin, 'moon');
     addMoons(world, anchor, b, t, labelsEl);
@@ -73,7 +75,7 @@ function addBody(world: World, b: Body, t: Textures, glow: THREE.Texture, labels
 }
 
 export function buildWorld(payload: Payload, t: Textures, labelsEl: HTMLElement, now: number): World {
-  const world: World = { scene: new THREE.Scene(), anchors: [], pickables: [], labels: [], spinners: [] };
+  const world: World = { scene: new THREE.Scene(), anchors: [], pickables: [], labels: [], spinners: [], orbitLines: [] };
   world.scene.add(new THREE.AmbientLight(0xffffff, 0.08 * LIGHT_SCALE));
   world.scene.add(new THREE.PointLight(0xfff1dc, 2.85 * LIGHT_SCALE, 0, 0));
   world.scene.add(stars());
