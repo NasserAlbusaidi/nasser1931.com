@@ -2,7 +2,7 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-09-27T12:03:25.667Z",
+  "updated": "2026-09-29T05:44:47.541Z",
   "stats": {
     "finished_total": 29,
     "finished_this_year": 11
@@ -17,7 +17,7 @@
       "genres": [],
       "started": null,
       "finished": null,
-      "progress": 10,
+      "progress": 50,
       "pages": 581,
       "cover_url": "https://assets.hardcover.app/external_data/60034216/8c9d46451cde9584afb787e08bcd18d6a86c0a09.jpeg"
     }
@@ -206,40 +206,14 @@
       "cover_url": "https://assets.hardcover.app/edition/25324831/62863aee-ef50-475f-b5ec-742f9da59115.tiff"
     },
     {
-      "title": "A Clash of Kings",
-      "author": "George R.R. Martin",
-      "status": "Finished",
-      "rating": 4,
-      "format": "Physical",
-      "genres": [],
-      "started": null,
-      "finished": "2016-10-08",
-      "progress": null,
-      "pages": 776,
-      "cover_url": "https://assets.hardcover.app/edition/30402149/2ea453587bfb7daf2061520edecba844d3f1847e.jpeg"
-    },
-    {
-      "title": "A Game of Thrones",
-      "author": "George R.R. Martin",
-      "status": "Finished",
-      "rating": 5,
-      "format": "Audiobook",
-      "genres": [],
-      "started": null,
-      "finished": "2016-08-03",
-      "progress": null,
-      "pages": 694,
-      "cover_url": "https://assets.hardcover.app/external_data/42454452/f690f0a0ca301c40bf62fd7bfeb47791aec2afc5.jpeg"
-    },
-    {
       "title": "A Dance with Dragons",
       "author": "George R.R. Martin",
       "status": "Finished",
       "rating": null,
       "format": "Physical",
       "genres": [],
-      "started": null,
-      "finished": null,
+      "started": "2016-10-29",
+      "finished": "2016-11-19",
       "progress": null,
       "pages": 1016,
       "cover_url": "https://assets.hardcover.app/edition/30805927/ab716664bcc1d505be08321269dc3420f095b808.jpeg"
@@ -251,11 +225,50 @@
       "rating": null,
       "format": "Audiobook",
       "genres": [],
-      "started": null,
-      "finished": null,
+      "started": "2016-10-08",
+      "finished": "2016-10-28",
       "progress": null,
       "pages": 1106,
       "cover_url": "https://assets.hardcover.app/edition/30401732/9ec8ea86-352f-441d-bb28-a02aeb9c0625.jpg"
+    },
+    {
+      "title": "A Storm of Swords",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": null,
+      "format": "Physical",
+      "genres": [],
+      "started": "2016-09-24",
+      "finished": "2016-10-07",
+      "progress": null,
+      "pages": 992,
+      "cover_url": "https://assets.hardcover.app/book_mappings/7332349/5249dbcbc118ae4ea68c37295c8386f96c341c95.jpeg"
+    },
+    {
+      "title": "A Clash of Kings",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 4,
+      "format": "Physical",
+      "genres": [],
+      "started": "2016-09-01",
+      "finished": "2016-09-23",
+      "progress": null,
+      "pages": 776,
+      "cover_url": "https://assets.hardcover.app/edition/30402149/2ea453587bfb7daf2061520edecba844d3f1847e.jpeg"
+    },
+    {
+      "title": "A Game of Thrones",
+      "author": "George R.R. Martin",
+      "status": "Finished",
+      "rating": 5,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2016-08-03",
+      "finished": "2016-08-31",
+      "progress": null,
+      "pages": 694,
+      "cover_url": "https://assets.hardcover.app/external_data/42454452/f690f0a0ca301c40bf62fd7bfeb47791aec2afc5.jpeg"
     },
     {
       "title": "A Knight of the Seven Kingdoms",
@@ -269,19 +282,6 @@
       "progress": null,
       "pages": 355,
       "cover_url": "https://assets.hardcover.app/edition/14849723/8fbeaf5167f4c972a60574d05aaf5902cecd7f2c.jpeg"
-    },
-    {
-      "title": "A Storm of Swords",
-      "author": "George R.R. Martin",
-      "status": "Finished",
-      "rating": null,
-      "format": "Physical",
-      "genres": [],
-      "started": null,
-      "finished": null,
-      "progress": null,
-      "pages": 992,
-      "cover_url": "https://assets.hardcover.app/book_mappings/7332349/5249dbcbc118ae4ea68c37295c8386f96c341c95.jpeg"
     },
     {
       "title": "All These Worlds",
