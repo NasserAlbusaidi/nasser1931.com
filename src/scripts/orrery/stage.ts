@@ -11,6 +11,9 @@ const MAX_DT = 0.05;
 const INTRO_SECONDS = 2.6;
 // Under this width the projected labels are hidden; a tap still opens the card.
 const LABELS_MEDIA = '(min-width: 601px)';
+// Above this width the hero copy is laid over the canvas, and the system keeps clear of it.
+const OVERLAY_MEDIA = '(min-width: 901px)';
+const TEXT_GAP_PX = 24;
 
 /** How close the camera flies for a body: the sun and moons have their own framing. */
 const closeness = (info: Info) => {
@@ -57,15 +60,21 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
     let lost = false;
     let last = performance.now();
     const wide = matchMedia(LABELS_MEDIA);
+    const overlay = matchMedia(OVERLAY_MEDIA);
+    const avoid = root.dataset.orreryAvoid ? document.querySelector(root.dataset.orreryAvoid) : null;
+    // Where the text ends, measured from the canvas's left edge.
+    const textEdge = () => (overlay.matches && avoid ? avoid.getBoundingClientRect().right - viewport.getBoundingClientRect().left + TEXT_GAP_PX : 0);
 
     const open = (info: Info, hit: THREE.Object3D | null) => {
       active = info;
+      root.classList.add('has-card');
       card.open(info, Date.now());
       if (hit?.parent) rig.fly(hit.parent, closeness(info));
       else rig.release();
     };
     const close = () => {
       active = null;
+      root.classList.remove('has-card');
       card.close();
       rig.release();
     };
@@ -80,7 +89,7 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
       const h = viewport.clientHeight;
       if (!w || !h) return;
       renderer.setSize(w, h, false);
-      rig.resize(w / h, world.extent);
+      rig.resize(w, h, world.extent, textEdge());
       draw();
     };
     const draw = () => {

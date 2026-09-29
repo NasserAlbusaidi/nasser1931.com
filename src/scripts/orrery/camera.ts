@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { HOME_DISTANCE, fitDistance } from '../../lib/orrery';
+import { HOME_DISTANCE, fitView } from '../../lib/orrery';
 
 const FOV = 40;
 const EASE = 0.08;
@@ -19,15 +19,41 @@ export class CameraRig {
   dragging = false;
   focus: THREE.Object3D | null = null;
   private homeDist = HOME_DISTANCE;
+  private width = 1;
+  private height = 1;
+  // The sun rests right of centre so text can sit on the left. It is the projection that shifts, not the scene,
+  // so dragging and flying in still turn around the sun and the body in focus.
+  private restShift = 0;
+  private focusShift = 0;
+  private shift = 0;
+  private shiftApplied = NaN;
   private readonly target = new THREE.Vector3();
   private readonly tmp = new THREE.Vector3();
 
-  /** Called on every resize: the resting distance depends on the canvas shape. */
-  resize(aspect: number, extent: number) {
-    this.camera.aspect = aspect;
-    this.camera.updateProjectionMatrix();
-    this.homeDist = fitDistance(aspect, FOV, extent);
+  /**
+   * Called on every resize. `safeLeft` is how many pixels of the left side text covers (0 when it does not overlap);
+   * the resting distance and the sun's position are fitted to the free area.
+   */
+  resize(width: number, height: number, extent: number, safeLeft: number) {
+    this.width = width;
+    this.height = height;
+    this.camera.aspect = width / height;
+    const view = fitView(width, height, FOV, extent, safeLeft);
+    this.homeDist = view.dist;
+    this.restShift = view.centerX - width / 2;
+    // A body in focus is centred in the free area, not under the text.
+    this.focusShift = safeLeft > 0 && safeLeft < width ? (safeLeft + width) / 2 - width / 2 : 0;
     if (!this.focus) this.goalDist = this.homeDist;
+    this.shift = this.focus ? this.focusShift : this.restShift;
+    this.shiftApplied = NaN; // the aspect changed too, so rebuild the projection
+    this.applyShift();
+  }
+
+  private applyShift() {
+    if (Math.abs(this.shift - this.shiftApplied) < 0.01) return;
+    this.shiftApplied = this.shift;
+    // A negative window offset moves what is drawn to the right.
+    this.camera.setViewOffset(this.width, this.height, -this.shift, 0, this.width, this.height);
   }
 
   /** Start far out and low on the horizon, then rise and settle. */
@@ -68,6 +94,8 @@ export class CameraRig {
       this.focus.getWorldPosition(this.tmp);
       this.target.lerp(this.tmp, EASE);
     } else this.target.lerp(this.tmp.set(0, 0, 0), EASE);
+    this.shift += ((this.focus ? this.focusShift : this.restShift) - this.shift) * EASE;
+    this.applyShift();
     this.dist += (this.goalDist - this.dist) * this.ease;
     if (!this.dragging) this.phi += (this.goalPhi - this.phi) * this.ease;
     this.camera.position.set(

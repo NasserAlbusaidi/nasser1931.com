@@ -1,6 +1,7 @@
 ---
-// The homepage sections as a solar system. The slotted poster (the static Earth) paints first and stays as the
-// fallback; the WebGL scene loads after first paint and fades in over it. Every destination is also a plain link.
+// The homepage hero: the sections as a solar system, filling the intro section behind the copy. The slotted poster (the
+// static Earth) paints first and stays as the fallback; the WebGL scene loads after first paint and fades in over the same
+// box. Every destination is also a plain link.
 import { getImage } from 'astro:assets';
 import type { Body, Sky } from '../lib/orrery';
 import earthDay from '../assets/orrery/earth-day.jpg';
@@ -28,13 +29,12 @@ const textures = Object.fromEntries(await Promise.all(Object.entries(sources).ma
 const payload = JSON.stringify({ bodies, sky, textures }).replace(/</g, '\\u003c');
 const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
 ---
-<div class="orrery" data-orrery>
-  <div class="globe-frame orrery-frame">
-    <slot />
+<figure class="orrery" data-orrery data-orrery-avoid=".intro-copy">
+  <div class="orrery-frame">
+    <div class="orrery-poster"><slot /></div>
     <div class="orrery-viewport" data-orrery-viewport aria-hidden="true">
       <div class="orrery-labels" data-orrery-labels></div>
     </div>
-    <p class="orrery-hint" aria-hidden="true">Drag to turn · click a planet</p>
   </div>
   <section class="orrery-card" data-orrery-card aria-label="About this planet" hidden>
     <button type="button" class="orrery-close" data-orrery-close aria-label="Close">×</button>
@@ -44,22 +44,46 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
     <p class="orrery-why" data-orrery-why></p>
     <a class="orrery-open" data-orrery-link href="/">Open</a>
   </section>
-  <nav class="orrery-links" aria-label="Sections">
-    {destinations.map(destination => <a href={destination.href}>{destination.section}</a>)}
-  </nav>
+  <div class="orrery-aside">
+    <p class="orrery-hint" aria-hidden="true">Drag to turn · click a planet</p>
+    <nav class="orrery-links" aria-label="Solar system sections">
+      {destinations.map(destination => <a href={destination.href}>{destination.section}</a>)}
+    </nav>
+  </div>
   <script type="application/json" data-orrery-data set:html={payload} />
-</div>
+  <slot name="caption" />
+</figure>
 <script>
   import { mountOrrery } from '../scripts/orrery/boot';
   mountOrrery();
 </script>
 <style is:global>
-  /* The scene is space, so it keeps its own dark palette in the lunar-gray light theme too. */
-  .orrery { --o-bg: #080d16; --o-deep: #101c2d; --o-ink: #eef2f8; --o-muted: #a6b3c6; --o-rule: #293547; --o-accent: #e8bd85; display: grid; }
-  .orrery > .orrery-frame, .orrery > .orrery-card { grid-row: 1; grid-column: 1; }
-  .orrery .orrery-frame { max-width: 640px; aspect-ratio: 1; }
-  .orrery-viewport { position: absolute; inset: 0; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity .6s ease; border: 1px solid var(--o-rule);
-    background: radial-gradient(ellipse at 50% 50%, var(--o-deep), var(--o-bg) 70%); }
+  /*
+   * The whole hero. On wide screens it fills the section behind the intro copy; below 900px it is a full-bleed
+   * square under the copy. The scene is space, so it keeps its own dark palette in the light theme too.
+   * The poster (the static Earth) and the frame's space background are there from first paint, and the canvas
+   * fades in over the same box, so nothing moves when WebGL arrives.
+   */
+  .orrery { --o-bg: #080d16; --o-deep: #101c2d; --o-ink: #eef2f8; --o-muted: #a6b3c6; --o-rule: #293547; --o-accent: #e8bd85;
+    position: absolute; inset: 0; margin: 0; z-index: 0; }
+  .orrery-frame { position: absolute; inset: 0; overflow: hidden;
+    background: radial-gradient(ellipse 60% 75% at 66% 50%, var(--o-deep), var(--o-bg) 75%); }
+  /* A few static stars, until the canvas draws its own. */
+  .orrery-frame::before { content: ''; position: absolute; inset: 0; transition: opacity .6s ease; opacity: .7;
+    background:
+      radial-gradient(1px 1px at 8% 18%, #c9d3e6, transparent), radial-gradient(1px 1px at 22% 72%, #c9d3e6, transparent),
+      radial-gradient(1px 1px at 31% 38%, #c9d3e6, transparent), radial-gradient(1.5px 1.5px at 44% 12%, #c9d3e6, transparent),
+      radial-gradient(1px 1px at 52% 84%, #c9d3e6, transparent), radial-gradient(1px 1px at 61% 27%, #c9d3e6, transparent),
+      radial-gradient(1px 1px at 68% 91%, #c9d3e6, transparent), radial-gradient(1.5px 1.5px at 77% 15%, #c9d3e6, transparent),
+      radial-gradient(1px 1px at 84% 60%, #c9d3e6, transparent), radial-gradient(1px 1px at 91% 33%, #c9d3e6, transparent),
+      radial-gradient(1px 1px at 96% 78%, #c9d3e6, transparent), radial-gradient(1px 1px at 14% 92%, #c9d3e6, transparent); }
+  .orrery.is-live .orrery-frame::before { opacity: 0; }
+  .orrery-poster { position: absolute; top: 50%; transform: translate(-50%, -50%); transition: opacity .6s ease;
+    left: clamp(60%, calc((var(--edge) + var(--copy-w) + 1.5rem + 100%) / 2), 75%); width: min(calc(var(--hero-h) * .78), 44%); max-width: 760px; }
+  .orrery-poster picture { display: block; }
+  .orrery-poster img { display: block; width: 100%; height: auto; }
+  .orrery.is-live .orrery-poster { opacity: 0; }
+  .orrery-viewport { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity .6s ease; }
   .orrery.is-live .orrery-viewport { opacity: 1; pointer-events: auto; }
   /* pan-y: a vertical swipe scrolls the page, a horizontal drag turns the system. */
   .orrery-viewport canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: pan-y; user-select: none; }
@@ -71,9 +95,22 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
   .orrery .orrery-label small { display: block; color: inherit; font-size: inherit; text-transform: none; letter-spacing: 0; opacity: .8; }
   .orrery-label.moon { text-transform: none; letter-spacing: 0; }
   .orrery-label.hot, .orrery-label.active { color: var(--o-accent); }
-  .orrery-hint { position: absolute; left: 1rem; bottom: .75rem; margin: 0; display: none; color: var(--o-muted); pointer-events: none; font: var(--text-label)/1.4 var(--font-mono); }
+  /* Bottom band: the caption on the left, hint and links on the right, both on the page's 1360px grid. */
+  .orrery > figcaption { position: absolute; z-index: 1; left: var(--edge); bottom: 1rem; max-width: 30rem; display: flex; flex-wrap: wrap;
+    align-items: baseline; gap: .2rem 1rem; color: var(--o-muted); }
+  .orrery > figcaption > .eyebrow { color: var(--o-muted); }
+  .orrery > figcaption > span:not(.eyebrow) { color: var(--o-ink); font-size: var(--text-body); }
+  .orrery > figcaption small { flex: 0 0 100%; text-align: left; font-size: var(--text-label); line-height: 1.5; color: var(--o-muted); }
+  .orrery > figcaption small a { color: var(--o-ink); text-decoration: underline; text-underline-offset: .2em; }
+  .orrery-aside { position: absolute; z-index: 1; right: var(--edge); bottom: .5rem; display: grid; justify-items: end; }
+  .orrery-hint { display: none; margin: 0; color: var(--o-muted); font: var(--text-label)/1.4 var(--font-mono); }
+  @media (hover: hover) and (pointer: fine) { .orrery.is-live:not(.has-card) .orrery-hint { display: block; } }
+  .orrery-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 .25rem; }
+  .orrery .orrery-links a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .6rem; color: var(--o-muted);
+    font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
+  .orrery .orrery-links a:hover { background: transparent; color: var(--o-accent); }
   .orrery-card[hidden] { display: none; }
-  .orrery-card { position: relative; z-index: 2; align-self: end; justify-self: end; margin: 1rem; width: min(320px, calc(100% - 2rem)); display: grid; gap: .55rem;
+  .orrery-card { position: absolute; z-index: 2; right: var(--edge); bottom: 5.5rem; width: min(320px, calc(100% - 2rem)); display: grid; gap: .55rem;
     padding: 1.1rem 1.2rem 1rem; background: rgba(16, 24, 36, .94); border: 1px solid var(--o-rule); color: var(--o-ink); }
   .orrery-eyebrow { margin: 0; font: var(--text-label)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--o-muted); }
   .orrery-title { margin: 0; font-size: var(--text-title); font-weight: 400; letter-spacing: -.02em; line-height: 1.2; }
@@ -83,15 +120,19 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
   .orrery .orrery-open:hover { background: transparent; text-decoration: underline; }
   .orrery-close { position: absolute; top: .25rem; right: .25rem; width: 44px; height: 44px; background: none; border: 0; color: var(--o-muted); font-size: 1.4rem; cursor: pointer; }
   .orrery-close:hover { color: var(--o-accent); }
-  .orrery-links { grid-row: 2; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .25rem; margin-top: .5rem; }
-  .orrery .orrery-links a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .6rem; color: var(--muted);
-    font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
-  .orrery .orrery-links a:hover { background: transparent; color: var(--accent); }
-  @media (hover: hover) and (pointer: fine) { .orrery.is-live .orrery-hint { display: block; } }
-  /* On phones the card sits under the picture, never over the sphere, and the labels are dropped. */
-  @media (max-width: 600px) {
-    .orrery-labels { display: none; }
-    .orrery > .orrery-card { grid-row: 2; align-self: stretch; justify-self: stretch; width: auto; margin: .75rem 0 0; }
-    .orrery > .orrery-links { grid-row: 3; }
+  /*
+   * Stacked: the copy comes first, then a full-bleed square, then the card, the links, and the caption, all in flow.
+   * Nothing is laid over the planets, and the labels are dropped on phones (a tap still opens the card).
+   */
+  @media (max-width: 900px) {
+    .orrery { position: relative; inset: auto; display: grid; padding-bottom: 1rem; }
+    .orrery-frame { position: relative; inset: auto; aspect-ratio: 1; background: radial-gradient(ellipse 60% 60% at 50% 50%, var(--o-deep), var(--o-bg) 75%); }
+    .orrery-poster { left: 50%; width: 78%; }
+    .orrery > .orrery-card { position: relative; inset: auto; width: auto; margin: .75rem var(--gutter) 0; }
+    .orrery > .orrery-aside { position: static; margin-inline: var(--gutter); }
+    .orrery > figcaption { position: static; max-width: none; margin: .5rem var(--gutter) 0; }
+    .orrery-hint { display: none !important; }
+    .orrery-links { justify-content: center; }
   }
+  @media (max-width: 600px) { .orrery-labels { display: none; } }
 </style>

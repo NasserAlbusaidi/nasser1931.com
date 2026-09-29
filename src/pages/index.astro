@@ -85,14 +85,12 @@ const structuredData = {
             <p class="intro-description">Senior software engineer. This is my personal home for side projects and life outside work.</p>
             <div class="intro-links"><a class="home-button primary" href="#work">Explore projects <span aria-hidden="true">↓</span></a><a class="home-button" href="mailto:nasserbusaidi@gmail.com">Say hello</a></div>
           </div>
-          <figure class="home-world">
-            <Orrery {...orrery}>
-              <Picture src={Earth} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 640, 960, 1254]} sizes="(max-width: 600px) 90vw, 540px" quality={75} loading="eager" fetchpriority="high" />
-              <span class="muscat-pin" aria-hidden="true"></span><span class="muscat-label" aria-hidden="true">Muscat</span>
-            </Orrery>
-            <figcaption><span class="eyebrow">Home base</span><span>Muscat, Oman</span><small>This site as a solar system. Planet, ring, and sun textures by <a href="https://www.solarsystemscope.com/textures/" rel="noopener">Solar System Scope</a>, CC BY 4.0, based on NASA imagery.</small></figcaption>
-          </figure>
         </div>
+        <Orrery {...orrery}>
+          <Picture src={Earth} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 640, 960, 1254]} sizes="(max-width: 900px) 78vw, min(44vw, 760px)" quality={75} loading="eager" fetchpriority="high" />
+          <span class="muscat-pin" aria-hidden="true"></span><span class="muscat-label" aria-hidden="true">Muscat</span>
+          <figcaption slot="caption"><span class="eyebrow">Home base</span><span>Muscat, Oman</span><small>This site as a solar system. Planet, ring, and sun textures by <a href="https://www.solarsystemscope.com/textures/" rel="noopener">Solar System Scope</a>, CC BY 4.0, based on NASA imagery.</small></figcaption>
+        </Orrery>
       </section>
       <div class="home-content">
         <aside class="now-strip" aria-label="What I’m up to">

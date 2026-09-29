@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { HOME_DISTANCE, UNDATED_DAYS, MAX_MOONS, agoLabel, bodySize, buildOrrery, daysSince, fitDistance, latestDate, motion, orbitSpeed } from '../src/lib/orrery.ts';
+import { HOME_DISTANCE, UNDATED_DAYS, MAX_MOONS, agoLabel, bodySize, buildOrrery, daysSince, fitView, latestDate, motion, orbitSpeed } from '../src/lib/orrery.ts';
 
 const near = (actual, expected, epsilon = 1e-9) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} is not within ${epsilon} of ${expected}`);
 const NOW = Date.UTC(2026, 8, 29);
@@ -121,14 +121,47 @@ test('missing dates stay missing, and empty sections still build', () => {
 	near(motion(bodies[1].changed, NOW).speed, orbitSpeed(UNDATED_DAYS));
 });
 
-test('camera distance grows on a narrow canvas so the outer ring is never clipped', () => {
-	const fov = 40;
-	const extent = 8.7 + 0.99 * 2.5;
-	const seen = (dist, aspect) => dist * Math.tan((fov * Math.PI) / 360) * Math.min(aspect, 1);
-	for (const aspect of [1.6, 1, 0.75, 0.5]) assert.ok(seen(fitDistance(aspect, fov, extent), aspect) >= extent, `aspect ${aspect}`);
-	assert.equal(fitDistance(2, fov, 4), HOME_DISTANCE);
-	assert.ok(fitDistance(0.5, fov, extent) > fitDistance(1, fov, extent));
-	assert.equal(fitDistance(1, fov, extent), fitDistance(1.6, fov, extent));
-	assert.equal(fitDistance(0, fov, extent), HOME_DISTANCE);
-	assert.equal(fitDistance(1, fov, 0), HOME_DISTANCE);
+const FOV = 40;
+const EXTENT = 8.7 + 0.99 * 2.5;
+// Pixels per scene unit at the origin, for a camera at `dist` looking at a canvas `h` tall.
+const pxPerUnit = (dist, h) => h / 2 / (dist * Math.tan((FOV * Math.PI) / 360));
+
+test('a phone-shaped canvas keeps the whole system inside its narrower side', () => {
+	for (const [w, h] of [[390, 390], [390, 480], [390, 300], [768, 768], [320, 568]]) {
+		const { dist, centerX } = fitView(w, h, FOV, EXTENT);
+		assert.equal(centerX, w / 2);
+		assert.ok(EXTENT * pxPerUnit(dist, h) <= Math.min(w, h) / 2 + 1e-6, `${w}x${h}`);
+	}
+	assert.ok(fitView(300, 600, FOV, EXTENT).dist > fitView(600, 600, FOV, EXTENT).dist);
+	assert.equal(fitView(600, 600, FOV, EXTENT).dist, fitView(1200, 600, FOV, EXTENT).dist);
+});
+
+test('with text on the left, the system fits the free area at 16:9 and 21:9', () => {
+	const cases = [
+		{ name: '1440x823', w: 1440, h: 823, safeLeft: 512 },
+		{ name: '1920x960', w: 1920, h: 960, safeLeft: 784 },
+		{ name: '2560x1080 (21:9)', w: 2560, h: 1080, safeLeft: 1100 },
+		{ name: '1024x692', w: 1024, h: 692, safeLeft: 466 },
+	];
+	for (const { name, w, h, safeLeft } of cases) {
+		const { dist, centerX } = fitView(w, h, FOV, EXTENT, safeLeft);
+		const reach = EXTENT * pxPerUnit(dist, h);
+		assert.ok(centerX >= 0.6 * w - 1e-6 && centerX <= 0.75 * w + 1e-6, `${name}: sun at ${centerX / w}`);
+		assert.ok(centerX - reach >= safeLeft - 1e-6, `${name}: clears the text`);
+		assert.ok(centerX + reach <= w + 1e-6, `${name}: clears the right edge`);
+		assert.ok(reach * 0.6 <= h / 2 + 1e-6, `${name}: fits vertically`);
+		assert.ok(dist >= HOME_DISTANCE, name);
+	}
+});
+
+test('a wider free area lets the system come closer; narrower text does too', () => {
+	assert.ok(fitView(1920, 960, FOV, EXTENT, 784).dist < fitView(1024, 692, FOV, EXTENT, 466).dist);
+	assert.ok(fitView(1440, 823, FOV, EXTENT, 400).dist <= fitView(1440, 823, FOV, EXTENT, 700).dist);
+});
+
+test('degenerate canvases fall back to the resting distance', () => {
+	assert.deepEqual(fitView(0, 0, FOV, EXTENT), { dist: HOME_DISTANCE, centerX: 0 });
+	assert.equal(fitView(500, 500, FOV, 0).dist, HOME_DISTANCE);
+	assert.equal(fitView(500, 500, FOV, EXTENT, 500).centerX, 250);
+	assert.equal(fitView(1000, 600, FOV, 2).dist, HOME_DISTANCE);
 });

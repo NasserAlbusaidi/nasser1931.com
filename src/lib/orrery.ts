@@ -100,12 +100,35 @@ export const buildOrrery = (input: OrreryInput): { bodies: Body[]; sky: Sky } =>
 
 export const HOME_DISTANCE = 30;
 const FIT_MARGIN = 1.04;
+// The orbits are seen from about 21 degrees above their plane, so the system is much flatter than it is wide.
+const VERTICAL_SHARE = 0.6;
+// Where the sun may sit, as a share of the canvas width, when text takes the left side.
+const SUN_MIN = 0.6;
+const SUN_MAX = 0.75;
+// Breathing room between the outermost ring and the edge of the free area (text side or canvas edge).
+const PAD_TEXT_PX = 24;
+const PAD_PLAIN_PX = 12;
+
+export type View = { dist: number; centerX: number };
+
 /**
- * Camera distance that keeps everything out to `extent` inside the narrower side of the canvas,
- * so Saturn and its ring are never clipped on a portrait canvas. Never closer than `minDist`.
+ * Camera distance and the sun's horizontal position for a `w` x `h` canvas, so everything out to
+ * `extent` (Saturn's ring included) stays inside the free area and is never clipped.
+ * `safeLeft` is the width, in pixels, that text covers on the left; the sun is centred in what is left
+ * (between 60% and 75% of the width). With no text (`safeLeft` 0) the sun stays centred and the narrower
+ * canvas side decides the distance, as on a phone. Never closer than `minDist`.
  */
-export const fitDistance = (aspect: number, fovDeg: number, extent: number, minDist = HOME_DISTANCE) => {
-  const narrow = Math.min(aspect, 1);
-  if (!(narrow > 0) || !(extent > 0)) return minDist;
-  return Math.max(minDist, (extent * FIT_MARGIN) / (Math.tan((fovDeg * Math.PI) / 360) * narrow));
+export const fitView = (w: number, h: number, fovDeg: number, extent: number, safeLeft = 0, minDist = HOME_DISTANCE): View => {
+  if (!(w > 0) || !(h > 0) || !(extent > 0)) return { dist: minDist, centerX: w > 0 ? w / 2 : 0 };
+  const tan = Math.tan((fovDeg * Math.PI) / 360);
+  let centerX = w / 2;
+  let half = Math.min(w, h) / 2 - PAD_PLAIN_PX;
+  if (safeLeft > 0 && safeLeft < w) {
+    centerX = Math.min(SUN_MAX * w, Math.max(SUN_MIN * w, (safeLeft + w) / 2));
+    half = Math.min(centerX - safeLeft, w - centerX) - PAD_TEXT_PX;
+  }
+  const needed = extent * FIT_MARGIN;
+  const across = half > 0 ? (needed * (h / 2)) / (half * tan) : Infinity;
+  const up = (needed * VERTICAL_SHARE) / tan;
+  return { dist: Math.max(minDist, across, up), centerX };
 };
