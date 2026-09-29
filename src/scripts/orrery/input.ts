@@ -4,19 +4,45 @@ import { isBody, type Info, type World } from './types';
 
 const DRAG_THRESHOLD_PX = 4;
 const TOUCH_REACH_PX = 28;
+// Two clicks or taps on empty space within this long, and this close, are a double: back to the overview.
+const DOUBLE_MS = 450;
+const DOUBLE_PX = 32;
+// A tap on empty space while nothing is focused opens the Sky card, after waiting to see whether a second tap follows.
+const SKY_DELAY_MS = 260;
+// Pinch on a trackpad arrives as a wheel event with a small deltaY; a mouse wheel with ctrl held is much larger.
+const WHEEL_ZOOM_RATE = 0.012;
+const WHEEL_STEP_MIN = 0.8;
+const WHEEL_STEP_MAX = 1.25;
 const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
 const probe = new THREE.Vector3();
 
 type Handlers = {
-  onPick: (info: Info | null, hit: THREE.Object3D | null) => void;
+  /** A body or moon was clicked. */
+  onPick: (info: Info, hit: THREE.Object3D) => void;
+  /** Empty space was clicked once: the overview if a body is in focus, otherwise the Sky card. */
+  onEmpty: () => void;
+  /** Empty space was clicked twice: back to the overview. */
+  onReset: () => void;
   onHover: (info: Info | null) => void;
 };
 
-/** Drag to orbit, click to pick. Vertical swipes are left to the page so the hero never traps scrolling on a phone. */
+type Point = { x: number; y: number };
+
+/**
+ * Drag to orbit, click to pick, pinch or ctrl+wheel to zoom. Vertical swipes are left to the page so the hero never
+ * traps scrolling on a phone, and a plain mouse wheel is left alone so the page still scrolls.
+ */
 export function attachInput(canvas: HTMLCanvasElement, rig: CameraRig, world: World, handlers: Handlers, signal: AbortSignal) {
   let drag: { x: number; y: number; theta: number; phi: number; moved: boolean } | null = null;
+  const pointers = new Map<number, Point>();
+  let pinch: { distance: number; zoom: number } | null = null;
+  // Set once a second finger has touched, so lifting them is not read as a tap.
+  let gesture = false;
+  let lastEmpty: (Point & { time: number }) | null = null;
+  let skyTimer: ReturnType<typeof setTimeout> | undefined;
   const opts = { signal };
+  signal.addEventListener('abort', () => clearTimeout(skyTimer));
 
   const toNdc = (ev: PointerEvent) => {
     const r = canvas.getBoundingClientRect();
@@ -48,12 +74,48 @@ export function attachInput(canvas: HTMLCanvasElement, rig: CameraRig, world: Wo
     rig.dragging = false;
   };
 
+  const spread = () => {
+    const [a, b] = [...pointers.values()];
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  };
+
+  const empty = (ev: PointerEvent) => {
+    const here = { x: ev.clientX, y: ev.clientY, time: ev.timeStamp };
+    const double = lastEmpty && here.time - lastEmpty.time < DOUBLE_MS && Math.hypot(here.x - lastEmpty.x, here.y - lastEmpty.y) < DOUBLE_PX;
+    clearTimeout(skyTimer);
+    skyTimer = undefined;
+    if (double) {
+      lastEmpty = null;
+      handlers.onReset();
+      return;
+    }
+    lastEmpty = here;
+    if (rig.focus) handlers.onEmpty();
+    else skyTimer = setTimeout(handlers.onEmpty, SKY_DELAY_MS);
+  };
+
   canvas.addEventListener('pointerdown', (ev) => {
-    drag = { x: ev.clientX, y: ev.clientY, theta: rig.theta, phi: rig.phi, moved: false };
-    rig.dragging = true;
+    rig.cancelIntro();
     canvas.setPointerCapture(ev.pointerId);
+    pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pointers.size === 2) {
+      // A second finger turns the drag into a pinch.
+      gesture = true;
+      endDrag();
+      pinch = { distance: Math.max(1, spread()), zoom: rig.zoomLevel };
+    } else if (pointers.size === 1) {
+      gesture = false;
+      drag = { x: ev.clientX, y: ev.clientY, theta: rig.theta, phi: rig.phi, moved: false };
+      rig.dragging = true;
+    }
   }, opts);
   canvas.addEventListener('pointermove', (ev) => {
+    if (pointers.has(ev.pointerId)) pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pinch && pointers.size >= 2) {
+      // Fingers apart bring the camera closer.
+      rig.setZoom((pinch.zoom * pinch.distance) / Math.max(1, spread()));
+      return;
+    }
     if (drag) {
       const dx = ev.clientX - drag.x;
       const dy = ev.clientY - drag.y;
@@ -61,21 +123,39 @@ export function attachInput(canvas: HTMLCanvasElement, rig: CameraRig, world: Wo
       rig.drag(drag.theta + dx * 0.006, drag.phi - dy * 0.005);
       return;
     }
+    if (ev.pointerType !== 'mouse') return;
     const hit = pick(ev);
     handlers.onHover(hit ? hit.userData.info : null);
     canvas.classList.toggle('pointing', !!hit);
   }, opts);
   canvas.addEventListener('pointerup', (ev) => {
-    const wasClick = !!drag && !drag.moved;
+    const wasClick = !!drag && !drag.moved && !gesture;
+    pointers.delete(ev.pointerId);
+    if (pointers.size < 2) pinch = null;
     endDrag();
     if (!wasClick) return;
     const hit = pick(ev);
-    handlers.onPick(hit ? hit.userData.info : null, hit);
+    if (hit) {
+      lastEmpty = null;
+      clearTimeout(skyTimer);
+      skyTimer = undefined;
+      handlers.onPick(hit.userData.info, hit);
+    } else empty(ev);
   }, opts);
   // The browser takes over a vertical swipe to scroll the page and cancels the pointer.
-  canvas.addEventListener('pointercancel', endDrag, opts);
+  canvas.addEventListener('pointercancel', (ev) => {
+    pointers.delete(ev.pointerId);
+    if (pointers.size < 2) pinch = null;
+    endDrag();
+  }, opts);
   canvas.addEventListener('pointerleave', () => {
     handlers.onHover(null);
     canvas.classList.remove('pointing');
   }, opts);
+  // Only a pinch on a trackpad, or ctrl or cmd with the wheel, zooms. A plain wheel scrolls the page as usual.
+  canvas.addEventListener('wheel', (ev) => {
+    if (!ev.ctrlKey && !ev.metaKey) return;
+    ev.preventDefault();
+    rig.zoomBy(Math.min(WHEEL_STEP_MAX, Math.max(WHEEL_STEP_MIN, Math.exp(ev.deltaY * WHEEL_ZOOM_RATE))));
+  }, { signal, passive: false });
 }

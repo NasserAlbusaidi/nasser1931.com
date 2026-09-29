@@ -44,8 +44,13 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
     <p class="orrery-why" data-orrery-why></p>
     <a class="orrery-open" data-orrery-link href="/">Open</a>
   </section>
+  <div class="orrery-controls" data-orrery-controls role="group" aria-label="View controls">
+    <button type="button" class="orrery-zoom" data-orrery-zoom-out aria-label="Zoom out">−</button>
+    <button type="button" class="orrery-zoom" data-orrery-zoom-in aria-label="Zoom in">+</button>
+    <button type="button" class="orrery-overview" data-orrery-overview aria-label="Back to the whole system" hidden>Overview</button>
+  </div>
   <div class="orrery-aside">
-    <p class="orrery-hint" aria-hidden="true">Drag to turn · click a planet</p>
+    <p class="orrery-hint" aria-hidden="true">Drag to turn · click a planet · ctrl + scroll to zoom</p>
     <nav class="orrery-links" aria-label="Solar system sections">
       {destinations.map(destination => <a href={destination.href}>{destination.section}</a>)}
     </nav>
@@ -94,9 +99,12 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
     font: var(--text-label)/1.3 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; text-shadow: 0 0 6px var(--o-bg), 0 0 2px var(--o-bg); }
   .orrery .orrery-label small { display: block; color: inherit; font-size: inherit; text-transform: none; letter-spacing: 0; opacity: .8; }
   .orrery-label.moon { text-transform: none; letter-spacing: 0; }
+  /* The labels stay out while the camera is close on Earth, so none sit on the enlarged planet. */
+  .orrery-labels { transition: opacity .5s ease; }
+  .orrery.is-intro .orrery-labels { opacity: 0; }
   .orrery-label.hot, .orrery-label.active { color: var(--o-accent); }
   /* Bottom band: the caption on the left, hint and links on the right, both on the page's 1360px grid. */
-  .orrery > figcaption { position: absolute; z-index: 1; left: var(--edge); bottom: 1rem; max-width: 30rem; display: flex; flex-wrap: wrap;
+  .orrery > figcaption { position: absolute; z-index: 1; left: var(--edge); bottom: 1rem; max-width: var(--copy-w); display: flex; flex-wrap: wrap;
     align-items: baseline; gap: .2rem 1rem; color: var(--o-muted); }
   .orrery > figcaption > .eyebrow { color: var(--o-muted); }
   .orrery > figcaption > span:not(.eyebrow) { color: var(--o-ink); font-size: var(--text-body); }
@@ -109,6 +117,14 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
   .orrery .orrery-links a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .6rem; color: var(--o-muted);
     font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
   .orrery .orrery-links a:hover { background: transparent; color: var(--o-accent); }
+  /* Zoom and Overview, bottom-left of the canvas area, clear of the copy. Overview comes last so showing it never moves the zoom buttons. */
+  .orrery-controls { display: none; position: absolute; z-index: 2; left: calc(var(--edge) + var(--copy-w) + 1.5rem); bottom: .5rem; gap: .5rem; }
+  .orrery.is-live .orrery-controls { display: flex; }
+  .orrery-controls button { min-width: 44px; min-height: 44px; padding-inline: .9rem; background: rgba(16, 24, 36, .9); border: 1px solid var(--o-rule); color: var(--o-ink);
+    font: var(--text-label)/1 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; cursor: pointer; }
+  .orrery-controls button:hover { border-color: var(--o-accent); color: var(--o-accent); }
+  .orrery-controls button[hidden] { display: none; }
+  .orrery-controls .orrery-zoom { padding-inline: 0; font-size: 1.25rem; letter-spacing: 0; }
   .orrery-card[hidden] { display: none; }
   .orrery-card { position: absolute; z-index: 2; right: var(--edge); bottom: 5.5rem; width: min(320px, calc(100% - 2rem)); display: grid; gap: .55rem;
     padding: 1.1rem 1.2rem 1rem; background: rgba(16, 24, 36, .94); border: 1px solid var(--o-rule); color: var(--o-ink); }
@@ -126,13 +142,15 @@ const destinations = [...bodies.filter(body => body.key !== 'sun'), sky];
    */
   @media (max-width: 900px) {
     .orrery { position: relative; inset: auto; display: grid; padding-bottom: 1rem; }
-    .orrery-frame { position: relative; inset: auto; aspect-ratio: 1; background: radial-gradient(ellipse 60% 60% at 50% 50%, var(--o-deep), var(--o-bg) 75%); }
-    .orrery-poster { left: 50%; width: 78%; }
+    .orrery-frame { position: relative; inset: auto; aspect-ratio: 3 / 2; background: radial-gradient(ellipse 60% 60% at 50% 50%, var(--o-deep), var(--o-bg) 75%); }
+    .orrery-poster { left: 50%; width: 61%; }
+    .orrery-controls { bottom: auto; top: .5rem; left: var(--gutter); }
     .orrery > .orrery-card { position: relative; inset: auto; width: auto; margin: .75rem var(--gutter) 0; }
     .orrery > .orrery-aside { position: static; margin-inline: var(--gutter); }
     .orrery > figcaption { position: static; max-width: none; margin: .5rem var(--gutter) 0; }
     .orrery-hint { display: none !important; }
     .orrery-links { justify-content: center; }
   }
-  @media (max-width: 600px) { .orrery-labels { display: none; } }
+  /* Phones: section names only. */
+  @media (max-width: 600px) { .orrery .orrery-label small, .orrery-label.sun { display: none; } }
 </style>

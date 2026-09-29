@@ -17,6 +17,9 @@ export type LabelSpec = {
   target: THREE.Object3D;
   offset: number;
   moonOf?: string;
+  /** Measured size in pixels, once; 0 when the stylesheet hides the label. */
+  width?: number;
+  height?: number;
 };
 
 export type World = {
@@ -25,6 +28,4 @@ export type World = {
   pickables: THREE.Object3D[];
   labels: LabelSpec[];
   spinners: { obj: THREE.Object3D; speed: number }[];
-  /** Furthest reach of any orbit, ring included, in scene units. */
-  extent: number;
 };

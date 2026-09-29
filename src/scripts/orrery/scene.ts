@@ -2,13 +2,11 @@ import * as THREE from 'three';
 import { motion, type Body } from '../../lib/orrery';
 import * as parts from './bodies';
 import { addLabel } from './labels';
-import type { CameraRig } from './camera';
 import type { Info, MoonInfo, Payload, Textures, World } from './types';
 
 // Physically-based lights fall off with distance; the look was tuned with none, and their strength
 // is in different units now. Pi and a zero decay reproduce the tuned brightness.
 const LIGHT_SCALE = Math.PI;
-const SPIN_EARTH = 0.05;
 const ARABIA = { lat: 24, lon: 50 };
 
 // Seeded so the stars are the same on every visit.
@@ -66,17 +64,16 @@ function addBody(world: World, b: Body, t: Textures, glow: THREE.Texture, labels
     parts.body(world, anchor, b, t, glow);
     if (anchor.userData.pin) addLabel(labelsEl, world, 'Muscat', '', anchor.userData.pin, 'moon');
     addMoons(world, anchor, b, t, labelsEl);
-    world.extent = Math.max(world.extent, b.orbit + b.radius * (b.ring ? 2.5 : 1.3));
   }
   const hit = parts.hitSphere(b.radius);
   anchor.add(hit);
   hit.userData.info = b satisfies Info;
   world.pickables.push(hit);
-  addLabel(labelsEl, world, b.section, b.kind === 'sun' ? '' : b.name, anchor);
+  addLabel(labelsEl, world, b.section, b.kind === 'sun' ? '' : b.name, anchor, b.kind === 'sun' ? 'sun' : '');
 }
 
 export function buildWorld(payload: Payload, t: Textures, labelsEl: HTMLElement, now: number): World {
-  const world: World = { scene: new THREE.Scene(), anchors: [], pickables: [], labels: [], spinners: [], extent: 0 };
+  const world: World = { scene: new THREE.Scene(), anchors: [], pickables: [], labels: [], spinners: [] };
   world.scene.add(new THREE.AmbientLight(0xffffff, 0.08 * LIGHT_SCALE));
   world.scene.add(new THREE.PointLight(0xfff1dc, 2.85 * LIGHT_SCALE, 0, 0));
   world.scene.add(stars());
@@ -100,16 +97,11 @@ export function placeAnchors(world: World, dt: number) {
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 
-// Turn Earth so Arabia faces the camera once the opening move settles, `lead` seconds from now.
-// Earth's axis is tilted, so the spin that centres Arabia is found by trying each angle and keeping the best.
-export function faceArabia(world: World, rig: CameraRig, lead: number) {
-  const earth = world.anchors.find((a) => a.userData.body.key === 'earth');
-  const globe: THREE.Object3D | undefined = earth?.userData.globe;
-  if (!earth || !globe?.parent) return;
-  const { orbit }: Body = earth.userData.body;
-  const angle = earth.userData.angle + earth.userData.speed * lead;
-  const earthPos = new THREE.Vector3(Math.cos(angle) * orbit, 0, Math.sin(angle) * orbit);
-  const toCam = rig.goalPosition().sub(earthPos).normalize();
+// Turn Earth so Arabia faces a camera in direction `toCamera` (unit, from Earth). Earth's axis is tilted, so the
+// spin that centres Arabia is found by trying each angle and keeping the best. Call it before Earth starts to spin.
+export function faceArabia(world: World, toCamera: THREE.Vector3) {
+  const globe: THREE.Object3D | undefined = world.anchors.find((a) => a.userData.body.key === 'earth')?.userData.globe;
+  if (!globe?.parent) return;
   const arabia = parts.latLon(ARABIA.lat, ARABIA.lon, 1);
   const tilt = globe.parent.rotation.z;
   const v = new THREE.Vector3();
@@ -117,8 +109,8 @@ export function faceArabia(world: World, rig: CameraRig, lead: number) {
   let bestDot = -Infinity;
   for (let deg = 0; deg < 360; deg += 0.5) {
     const yaw = (deg * Math.PI) / 180;
-    const dot = v.copy(arabia).applyAxisAngle(Y_AXIS, yaw).applyAxisAngle(Z_AXIS, tilt).dot(toCam);
+    const dot = v.copy(arabia).applyAxisAngle(Y_AXIS, yaw).applyAxisAngle(Z_AXIS, tilt).dot(toCamera);
     if (dot > bestDot) [best, bestDot] = [yaw, dot];
   }
-  globe.rotation.y = best - SPIN_EARTH * lead;
+  globe.rotation.y = best;
 }

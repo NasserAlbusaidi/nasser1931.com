@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { HOME_DISTANCE, UNDATED_DAYS, MAX_MOONS, agoLabel, bodySize, buildOrrery, daysSince, fitView, latestDate, motion, orbitSpeed } from '../src/lib/orrery.ts';
+import { MAX_MOONS, REST_PHI, UNDATED_DAYS, agoLabel, bodyReach, bodySize, buildOrrery, daysSince, earthStartAngle, easeInOut, fitView, latestDate, motion, orbitSpeed, projectBounds, sphereDistance, systemReaches } from '../src/lib/orrery.ts';
 
 const near = (actual, expected, epsilon = 1e-9) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} is not within ${epsilon} of ${expected}`);
 const NOW = Date.UTC(2026, 8, 29);
@@ -122,46 +122,116 @@ test('missing dates stay missing, and empty sections still build', () => {
 });
 
 const FOV = 40;
-const EXTENT = 8.7 + 0.99 * 2.5;
-// Pixels per scene unit at the origin, for a camera at `dist` looking at a canvas `h` tall.
-const pxPerUnit = (dist, h) => h / 2 / (dist * Math.tan((FOV * Math.PI) / 360));
+const { bodies } = buildOrrery(input);
+const reaches = systemReaches(bodies);
+const saturn = bodies.find((body) => body.key === 'saturn');
 
-test('a phone-shaped canvas keeps the whole system inside its narrower side', () => {
-	for (const [w, h] of [[390, 390], [390, 480], [390, 300], [768, 768], [320, 568]]) {
-		const { dist, centerX } = fitView(w, h, FOV, EXTENT);
-		assert.equal(centerX, w / 2);
-		assert.ok(EXTENT * pxPerUnit(dist, h) <= Math.min(w, h) / 2 + 1e-6, `${w}x${h}`);
-	}
-	assert.ok(fitView(300, 600, FOV, EXTENT).dist > fitView(600, 600, FOV, EXTENT).dist);
-	assert.equal(fitView(600, 600, FOV, EXTENT).dist, fitView(1200, 600, FOV, EXTENT).dist);
+test('body reach covers rings and moons, and the system reaches out to the ring of Saturn', () => {
+	assert.equal(bodyReach(saturn), saturn.radius * 2.5);
+	assert.ok(bodyReach(bodies.find((body) => body.key === 'mars')) > bodySize(3) + 0.45);
+	assert.equal(bodyReach(bodies.find((body) => body.key === 'notes')), 0.2 * 1.3);
+	assert.equal(reaches.find((r) => r.orbit === saturn.orbit).reach, saturn.radius * 2.5);
 });
 
-test('with text on the left, the system fits the free area at 16:9 and 21:9', () => {
-	const cases = [
-		{ name: '1440x823', w: 1440, h: 823, safeLeft: 512 },
-		{ name: '1920x960', w: 1920, h: 960, safeLeft: 784 },
-		{ name: '2560x1080 (21:9)', w: 2560, h: 1080, safeLeft: 1100 },
-		{ name: '1024x692', w: 1024, h: 692, safeLeft: 466 },
-	];
-	for (const { name, w, h, safeLeft } of cases) {
-		const { dist, centerX } = fitView(w, h, FOV, EXTENT, safeLeft);
-		const reach = EXTENT * pxPerUnit(dist, h);
+test('projected bounds grow as the camera comes closer, and the far side is smaller than the near side', () => {
+	const near = projectBounds(reaches, 25, FOV, 800);
+	const far = projectBounds(reaches, 50, FOV, 800);
+	assert.ok(near.right > far.right && -near.left > -far.left && near.bottom > far.bottom);
+	// Seen from above the plane, the near side hangs lower than the far side rises, and the sides are even.
+	assert.ok(near.bottom > -near.top);
+	assert.ok(Math.abs(near.right + near.left) < 1e-6);
+	assert.deepEqual(projectBounds([{ orbit: 0, reach: 1 }], 30, FOV, 800), { left: -800 / 2 / Math.tan((FOV * Math.PI) / 360) / 30, right: 800 / 2 / Math.tan((FOV * Math.PI) / 360) / 30, top: -800 / 2 / Math.tan((FOV * Math.PI) / 360) / 30, bottom: 800 / 2 / Math.tan((FOV * Math.PI) / 360) / 30 });
+});
+
+const desktop = { labelBelowPx: 46, padBottomPx: 70 };
+const wide = [
+	{ name: '1440x900 hero', w: 1425, h: 824, safeLeft: 537 },
+	{ name: '1920x1080 hero', w: 1905, h: 960, safeLeft: 777 },
+	{ name: '1024x768 hero', w: 1009, h: 692, safeLeft: 506 },
+	// The hero stops growing at 960px tall, so on a very wide screen its height, not its width, limits the system.
+	{ name: '2560x1440 hero', w: 2545, h: 960, safeLeft: 1100, heightLimited: true },
+	{ name: '21:9 2560x1080', w: 2545, h: 1000, safeLeft: 1100, heightLimited: true },
+];
+
+test('with text on the left, the whole system fits the free area, and no closer camera would', () => {
+	for (const { name, w, h, safeLeft } of wide) {
+		const { dist, centerX, centerY } = fitView(w, h, FOV, reaches, REST_PHI, { safeLeft, ...desktop });
+		const b = projectBounds(reaches, dist, FOV, h);
 		assert.ok(centerX >= 0.6 * w - 1e-6 && centerX <= 0.75 * w + 1e-6, `${name}: sun at ${centerX / w}`);
-		assert.ok(centerX - reach >= safeLeft - 1e-6, `${name}: clears the text`);
-		assert.ok(centerX + reach <= w + 1e-6, `${name}: clears the right edge`);
-		assert.ok(reach * 0.6 <= h / 2 + 1e-6, `${name}: fits vertically`);
-		assert.ok(dist >= HOME_DISTANCE, name);
+		assert.ok(centerX + b.left >= safeLeft - 1e-6, `${name}: clears the text`);
+		assert.ok(centerX + b.right <= w + 1e-6, `${name}: clears the right edge`);
+		assert.ok(centerY + b.top >= 12 - 1e-6 && centerY + b.bottom + desktop.labelBelowPx <= h - desktop.padBottomPx + 1e-6, `${name}: fits vertically`);
+		// Centred by its own bounds: the room above the system and below it (labels included) are equal.
+		near(centerY + b.top - 12, h - desktop.padBottomPx - (centerY + b.bottom + desktop.labelBelowPx), 1e-6);
+		// Tight: 2% closer would push something past a limit.
+		const c = projectBounds(reaches, dist * 0.98, FOV, h);
+		const spills = centerX + c.left < safeLeft || centerX + c.right > w - 16 || c.bottom - c.top + desktop.labelBelowPx > h - 12 - desktop.padBottomPx;
+		assert.ok(spills || dist < 10.1, `${name}: not tight (dist ${dist})`);
 	}
 });
 
-test('a wider free area lets the system come closer; narrower text does too', () => {
-	assert.ok(fitView(1920, 960, FOV, EXTENT, 784).dist < fitView(1024, 692, FOV, EXTENT, 466).dist);
-	assert.ok(fitView(1440, 823, FOV, EXTENT, 400).dist <= fitView(1440, 823, FOV, EXTENT, 700).dist);
+test('the outer orbit takes most of the free width, as much as the ring of Saturn allows', () => {
+	for (const { name, w, h, safeLeft, heightLimited } of wide) {
+		const { dist } = fitView(w, h, FOV, reaches, REST_PHI, { safeLeft, ...desktop });
+		const orbitWidth = (2 * saturn.orbit * (h / 2 / Math.tan((FOV * Math.PI) / 360))) / dist;
+		const share = orbitWidth / (w - 16 - safeLeft);
+		assert.ok(share > (heightLimited ? 0.5 : 0.68) && share < 0.79, `${name}: ${share.toFixed(3)}`);
+	}
+});
+
+test('a wider free area brings the camera closer; narrower text does too', () => {
+	const dist = (w, h, safeLeft) => fitView(w, h, FOV, reaches, REST_PHI, { safeLeft, ...desktop }).dist;
+	assert.ok(dist(1905, 960, 777) < dist(1009, 692, 506));
+	assert.ok(dist(1425, 824, 400) <= dist(1425, 824, 700));
+});
+
+test('a phone canvas is fitted tightly around the system, with the sun centred and labels below', () => {
+	for (const [w, h] of [[390, 292], [360, 270], [320, 240], [768, 576]]) {
+		const { dist, centerX, centerY } = fitView(w, h, FOV, reaches, REST_PHI, { labelBelowPx: 24 });
+		const b = projectBounds(reaches, dist, FOV, h);
+		assert.equal(centerX, w / 2);
+		assert.ok(w / 2 + b.left >= 12 - 1e-6 && w / 2 + b.right <= w - 12 + 1e-6, `${w}x${h}: sides`);
+		assert.ok(centerY + b.top >= 12 - 1e-6 && centerY + b.bottom + 24 <= h - 12 + 1e-6, `${w}x${h}: top and bottom`);
+		// The width decides it, so the canvas is not far taller than the system needs.
+		assert.ok((b.bottom - b.top + 24) / h > 0.55, `${w}x${h}: too much empty height`);
+	}
 });
 
 test('degenerate canvases fall back to the resting distance', () => {
-	assert.deepEqual(fitView(0, 0, FOV, EXTENT), { dist: HOME_DISTANCE, centerX: 0 });
-	assert.equal(fitView(500, 500, FOV, 0).dist, HOME_DISTANCE);
-	assert.equal(fitView(500, 500, FOV, EXTENT, 500).centerX, 250);
-	assert.equal(fitView(1000, 600, FOV, 2).dist, HOME_DISTANCE);
+	assert.deepEqual(fitView(0, 0, FOV, reaches), { dist: 30, centerX: 0, centerY: 0 });
+	assert.equal(fitView(500, 500, FOV, []).dist, 30);
+	assert.equal(fitView(500, 500, FOV, reaches, REST_PHI, { safeLeft: 500 }).centerX, 250);
+});
+
+test('easing starts and ends flat and never overshoots', () => {
+	assert.equal(easeInOut(0), 0);
+	assert.equal(easeInOut(1), 1);
+	assert.equal(easeInOut(0.5), 0.5);
+	assert.equal(easeInOut(-2), 0);
+	assert.equal(easeInOut(3), 1);
+	let previous = 0;
+	for (let i = 1; i <= 20; i++) { const v = easeInOut(i / 20); assert.ok(v >= previous && v <= 1); previous = v; }
+	assert.ok(easeInOut(0.1) < 0.1 && easeInOut(0.9) > 0.9);
+});
+
+test('a sphere placed at its start distance projects to the pixel radius asked for', () => {
+	for (const [px, h, radius] of [[280, 824, 0.71], [150, 292, 0.71], [400, 960, 0.71], [60, 300, 1]]) {
+		const dist = sphereDistance(px, h, FOV, radius);
+		const tanEdge = radius / Math.sqrt(dist * dist - radius * radius);
+		assert.ok(Math.abs((tanEdge / Math.tan((FOV * Math.PI) / 360)) * (h / 2) - px) < 1e-6, `${px}px on ${h}`);
+		assert.ok(dist > radius);
+	}
+});
+
+test('Earth starts with the sun to the right of the camera, a fixed angle away, and out of frame', () => {
+	for (const theta of [0, 0.7, 2, -1.3]) {
+		for (const offset of [0.6, 0.9]) {
+			const a = earthStartAngle(theta, offset);
+			const sun = [-Math.cos(a), -Math.sin(a)]; // from Earth to the sun
+			const toCamera = [Math.cos(theta), Math.sin(theta)];
+			const right = [Math.sin(theta), -Math.cos(theta)];
+			near(sun[0] * toCamera[0] + sun[1] * toCamera[1], Math.cos(offset), 1e-9);
+			near(sun[0] * right[0] + sun[1] * right[1], Math.sin(offset), 1e-9);
+		}
+	}
 });

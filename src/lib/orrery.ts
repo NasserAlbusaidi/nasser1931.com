@@ -99,36 +99,127 @@ export const buildOrrery = (input: OrreryInput): { bodies: Body[]; sky: Sky } =>
 };
 
 export const HOME_DISTANCE = 30;
-const FIT_MARGIN = 1.04;
-// The orbits are seen from about 21 degrees above their plane, so the system is much flatter than it is wide.
-const VERTICAL_SHARE = 0.6;
+// The resting camera: a fixed bearing, seen from about 21 degrees above the orbital plane.
+export const REST_THETA = 0.7;
+export const REST_PHI = 1.2;
+
 // Where the sun may sit, as a share of the canvas width, when text takes the left side.
 const SUN_MIN = 0.6;
 const SUN_MAX = 0.75;
-// Breathing room between the outermost ring and the edge of the free area (text side or canvas edge).
-const PAD_TEXT_PX = 24;
-const PAD_PLAIN_PX = 12;
+// Breathing room between the outermost ring and the canvas edge, and above and below the system.
+const EDGE_PAD_PX = 16;
+const PLAIN_PAD_PX = 12;
+const MIN_DIST = 10;
+const MAX_DIST = 400;
+const ORBIT_SAMPLES = 96;
 
-export type View = { dist: number; centerX: number };
+/** How far a body, its ring, or its moons reach out from its own centre, in scene units. */
+export const bodyReach = (body: Pick<Body, 'kind' | 'radius' | 'ring' | 'moons'>) => {
+  if (body.kind === 'sun') return body.radius * 1.4;
+  if (body.ring) return body.radius * 2.5;
+  if (body.moons.length) return body.radius + 0.45 + (body.moons.length - 1) * 0.26 + 0.14;
+  return body.radius * 1.3;
+};
+
+export type Reach = { orbit: number; reach: number };
+export const systemReaches = (bodies: Pick<Body, 'kind' | 'radius' | 'ring' | 'moons' | 'orbit'>[]): Reach[] =>
+  bodies.map((body) => ({ orbit: body.orbit, reach: bodyReach(body) }));
+
+export type Bounds = { left: number; right: number; top: number; bottom: number };
 
 /**
- * Camera distance and the sun's horizontal position for a `w` x `h` canvas, so everything out to
- * `extent` (Saturn's ring included) stays inside the free area and is never clipped.
- * `safeLeft` is the width, in pixels, that text covers on the left; the sun is centred in what is left
- * (between 60% and 75% of the width). With no text (`safeLeft` 0) the sun stays centred and the narrower
- * canvas side decides the distance, as on a phone. Never closer than `minDist`.
+ * Where the system lands on a canvas `h` pixels tall, as pixel offsets from the sun's screen position
+ * (x right, y down), for a camera `dist` away at polar angle `phi`. Every orbit is sampled all the way round,
+ * so a body is counted wherever it might be, near side, far side, or at the sides, with perspective.
+ * The bearing does not matter: the orbits are circles.
  */
-export const fitView = (w: number, h: number, fovDeg: number, extent: number, safeLeft = 0, minDist = HOME_DISTANCE): View => {
-  if (!(w > 0) || !(h > 0) || !(extent > 0)) return { dist: minDist, centerX: w > 0 ? w / 2 : 0 };
-  const tan = Math.tan((fovDeg * Math.PI) / 360);
-  let centerX = w / 2;
-  let half = Math.min(w, h) / 2 - PAD_PLAIN_PX;
-  if (safeLeft > 0 && safeLeft < w) {
-    centerX = Math.min(SUN_MAX * w, Math.max(SUN_MIN * w, (safeLeft + w) / 2));
-    half = Math.min(centerX - safeLeft, w - centerX) - PAD_TEXT_PX;
+export const projectBounds = (reaches: Reach[], dist: number, fovDeg: number, h: number, phi = REST_PHI): Bounds => {
+  const k = h / 2 / Math.tan((fovDeg * Math.PI) / 360);
+  const bounds = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
+  for (const { orbit, reach } of reaches) {
+    for (let i = 0; i < (orbit > 0 ? ORBIT_SAMPLES : 1); i++) {
+      const a = (i / ORBIT_SAMPLES) * Math.PI * 2;
+      const depth = dist - orbit * Math.cos(a) * Math.sin(phi);
+      const x = (-orbit * Math.sin(a) * k) / depth;
+      const y = (orbit * Math.cos(a) * Math.cos(phi) * k) / depth;
+      const r = (reach * k) / depth;
+      bounds.left = Math.min(bounds.left, x - r);
+      bounds.right = Math.max(bounds.right, x + r);
+      bounds.top = Math.min(bounds.top, y - r);
+      bounds.bottom = Math.max(bounds.bottom, y + r);
+    }
   }
-  const needed = extent * FIT_MARGIN;
-  const across = half > 0 ? (needed * (h / 2)) / (half * tan) : Infinity;
-  const up = (needed * VERTICAL_SHARE) / tan;
-  return { dist: Math.max(minDist, across, up), centerX };
+  return bounds;
+};
+
+export type View = { dist: number; centerX: number; centerY: number };
+export type FitOptions = {
+  /** Pixels on the left that text covers, gap included; 0 when nothing overlaps. */
+  safeLeft?: number;
+  /** Room a label needs under the lowest body. */
+  labelBelowPx?: number;
+  /** Room to keep clear at the bottom (a caption band, say). */
+  padBottomPx?: number;
+};
+
+/**
+ * The closest camera distance, and the sun's horizontal position, at which the whole system stays
+ * inside a `w` x `h` canvas at the resting pose: Saturn and its ring, moons, and labels included, wherever they
+ * are on their orbits. With text on the left, the sun is centred in the free area (60% to 75% across); without it,
+ * the sun is centred on the canvas. Only the resting view is fitted: a drag may clip it for a moment.
+ */
+export const fitView = (w: number, h: number, fovDeg: number, reaches: Reach[], phi = REST_PHI, options: FitOptions = {}): View => {
+  const { safeLeft = 0, labelBelowPx = 0, padBottomPx = PLAIN_PAD_PX } = options;
+  if (!(w > 0) || !(h > 0) || !reaches.length) return { dist: HOME_DISTANCE, centerX: w > 0 ? w / 2 : 0, centerY: h > 0 ? h / 2 : 0 };
+  const beside = safeLeft > 0 && safeLeft < w;
+  const left = beside ? safeLeft : PLAIN_PAD_PX;
+  const right = w - (beside ? EDGE_PAD_PX : PLAIN_PAD_PX);
+  const centerX = beside ? Math.min(SUN_MAX * w, Math.max(SUN_MIN * w, (left + right) / 2)) : w / 2;
+  const half = Math.min(centerX - left, right - centerX);
+  // The system is much lower than it is high above the sun (the near side and its labels hang down), so it is
+  // centred vertically by its own bounds, not by the sun.
+  const room = h - PLAIN_PAD_PX - padBottomPx;
+  const centerYFor = (dist: number) => {
+    const b = projectBounds(reaches, dist, fovDeg, h, phi);
+    const up = -b.top;
+    const down = b.bottom + labelBelowPx;
+    return { fits: Math.max(-b.left, b.right) <= half && up + down <= room, centerY: PLAIN_PAD_PX + up + (room - up - down) / 2 };
+  };
+  const fits = (dist: number) => centerYFor(dist).fits;
+  if (!(half > 0)) return { dist: MAX_DIST, centerX, centerY: h / 2 };
+  if (fits(MIN_DIST)) return { dist: MIN_DIST, centerX, centerY: centerYFor(MIN_DIST).centerY };
+  let near = MIN_DIST;
+  let far = MAX_DIST;
+  for (let i = 0; i < 40; i++) {
+    const mid = (near + far) / 2;
+    if (fits(mid)) far = mid;
+    else near = mid;
+  }
+  return { dist: far, centerX, centerY: centerYFor(far).centerY };
+};
+
+/** Smooth start and finish. `t` is clamped to 0..1. */
+export const easeInOut = (t: number) => {
+  const x = Math.min(1, Math.max(0, t));
+  return x * x * (3 - 2 * x);
+};
+
+/**
+ * How far a camera must be from a sphere of scene radius `radius`, looking straight at it, for the sphere
+ * to be `pxRadius` pixels in radius on a canvas `h` pixels tall.
+ */
+export const sphereDistance = (pxRadius: number, h: number, fovDeg: number, radius: number) => {
+  const tanHalfAngle = (pxRadius * Math.tan((fovDeg * Math.PI) / 360)) / (h / 2);
+  return radius / Math.sin(Math.atan(tanHalfAngle));
+};
+
+/**
+ * Earth's orbit angle that puts the sun `offset` radians to the right of a camera at bearing `theta`, as seen
+ * from Earth. The camera then sees a mostly lit disc with the terminator on its left, and the sun stays out of frame.
+ */
+export const earthStartAngle = (theta: number, offset: number, orbit = 3.4) => {
+  const toCamera = [Math.cos(theta), Math.sin(theta)];
+  const right = [Math.sin(theta), -Math.cos(theta)];
+  const toSun = [Math.cos(offset) * toCamera[0] + Math.sin(offset) * right[0], Math.cos(offset) * toCamera[1] + Math.sin(offset) * right[1]];
+  return Math.atan2(-toSun[1] * orbit, -toSun[0] * orbit);
 };
