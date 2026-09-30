@@ -3,7 +3,7 @@ import '../styles/interior.css';
 interface Props { title: string; description: string; meta?: string; eyebrow?: string; }
 const { title, description, meta, eyebrow = 'From the observatory' } = Astro.props;
 ---
-<header class="page-intro"><div><p class="intro-eyebrow">{eyebrow}</p><h1>{title}<span>.</span></h1><p class="intro-description">{description}</p></div>{meta && <span class="page-intro-meta">{meta}</span>}</header>
+<header class="page-intro"><div><p class="intro-eyebrow">{eyebrow}</p><h1>{title}<span>.</span></h1><p class="intro-description">{description}</p></div>{meta && <span class="page-intro-meta">{meta}</span>}<slot /></header>
 <style>
   .page-intro { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.5rem 3rem; padding: 3.5rem 0 3rem; }
   .intro-eyebrow { margin: 0 0 1rem; }
