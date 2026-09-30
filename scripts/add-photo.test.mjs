@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import exifr from 'exifr';
@@ -42,6 +42,35 @@ test('export never enlarges and caps the width', async () => {
   await sharp({ create: { width: 400, height: 100, channels: 3, background: '#000' } }).tiff().toFile(input);
   assert.equal((await exportPhoto(input, join(work, 'wide-out.jpg'), 200)).width, 200);
   assert.equal((await exportPhoto(input, join(work, 'wide-out2.jpg'), 1000)).width, 400);
+});
+
+// A 2×2 RGB TIFF with a Photoshop data block (tag 37724) of `blockBytes`.
+// Lightroom and Photoshop edits carry one of 100 MB or more, over libtiff's
+// default 50 MB read limit.
+const tiffWithDataBlock = (blockBytes) => {
+  const entries = [[256, 3, 1, 2], [257, 3, 1, 2], [258, 3, 3, 0], [259, 3, 1, 1], [262, 3, 1, 2], [273, 4, 1, 0],
+    [277, 3, 1, 3], [278, 3, 1, 2], [279, 4, 1, 12], [284, 3, 1, 1], [37724, 7, blockBytes, 0]];
+  const ifdEnd = 8 + 2 + entries.length * 12 + 4;
+  const bits = ifdEnd, pixels = bits + 6, block = pixels + 12;
+  const head = Buffer.alloc(block);
+  head.write('II', 0, 'latin1'); head.writeUInt16LE(42, 2); head.writeUInt32LE(8, 4); head.writeUInt16LE(entries.length, 8);
+  entries.forEach(([tag, type, count, value], i) => {
+    const at = 10 + i * 12;
+    head.writeUInt16LE(tag, at); head.writeUInt16LE(type, at + 2); head.writeUInt32LE(count, at + 4);
+    const offset = { 258: bits, 273: pixels, 37724: block }[tag];
+    if (offset !== undefined) head.writeUInt32LE(offset, at + 8);
+    else if (type === 3) head.writeUInt16LE(value, at + 8);
+    else head.writeUInt32LE(value, at + 8);
+  });
+  [8, 8, 8].forEach((b, i) => head.writeUInt16LE(b, bits + i * 2));
+  head.fill(0x40, pixels, block);
+  return Buffer.concat([head, Buffer.alloc(blockBytes)]);
+};
+
+test('export reads edited TIFFs with a large Photoshop data block', async () => {
+  const input = join(work, 'edit.tif');
+  writeFileSync(input, tiffWithDataBlock(60 * 1024 * 1024));
+  assert.equal((await exportPhoto(input, join(work, 'edit-out.jpg'))).width, 2);
 });
 
 test('camera dates keep the camera-local day', () => {
