@@ -11,6 +11,8 @@ import RaceCard from '../components/RaceCard.astro';
 import WorldsCard from '../components/WorldsCard.astro';
 import SkyClosing from '../components/SkyClosing.astro';
 import Orrery from '../components/Orrery.astro';
+import PlanetHeading from '../components/PlanetHeading.astro';
+import PlanetMark from '../components/PlanetMark.astro';
 import { getCollection } from 'astro:content';
 import reading from '../data/reading.json';
 import nextRace from '../data/next-race.json';
@@ -18,13 +20,13 @@ import { races } from '../lib/races';
 import { buildOrrery, latestDate } from '../lib/orrery';
 import { buildReadingSeries } from '../lib/reading-series.mjs';
 import { newestFirst } from '../lib/sky.mjs';
+import { buildNowFeed, promotedNotes } from '../lib/now-feed.mjs';
 import builds from '../data/builds.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/home.css';
 
 const allBooks = [...reading.currently_reading, ...reading.finished]
   .filter((book, index, all) => all.findIndex(other => other.title === book.title && other.author === book.author) === index);
-const books = allBooks.slice(0, 5);
 const upcoming = (nextRace as { race: { date: string; name: string } | null }).race;
 const latestFinish = races.find(race => race.status === 'finished');
 const skyPhotos = (await getCollection('sky')).sort(newestFirst);
@@ -49,6 +51,15 @@ const orrery = buildOrrery({
     series: readingTrack ? { name: readingTrack.name, total: readingTrack.total, done: readingTrack.finishedCount + inProgress(readingTrack) } : null,
   },
   sky: { count: skyPhotos.length, changed: latestSky ? day(latestSky.data.date) : null, latestTitle: latestSky?.data.title ?? null },
+});
+const noteRows = notes.map(note => ({ title: note.data.title, summary: note.data.summary, date: day(note.data.date), href: `/stupidshit/${note.id}`, tags: note.data.tags }));
+const homeNotes = promotedNotes(noteRows).slice(0, 3);
+const nowFeed = buildNowFeed({
+  notes: noteRows,
+  sky: latestSky ? { title: latestSky.data.title, date: day(latestSky.data.date), href: `/sky#${latestSky.id}` } : null,
+  nextRace: upcoming,
+  lastRace: latestFinish ?? null,
+  book: nowReading ? { title: nowReading.title, author: nowReading.author, progress: nowReading.progress } : null,
 });
 const date = (value: string | Date) => {
   const parsed = value instanceof Date ? value : new Date(value);
@@ -94,16 +105,18 @@ const structuredData = {
         </Orrery>
       </section>
       <div class="home-content">
-        <aside class="now-strip" aria-label="What I’m up to">
-          <div class="now-heading"><span class="eyebrow">Now</span><span>A few things in motion.</span></div>
-          <a class="now-item" href="#rihla"><span class="eyebrow">Shipped</span><strong>Rihla — on iOS &amp; Android</strong><span>App Store · Google Play <span aria-hidden="true">↓</span></span></a>
-          {upcoming ? <a class="now-item" href="/races"><span class="eyebrow">Racing next</span><strong>{upcoming.name}</strong><span>{date(upcoming.date)} <span aria-hidden="true">→</span></span></a>
-            : latestFinish && <a class="now-item" href="/races"><span class="eyebrow">Last race</span><strong>{latestFinish.name}{latestFinish.total && ` · ${latestFinish.total}`}</strong><span>{date(latestFinish.date)} <span aria-hidden="true">→</span></span></a>}
-          {books[0] && <a class="now-item" href="/reading"><span class="eyebrow">{reading.currently_reading.length ? 'Reading' : 'From the shelf'}</span><strong>{books[0].title}</strong><span>{books[0].author} <span aria-hidden="true">→</span></span></a>}
-        </aside>
+        {nowFeed.length > 0 && <aside class="now-feed" aria-labelledby="now-title">
+          <div class="now-heading"><p class="eyebrow" id="now-title">In orbit now</p><p>The newest thing in each part of the site.</p></div>
+          <ul>{nowFeed.map(item => <li><a href={item.href}>
+            <PlanetMark body={item.body} size="small" />
+            <span class="now-section eyebrow">{item.section}</span>
+            <strong>{item.title}</strong>
+            <span class="now-meta">{item.date ? date(item.date) : item.detail}</span>
+          </a></li>)}</ul>
+        </aside>}
 
-        <section id="work" class="work-section" aria-labelledby="work-title">
-          <div class="section-heading"><h2 id="work-title">Selected projects</h2><a class="quiet-link" href="/builds">All {builds.builds.length} projects <span aria-hidden="true">→</span></a></div>
+        <section id="work" class="planet-section" aria-labelledby="work-title">
+          <PlanetHeading body="earth" label="Earth · Projects" title="Things I have built" id="work-title" href="/builds" link={`All ${builds.builds.length} projects`} />
           <article id="rihla" class="rihla-showcase" aria-labelledby="rihla-title">
             <div class="rihla-copy">
               <div class="project-topline"><span class="eyebrow">Software × everyday life</span><span class="project-badge">Shipped</span></div>
@@ -117,22 +130,33 @@ const structuredData = {
               <div class="project-bottom"><span>{rihla?.stack.join(' · ')}</span>{rihla?.repo && <a href={rihla.repo}>Source <span aria-hidden="true">↗</span></a>}</div>
             </div>
           </article>
-
-          <div class="supporting-projects">
-            <RaceCard />
-            {einstein && <article class="supporting-project" aria-labelledby="home-einstein">
-              <ProjectPreview project={einstein.slug} variant="card" />
-              <div class="supporting-copy"><p class="eyebrow">An experiment in physics</p><h3 id="home-einstein">{einstein.name}</h3><p class="project-description">Plan a trip near the speed of light and see how differently time passes.</p></div>
+          {einstein && <article class="einstein-card" aria-labelledby="home-einstein">
+            <ProjectPreview project={einstein.slug} variant="card" />
+            <div class="einstein-copy">
+              <p class="eyebrow">An experiment in physics</p><h3 id="home-einstein">{einstein.name}</h3>
+              <p class="project-description">Plan a trip near the speed of light and see how differently time passes.</p>
               <div class="project-bottom"><span>{einstein.stack.join(' · ')}</span><a href={einstein.url ?? einstein.repo ?? '/builds'}>Try the demo <span aria-hidden="true">↗</span></a></div>
-            </article>}
-            <WorldsCard />
-          </div>
+            </div>
+          </article>}
         </section>
 
-        <section aria-labelledby="reading-title" class="reading-section">
-          <div class="section-heading"><h2 id="reading-title">On the shelf</h2><a class="quiet-link" href="/reading">Reading list <span aria-hidden="true">→</span></a></div>
+        <section id="races" class="planet-section" aria-labelledby="races-title">
+          <PlanetHeading body="mars" label="Mars · Races" title="Swim, bike, run" id="races-title" href="/races" link="All races" />
+          <RaceCard />
+        </section>
+
+        {homeNotes.length > 0 && <section id="notes" class="planet-section" aria-labelledby="notes-title">
+          <PlanetHeading body="notes" label="Asteroid belt · Notes" title="Small things, written down" id="notes-title" href="/stupidshit" link="All notes" />
+          <ul class="home-notes">{homeNotes.map(note => <li><a href={note.href}>
+            <time datetime={note.date}>{date(note.date)}</time><strong>{note.title}</strong><span>{note.summary}</span>
+          </a></li>)}</ul>
+        </section>}
+
+        <section id="reading" class="planet-section" aria-labelledby="reading-title">
+          <PlanetHeading body="saturn" label="Saturn · Reading" title="On the shelf" id="reading-title" href="/reading" link="Reading list" />
           <p class="shelf-intro">What I’m reading now, then the most recent finishes.</p>
           <ShelfSpines /><ReadingSource />
+          <WorldsCard />
         </section>
         {latestSky ? <SkyClosing photo={latestSky} />
           : <div class="closing-note"><p>Something here sparked a thought?</p><a class="home-button primary" href="mailto:nasserbusaidi@gmail.com">Say hello <span aria-hidden="true">→</span></a></div>}

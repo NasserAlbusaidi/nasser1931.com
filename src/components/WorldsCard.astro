@@ -1,5 +1,5 @@
 ---
-// Homepage card for the long series on the shelf. The full tracks live on /reading.
+// Homepage band for the long series on the shelf, under the spines. The full tracks live on /reading.
 import reading from '../data/reading.json';
 import { buildReadingSeries } from '../lib/reading-series.mjs';
 
@@ -14,7 +14,8 @@ const summary = (track: (typeof series)[number]) => {
   return `${track.finishedCount} of ${track.total} finished` + (reading ? `, reading book ${reading.position}` : '');
 };
 ---
-{series.length > 0 && <article class="supporting-project worlds-card" aria-labelledby="worlds-title">
+{series.length > 0 && <div class="worlds-band">
+  <div class="worlds-head"><h3 id="worlds-title">Worlds I’m in</h3><p>The long series on my shelf, book by book.</p><a class="quiet-link" href="/reading#series-title">All series <span aria-hidden="true">→</span></a></div>
   <ul class="worlds-preview">
     {series.map(track => <li>
       <div class="worlds-row-head"><span class="worlds-name">{track.name}</span><span class="worlds-count" aria-hidden="true">{track.finishedCount}/{track.total}</span></div>
@@ -22,15 +23,12 @@ const summary = (track: (typeof series)[number]) => {
       <span class="worlds-sr-only">{summary(track)}</span>
     </li>)}
   </ul>
-  <div class="supporting-copy">
-    <p class="eyebrow">Reading · Series</p>
-    <h3 id="worlds-title">Worlds I’m in</h3>
-    <p class="project-description">The long series on my shelf, book by book.</p>
-  </div>
-  <div class="project-bottom"><span>Main novels</span><a href="/reading#series-title">All series <span aria-hidden="true">→</span></a></div>
-</article>}
+</div>}
 <style>
-  .worlds-preview { list-style: none; margin: 0; display: flex; flex-direction: column; justify-content: center; gap: 1.25rem; padding: 1.25rem; border: 1px solid var(--rule); background: var(--bg); min-height: 16rem; }
+  .worlds-band { display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr); gap: 2rem; align-items: center; margin-top: 2.5rem; padding: 1.75rem 2rem; border: 1px solid var(--rule); background: var(--surface); }
+  .worlds-head h3 { font-size: var(--text-title); font-weight: 400; line-height: 1.25; }
+  .worlds-head p { margin: .4rem 0 0; color: var(--muted); font-size: var(--text-label); line-height: 1.5; }
+  .worlds-preview { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1.25rem 1.75rem; }
   .worlds-row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .5rem; }
   .worlds-name { font-size: var(--text-body); line-height: 1.3; }
   .worlds-count { font: var(--text-label)/1 var(--font-mono); color: var(--muted); white-space: nowrap; }
@@ -40,4 +38,6 @@ const summary = (track: (typeof series)[number]) => {
   .worlds-track > .worlds-current { background: var(--accent); }
   .worlds-track > .worlds-wanted { background: transparent; border: 1px dashed var(--accent); }
   .worlds-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (max-width: 900px) { .worlds-band { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; } }
+  @media (max-width: 720px) { .worlds-band { padding: 1.5rem; } }
 </style>
