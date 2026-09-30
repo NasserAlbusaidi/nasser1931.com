@@ -1,0 +1,33 @@
+---
+// /races header figure: Mars with one moon per race, the orrery's mapping up
+// close. A longer race orbits farther out; the ladder below carries the numbers.
+import PlanetMark from './PlanetMark.astro';
+import { marsMoons } from '../lib/race-story';
+import type { Race } from '../lib/races';
+
+type Props = { races: Race[] };
+const moons = marsMoons(Astro.props.races);
+const fmt = (value: string) => new Intl.DateTimeFormat('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
+---
+{moons.length > 0 && <figure class="mars-system">
+  <div class="mars-system-canvas">
+    <svg viewBox="-100 -50 200 100" aria-hidden="true">
+      {moons.map(moon => <ellipse class="mars-orbit" rx={moon.rx} ry={moon.ry} />)}
+      {moons.map(moon => <circle class:list={['mars-moon', { 'mars-moon-newest': moon.newest, 'mars-moon-far': moon.y < 0 }]} cx={moon.x.toFixed(2)} cy={moon.y.toFixed(2)} r={moon.newest ? 3.2 : 2.3}><title>{`${moon.name}, ${fmt(moon.date)}, ${moon.km} km`}</title></circle>)}
+    </svg>
+    <PlanetMark body="mars" />
+  </div>
+  <figcaption>Mars, with a moon for each race. Longer races orbit farther out.</figcaption>
+</figure>}
+<style>
+  .mars-system { width: min(24rem, 100%); margin: 0; container-type: inline-size; }
+  .mars-system-canvas { position: relative; aspect-ratio: 2 / 1; }
+  .mars-system svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  /* 2 × MARS_RADIUS of the 200-unit-wide box. */
+  .mars-system :global(.planet-mark) { --planet-size: 16cqw; position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
+  .mars-orbit { fill: none; stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .mars-moon { fill: var(--muted); }
+  .mars-moon-far { opacity: .7; }
+  .mars-moon-newest { fill: var(--accent); opacity: 1; }
+  figcaption { margin-top: .75rem; font: var(--text-label)/1.5 var(--font-mono); color: var(--muted); }
+</style>

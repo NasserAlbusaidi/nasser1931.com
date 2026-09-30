@@ -4,6 +4,8 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import RaceSplitBar from '../../components/RaceSplitBar.astro';
+import MarsSystem from '../../components/MarsSystem.astro';
+import RaceLadder from '../../components/RaceLadder.astro';
 import { races, raceStatus, pace, transitions, personalBests, raceStats, clock } from '../../lib/races';
 const formatDate = (date: string) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(date));
 const stats = raceStats(races);
@@ -16,14 +18,17 @@ const legSummary = (race: typeof races[number]) => race.splits.map(split => `${s
   <body>
     <Header />
     <main id="main-content" tabindex="-1" class="interior">
-      <PageIntro title="Races" eyebrow="Swim · Bike · Run" description="Triathlons, aquathlons, and open-water swims. Times come from my recorded race files." />
+      <PageIntro title="Races" eyebrow="Swim · Bike · Run" description="Triathlons, aquathlons, and open-water swims. Times come from my recorded race files."><MarsSystem races={races} /></PageIntro>
+      {races.length > 1 && <section id="build-up" aria-labelledby="build-up-title">
+        <div class="interior-section-head"><h2 id="build-up-title">The build-up</h2>{stats.weeks != null && stats.longest && <span>First triathlon to {stats.longest.name} in {stats.weeks} weeks</span>}</div>
+        <RaceLadder races={races} />
+      </section>}
       {races.length > 0 ? <section id="races" class="race-log" aria-labelledby="races-title">
         <div class="interior-section-head"><h2 id="races-title">Race log</h2><span>{races.length} {races.length === 1 ? 'race' : 'races'}</span></div>
         <dl class="race-stats">
           <div><dt>Finished</dt><dd>{stats.finished}{stats.finished !== stats.entered && <small>of {stats.entered}</small>}</dd></div>
           <div><dt>Time racing</dt><dd>{clock(stats.racing)}</dd></div>
           {stats.longest && <div><dt>Longest</dt><dd class="race-stat-text">{stats.longest.name} <small>{stats.longest.total}</small></dd></div>}
-          {stats.weeks != null && stats.longest && <div><dt>First triathlon to {stats.longest.name}</dt><dd>{stats.weeks}<small>weeks</small></dd></div>}
         </dl>
         <ol class="race-list">{races.map(race => { const tx = transitions(race); const legs = race.splits.filter(split => !/^T\d$/i.test(split.leg)); return <li>
           <time datetime={race.date}>{formatDate(race.date)}</time>
@@ -40,13 +45,15 @@ const legSummary = (race: typeof races[number]) => race.splits.map(split => `${s
   </body>
 </html>
 <style>
+  #build-up { margin-top: 3.5rem; }
+  #build-up + .race-log { margin-top: 0; }
   .race-log { margin-top: 3.5rem; }
   .race-list { list-style: none; margin: 0; padding: 0; }
   .race-list li { display: grid; grid-template-columns: 11rem minmax(0, 1fr) auto; gap: 1.5rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); align-items: start; }
   .race-list time { font: var(--text-label)/1.6 var(--font-mono); color: var(--muted); }
   .race-list h3 { font-size: var(--text-title); font-weight: 400; line-height: 1.3; }
   .race-list-main p { color: var(--muted); font-size: var(--text-label); margin: .35rem 0 0; }
-  .race-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 1rem; border-block: 1px solid var(--rule); }
+  .race-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 1rem; border-block: 1px solid var(--rule); }
   /* Subgrid rows keep values level when a label wraps to two lines. */
   .race-stats div { display: grid; grid-row: span 2; grid-template-rows: subgrid; align-content: start; padding: 1.1rem 1.25rem 1.1rem 0; min-width: 0; }
   .race-stats div + div { border-left: 1px solid var(--rule); padding-left: 1.25rem; }
@@ -63,12 +70,11 @@ const legSummary = (race: typeof races[number]) => race.splits.map(split => `${s
   .race-legs dd { margin: 0; }
   .race-legs dd span { display: block; color: var(--muted); }
   .race-list-main .race-transitions { font-family: var(--font-mono); margin-top: .75rem; }
-  @media (max-width: 900px) {
-    .race-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .race-stats div + div:nth-child(3) { border-left: 0; padding-left: 0; }
-    .race-stats div:nth-child(n + 3) { border-top: 1px solid var(--rule); }
+  @media (max-width: 720px) {
+    .race-stats { grid-template-columns: minmax(0, 1fr); }
+    .race-stats div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); }
   }
   .race-list-result { font: var(--text-lead)/1.3 var(--font-mono); color: var(--accent); margin: 0; }
   .race-list-muted { color: var(--muted); font-size: var(--text-body); }
-  @media (max-width: 540px) { .race-log { margin-top: 2.5rem; } .race-list li { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; } .race-list time { grid-row: 1; } .race-list-result { grid-row: 1; grid-column: 2; } .race-list-main { grid-column: 1 / -1; } .race-legs { column-gap: 1.25rem; } }
+  @media (max-width: 540px) { #build-up, .race-log { margin-top: 2.5rem; } #build-up + .race-log { margin-top: 0; } .race-list li { grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; } .race-list time { grid-row: 1; } .race-list-result { grid-row: 1; grid-column: 2; } .race-list-main { grid-column: 1 / -1; } .race-legs { column-gap: 1.25rem; } }
 </style>
