@@ -17,6 +17,7 @@ import nextRace from '../data/next-race.json';
 import { races } from '../lib/races';
 import { buildOrrery, latestDate } from '../lib/orrery';
 import { buildReadingSeries } from '../lib/reading-series.mjs';
+import { newestFirst } from '../lib/sky.mjs';
 import builds from '../data/builds.json';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/home.css';
@@ -26,7 +27,7 @@ const allBooks = [...reading.currently_reading, ...reading.finished]
 const books = allBooks.slice(0, 5);
 const upcoming = (nextRace as { race: { date: string; name: string } | null }).race;
 const latestFinish = races.find(race => race.status === 'finished');
-const skyPhotos = (await getCollection('sky')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const skyPhotos = (await getCollection('sky')).sort(newestFirst);
 const latestSky = skyPhotos[0];
 const rihla = builds.builds.find(build => build.slug === 'rihla');
 const einstein = builds.builds.find(build => build.slug === 'einsteins-travel-bureau');

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import exifr from 'exifr';
 import sharp from 'sharp';
 import { cameraDate, exportPhoto, parseStack, renderEntry, slugify } from './add-photo.mjs';
-import { captureLine, formatShutter } from '../src/lib/sky.mjs';
+import { captureLine, formatShutter, newestFirst } from '../src/lib/sky.mjs';
 
 const work = mkdtempSync(join(tmpdir(), 'add-photo-'));
 test.after(() => rmSync(work, { recursive: true, force: true }));
@@ -93,4 +93,12 @@ test('shutter speeds', () => {
   assert.equal(shutter(2.5), '2.5 s');
   assert.equal(shutter(0.00625), '1/160 s');
   assert.equal(shutter(0), null);
+});
+
+test('sky order: newest night first, then slug order within a night', () => {
+  const entry = (id, date) => ({ id, data: { date: new Date(date) } });
+  const shuffled = [entry('2026-06-13-jabal-al-sarah-0159', '2026-06-13'), entry('2026-05-02-wadi', '2026-05-02'),
+    entry('2026-06-13-jabal-al-sarah', '2026-06-13'), entry('2026-06-13-jabal-al-sarah-0030', '2026-06-13')];
+  assert.deepEqual(shuffled.sort(newestFirst).map(({ id }) => id),
+    ['2026-06-13-jabal-al-sarah', '2026-06-13-jabal-al-sarah-0030', '2026-06-13-jabal-al-sarah-0159', '2026-05-02-wadi']);
 });

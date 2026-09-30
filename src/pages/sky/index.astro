@@ -5,10 +5,10 @@ import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PageIntro from '../../components/PageIntro.astro';
-import { captureLine } from '../../lib/sky.mjs';
+import { captureLine, newestFirst } from '../../lib/sky.mjs';
 import '../../styles/sky.css';
 
-const photos = (await getCollection('sky')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const photos = (await getCollection('sky')).sort(newestFirst);
 const latest = photos[0];
 const ogImage = latest ? await getImage({ src: latest.data.photo, width: 1200, format: 'jpg', quality: 85 }) : undefined;
 const day = (date: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);

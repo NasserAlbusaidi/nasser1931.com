@@ -31,3 +31,10 @@ export const captureLine = ({ exposure = {}, stack } = {}) => {
   ];
   return parts.filter(Boolean).join(' · ');
 };
+
+/**
+ * Newest night first. Photos from the same night keep slug order, so the
+ * night's main image keeps the plain `<date>-<place>` slug and single frames
+ * add a camera time (`-0030`); the homepage shows the first entry.
+ */
+export const newestFirst = (a, b) => b.data.date.valueOf() - a.data.date.valueOf() || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
