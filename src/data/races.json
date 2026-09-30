@@ -1,5 +1,5 @@
 {
-  "source": "Recorded intervals.icu activities (Garmin multisport legs), checked 2026-09-23. Leg km are course distances, except the Al Bustan swim (900 m actually swum). Swim GPS reads short, so it is not used.",
+  "source": "Recorded intervals.icu activities (Garmin multisport legs), checked 2026-09-23. Leg km are course distances, except the Al Bustan swim (900 m actually swum). Swim GPS reads short, so it is not used. The Muscat Half Marathon 2025 is from its recorded Strava activity (elapsed time; course distance, GPS read 21.28 km), checked 2026-09-30.",
   "races": [
     {
       "date": "2026-02-14",
@@ -149,6 +149,23 @@
           "time": "32:41",
           "seconds": 1961,
           "km": 5
+        }
+      ]
+    },
+    {
+      "date": "2025-02-21",
+      "name": "Muscat Half Marathon",
+      "kind": "Half marathon",
+      "distance": "21.1 km run",
+      "status": "finished",
+      "total": "2:10:10",
+      "note": null,
+      "splits": [
+        {
+          "leg": "Run",
+          "time": "2:10:10",
+          "seconds": 7810,
+          "km": 21.1
         }
       ]
     }
