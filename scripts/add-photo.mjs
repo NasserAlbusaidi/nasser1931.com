@@ -7,7 +7,7 @@
 // capture data, so --exif-from reads it from one of the source frames.
 // The repository is public: the copy is re-encoded without EXIF, so GPS and
 // camera serial numbers never reach Git. The script checks that before it writes.
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -48,7 +48,8 @@ export const readCapture = async (file) => {
 
 /** Re-encode without metadata. sharp drops EXIF, XMP, and IPTC unless asked to keep them. */
 export const exportPhoto = async (input, output, maxWidth = MAX_WIDTH) => {
-  const info = await sharp(input, { failOn: 'none', limitInputPixels: false })
+  // unlimited: Lightroom and Photoshop TIFFs carry a data block over libtiff's 50 MB read limit.
+  const info = await sharp(input, { failOn: 'none', limitInputPixels: false, unlimited: true })
     .rotate()
     .resize({ width: maxWidth, withoutEnlargement: true })
     .jpeg({ quality: 90, mozjpeg: true, chromaSubsampling: '4:4:4' })
@@ -98,10 +99,14 @@ const main = async () => {
 
   const slug = values.slug ?? `${capture.date}-${slugify(values.location)}`;
   const dir = new URL(`${slug}/`, CONTENT_DIR);
-  if (existsSync(dir) && !values.force) throw new Error(`${slug} already exists; pass --force to replace it`);
+  const existed = existsSync(dir);
+  if (existed && !values.force) throw new Error(`${slug} already exists; pass --force to replace it`);
   mkdirSync(dir, { recursive: true });
 
-  const info = await exportPhoto(input, join(fileURLToPath(dir), 'photo.jpg'));
+  const info = await exportPhoto(input, join(fileURLToPath(dir), 'photo.jpg')).catch((error) => {
+    if (!existed) rmSync(dir, { recursive: true, force: true });
+    throw error;
+  });
   const entry = renderEntry({ ...capture, title: values.title, location: values.location, alt: values.alt, stack: parseStack(values.stack) });
   writeFileSync(new URL('index.md', dir), entry);
   console.log(`wrote src/content/sky/${slug}/ (${info.width}×${info.height}, ${Math.round(info.size / 1024)} KB)`);
