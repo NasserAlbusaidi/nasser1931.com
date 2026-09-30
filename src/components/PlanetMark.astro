@@ -1,0 +1,35 @@
+---
+// A small still of the orrery body that stands for a section: the same texture,
+// wrapped on a sphere with CSS and lit from the upper left. Decorative only;
+// the section name beside it carries the meaning.
+import { getImage } from 'astro:assets';
+import earth from '../assets/orrery/earth-day.jpg';
+import mars from '../assets/orrery/mars.jpg';
+import rock from '../assets/orrery/rock.jpg';
+import saturn from '../assets/orrery/saturn.jpg';
+
+type Props = { body: 'earth' | 'mars' | 'notes' | 'saturn' | 'sky'; size?: 'small' | 'large' };
+const { body, size = 'large' } = Astro.props;
+const maps = { earth, mars, notes: rock, saturn };
+const map = body === 'sky' ? null : await getImage({ src: maps[body], width: 256, format: 'webp', quality: 70 });
+---
+<span class:list={['planet-mark', `planet-mark-${body}`, `planet-mark-${size}`]} style={map ? `--map: url(${map.src})` : undefined} aria-hidden="true"></span>
+<style>
+  .planet-mark { --d: 2.75rem; position: relative; display: inline-block; flex: none; width: var(--d); height: var(--d); border-radius: 50%;
+    background: var(--map) 30% 50% / 200% 100%, #1b2433;
+    box-shadow: inset calc(var(--d) * -.22) calc(var(--d) * -.12) calc(var(--d) * .3) #000c, inset 1px 1px 2px #fff3, 0 0 0 1px #ffffff14; }
+  .planet-mark-small { --d: 1.1rem; }
+  .planet-mark-earth { box-shadow: inset calc(var(--d) * -.22) calc(var(--d) * -.12) calc(var(--d) * .3) #000c, inset 1px 1px 2px #fff3, 0 0 calc(var(--d) * .18) #5aa7ff66; }
+  /* An asteroid: smaller, off-round, with two companions. */
+  .planet-mark-notes { width: calc(var(--d) * .6); height: calc(var(--d) * .5); margin: calc(var(--d) * .25) calc(var(--d) * .2); border-radius: 48% 52% 44% 56% / 55% 45% 55% 45%; transform: rotate(-18deg); }
+  .planet-mark-notes::before, .planet-mark-notes::after { content: ''; position: absolute; border-radius: 50%; background: #8d8a84; }
+  .planet-mark-notes::before { width: 22%; height: 26%; right: -38%; top: -30%; }
+  .planet-mark-notes::after { width: 14%; height: 16%; left: -34%; bottom: -26%; }
+  /* Saturn: the ring crosses in front of the sphere at a tilt. */
+  .planet-mark-saturn { width: calc(var(--d) * .72); height: calc(var(--d) * .72); margin: calc(var(--d) * .14); }
+  .planet-mark-saturn::after { content: ''; position: absolute; left: -38%; top: 34%; width: 176%; height: 32%; border-radius: 50%;
+    border: calc(var(--d) * .06) solid #d9c49acc; border-top-color: transparent; transform: rotate(-16deg); }
+  /* Sky: no body, a small bright star. */
+  .planet-mark-sky { background: radial-gradient(circle, #fff 0 8%, #e8bd85aa 14%, transparent 40%), transparent; box-shadow: none; }
+  .planet-mark-sky::before { content: ''; position: absolute; inset: 20%; background: linear-gradient(90deg, transparent 47%, #e8bd85 50%, transparent 53%), linear-gradient(0deg, transparent 47%, #e8bd85 50%, transparent 53%); opacity: .7; }
+</style>

@@ -114,7 +114,7 @@ Removed on 27 September 2026 at the owner's request; see the redirects under fir
 ## Layout details
 
 `src/pages/index.astro`:
-- The homepage features Rihla with separate App Store and Google Play links plus a secondary source link. Below it, three supporting cards: Race log (`RaceCard.astro`), Einstein’s Travel Bureau, and Worlds I’m in (`WorldsCard.astro`). Each card uses one link; do not nest anchors.
+- Below the hero: the "In orbit now" feed (`src/lib/now-feed.mjs`, tested in `scripts/now-feed.test.mjs`), then one section per orrery body in orbit order, each headed by `PlanetHeading.astro`: Earth · Projects (Rihla with App Store, Google Play, and source links, then Einstein), Mars · Races (`RaceCard.astro`), Asteroid belt · Notes, Saturn · Reading (`ShelfSpines`, then `WorldsCard.astro`). Notes tagged `meta` (the welcome post) are never promoted, so the Notes section and its feed item appear only once a real note is published. Do not nest anchors.
 - The page closes with `SkyClosing.astro`: the latest sky photo with the "Say hello" line and button on the dark sky, and the title, capture line, and "All photos" link below the image. With no sky photos it falls back to the plain closing note.
 
 OG fallback image:

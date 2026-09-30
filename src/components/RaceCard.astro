@@ -1,6 +1,7 @@
 ---
-// Homepage card for races: the next race on the calendar (from the race bot's
-// next-race.json) and a curated record of past results (races.json).
+// Homepage races panel: the next race when one is on the calendar (the race
+// bot's next-race.json), the latest result with its splits, and the races
+// before it (races.json). Each race appears once.
 import nextRace from '../data/next-race.json';
 import RaceSplitBar from './RaceSplitBar.astro';
 import { races as results, raceStatus as status } from '../lib/races';
@@ -9,6 +10,7 @@ type NextRace = { date: string; name: string; priority: string; distance_km: num
 
 const finished = results.filter(race => race.status === 'finished');
 const latest = finished[0] ?? null;
+const earlier = results.filter(race => race !== latest).slice(0, 4);
 const upcoming = (nextRace as { race: NextRace }).race;
 const fmt = (value: string, opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }) => new Intl.DateTimeFormat('en-GB', { ...opts, timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
 const daysUntil = (value: string) => Math.max(0, Math.round((Date.parse(`${value}T00:00:00Z`) - Date.now()) / 86400000));
@@ -19,33 +21,29 @@ const others = results.length - finished.length;
 const summary = !finished.length ? 'Races I have entered, and what is next.'
   : `${finished.length} ${finished.length === 1 ? 'finish' : 'finishes'} so far` + (others ? `, and ${others} that didn’t go to plan.` : '.');
 ---
-<article class="supporting-project race-card" aria-labelledby="race-title">
-  <div class="race-preview">
-    {upcoming ? <div class="race-next">
+<div class="race-panel">
+  <div class="race-feature">
+    {upcoming && <div class="race-next">
       <span class="eyebrow">Next race · {fmt(upcoming.date)}</span>
       <p class="race-countdown"><span data-race-date={upcoming.date}>{daysUntil(upcoming.date)}</span> <small>days to go</small></p>
       <strong>{upcoming.name}</strong>
-    </div> : <div class="race-next race-next-none">
-      <span class="eyebrow">Next race</span>
-      <strong>Not on the calendar yet</strong>
     </div>}
     {latest && <div class="race-latest">
       <div class="race-latest-head"><span class="eyebrow">Latest result</span><time datetime={latest.date}>{fmt(latest.date)}</time></div>
-      <p class="race-latest-name">{latest.name} <span>{latest.total}</span></p>
+      <h3 class="race-latest-name">{latest.name}</h3>
+      <p class="race-latest-meta"><span class="race-total">{latest.total}</span> {latest.kind}</p>
       {latest.splits.length > 0 && <>
         <RaceSplitBar splits={latest.splits} />
         <dl class="race-split-list">{labelledSplits.map(split => <div><dt>{split.leg}</dt><dd>{split.time}</dd></div>)}</dl>
       </>}
     </div>}
   </div>
-  <div class="supporting-copy">
-    <p class="eyebrow">Outside the screen · Racing</p>
-    <h3 id="race-title">Race log</h3>
-    <p class="project-description">{summary}</p>
-    {results.length > 1 && <ol class="race-history">{results.slice(0, 4).map(race => <li><time datetime={race.date}>{fmt(race.date, { month: 'short', year: 'numeric' })}</time><span>{race.name}</span><span>{race.status === 'finished' ? race.total ?? 'Finished' : status[race.status]}</span></li>)}</ol>}
+  <div class="race-log">
+    <p class="race-summary">{summary}</p>
+    {earlier.length > 0 && <><p class="eyebrow">Before that</p>
+      <ol class="race-history">{earlier.map(race => <li><time datetime={race.date}>{fmt(race.date, { month: 'short', year: 'numeric' })}</time><span>{race.name}</span><span>{race.status === 'finished' ? race.total ?? 'Finished' : status[race.status]}</span></li>)}</ol></>}
   </div>
-  <div class="project-bottom"><span>Swim · Bike · Run</span><a href="/races">All races <span aria-hidden="true">→</span></a></div>
-</article>
+</div>
 <script>
   // The build-time count goes stale between deploys; recompute in the browser.
   document.querySelectorAll<HTMLElement>('[data-race-date]').forEach(element => {
@@ -54,18 +52,31 @@ const summary = !finished.length ? 'Races I have entered, and what is next.'
   });
 </script>
 <style>
-  .race-preview { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.25rem; border: 1px solid var(--rule); background: var(--bg); min-height: 16rem; }
-  .race-next strong, .race-latest-name { display: block; font-size: var(--text-title); font-weight: 400; line-height: 1.25; margin: .35rem 0 0; }
-  .race-next-none strong { color: var(--muted); font-size: var(--text-body); }
+  .race-panel { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); border: 1px solid var(--rule); background: var(--surface); }
+  .race-feature { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; border-right: 1px solid var(--rule); }
+  .race-log { padding: 2rem; }
+  .race-next strong { display: block; font-size: var(--text-title); font-weight: 400; line-height: 1.25; margin-top: .35rem; }
   .race-countdown { margin: .5rem 0 0; font-size: var(--text-display); font-weight: 300; line-height: 1; letter-spacing: -.05em; color: var(--accent); }
   .race-countdown small { font: var(--text-label)/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .race-latest { border-top: 1px solid var(--rule); padding-top: 1rem; }
+  .race-next + .race-latest { border-top: 1px solid var(--rule); padding-top: 1.5rem; }
   .race-latest-head { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-label); color: var(--muted); }
-  .race-latest-name span { font-family: var(--font-mono); font-size: var(--text-body); color: var(--accent); margin-left: .35rem; white-space: nowrap; }
-  .race-split-list { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin: 0; font: var(--text-label)/1.4 var(--font-mono); }
+  .race-latest-name { margin-top: .75rem; font-size: var(--text-display); font-weight: 350; line-height: 1; letter-spacing: -.045em; }
+  .race-latest-meta { margin: .75rem 0 1.5rem; color: var(--muted); }
+  .race-total { font-family: var(--font-mono); font-size: var(--text-lead); color: var(--accent); margin-right: .5rem; }
+  .race-split-list { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin: .75rem 0 0; font: var(--text-label)/1.4 var(--font-mono); }
   .race-split-list dt { color: var(--muted); display: inline; }
   .race-split-list dd { display: inline; margin: 0 0 0 .4rem; }
-  .race-history { list-style: none; margin: 1rem 0 0; padding: 0; font-size: var(--text-label); }
-  .race-history li { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; gap: .75rem; padding: .45rem 0; border-top: 1px solid var(--rule); }
-  .race-history time, .race-history li > span:last-child { font-family: var(--font-mono); color: var(--muted); }
+  .race-summary { font-size: var(--text-lead); line-height: 1.4; margin: 0 0 1.75rem; }
+  .race-log .eyebrow { margin-bottom: .5rem; }
+  .race-history { list-style: none; margin: 0; padding: 0; }
+  .race-history li { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; gap: .75rem; padding: .7rem 0; border-top: 1px solid var(--rule); }
+  .race-history time, .race-history li > span:last-child { font: var(--text-label)/1.6 var(--font-mono); color: var(--muted); }
+  @media (max-width: 900px) {
+    .race-panel { grid-template-columns: minmax(0, 1fr); }
+    .race-feature { border-right: 0; border-bottom: 1px solid var(--rule); }
+  }
+  @media (max-width: 720px) {
+    .race-feature, .race-log { padding: 1.5rem; }
+    .race-latest-name { font-size: var(--text-heading); }
+  }
 </style>
