@@ -4,59 +4,71 @@
 
 **[nasser1931.com →](https://nasser1931.com)**
 
-Personal home of [Nasser Al Busaidi](https://nasser1931.com): software, racing, experiments, and reading. Astro static build, deployed to Firebase Hosting. **Personal observatory** — see [`DESIGN.md`](./DESIGN.md). Project notes in [`CLAUDE.md`](./CLAUDE.md).
+Personal home of [Nasser Al Busaidi](https://nasser1931.com): software, racing, notes, reading, and the night sky. The site is laid out as a solar system. The homepage hero is a clickable three.js orrery where each section is a body: Earth is Projects, Mars is Races, the asteroid is Notes, Saturn is Reading, and the Sun is home. Each body's size and speed come from the real data behind it, so a section that changed recently moves faster.
 
-The homepage pairs Earth artwork with selected projects, a race log, the series on the shelf, and a bookshelf. Rihla links to the App Store and Google Play; Einstein’s Travel Bureau is featured. The welcome post stays in Notes without occupying the homepage.
+Below the hero, an "In orbit now" feed lists the newest item from each section, then one section per planet in orbit order. The latest night-sky photo closes the page. Without WebGL, with reduced motion, or with save-data on, the orrery stays a static Earth and three.js is never downloaded.
 
-Section-specific social cards and responsive Astro images are included.
+Design notes are in [`DESIGN.md`](./DESIGN.md), project notes in [`CLAUDE.md`](./CLAUDE.md).
 
 ## Stack
 
-- Astro 6 + React 19 + Tailwind 4
-- Fonts: self-hosted Outfit display/UI and Literata prose; system mono for log labels and data
-- Firebase Hosting (project: `nasser-portfolio`, see CLAUDE.md gotcha)
-- DNS: Route 53; cert auto-issued by Google Trust Services
-
-## Commands
-
-```sh
-npm run dev              # local dev — http://localhost:4321
-npm test                 # node --test: redirects, reading series, StoryGraph importer
-npm run sync-hardcover   # refresh reading from Hardcover (needs HARDCOVER_TOKEN; CI runs it every 6h)
-npm run build            # static output to dist/
-firebase deploy --only hosting --project nasser-portfolio  # manual ship
-```
-
-`main` auto-deploys via GitHub Actions. PRs get preview channels.
+- Astro 6 static build, Tailwind 4, three.js for the orrery
+- Fonts, all self-hosted: Outfit (display and UI), Literata (prose), IBM Plex Mono (labels and data)
+- Firebase Hosting (project `nasser-portfolio`; see the gotcha in CLAUDE.md)
+- DNS on Route 53; certificate auto-issued by Google Trust Services
 
 ## Site map
 
 ```
-/             personal introduction, selected projects, races, reading
-/builds       Projects — apps, tools, and open source
-/races        race log with splits, paces, and transitions
-/stupidshit   Notes — one-off ideas and oddities
-/reading      books, by year
+/             the orrery, "In orbit now", and one section per planet
+/builds       Projects: apps, tools, and open source
+/races        Mars and its race moons, the build-up ladder, and every race with splits and paces
+/stupidshit   Notes: short pieces, written in Notion
+/reading      the shelf, series tracks, and finished books by year
+/sky          night-sky photos, with capture data and a timelapse
 ```
+
+## Where the content comes from
+
+Everything on the site is committed data; nothing is invented to fill a gap.
+
+| Section | Source | How it updates |
+|---------|--------|----------------|
+| Notes | a Notion database | `sync-posts.yml` every 30 minutes; images are copied into the site |
+| Reading | [Hardcover](https://hardcover.app/@nasser) | `sync-hardcover.yml` every 6 hours; covers cached by `cache-covers.mjs` |
+| Next race | the intervals.icu calendar | `refresh-next-race.yml` every 6 hours |
+| Race results | recorded race files | `src/data/races.json`, edited by hand after a race |
+| Sky | photos from the camera | `npm run add-photo`, which strips all metadata (GPS included) and refuses to write if any survives |
+
+Each workflow commits and deploys only when its data changed.
+
+## Commands
+
+```sh
+npm run dev              # local dev: http://localhost:4321
+npm test                 # node --test over scripts/*.test.mjs
+npm run build            # static output to dist/
+npm run add-photo -- <image> --title "…" --location "…" --exif-from <raw frame>   # add a /sky photo
+npm run sync-posts       # pull Published posts from Notion (needs NOTION_TOKEN)
+npm run sync-hardcover   # pull the shelf from Hardcover (needs HARDCOVER_TOKEN)
+firebase deploy --only hosting --project nasser-portfolio   # manual deploy
+```
+
+`main` auto-deploys through GitHub Actions. Pull requests get a preview channel.
 
 ## Files of interest
 
-- `src/styles/global.css` — design tokens (CSS vars + Tailwind 4 `@theme`)
-- `src/styles/home.css` — observatory homepage and responsive composition
-- `src/pages/index.astro` — introduction, featured work, races, series, and reading
-- `src/components/PageIntro.astro` — shared section-index introduction
-- `src/layouts/Entry.astro` — layout for `/stupidshit` entries
-- `src/components/ThemeToggle.astro` — light/dark toggle (FOUC-safe boot in `BaseHead.astro`)
-- `firebase.json` — 301s for retired routes (`/field`, `/coach` → `/races`; `/paper` → `/builds`), checked by `scripts/redirects.test.mjs`
+- `src/components/Orrery.astro`, `src/scripts/orrery/`, `src/lib/orrery.ts`: the hero solar system; the pure rules are tested by `scripts/orrery.test.mjs`
+- `src/pages/index.astro`, `src/styles/home.css`: the homepage below the hero
+- `src/lib/races.ts`, `src/lib/race-story.ts`: race stats, paces, PBs, the build-up ladder, and the Mars moons
+- `src/styles/global.css`: design tokens and the light and dark themes
+- `scripts/add-photo.mjs`: the /sky pipeline and its privacy check
+- `firebase.json`: caching headers and the 301s for retired routes (`/field`, `/coach` → `/races`; `/paper` → `/builds`), checked by `scripts/redirects.test.mjs`
 
-## Reading
+## Reading: StoryGraph fallback
 
-The shelf syncs from [Hardcover](https://hardcover.app/@nasser) every 6 hours (`sync-hardcover.yml`), with covers cached by `cache-covers.mjs`. `src/data/reading-series.json` lists the series catalogues that drive "Worlds I'm in" and the reading order per series.
+A StoryGraph export can still replace the shelf by hand. Running it hands ownership of the snapshot to StoryGraph; the Hardcover sync then waits until it runs once with `-f takeover=true`. To import, open [Export your library](https://app.thestorygraph.com/user-export), download a new CSV, then run `npm run import-storygraph -- "C:/path/to/export.csv" nasser1931`. The importer validates the file before writing, keeps partial read dates and decimal ratings, and leaves out reviews, custom tags, owned-only records, and DNF books. Keep the raw export outside the repository.
 
-### StoryGraph fallback
+## Credits
 
-A StoryGraph export can still replace the shelf by hand. Running it hands ownership of the snapshot to StoryGraph; the Hardcover sync then waits until it runs once with `-f takeover=true`. To import, open [Export your library](https://app.thestorygraph.com/user-export), generate and download a new CSV, then run `npm run import-storygraph -- "C:/path/to/export.csv" nasser1931`. The importer validates the file before writing, preserves partial read dates and decimal ratings, and excludes reviews, custom tags, owned-only records, and DNF books. Keep the raw export outside the repository. No password, cookie, or signed download URL belongs in source control.
-
-After an import, `src/data/reading.json` records `source: "storygraph"`, the public profile URL, and import time. The old Notion refresh exits without changes while another source owns the snapshot, so its scheduled workflow does not overwrite this import. An older workflow run also fails a stale push instead of rebasing old Notion data over a source switch. Publishing an updated snapshot still follows the site's existing separately authorized deployment workflow.
-
-Validation: `npm test`.
+Planet, ring, and sun textures by [Solar System Scope](https://www.solarsystemscope.com/textures/), CC BY 4.0, based on NASA imagery.

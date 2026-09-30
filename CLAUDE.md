@@ -32,7 +32,7 @@ The Firebase project ID is **`nasser-portfolio`**, not `nasser1931`. A 2026-04-2
 
 ```bash
 npm run dev                                          # local dev server, http://localhost:4321
-npm test                                             # node --test: redirects, reading series + route, StoryGraph importer
+npm test                                             # node --test over scripts/*.test.mjs (orrery, races, now feed, sky privacy, reading, redirects, importers)
 npm run refresh-next-race                            # write the next intervals.icu race to src/data/next-race.json (needs INTERVALS_API_KEY + INTERVALS_ATHLETE_ID env vars)
 npm run refresh-reading                              # fetch reading list from Notion, write src/data/reading.json (needs NOTION_TOKEN env var)
 npm run sync-hardcover                               # pull the shelf + progress from Hardcover (needs HARDCOVER_TOKEN; HARDCOVER_TAKEOVER=1 to replace another source)
@@ -70,9 +70,9 @@ For one-off manual deploys, the legacy command above still works — useful for 
 src/
 ├── consts.ts                  ← SITE_TITLE, SITE_DESCRIPTION
 ├── pages/
-│   ├── index.astro            ← home page: Rihla, then Race log / Einstein / Worlds I'm in cards, then the shelf
+│   ├── index.astro            ← home page: the orrery hero, "In orbit now", one section per planet, the sky closing
 │   ├── builds/                ← /builds (Projects)
-│   ├── races/                 ← /races race log
+│   ├── races/                 ← /races: Mars and its moons, the build-up ladder, the race log
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
 │   ├── sky/                   ← /sky night-sky photos
 │   └── reading/               ← /reading
@@ -85,8 +85,12 @@ src/
 │   ├── Header.astro           ← nav: Projects / Notes / Races / Reading / Sky + theme toggle
 │   ├── SkyClosing.astro       ← homepage closing line over the latest sky photo
 │   ├── Orrery.astro           ← hero solar system: markup, hashed textures, hoisted boot script
-│   ├── RaceCard.astro         ← homepage race card
-│   ├── WorldsCard.astro       ← homepage series card (from reading-series.json + the shelf)
+│   ├── PlanetMark.astro       ← still of an orrery body (texture on a CSS sphere); section markers
+│   ├── PlanetHeading.astro    ← homepage section heading: marker, "Body · Section", link
+│   ├── RaceCard.astro         ← homepage races panel
+│   ├── MarsSystem.astro       ← /races header: Mars with a moon per race
+│   ├── RaceLadder.astro       ← /races build-up: races by distance raced, oldest first
+│   ├── WorldsCard.astro       ← homepage series band (from reading-series.json + the shelf)
 │   ├── Footer.astro
 │   ├── BaseHead.astro
 │   ├── HeaderLink.astro
