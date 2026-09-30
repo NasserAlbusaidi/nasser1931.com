@@ -7,6 +7,7 @@ import type { Race } from '../lib/races';
 
 type Props = { races: Race[] };
 const moons = marsMoons(Astro.props.races);
+const every = moons.length === Astro.props.races.length;
 const fmt = (value: string) => new Intl.DateTimeFormat('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
 ---
 {moons.length > 0 && <figure class="mars-system">
@@ -17,7 +18,7 @@ const fmt = (value: string) => new Intl.DateTimeFormat('en-GB', { month: 'short'
     </svg>
     <PlanetMark body="mars" />
   </div>
-  <figcaption>Mars, with a moon for each race. Longer races orbit farther out.</figcaption>
+  <figcaption>Mars, with a moon for {every ? 'each race' : `each of the ${moons.length} newest races with a distance`}. Longer races orbit farther out.</figcaption>
 </figure>}
 <style>
   .mars-system { width: min(24rem, 100%); margin: 0; container-type: inline-size; }

@@ -1,6 +1,7 @@
 // The build-up on /races: the ladder of races by distance, and Mars with one
 // moon per race. Pure, so the rules are tested without the race data.
 import type { Race } from './races';
+// A value import, so it keeps its extension for node --test; the type import above is erased.
 import { MAX_MOONS, REST_ELEVATION_DEG } from './orrery.ts';
 
 const DAY = 86400000;
