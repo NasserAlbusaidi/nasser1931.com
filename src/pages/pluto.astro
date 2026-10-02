@@ -29,17 +29,43 @@ import { WAYS } from '../lib/pluto.mjs';
                   <stop offset=".45" stop-color="#04060b" stop-opacity="0" /><stop offset=".78" stop-color="#04060b" stop-opacity=".55" /><stop offset="1" stop-color="#04060b" stop-opacity=".92" />
                 </radialGradient>
                 <filter id="pluto-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" /></filter>
+                <filter id="pluto-blur-wide" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="22" /></filter>
                 <filter id="pluto-haze" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" /></filter>
+                <!-- Ragged, organic edges for the terrain, then a soft blur so it reads as seen from far off. -->
+                <filter id="pluto-terrain" x="-20%" y="-30%" width="140%" height="160%">
+                  <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7" />
+                  <feDisplacementMap in="SourceGraphic" scale="22" xChannelSelector="R" yChannelSelector="G" />
+                  <feGaussianBlur stdDeviation="3" />
+                </filter>
+                <!-- The heart is drawn scaled up, so it gets a gentler version or it stops reading as a heart. -->
+                <filter id="pluto-heart" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency=".08" numOctaves="2" seed="4" />
+                  <feDisplacementMap in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" />
+                  <feGaussianBlur stdDeviation="1.6" />
+                </filter>
+                <filter id="pluto-grain" x="0" y="0" width="100%" height="100%">
+                  <feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="4" seed="3" />
+                  <feColorMatrix type="saturate" values="0" />
+                </filter>
                 <clipPath id="pluto-clip"><circle cx="200" cy="200" r="180" /></clipPath>
               </defs>
               <circle cx="200" cy="200" r="184" fill="none" stroke="#8fb4e6" stroke-width="6" opacity=".35" filter="url(#pluto-haze)" />
               <g clip-path="url(#pluto-clip)">
                 <circle cx="200" cy="200" r="180" fill="url(#pluto-base)" />
-                <!-- The dark reddish band along the equator (Cthulhu Macula), then the pale heart (Tombaugh Regio). -->
-                <path d="M10 250 C70 205 120 235 165 262 C150 300 95 318 30 312 Z" fill="#5c3422" opacity=".85" filter="url(#pluto-soft)" />
-                <path d="M250 268 C290 255 340 262 395 240 L395 300 C340 312 290 300 250 268 Z" fill="#6a3d28" opacity=".55" filter="url(#pluto-soft)" />
-                <g transform="translate(168 118) rotate(-14) scale(1.75)" filter="url(#pluto-soft)">
-                  <path d="M50 30 C50 18 34 8 22 18 C10 30 22 48 50 70 C70 52 84 36 76 22 C68 10 52 16 50 30 Z" fill="#f2e7d8" opacity=".92" />
+                <rect x="20" y="20" width="360" height="360" filter="url(#pluto-grain)" opacity=".22" style="mix-blend-mode: multiply" />
+                <!-- The greyer north pole (Lowell Regio). -->
+                <ellipse cx="205" cy="22" rx="190" ry="70" fill="#8d7867" opacity=".28" filter="url(#pluto-blur-wide)" />
+                <!-- The dark reddish band along the equator: Cthulhu Macula west of the heart, smaller patches east of it. -->
+                <g filter="url(#pluto-terrain)">
+                  <path d="M14 236 C52 214 92 220 128 234 C152 244 172 254 190 270 C176 287 148 295 118 296 C80 299 44 292 16 282 Z" fill="#4a2719" opacity=".9" />
+                  <ellipse cx="288" cy="278" rx="36" ry="12" fill="#56301f" opacity=".7" />
+                  <ellipse cx="340" cy="270" rx="28" ry="10" fill="#56301f" opacity=".6" />
+                  <ellipse cx="381" cy="258" rx="20" ry="9" fill="#56301f" opacity=".5" />
+                </g>
+                <!-- The heart (Tombaugh Regio); its western lobe, Sputnik Planitia, is the brighter one. -->
+                <g transform="translate(166 116) rotate(-14) scale(1.75)">
+                  <path d="M50 30 C50 18 34 8 22 18 C10 30 22 48 50 70 C70 52 84 36 76 22 C68 10 52 16 50 30 Z" fill="#efe2d0" opacity=".85" filter="url(#pluto-heart)" />
+                  <ellipse cx="34" cy="36" rx="13" ry="20" transform="rotate(-18 34 36)" fill="#fbf6ee" opacity=".75" filter="url(#pluto-soft)" />
                 </g>
                 <circle cx="200" cy="200" r="180" fill="url(#pluto-night)" />
               </g>

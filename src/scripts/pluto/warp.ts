@@ -6,6 +6,15 @@ const WARP_MS = 900;
 const STARS = 420;
 
 let leaving = false;
+let overlay: HTMLCanvasElement | null = null;
+
+// Back from the room, a page restored from the back-forward cache would still be mid-warp: black, and deaf to every way in.
+addEventListener('pageshow', (ev) => {
+  if (!ev.persisted) return;
+  overlay?.remove();
+  overlay = null;
+  leaving = false;
+});
 
 /** A short jump to light speed, then the room. Straight there under reduced motion. */
 export function enterRoom(way: string) {
@@ -15,7 +24,7 @@ export function enterRoom(way: string) {
   const go = () => location.assign(ROOM);
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return go();
 
-  const canvas = document.createElement('canvas');
+  const canvas = (overlay = document.createElement('canvas'));
   canvas.setAttribute('aria-hidden', 'true');
   Object.assign(canvas.style, { position: 'fixed', inset: '0', width: '100vw', height: '100vh', zIndex: '2147483647', pointerEvents: 'none' });
   document.body.append(canvas);

@@ -121,10 +121,11 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
       card.open(info, Date.now());
       rig.setCard(cardCorner());
     };
-    // Nine knocks on the Sun in a row open the hidden room.
+    // Nine knocks on the Sun in a row open the hidden room; picking anything else in between starts the count again.
     const sunKnocks = knocker();
     const open = (info: Info, hit: THREE.Object3D) => {
-      if (isBody(info) && info.kind === 'sun' && sunKnocks.knock(performance.now())) return enterRoom('sun');
+      if (!isBody(info) || info.kind !== 'sun') sunKnocks.reset();
+      else if (sunKnocks.knock(performance.now())) return enterRoom('sun');
       showCard(info);
       // A moon has only its own radius; a body's fit includes its ring.
       if (hit.parent) rig.fly(hit.parent, closeness(info), closest(info), hit.parent.userData.focusRadius ?? hit.parent.userData.radius);

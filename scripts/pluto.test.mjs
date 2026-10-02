@@ -57,6 +57,13 @@ test('a pause between knocks starts the count again', () => {
 	assert.equal(sun.knock((time += 1000)), true);
 });
 
+test('a knock on anything else breaks the run', () => {
+	const sun = knocker();
+	for (let i = 1; i < KNOCKS; i++) sun.knock(i * 100);
+	sun.reset();
+	assert.equal(sun.knock(KNOCKS * 100), false);
+});
+
 test('found ways keep the room order and drop anything unknown', () => {
 	assert.deepEqual(foundWays(['lost', 'konami', 'nonsense'], 'sun'), ['konami', 'sun', 'lost']);
 	assert.deepEqual(foundWays(null, 'name'), ['name']);

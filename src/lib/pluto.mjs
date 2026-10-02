@@ -49,7 +49,7 @@ export function keyWatcher(sequences) {
 export const KNOCKS = 9;
 export const KNOCK_GAP_MS = 2500;
 
-/** Counts knocks on the Sun. `knock` takes a timestamp in ms and returns true on the ninth in a row. */
+/** Counts knocks on the Sun. `knock` takes a timestamp in ms and returns true on the ninth in a row; `reset` starts over. */
 export function knocker(count = KNOCKS, gap = KNOCK_GAP_MS) {
   let knocks = 0;
   let last = -Infinity;
@@ -60,6 +60,10 @@ export function knocker(count = KNOCKS, gap = KNOCK_GAP_MS) {
       if (knocks < count) return false;
       knocks = 0;
       return true;
+    },
+    reset() {
+      knocks = 0;
+      last = -Infinity;
     },
   };
 }
