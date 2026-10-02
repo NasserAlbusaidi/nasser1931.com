@@ -10,13 +10,14 @@ import Footer from '../components/Footer.astro';
     <Header />
     <main id="main-content" tabindex="-1" class="lost-page">
       <p class="lost-code" aria-hidden="true">404</p>
+      <a class="lost-pluto" href="/pluto" data-pluto-way="lost" aria-label="Something small, far out"></a>
       <div><p class="lost-label">Outside the known orbit</p><h1>Lost in space<span>.</span></h1><p class="lost-description">There isn't a page at this address. Let's head back to familiar ground.</p><a class="lost-home" href="/"><span aria-hidden="true">←</span> Back home</a></div>
     </main>
     <Footer />
   </body>
 </html>
 <style>
-  .lost-page { max-width: var(--container-wide); margin: 0 auto; padding: 5rem 2rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); align-items: center; gap: 4rem; }
+  .lost-page { position: relative; max-width: var(--container-wide); margin: 0 auto; padding: 5rem 2rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); align-items: center; gap: 4rem; }
   .lost-code { color: var(--accent); font-size: var(--text-hero); font-weight: 250; line-height: 1; letter-spacing: -.06em; margin: 0; }
   .lost-label { color: var(--muted); font-family: var(--font-mono); font-size: var(--text-label); letter-spacing: .08em; text-transform: uppercase; }
   h1 { font-size: var(--text-display); font-weight: 350; line-height: 1.1; }
@@ -24,5 +25,12 @@ import Footer from '../components/Footer.astro';
   .lost-description { color: var(--muted); font-size: var(--text-lead); line-height: 1.7; max-width: 35ch; margin: 1.5rem 0; text-wrap: balance; }
   .lost-home { display: inline-flex; align-items: center; gap: .75rem; text-decoration: none; border-bottom: 1px solid var(--accent); padding-block: .75rem; }
   .lost-home:hover { background: transparent; color: var(--accent); }
+  /* Pluto, out past everything: a faint dot, one of the ways into the hidden room. */
+  .lost-pluto { position: absolute; right: 6%; top: 2.5rem; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; }
+  .lost-pluto::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #b99a7c; opacity: .4; box-shadow: 0 0 6px rgba(185, 154, 124, .35); transition: opacity .3s ease, transform .3s ease; }
+  .lost-pluto:hover { background: transparent; }
+  .lost-pluto:hover::before, .lost-pluto:focus-visible::before { opacity: 1; transform: scale(1.6); }
+  @media (prefers-reduced-motion: no-preference) { .lost-pluto { animation: lost-drift 14s ease-in-out infinite alternate; } }
+  @keyframes lost-drift { to { transform: translate(-28px, 10px); } }
   @media (max-width: 720px) { .lost-page { grid-template-columns: minmax(0, 1fr); gap: 2rem; padding: 3rem 1.25rem; } .lost-code { font-size: var(--text-hero); } }
 </style>

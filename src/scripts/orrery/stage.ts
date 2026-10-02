@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { REST_THETA, earthStartAngle, easeInOut, sphereDistance, systemReaches } from '../../lib/orrery';
+import { knocker } from '../../lib/pluto.mjs';
+import { enterRoom } from '../pluto/warp';
 import { CameraRig, FOV } from './camera';
 import { createCard } from './card';
 import { attachInput } from './input';
 import { resetLabelSizes, updateLabels } from './labels';
 import { buildWorld, faceArabia, placeAnchors } from './scene';
 import { loadTextures } from './textures';
-import { isMoon, type Info, type Payload } from './types';
+import { isBody, isMoon, type Info, type Payload } from './types';
 
 const MAX_DT = 0.05;
 // The opening move: hold the first frame (Earth over the poster) while the poster fades out, then pull back to the system.
@@ -119,7 +121,10 @@ export async function startOrrery(root: HTMLElement, payload: Payload) {
       card.open(info, Date.now());
       rig.setCard(cardCorner());
     };
+    // Nine knocks on the Sun in a row open the hidden room.
+    const sunKnocks = knocker();
     const open = (info: Info, hit: THREE.Object3D) => {
+      if (isBody(info) && info.kind === 'sun' && sunKnocks.knock(performance.now())) return enterRoom('sun');
       showCard(info);
       // A moon has only its own radius; a body's fit includes its ring.
       if (hit.parent) rig.fly(hit.parent, closeness(info), closest(info), hit.parent.userData.focusRadius ?? hit.parent.userData.radius);
