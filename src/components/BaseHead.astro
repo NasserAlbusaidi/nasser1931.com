@@ -12,11 +12,13 @@ interface Props {
 	description: string;
 	image?: ImageMetadata | { src: string } | null;
 	ogType?: 'website' | 'article';
+	/** Keeps the page out of search results (the hidden room). */
+	noindex?: boolean;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, ogType = 'website' } = Astro.props;
+const { title, description, ogType = 'website', noindex = false } = Astro.props;
 const sectionPreviews: Record<string, string> = {
   '/': '/social/home.jpg', '/builds': '/social/projects.jpg',
   '/races': '/social/races.jpg',
@@ -52,6 +54,13 @@ const imageURL = image ? new URL(image.src, Astro.site) : null;
 		root.style.colorScheme = theme;
 		document.querySelector('meta[name="color-scheme"]').setAttribute('content', theme);
 	})();
+</script>
+
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- The ways into the hidden room (/pluto) that work on every page. -->
+<script>
+	import '../scripts/pluto/triggers';
 </script>
 
 <!-- Canonical URL -->

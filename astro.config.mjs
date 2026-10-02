@@ -11,7 +11,8 @@ export default defineConfig({
   // Firebase serves clean URLs without a trailing slash (firebase.json), so
   // canonical and sitemap URLs must match or every one of them is a 301.
   trailingSlash: 'never',
-  integrations: [mdx(), sitemap()],
+  // The hidden room stays out of the sitemap; its page also asks not to be indexed.
+  integrations: [mdx(), sitemap({ filter: (page) => new URL(page).pathname !== '/pluto' })],
   vite: {
     plugins: [tailwindcss()],
   },
