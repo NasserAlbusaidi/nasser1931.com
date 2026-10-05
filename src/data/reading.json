@@ -2,7 +2,7 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-03T21:14:52.340Z",
+  "updated": "2026-10-05T14:40:09.973Z",
   "stats": {
     "finished_total": 31,
     "finished_this_year": 12
@@ -98,7 +98,7 @@
       "started": null,
       "finished": "2026-09-16",
       "progress": null,
-      "pages": 595,
+      "pages": 597,
       "cover_url": "https://assets.hardcover.app/external_data/59507420/ec1ce4bf55c34acbc25eb44ecc97fe1b2ac10d17.jpeg"
     },
     {
@@ -124,7 +124,7 @@
       "started": null,
       "finished": "2026-09-06",
       "progress": null,
-      "pages": 571,
+      "pages": 592,
       "cover_url": "https://assets.hardcover.app/edition/30805932/284af54a-2341-4914-b831-e5c5b0347662.jpg"
     },
     {
