@@ -8,22 +8,22 @@ import '../../styles/work.css';
 
 type Build = (typeof buildsData.builds)[number];
 const builds = buildsData.builds;
-const selectedSlugs = ['rihla', 'einsteins-travel-bureau'];
+const selectedSlugs = ['fog-of-war-observatory', 'rihla'];
 const selected = selectedSlugs.flatMap(slug => builds.filter(build => build.slug === slug));
 const moreProjects = builds.filter(build => !selectedSlugs.includes(build.slug));
 const sourceCount = builds.filter(build => build.repo).length;
 const projectStories: Record<string, { lead: string; detail: string; category: string; facts: [string, string][] }> = {
+  'fog-of-war-observatory': {
+    lead: 'Haul freight across the real solar system.',
+    detail: 'A torch-ship pilot game at true scale, on today’s date, with orbits from NASA JPL. Every trip is a trade between time and reaction mass. The torch drive is the one piece of fiction.',
+    category: 'Space · Game',
+    facts: [['Platform', 'Windows'], ['Inside', '8 planets · 453 moons · 9 ports']],
+  },
   rihla: {
     lead: 'For the plans we make together.',
     detail: 'Groups, events, and shared expenses in one app. Designed to work offline, with fewer transfers needed to settle up.',
     category: 'Everyday life · App',
     facts: [['Platforms', 'iOS · Android'], ['Works', 'Offline-first']],
-  },
-  'einsteins-travel-bureau': {
-    lead: 'A travel agency for spacetime.',
-    detail: 'Plan a trip near the speed of light and see how differently time passes. Real physics behind an imaginary travel desk.',
-    category: 'Physics · Experiment',
-    facts: [['Physics', 'Special and general relativity'], ['Inside', 'Brochures · boarding passes · a lab']],
   },
 };
 const shortDescriptions: Record<string, string> = {
@@ -49,7 +49,7 @@ if (ungroupedProjects.length) projectGroups.push({ id: 'other-projects', title: 
 const hrefFor = (build: Build) => build.url ?? build.repo ?? null;
 const storesFor = (build: Build) => 'stores' in build ? build.stores ?? [] : [];
 const isExternal = (href: string) => /^https?:\/\//.test(href);
-const destinationLabel = (build: Build) => build.slug === 'einsteins-travel-bureau' ? 'Explore the bureau' : build.url ? 'View project' : 'View source';
+const destinationLabel = (build: Build) => build.url ? 'View project' : 'View source';
 ---
 
 <!doctype html>

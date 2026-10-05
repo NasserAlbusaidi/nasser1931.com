@@ -49,7 +49,7 @@ test('latest date ignores empty and partial dates', () => {
 });
 
 const input = {
-	projects: { count: 11, changed: '2026-09-27', moons: [{ name: 'Rihla', note: 'Available on iOS and Android' }, { name: "Einstein's Travel Bureau", note: 'Interactive physics playground' }] },
+	projects: { count: 11, changed: '2026-09-27', moons: [{ name: 'Fog of War Observatory', note: 'In development · Windows' }, { name: 'Rihla', note: 'Available on iOS and Android' }] },
 	races: [
 		{ name: 'Muscat 70.3', date: '2026-02-14', status: 'finished' },
 		{ name: 'Athiba Triathlon', date: '2026-01-31', status: 'finished' },
@@ -84,7 +84,7 @@ test('each section reports the date its own data last changed', () => {
 
 test('moons: featured projects around Earth, races around Mars, newest first', () => {
 	const { bodies } = buildOrrery(input);
-	assert.deepEqual(bodies.find((body) => body.key === 'earth').moons.map((moon) => moon.name), ['Rihla', "Einstein's Travel Bureau"]);
+	assert.deepEqual(bodies.find((body) => body.key === 'earth').moons.map((moon) => moon.name), ['Fog of War Observatory', 'Rihla']);
 	assert.deepEqual(bodies.find((body) => body.key === 'mars').moons, [
 		{ name: 'Muscat 70.3', note: '14 Feb 2026 · finished' },
 		{ name: 'Athiba Triathlon', note: '31 Jan 2026 · finished' },
