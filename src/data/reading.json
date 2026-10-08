@@ -2,27 +2,40 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-05T14:40:09.973Z",
+  "updated": "2026-10-08T06:05:00.970Z",
   "stats": {
-    "finished_total": 31,
-    "finished_this_year": 12
+    "finished_total": 32,
+    "finished_this_year": 13
   },
   "currently_reading": [
     {
-      "title": "Nemesis Games",
+      "title": "Babylon's Ashes",
       "author": "James S. A. Corey",
       "status": "Reading",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
-      "started": "2026-10-02",
+      "started": "2026-10-08",
       "finished": null,
-      "progress": 28,
-      "pages": 532,
-      "cover_url": "https://assets.hardcover.app/edition/30391440/5cb05fc8-3d80-4bb5-9551-f80be130eea1.jpg"
+      "progress": null,
+      "pages": 541,
+      "cover_url": "https://assets.hardcover.app/external_data/59453602/453e2eec20827231c35e371247878bdb9788f6ea.jpeg"
     }
   ],
   "finished": [
+    {
+      "title": "Nemesis Games",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-10-02",
+      "finished": "2026-10-08",
+      "progress": null,
+      "pages": 532,
+      "cover_url": "https://assets.hardcover.app/edition/30391440/5cb05fc8-3d80-4bb5-9551-f80be130eea1.jpg"
+    },
     {
       "title": "The Vital Abyss",
       "author": "James S. A. Corey",
