@@ -77,6 +77,18 @@
     "height": 400,
     "color": "#113d55"
   },
+  "https://assets.hardcover.app/edition/31112894/3a385e79-51f8-4baf-badd-815a91763f66.jpg": {
+    "path": "/covers/e85623125596.webp",
+    "width": 400,
+    "height": 626,
+    "color": "#423a24"
+  },
+  "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg": {
+    "path": "/covers/f25dec8c306c.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#724c31"
+  },
   "https://assets.hardcover.app/edition/31472228/7cf5a512-2bfe-4f43-90a0-51fbcd470695.jpg": {
     "path": "/covers/78f266f631b8.webp",
     "width": 400,
@@ -125,6 +137,12 @@
     "height": 608,
     "color": "#dd8e44"
   },
+  "https://assets.hardcover.app/editions/30550453/6071791939192717.jpg": {
+    "path": "/covers/54cb0f4cf858.webp",
+    "width": 400,
+    "height": 519,
+    "color": "#095770"
+  },
   "https://assets.hardcover.app/editions/31227548/998469990702544.jpg": {
     "path": "/covers/082f546d5993.webp",
     "width": 400,
@@ -136,6 +154,12 @@
     "width": 333,
     "height": 500,
     "color": "#282a53"
+  },
+  "https://assets.hardcover.app/editions/32062745/65671f8e-da0d-4be5-a5e4-fe6beba21d3d.jpg": {
+    "path": "/covers/05a7be785654.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#88635a"
   },
   "https://assets.hardcover.app/external_data/3125640/a3083d4341470b1f75fc76d73b420d7b210b53a8.jpeg": {
     "path": "/covers/53a2e21dba86.webp",
@@ -203,11 +227,29 @@
     "height": 98,
     "color": "#cc2c27"
   },
+  "https://assets.hardcover.app/external_data/60703884/21b919e62325a0786e0322350c99a7a542ab0f86.jpeg": {
+    "path": "/covers/a984d8bb260c.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#2a2752"
+  },
+  "https://assets.hardcover.app/external_data/61060171/bca8750d3ab80754377c6eff31ff82f0b60c0110.jpeg": {
+    "path": "/covers/2344e7a2f91b.webp",
+    "width": 318,
+    "height": 470,
+    "color": "#d4ef13"
+  },
   "https://assets.hardcover.app/external_data/61337380/d0b010bc43a0aa7811bca346dfef07bdd0104f1d.jpeg": {
     "path": "/covers/bb320a177172.webp",
     "width": 98,
     "height": 131,
     "color": "#13058f"
+  },
+  "https://assets.hardcover.app/external_data/61397703/5f47bf1bdfcce5e93c58b85c9c7ed0b1afa69256.jpeg": {
+    "path": "/covers/69b9ed645a39.webp",
+    "width": 98,
+    "height": 148,
+    "color": "#e0dbb8"
   },
   "https://covers.openlibrary.org/b/id/10522898-L.jpg?default=false": {
     "path": "/covers/621a8c97d889.webp",

@@ -2,27 +2,40 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-10T21:45:06.720Z",
+  "updated": "2026-10-14T11:52:59.143Z",
   "stats": {
-    "finished_total": 32,
-    "finished_this_year": 13
+    "finished_total": 33,
+    "finished_this_year": 14
   },
   "currently_reading": [
     {
-      "title": "Babylon's Ashes",
+      "title": "Strange Dogs",
       "author": "James S. A. Corey",
       "status": "Reading",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
-      "started": "2026-10-08",
+      "started": "2026-10-14",
       "finished": null,
-      "progress": 4,
-      "pages": 541,
-      "cover_url": "https://assets.hardcover.app/external_data/59453602/453e2eec20827231c35e371247878bdb9788f6ea.jpeg"
+      "progress": 2,
+      "pages": 95,
+      "cover_url": "https://assets.hardcover.app/external_data/60703884/21b919e62325a0786e0322350c99a7a542ab0f86.jpeg"
     }
   ],
   "finished": [
+    {
+      "title": "Babylon's Ashes",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-10-08",
+      "finished": "2026-10-14",
+      "progress": null,
+      "pages": 541,
+      "cover_url": "https://assets.hardcover.app/external_data/59453602/453e2eec20827231c35e371247878bdb9788f6ea.jpeg"
+    },
     {
       "title": "Nemesis Games",
       "author": "James S. A. Corey",
@@ -442,6 +455,45 @@
   ],
   "want_to_read": [
     {
+      "title": "Auberon",
+      "author": "James S. A. Corey",
+      "status": "Want to Read",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 75,
+      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
+    },
+    {
+      "title": "Leviathan Falls",
+      "author": "James S. A. Corey",
+      "status": "Want to Read",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 528,
+      "cover_url": "https://assets.hardcover.app/external_data/61397703/5f47bf1bdfcce5e93c58b85c9c7ed0b1afa69256.jpeg"
+    },
+    {
+      "title": "Persepolis Rising",
+      "author": "James S. A. Corey",
+      "status": "Want to Read",
+      "rating": null,
+      "format": "Physical",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 549,
+      "cover_url": "https://assets.hardcover.app/edition/31112894/3a385e79-51f8-4baf-badd-815a91763f66.jpg"
+    },
+    {
       "title": "The Infinite Extent",
       "author": "Dennis E. Taylor",
       "status": "Want to Read",
@@ -453,6 +505,45 @@
       "progress": null,
       "pages": null,
       "cover_url": "https://assets.hardcover.app/edition/32944595/a7e36f33-4898-4a24-9ef9-b578b5a258bb.jpg"
+    },
+    {
+      "title": "The Last Flight of the Cassandra",
+      "author": "James S. A. Corey",
+      "status": "Want to Read",
+      "rating": null,
+      "format": "Ebook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 30,
+      "cover_url": "https://assets.hardcover.app/editions/30550453/6071791939192717.jpg"
+    },
+    {
+      "title": "The Sins of Our Fathers",
+      "author": "James S. A. Corey",
+      "status": "Want to Read",
+      "rating": null,
+      "format": "Physical",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 64,
+      "cover_url": "https://assets.hardcover.app/external_data/61060171/bca8750d3ab80754377c6eff31ff82f0b60c0110.jpeg"
+    },
+    {
+      "title": "Tiamat's Wrath",
+      "author": "James S. A. Corey",
+      "status": "Want to Read",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": null,
+      "finished": null,
+      "progress": null,
+      "pages": 534,
+      "cover_url": "https://assets.hardcover.app/editions/32062745/65671f8e-da0d-4be5-a5e4-fe6beba21d3d.jpg"
     }
   ],
   "dropped": [
