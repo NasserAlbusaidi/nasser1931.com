@@ -2,7 +2,7 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-14T11:52:59.143Z",
+  "updated": "2026-10-14T17:10:55.280Z",
   "stats": {
     "finished_total": 33,
     "finished_this_year": 14
@@ -17,7 +17,7 @@
       "genres": [],
       "started": "2026-10-14",
       "finished": null,
-      "progress": 2,
+      "progress": 45,
       "pages": 95,
       "cover_url": "https://assets.hardcover.app/external_data/60703884/21b919e62325a0786e0322350c99a7a542ab0f86.jpeg"
     }
