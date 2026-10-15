@@ -2,24 +2,24 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-14T17:10:55.280Z",
+  "updated": "2026-10-15T11:29:57.685Z",
   "stats": {
-    "finished_total": 33,
-    "finished_this_year": 14
+    "finished_total": 34,
+    "finished_this_year": 15
   },
   "currently_reading": [
     {
-      "title": "Strange Dogs",
+      "title": "Persepolis Rising",
       "author": "James S. A. Corey",
       "status": "Reading",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
-      "started": "2026-10-14",
+      "started": "2026-10-15",
       "finished": null,
-      "progress": 45,
-      "pages": 95,
-      "cover_url": "https://assets.hardcover.app/external_data/60703884/21b919e62325a0786e0322350c99a7a542ab0f86.jpeg"
+      "progress": 2,
+      "pages": 549,
+      "cover_url": "https://assets.hardcover.app/editions/31545890/4330331378549462.jpg"
     }
   ],
   "finished": [
@@ -35,6 +35,19 @@
       "progress": null,
       "pages": 541,
       "cover_url": "https://assets.hardcover.app/external_data/59453602/453e2eec20827231c35e371247878bdb9788f6ea.jpeg"
+    },
+    {
+      "title": "Strange Dogs",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-10-14",
+      "finished": "2026-10-14",
+      "progress": null,
+      "pages": 95,
+      "cover_url": "https://assets.hardcover.app/external_data/60703884/21b919e62325a0786e0322350c99a7a542ab0f86.jpeg"
     },
     {
       "title": "Nemesis Games",
@@ -479,19 +492,6 @@
       "progress": null,
       "pages": 528,
       "cover_url": "https://assets.hardcover.app/external_data/61397703/5f47bf1bdfcce5e93c58b85c9c7ed0b1afa69256.jpeg"
-    },
-    {
-      "title": "Persepolis Rising",
-      "author": "James S. A. Corey",
-      "status": "Want to Read",
-      "rating": null,
-      "format": "Physical",
-      "genres": [],
-      "started": null,
-      "finished": null,
-      "progress": null,
-      "pages": 549,
-      "cover_url": "https://assets.hardcover.app/edition/31112894/3a385e79-51f8-4baf-badd-815a91763f66.jpg"
     },
     {
       "title": "The Infinite Extent",
