@@ -1,6 +1,19 @@
 {
-  "updated": "2026-09-27",
+  "updated": "2026-10-05",
   "builds": [
+    {
+      "slug": "fog-of-war-observatory",
+      "name": "Fog of War Observatory",
+      "summary": "A torch-ship pilot game in the real solar system: true scale, today’s date, orbits from NASA JPL. Every trip is a trade between time and reaction mass.",
+      "stack": [
+        "Unity",
+        "C#"
+      ],
+      "url": null,
+      "repo": null,
+      "featured": true,
+      "label": "In development · Windows"
+    },
     {
       "slug": "macrofactor-mcp",
       "name": "macrofactor-mcp",
@@ -96,20 +109,6 @@
       "repo": "https://github.com/NasserAlbusaidi/OmanClimate",
       "featured": false,
       "label": "Research code"
-    },
-    {
-      "slug": "einsteins-travel-bureau",
-      "name": "Einstein's Travel Bureau",
-      "summary": "Time-dilation sandbox dressed as a vintage travel agency — real SR+GR math behind brochures, boarding passes, and a multi-observer laboratory.",
-      "stack": [
-        "React",
-        "TypeScript"
-      ],
-      "url": "https://nasseralbusaidi.github.io/einsteins-travel-bureau/",
-      "repo": "https://github.com/NasserAlbusaidi/einsteins-travel-bureau",
-      "featured": true,
-      "checked": "2026-09-21",
-      "label": "Interactive physics playground"
     },
     {
       "slug": "bite-pos",

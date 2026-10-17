@@ -42,9 +42,9 @@
 .now-feed a:hover strong { color: var(--accent); }
 /* One section per orrery body, in orbit order. */
 .planet-section + .planet-section { margin-top: 6rem; }
-.einstein-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; margin-top: 1.5rem; padding: 2rem; background: var(--surface); border: 1px solid var(--rule); }
-.einstein-copy h3 { margin: .65rem 0 .25rem; font-size: var(--text-heading); font-weight: 350; line-height: 1.1; letter-spacing: -.03em; }
-.einstein-copy .project-bottom { margin-top: 1.5rem; }
+.game-showcase { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 2rem 3rem; align-items: center; margin-bottom: 1.5rem; padding: 2rem 3.5rem 2rem 2rem; background: var(--surface); border: 1px solid var(--rule); }
+.game-copy { min-width: 0; }
+.game-copy .project-bottom { margin-top: 1.75rem; }
 .home-notes { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
 .home-notes a { display: grid; grid-template-columns: 8rem minmax(0, 1fr) minmax(0, 1.2fr); gap: .5rem 2rem; align-items: baseline; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); }
 .home-notes time { font: var(--text-label)/1.5 var(--font-mono); color: var(--muted); }
@@ -57,7 +57,7 @@
 .rihla-showcase > .project-preview { grid-column: 2; grid-row: 1 / 3; }
 .project-topline { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
 .project-badge { border: 1px solid var(--accent); color: var(--accent); border-radius: 2rem; padding: .15rem .65rem; font: var(--text-label)/1.5 var(--font-mono); }
-.rihla-copy h3 { margin-top: 1.75rem; font-size: var(--text-display); line-height: 1; font-weight: 350; letter-spacing: -.045em; }
+.rihla-copy h3, .game-copy h3 { margin-top: 1.75rem; font-size: var(--text-display); line-height: 1; font-weight: 350; letter-spacing: -.045em; }
 .project-deck { font-size: var(--text-title); line-height: 1.35; margin: 1rem 0; }
 .project-description { font-size: var(--text-body); line-height: 1.65; color: var(--muted); margin: .8rem 0 0; }
 .project-store-links { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; }
@@ -77,7 +77,7 @@
   .intro-content { height: auto; display: block; padding-block: 3rem 2rem; pointer-events: auto; }
   .intro-copy > * { width: auto; }
   .now-feed { grid-template-columns: minmax(0, 1fr); }
-  .einstein-card { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  .game-showcase { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; padding: 2rem; }
   .home-notes a { grid-template-columns: 7rem minmax(0, 1fr); }
   .home-notes span { grid-column: 2; }
 }
@@ -88,7 +88,7 @@
   .intro-links { margin-top: 1.5rem; }
   .rihla-showcase { --showcase-inset: 1.5rem; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; min-height: 0; gap: 1.75rem; }
   .rihla-showcase > .project-preview { grid-column: 1; grid-row: auto; }
-  .rihla-copy h3 { margin-top: 1.25rem; }
+  .rihla-copy h3, .game-copy h3 { margin-top: 1.25rem; }
   .rihla-actions { grid-column: 1; }
   .project-store-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .project-store-links .home-button { padding-inline: .4rem; gap: .5rem; }
@@ -98,7 +98,7 @@
   .now-feed li + li { border-left: 0; border-top: 1px solid var(--rule); }
   .now-feed a { padding: 1rem 0; }
   .planet-section + .planet-section { margin-top: 4rem; }
-  .einstein-card { padding: 1.5rem; }
+  .game-showcase { padding: 1.5rem; }
   .home-notes a { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
   .home-notes span { grid-column: auto; }
 }

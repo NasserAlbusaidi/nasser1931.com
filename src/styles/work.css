@@ -47,7 +47,7 @@
 .work-page .work-feature-visual .app-screens { height: 30rem; overflow: hidden; border: 0; padding: 2.5rem 1.75rem 0; gap: 1.75rem; align-items: flex-start; background: transparent; }
 .work-page .work-feature-visual .app-screens img { width: min(44%, 250px); height: auto; flex: 0 1 auto; box-shadow: 0 1.5rem 3rem #00000030; }
 .work-page .work-feature-visual .app-screens img:nth-child(2) { margin-top: 3rem; }
-.work-page .work-feature-visual .bureau-preview img { width: 100%; height: auto; border: 0; }
+.work-page .work-feature-visual .game-preview img { width: 100%; height: auto; border: 0; }
 
 .work-tools { margin-top: 5rem; }
 .work-category-links { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; margin: 0 0 .75rem; }
