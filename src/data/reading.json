@@ -2,27 +2,40 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-22T17:11:07.359Z",
+  "updated": "2026-10-22T21:36:14.072Z",
   "stats": {
-    "finished_total": 34,
-    "finished_this_year": 15
+    "finished_total": 35,
+    "finished_this_year": 16
   },
   "currently_reading": [
     {
-      "title": "Persepolis Rising",
+      "title": "Auberon",
       "author": "James S. A. Corey",
       "status": "Reading",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
-      "started": "2026-10-15",
+      "started": "2026-10-22",
       "finished": null,
-      "progress": 83,
-      "pages": 435,
-      "cover_url": "https://assets.hardcover.app/editions/31545890/4330331378549462.jpg"
+      "progress": null,
+      "pages": 75,
+      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
     }
   ],
   "finished": [
+    {
+      "title": "Persepolis Rising",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-10-15",
+      "finished": "2026-10-22",
+      "progress": null,
+      "pages": 435,
+      "cover_url": "https://assets.hardcover.app/editions/31545890/4330331378549462.jpg"
+    },
     {
       "title": "Babylon's Ashes",
       "author": "James S. A. Corey",
@@ -467,19 +480,6 @@
     }
   ],
   "want_to_read": [
-    {
-      "title": "Auberon",
-      "author": "James S. A. Corey",
-      "status": "Want to Read",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": null,
-      "finished": null,
-      "progress": null,
-      "pages": 75,
-      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
-    },
     {
       "title": "Leviathan Falls",
       "author": "James S. A. Corey",
