@@ -2,27 +2,40 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-22T21:36:14.072Z",
+  "updated": "2026-10-23T11:39:54.417Z",
   "stats": {
-    "finished_total": 35,
-    "finished_this_year": 16
+    "finished_total": 36,
+    "finished_this_year": 17
   },
   "currently_reading": [
     {
-      "title": "Auberon",
+      "title": "Tiamat's Wrath",
       "author": "James S. A. Corey",
       "status": "Reading",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
-      "started": "2026-10-22",
+      "started": "2026-10-23",
       "finished": null,
-      "progress": null,
-      "pages": 75,
-      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
+      "progress": 0,
+      "pages": 534,
+      "cover_url": "https://assets.hardcover.app/editions/32062745/65671f8e-da0d-4be5-a5e4-fe6beba21d3d.jpg"
     }
   ],
   "finished": [
+    {
+      "title": "Auberon",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-10-22",
+      "finished": "2026-10-23",
+      "progress": null,
+      "pages": 75,
+      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
+    },
     {
       "title": "Persepolis Rising",
       "author": "James S. A. Corey",
@@ -531,19 +544,6 @@
       "progress": null,
       "pages": 64,
       "cover_url": "https://assets.hardcover.app/external_data/61060171/bca8750d3ab80754377c6eff31ff82f0b60c0110.jpeg"
-    },
-    {
-      "title": "Tiamat's Wrath",
-      "author": "James S. A. Corey",
-      "status": "Want to Read",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": null,
-      "finished": null,
-      "progress": null,
-      "pages": 534,
-      "cover_url": "https://assets.hardcover.app/editions/32062745/65671f8e-da0d-4be5-a5e4-fe6beba21d3d.jpg"
     }
   ],
   "dropped": [
