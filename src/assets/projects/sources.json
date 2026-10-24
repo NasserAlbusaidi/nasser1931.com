@@ -18,12 +18,12 @@
     "provenance": "Same official raw in-app demo capture set"
   },
   {
-    "caveat": "No identifiable people or private information.",
-    "height": 900,
-    "description": "Official real website UI screenshot: vintage bureau masthead, illustrated interactive atlas and start of destination brochure cards",
+    "caveat": "In-game capture. No people or private information.",
+    "height": 810,
+    "description": "In-game capture: the player’s torch ship in orbit over Saturn, with the rings behind",
     "width": 1440,
-    "file": "einstein-repo-hero.png",
-    "source": "https://raw.githubusercontent.com/NasserAlbusaidi/einsteins-travel-bureau/e88b313941c15ef651a2eb634f53032661cae336/docs/hero.png",
-    "provenance": "Official repository README embeds this as The Bureau Wall-Map atlas of relativistic itineraries with destination cards"
+    "file": "fog-of-war-saturn.jpg",
+    "source": "https://github.com/NasserAlbusaidi/fog-of-war-observatory/blob/92c4c5f6ec0e0137f49f88ab7003a7b343ecf609/docs/media/shot-saturn.jpg",
+    "provenance": "The game’s own README screenshot (docs/media), captured in the game. The repository is private, so the source URL needs access."
   }
 ]

@@ -32,7 +32,7 @@ const latestFinish = races.find(race => race.status === 'finished');
 const skyPhotos = (await getCollection('sky')).sort(newestFirst);
 const latestSky = skyPhotos[0];
 const rihla = builds.builds.find(build => build.slug === 'rihla');
-const einstein = builds.builds.find(build => build.slug === 'einsteins-travel-bureau');
+const game = builds.builds.find(build => build.slug === 'fog-of-war-observatory');
 // The solar system: each section's size and speed come from the data it already shows.
 const day = (value: Date) => value.toISOString().slice(0, 10);
 const notes = await getCollection('stupidshit');
@@ -41,7 +41,7 @@ const inProgress = (track: NonNullable<typeof readingTrack>) => track.books.filt
   .reduce((sum, book) => sum + (reading.currently_reading.find(item => item.title === book.matchedTitle)?.progress ?? 0) / 100, 0);
 const nowReading = reading.currently_reading[0];
 const orrery = buildOrrery({
-  projects: { count: builds.builds.length, changed: builds.updated, moons: [rihla, einstein].filter(build => !!build).map(build => ({ name: build.name, note: build.label })) },
+  projects: { count: builds.builds.length, changed: builds.updated, moons: [game, rihla].filter(build => !!build).map(build => ({ name: build.name, note: build.label })) },
   races: races.map(({ name, date, status }) => ({ name, date, status })),
   notes: { count: notes.length, changed: latestDate(notes.map(note => day(note.data.date))) },
   reading: {
@@ -117,6 +117,16 @@ const structuredData = {
 
         <section id="work" class="planet-section" aria-labelledby="work-title">
           <PlanetHeading body="earth" label="Earth · Projects" title="Things I have built" id="work-title" href="/builds" link={`All ${builds.builds.length} projects`} />
+          {game && <article id={game.slug} class="game-showcase" aria-labelledby="game-title">
+            <ProjectPreview project={game.slug} />
+            <div class="game-copy">
+              <div class="project-topline"><span class="eyebrow">Software × space</span><span class="project-badge">In development</span></div>
+              <h3 id="game-title">{game.name}</h3>
+              <p class="project-deck">Haul freight across the real solar system.</p>
+              <p class="project-description">A torch-ship pilot game at true scale, on today's date, with orbits from NASA JPL. Every trip is a trade between time and reaction mass.</p>
+              <div class="project-bottom"><span>{game.stack.join(' · ')} · Windows</span><a href={`/builds#${game.slug}`}>Read more <span aria-hidden="true">→</span></a></div>
+            </div>
+          </article>}
           <article id="rihla" class="rihla-showcase" aria-labelledby="rihla-title">
             <div class="rihla-copy">
               <div class="project-topline"><span class="eyebrow">Software × everyday life</span><span class="project-badge">Shipped</span></div>
@@ -130,14 +140,6 @@ const structuredData = {
               <div class="project-bottom"><span>{rihla?.stack.join(' · ')}</span>{rihla?.repo && <a href={rihla.repo}>Source <span aria-hidden="true">↗</span></a>}</div>
             </div>
           </article>
-          {einstein && <article class="einstein-card" aria-labelledby="home-einstein">
-            <ProjectPreview project={einstein.slug} variant="card" />
-            <div class="einstein-copy">
-              <p class="eyebrow">An experiment in physics</p><h3 id="home-einstein">{einstein.name}</h3>
-              <p class="project-description">Plan a trip near the speed of light and see how differently time passes.</p>
-              <div class="project-bottom"><span>{einstein.stack.join(' · ')}</span><a href={einstein.url ?? einstein.repo ?? '/builds'}>Try the demo <span aria-hidden="true">↗</span></a></div>
-            </div>
-          </article>}
         </section>
 
         <section id="races" class="planet-section" aria-labelledby="races-title">
