@@ -2,27 +2,26 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-10-28T12:55:23.985Z",
+  "updated": "2026-10-30T05:49:42.286Z",
   "stats": {
-    "finished_total": 36,
-    "finished_this_year": 17
+    "finished_total": 37,
+    "finished_this_year": 18
   },
-  "currently_reading": [
+  "currently_reading": [],
+  "finished": [
     {
       "title": "Tiamat's Wrath",
       "author": "James S. A. Corey",
-      "status": "Reading",
+      "status": "Finished",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
       "started": "2026-10-23",
-      "finished": null,
-      "progress": 73,
+      "finished": "2026-10-30",
+      "progress": null,
       "pages": 534,
       "cover_url": "https://assets.hardcover.app/editions/32062745/65671f8e-da0d-4be5-a5e4-fe6beba21d3d.jpg"
-    }
-  ],
-  "finished": [
+    },
     {
       "title": "Auberon",
       "author": "James S. A. Corey",
