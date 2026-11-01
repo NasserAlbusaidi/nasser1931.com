@@ -2,7 +2,7 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-11-01T06:05:31.895Z",
+  "updated": "2026-11-01T22:02:01.596Z",
   "stats": {
     "finished_total": 37,
     "finished_this_year": 18
@@ -17,7 +17,7 @@
       "genres": [],
       "started": "2026-10-30",
       "finished": null,
-      "progress": 36,
+      "progress": 46,
       "pages": 528,
       "cover_url": "https://assets.hardcover.app/editions/32062744/3e83e434-6721-4a5d-ad9f-73a3ff5a2993.jpg"
     }
@@ -423,7 +423,7 @@
       "started": null,
       "finished": null,
       "progress": null,
-      "pages": 320,
+      "pages": 311,
       "cover_url": "https://assets.hardcover.app/edition/33014501/4dcb3d37-a0df-436d-8111-b51fb03ee22b.jpg"
     },
     {
@@ -507,7 +507,7 @@
   ],
   "want_to_read": [
     {
-      "title": "The Infinite Extent",
+      "title": "The Infinite Extent: Bobiverse: Book 6",
       "author": "Dennis E. Taylor",
       "status": "Want to Read",
       "rating": null,
@@ -516,7 +516,7 @@
       "started": null,
       "finished": null,
       "progress": null,
-      "pages": null,
+      "pages": 304,
       "cover_url": "https://assets.hardcover.app/edition/32944595/a7e36f33-4898-4a24-9ef9-b578b5a258bb.jpg"
     },
     {
