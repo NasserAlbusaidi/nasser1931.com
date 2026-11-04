@@ -2,7 +2,7 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-11-03T23:23:56.248Z",
+  "updated": "2026-11-04T06:22:57.728Z",
   "stats": {
     "finished_total": 37,
     "finished_this_year": 18
@@ -112,7 +112,7 @@
       "finished": "2026-10-02",
       "progress": null,
       "pages": null,
-      "cover_url": "https://assets.hardcover.app/external_data/60703865/e4db842f80fb6088e939af71180f89fb1be74ee6.jpeg"
+      "cover_url": "https://assets.hardcover.app/external_data/4414861/a53811f3d5b8320d1801dda4cc602fd5d14109de.jpeg"
     },
     {
       "title": "The Churn",

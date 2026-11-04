@@ -191,6 +191,12 @@
     "height": 462,
     "color": "#ec918f"
   },
+  "https://assets.hardcover.app/external_data/4414861/a53811f3d5b8320d1801dda4cc602fd5d14109de.jpeg": {
+    "path": "/covers/bd923666ab3e.webp",
+    "width": 400,
+    "height": 400,
+    "color": "#d02c25"
+  },
   "https://assets.hardcover.app/external_data/59379830/9c2bb75bf51699463a8decd3a41cb2c74f6d33e0.jpeg": {
     "path": "/covers/0877fe6b79e2.webp",
     "width": 98,
@@ -226,12 +232,6 @@
     "width": 128,
     "height": 197,
     "color": "#516d30"
-  },
-  "https://assets.hardcover.app/external_data/60703865/e4db842f80fb6088e939af71180f89fb1be74ee6.jpeg": {
-    "path": "/covers/3218f97fac87.webp",
-    "width": 98,
-    "height": 98,
-    "color": "#cc2c27"
   },
   "https://assets.hardcover.app/external_data/60703884/21b919e62325a0786e0322350c99a7a542ab0f86.jpeg": {
     "path": "/covers/a984d8bb260c.webp",
