@@ -2,27 +2,26 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-11-04T19:45:34.649Z",
+  "updated": "2026-11-06T06:47:00.478Z",
   "stats": {
-    "finished_total": 38,
-    "finished_this_year": 19
+    "finished_total": 39,
+    "finished_this_year": 20
   },
-  "currently_reading": [
+  "currently_reading": [],
+  "finished": [
     {
       "title": "The Sins of Our Fathers",
       "author": "James S. A. Corey",
-      "status": "Reading",
+      "status": "Finished",
       "rating": null,
       "format": "Audiobook",
       "genres": [],
       "started": "2026-11-04",
-      "finished": null,
+      "finished": "2026-11-06",
       "progress": null,
       "pages": 64,
       "cover_url": "https://assets.hardcover.app/external_data/1107112/beef6a5e3ea0ad558c02bc70bcc323e235eb5686.jpeg"
-    }
-  ],
-  "finished": [
+    },
     {
       "title": "Leviathan Falls",
       "author": "James S. A. Corey",
@@ -138,7 +137,7 @@
       "finished": "2026-09-25",
       "progress": null,
       "pages": 75,
-      "cover_url": "https://assets.hardcover.app/external_data/59379830/9c2bb75bf51699463a8decd3a41cb2c74f6d33e0.jpeg"
+      "cover_url": "https://assets.hardcover.app/external_data/4544689/fe48c5c7a8ff4124550de6abe7702445ffab3fab.jpeg"
     },
     {
       "title": "Abaddon's Gate",
