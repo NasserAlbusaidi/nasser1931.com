@@ -2,13 +2,26 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-11-06T06:47:00.478Z",
+  "updated": "2026-11-12T07:10:50.049Z",
   "stats": {
     "finished_total": 39,
     "finished_this_year": 20
   },
   "currently_reading": [],
   "finished": [
+    {
+      "title": "The Churn",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-11-11",
+      "finished": "2026-11-11",
+      "progress": null,
+      "pages": 75,
+      "cover_url": "https://assets.hardcover.app/external_data/4544689/fe48c5c7a8ff4124550de6abe7702445ffab3fab.jpeg"
+    },
     {
       "title": "The Sins of Our Fathers",
       "author": "James S. A. Corey",
@@ -125,19 +138,6 @@
       "progress": null,
       "pages": null,
       "cover_url": "https://assets.hardcover.app/external_data/4414861/a53811f3d5b8320d1801dda4cc602fd5d14109de.jpeg"
-    },
-    {
-      "title": "The Churn",
-      "author": "James S. A. Corey",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": "2026-09-25",
-      "finished": "2026-09-25",
-      "progress": null,
-      "pages": 75,
-      "cover_url": "https://assets.hardcover.app/external_data/4544689/fe48c5c7a8ff4124550de6abe7702445ffab3fab.jpeg"
     },
     {
       "title": "Abaddon's Gate",
