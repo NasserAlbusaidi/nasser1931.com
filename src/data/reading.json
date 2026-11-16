@@ -2,13 +2,26 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-11-14T06:23:47.780Z",
+  "updated": "2026-11-16T06:30:28.596Z",
   "stats": {
     "finished_total": 39,
     "finished_this_year": 20
   },
   "currently_reading": [],
   "finished": [
+    {
+      "title": "Gods of Risk",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-11-15",
+      "finished": "2026-11-16",
+      "progress": null,
+      "pages": null,
+      "cover_url": "https://assets.hardcover.app/edition/8582300/7992542-L.jpg"
+    },
     {
       "title": "The Churn",
       "author": "James S. A. Corey",
@@ -151,19 +164,6 @@
       "progress": null,
       "pages": 576,
       "cover_url": "https://assets.hardcover.app/book/430976/dfef2030-3801-4d50-9b8b-b543d321cef8.jpg"
-    },
-    {
-      "title": "Gods of Risk",
-      "author": "James S. A. Corey",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": "2026-09-17",
-      "finished": "2026-09-17",
-      "progress": null,
-      "pages": null,
-      "cover_url": "https://assets.hardcover.app/edition/8582300/7992542-L.jpg"
     },
     {
       "title": "The Butcher of Anderson Station",
