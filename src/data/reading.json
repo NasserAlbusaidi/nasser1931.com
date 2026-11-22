@@ -2,13 +2,26 @@
   "source": "hardcover",
   "source_method": "api",
   "profile_url": "https://hardcover.app/@nasser",
-  "updated": "2026-11-21T07:08:19.848Z",
+  "updated": "2026-11-22T06:48:30.362Z",
   "stats": {
     "finished_total": 39,
     "finished_this_year": 20
   },
   "currently_reading": [],
   "finished": [
+    {
+      "title": "Auberon",
+      "author": "James S. A. Corey",
+      "status": "Finished",
+      "rating": null,
+      "format": "Audiobook",
+      "genres": [],
+      "started": "2026-11-22",
+      "finished": "2026-11-22",
+      "progress": null,
+      "pages": 75,
+      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
+    },
     {
       "title": "Gods of Risk",
       "author": "James S. A. Corey",
@@ -73,19 +86,6 @@
       "progress": null,
       "pages": 534,
       "cover_url": "https://assets.hardcover.app/editions/32062745/65671f8e-da0d-4be5-a5e4-fe6beba21d3d.jpg"
-    },
-    {
-      "title": "Auberon",
-      "author": "James S. A. Corey",
-      "status": "Finished",
-      "rating": null,
-      "format": "Audiobook",
-      "genres": [],
-      "started": "2026-10-22",
-      "finished": "2026-10-23",
-      "progress": null,
-      "pages": 75,
-      "cover_url": "https://assets.hardcover.app/edition/31173079/530a2885-5e4b-4a99-8e26-5f1c11bc581e.jpeg"
     },
     {
       "title": "Persepolis Rising",
