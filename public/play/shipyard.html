@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shipyard</title>
+<style>
+:root{--bg:#15120f;--panel:#1d1915;--panel2:#25201a;--line:#3a3128;--text:#e8dcc6;--dim:#9a8b74;--acc:#ff9d3c;--acc2:#61d4ff;--bad:#ff5a4a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:12px/1.35 ui-monospace,"Cascadia Mono",Consolas,Menlo,monospace;overflow:hidden}
+button,select,input,textarea{font:inherit;color:var(--text)}
+button{background:var(--panel2);border:1px solid var(--line);padding:4px 8px;border-radius:3px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:var(--acc);color:#fff}
+button.on{background:#4a2f12;border-color:var(--acc);color:#fff}
+button.big{padding:6px 10px}
+select,input[type=number],input[type=text],textarea{background:#110f0c;border:1px solid var(--line);border-radius:3px;padding:3px 5px}
+textarea{width:100%;resize:vertical}
+#app{display:grid;grid-template-columns:236px 1fr 300px;grid-template-rows:44px 1fr 24px;height:100vh}
+header{grid-column:1/4;display:flex;align-items:center;gap:6px;padding:0 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+header .logo{font-weight:700;color:var(--acc);letter-spacing:2px;margin-right:6px}
+header .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+header .grow{flex:1}
+aside{background:var(--panel);overflow-y:auto;padding:8px}
+#left{border-right:1px solid var(--line)}
+#right{border-left:1px solid var(--line)}
+h3{margin:12px 0 6px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+h3:first-child{margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.grid2 button,.grid3 button{text-align:left;overflow:hidden;text-overflow:ellipsis}
+#view{position:relative;overflow:hidden;background:#0d0b09}
+#view canvas{display:block;width:100%;height:100%;touch-action:none}
+.vlabel{position:absolute;pointer-events:none;color:var(--dim);font-size:11px;padding:4px 7px;letter-spacing:1px}
+.vborder{position:absolute;pointer-events:none;border:1px solid var(--line)}
+footer{grid-column:1/4;display:flex;gap:16px;align-items:center;padding:0 10px;border-top:1px solid var(--line);background:var(--panel);color:var(--dim);font-size:11px}
+footer b{color:var(--text);font-weight:600}
+.plist{display:flex;flex-direction:column;gap:2px;max-height:34vh;overflow-y:auto;border:1px solid var(--line);border-radius:3px;padding:2px;background:#110f0c}
+.prow{display:flex;gap:6px;padding:3px 5px;border-radius:2px;cursor:pointer;align-items:center}
+.prow:hover{background:var(--panel2)}
+.prow.sel{background:#4a2f12}
+.prow .sw{width:9px;height:9px;border-radius:2px;flex:none}
+.prow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .tg{color:var(--dim);font-size:10px}
+.field{display:grid;grid-template-columns:86px 1fr 62px;gap:5px;align-items:center;margin:3px 0}
+.field label{color:var(--dim);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field input[type=range]{width:100%;accent-color:var(--acc)}
+.field input[type=number]{width:62px;padding:2px 3px}
+.row{display:flex;gap:5px;align-items:center;margin:4px 0;flex-wrap:wrap}
+.row label{color:var(--dim)}
+.hint{color:var(--dim);font-size:11px;margin:6px 0}
+.pal{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.pal label{display:flex;gap:5px;align-items:center;color:var(--dim)}
+.pal input[type=color]{width:26px;height:20px;border:1px solid var(--line);background:none;padding:0}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:10}
+#modal.open{display:flex}
+#modal .box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;max-width:1040px;width:94vw;max-height:92vh;overflow:auto}
+.vars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.vars .card{border:1px solid var(--line);border-radius:4px;cursor:pointer;overflow:hidden;background:#0d0b09;position:relative}
+.vars .card:hover{border-color:var(--acc)}
+.vars .card img{display:block;width:100%}
+.vars .card span{position:absolute;left:6px;top:4px;color:var(--dim);font-size:11px}
+.menu{position:relative}
+.menu .dd{display:none;position:absolute;right:0;top:30px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px;z-index:5;min-width:250px;flex-direction:column;gap:3px}
+.menu.open .dd{display:flex}
+.menu .dd button{text-align:left}
+.menu .dd small{color:var(--dim);display:block;font-size:10px}
+#toast{position:fixed;bottom:34px;left:50%;transform:translateX(-50%);background:#4a2f12;border:1px solid var(--acc);padding:6px 12px;border-radius:4px;display:none;z-index:20}
+.kbd{color:var(--dim);font-size:10px;line-height:1.6}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<div id="app">
+<header>
+  <span class="logo">SHIPYARD</span>
+  <input type="text" id="shipName" style="width:170px" title="Ship name">
+  <span class="sep"></span>
+  <button id="bUndo" title="Ctrl+Z">Undo</button><button id="bRedo" title="Ctrl+Shift+Z">Redo</button>
+  <span class="sep"></span>
+  <button data-lay="quad" class="on" title="1">Quad</button><button data-lay="persp" title="2">3D</button><button data-lay="top" title="3">Top</button><button data-lay="side" title="4">Side</button><button data-lay="front" title="5">Front</button>
+  <button id="bFit" title="F">Fit</button>
+  <span class="sep"></span>
+  <button id="bSil" title="S: black shape only, judge the outline">Silhouette</button>
+  <select id="refSel" title="Scale reference"><option value="none">No scale ref</option><option value="human" selected>Human 1.8 m</option><option value="fighter">Fighter 16 m</option><option value="both">Human + fighter</option></select>
+  <span class="grow"></span>
+  <button id="bVar" class="big" title="V">Show me variations</button>
+  <div class="menu" id="expMenu"><button class="big on" id="bExp">Export for Claude ▾</button>
+    <div class="dd">
+      <button id="eZip">Download handoff package (.zip)<small>brief.md + spec.json + sheet.png + blockout.py</small></button>
+      <button id="eBrief">Copy brief to clipboard<small>paste into the Blender chat with the zip</small></button>
+      <button id="ePy">Download Blender script (.py)<small>rebuilds this exact blockout in Blender</small></button>
+      <button id="ePng">Download reference sheet (.png)<small>top, side, front, 3/4 with dimensions</small></button>
+      <button id="eJson">Download spec (.json)<small>also re-imports here</small></button>
+      <button id="eImp">Import spec (.json)<small>load a ship you exported earlier</small></button>
+    </div>
+  </div>
+  <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+</header>
+<aside id="left">
+  <h3>Art direction</h3>
+  <select id="dirSel" style="width:100%"></select>
+  <div class="hint" id="dirHint" style="margin:4px 0 0"></div>
+  <h3>Draw it yourself</h3>
+  <button id="bDraw" class="big" style="width:100%" title="K">✏ Sketch a shape</button>
+  <div class="hint">Scribble an outline in the Top, Side or Front view. It gets cleaned up into a solid part. Drop an image on a view to trace over it.</div>
+  <h3>Start from</h3>
+  <div class="grid2" id="tpls"></div>
+  <h3>Add part</h3>
+  <div class="grid2" id="adds"></div>
+  <h3>Push the shape</h3>
+  <div class="hint" style="margin-top:0">Whole ship, or just the selected part if one is selected.</div>
+  <div class="grid2" id="styles"></div>
+  <h3>Keys</h3>
+  <div class="kbd">Drag parts in Top/Side/Front views (Alt = no snap). Drag empty space to pan, wheel to zoom. 3D view: drag to orbit.<br>K sketch · Del delete · Ctrl+D duplicate · M mirror · F fit · S silhouette · V variations · 1-5 layouts · Esc deselect</div>
+</aside>
+<main id="view"><canvas id="cv"></canvas><canvas id="draw" style="position:absolute;inset:0;pointer-events:none;width:100%;height:100%"></canvas><div id="overlay"></div></main>
+<input type="file" id="refIn" accept="image/*" multiple style="display:none">
+<aside id="right">
+  <h3>Parts <span id="pcount"></span></h3>
+  <div class="plist" id="plist"></div>
+  <div id="insp"></div>
+</aside>
+<footer><span id="fDims"></span><span id="fRef"></span><span class="grow" style="flex:1"></span><span id="fHint">Can't draw? Good. Nobody's asking you to.</span></footer>
+</div>
+<div id="modal"><div class="box">
+  <div class="row" style="justify-content:space-between"><b style="color:var(--acc)">VARIATIONS: pick the one that looks like the thing in your head</b><button id="vClose">Close</button></div>
+  <div class="row"><label>How wild</label><input type="range" id="vStr" min="0.1" max="1.5" step="0.05" value="0.8" style="width:180px;accent-color:var(--acc)"><button id="vRoll">Roll again</button><span class="hint">Click one to adopt it (undo works). Keep rolling from the one you pick.</span></div>
+  <div class="vars" id="vars"></div>
+</div></div>
+<div id="toast"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ---------------------------------------------------------------------------
+// Conventions: everything is stored in Blender space. Metres, +Z up, nose points +Y,
+// +X is starboard. Rotations are Blender XYZ Euler, in degrees.
+// ---------------------------------------------------------------------------
+const D2R = Math.PI / 180;
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const r3 = n => Math.round(n * 1000) / 1000;
+const fmt = (n, d = 1) => (Math.round(n * 10 ** d) / 10 ** d).toFixed(d);
+
+function mulberry(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ---------------- mesh generators (part-local coords, Blender axes) ----------------
+const M = () => ({ v: [], f: [] });
+// m.fz (optional): per-face zone override, 0 = the part's own zone
+function merge(a, b, zone = null) {
+  const o = a.v.length, na = a.f.length;
+  for (const p of b.v) a.v.push(p); for (const f of b.f) a.f.push(f.map(i => i + o));
+  if (a.fz || b.fz || zone) { a.fz = a.fz || Array(na).fill(0); for (let i = 0; i < b.f.length; i++) a.fz.push(zone || (b.fz ? b.fz[i] : 0)); }
+  return a;
+}
+// square-section beam between two points (for trusses)
+function beam(a, b, t) {
+  const d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], L = Math.hypot(...d) || 1, n = d.map(x => x / L);
+  const up = Math.abs(n[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0];
+  const cr = (u, v) => [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]], nz = u => { const l = Math.hypot(...u); return u.map(x => x / l); };
+  const e1 = nz(cr(n, up)), e2 = cr(e1, n), h = t / 2, m = M();
+  for (const P of [a, b]) for (const [s1, s2] of [[1, 1], [-1, 1], [-1, -1], [1, -1]]) m.v.push([0, 1, 2].map(i => P[i] + e1[i] * h * s1 + e2[i] * h * s2));
+  m.f.push([0, 1, 2, 3], [7, 6, 5, 4]); for (let i = 0; i < 4; i++) { const j = (i + 1) % 4; m.f.push([i, 4 + i, 4 + j, j]); }
+  return m;
+}
+// freehand outline -> extruded slab. plane: side (u=y,v=z), top (u=x,v=y), front (u=x,v=z)
+function sketchMesh(pts, plane, thick) {
+  const m = M(); if (!pts || pts.length < 3) return box(1, 1, 1);
+  const to3 = plane === 'side' ? (u, v, w) => [w, u, v] : plane === 'top' ? (u, v, w) => [u, v, w] : (u, v, w) => [u, w, v];
+  const n = pts.length, tris = THREE.ShapeUtils.triangulateShape(pts.map(([u, v]) => new THREE.Vector2(u, v)), []);
+  for (const [u, v] of pts) m.v.push(to3(u, v, thick / 2)); for (const [u, v] of pts) m.v.push(to3(u, v, -thick / 2));
+  for (const [a, b, c] of tris) { m.f.push([a, b, c]); m.f.push([n + c, n + b, n + a]); }
+  for (let i = 0; i < n; i++) { const j = (i + 1) % n; m.f.push([i, n + i, n + j, j]); }
+  return m;
+}
+function xf(m, fn) { m.v = m.v.map(fn); return m; }
+const tr = (m, dx, dy, dz) => xf(m, p => [p[0] + dx, p[1] + dy, p[2] + dz]);
+const yToZ = m => xf(m, p => [p[0], -p[2], p[1]]); // rotate +90 about X: local +Y axis becomes +Z
+function rect(w, h) { const a = w / 2, b = h / 2; return [[a, -b], [a, b], [-a, b], [-a, -b]]; }
+function octa(w, h, c) {
+  if (c <= 0.001) return rect(w, h);
+  const a = w / 2, b = h / 2, d = Math.min(c * Math.min(w, h), Math.min(a, b) * 0.95);
+  return [[a, -b + d], [a, b - d], [a - d, b], [-a + d, b], [-a, b - d], [-a, -b + d], [-a + d, -b], [a - d, -b]];
+}
+function loft(pB, yB, pF, yF, zB = 0, zF = 0) {
+  const n = pB.length, m = M();
+  pB.forEach(([x, z]) => m.v.push([x, yB, z + zB]));
+  pF.forEach(([x, z]) => m.v.push([x, yF, z + zF]));
+  for (let i = 0; i < n; i++) { const j = (i + 1) % n; m.f.push([i, n + i, n + j, j]); }
+  m.f.push([...Array(n).keys()]);
+  m.f.push([...Array(n).keys()].map(i => n + i).reverse());
+  return m;
+}
+const box = (sx, sy, sz, cx = 0, cy = 0, cz = 0) => tr(loft(rect(sx, sz), -sy / 2, rect(sx, sz), sy / 2), cx, cy, cz);
+// lathe around local Y. prof = [[radius, y], ...]
+function lathe(prof, sides, { caps = true, closed = false, off = Math.PI / sides } = {}) {
+  const m = M(), rings = [];
+  for (const [r, y] of prof) {
+    if (r < 1e-4) { rings.push({ pole: m.v.length }); m.v.push([0, y, 0]); }
+    else { const s = m.v.length; for (let k = 0; k < sides; k++) { const t = off + k / sides * 2 * Math.PI; m.v.push([r * Math.cos(t), y, r * Math.sin(t)]); } rings.push({ s }); }
+  }
+  const nR = rings.length;
+  for (let i = 0; i < (closed ? nR : nR - 1); i++) {
+    const A = rings[i], B = rings[(i + 1) % nR];
+    if (A.pole !== undefined && B.pole !== undefined) continue;
+    for (let k = 0; k < sides; k++) {
+      const k2 = (k + 1) % sides;
+      if (A.pole !== undefined) m.f.push([A.pole, B.s + k, B.s + k2]);
+      else if (B.pole !== undefined) m.f.push([A.s + k2, A.s + k, B.pole]);
+      else m.f.push([A.s + k, B.s + k, B.s + k2, A.s + k2]);
+    }
+  }
+  if (caps && !closed) {
+    const a = rings[0], b = rings[nR - 1], ids = s => [...Array(sides).keys()].map(k => s + k);
+    if (a.pole === undefined) m.f.push(ids(a.s).reverse());
+    if (b.pole === undefined) m.f.push(ids(b.s));
+  }
+  return m;
+}
+function rotZ(m, a) { const c = Math.cos(a), s = Math.sin(a); return xf(m, p => [p[0] * c - p[1] * s, p[0] * s + p[1] * c, p[2]]); }
+function rotY(m, a) { const c = Math.cos(a), s = Math.sin(a); return xf(m, p => [p[0] * c + p[2] * s, p[1], -p[0] * s + p[2] * c]); }
+
+const pd = (v, a, min, max, st, lab, int = false) => ({ v, a, min, max, st, lab, int });
+// axis tags drive the style buttons: x/y/z scale with that axis, r with radial (xz), u with everything
+const TYPES = {
+  hull: { label: 'Hull block', zone: 'hull', p: {
+      len: pd(20, 'y', 0.5, 800, 0.5, 'Length'), wB: pd(8, 'x', 0.05, 400, 0.1, 'Width rear'), hB: pd(6, 'z', 0.05, 400, 0.1, 'Height rear'),
+      wF: pd(8, 'x', 0.05, 400, 0.1, 'Width front'), hF: pd(6, 'z', 0.05, 400, 0.1, 'Height front'), zF: pd(0, 'z', -200, 200, 0.1, 'Front up/down'), cham: pd(0.15, '', 0, 0.45, 0.01, 'Corner bevel') },
+    gen: p => loft(octa(p.wB, p.hB, p.cham), -p.len / 2, octa(p.wF, p.hF, p.cham), p.len / 2, 0, p.zF) },
+  box: { label: 'Box / slab', zone: 'secondary', p: { sx: pd(6, 'x', 0.05, 400, 0.1, 'Width X'), sy: pd(6, 'y', 0.05, 800, 0.1, 'Length Y'), sz: pd(3, 'z', 0.05, 400, 0.1, 'Height Z') },
+    gen: p => box(p.sx, p.sy, p.sz) },
+  tube: { label: 'Tube / spine', zone: 'secondary', p: { len: pd(30, 'y', 0.2, 800, 0.5, 'Length'), rB: pd(1.5, 'r', 0, 200, 0.05, 'Radius rear'), rF: pd(1.5, 'r', 0, 200, 0.05, 'Radius front'), sides: pd(8, '', 3, 48, 1, 'Sides', true) },
+    gen: p => lathe([[p.rB, -p.len / 2], [p.rF, p.len / 2]], p.sides) },
+  engine: { label: 'Engine bell', zone: 'dark', p: { len: pd(5, 'y', 0.2, 200, 0.1, 'Bell length'), rT: pd(1.2, 'r', 0.05, 100, 0.05, 'Throat radius'), rE: pd(2.4, 'r', 0.05, 100, 0.05, 'Exit radius'),
+      flare: pd(1.8, '', 0.5, 4, 0.05, 'Bell curve'), hl: pd(3, 'y', 0, 200, 0.1, 'Housing length'), sides: pd(24, '', 6, 48, 1, 'Sides', true) },
+    gen: p => {
+      const t = Math.max(0.05, p.rE * 0.06), n = 10, prof = [[0, 0]];
+      for (let k = 0; k <= n; k++) { const s = k / n; prof.push([p.rT + (p.rE - p.rT) * Math.pow(s, 1 / p.flare) + t, -p.len * s]); }
+      for (let k = n; k >= 2; k--) { const s = k / n; prof.push([p.rT + (p.rE - p.rT) * Math.pow(s, 1 / p.flare), -p.len * s]); }
+      prof.push([0, -p.len * 0.2]);
+      const m = lathe(prof, p.sides);
+      if (p.hl > 0.01) merge(m, lathe([[p.rT * 1.5, 0], [p.rT * 1.5, p.hl]], p.sides));
+      return m;
+    } },
+  plume: { label: 'Engine plume', zone: 'glow', p: { len: pd(14, 'y', 0.5, 600, 0.5, 'Length'), r: pd(2, 'r', 0.05, 100, 0.05, 'Radius') },
+    gen: p => lathe([[0, 0], [p.r, 0], [p.r * 0.85, -p.len * 0.3], [p.r * 0.4, -p.len * 0.7], [0, -p.len]], 20) },
+  nacelle: { label: 'Nacelle / pod', zone: 'secondary', p: { len: pd(14, 'y', 0.5, 600, 0.5, 'Length'), r: pd(1.6, 'r', 0.05, 100, 0.05, 'Radius'), nose: pd(0.25, '', 0, 0.5, 0.01, 'Nose share'),
+      tail: pd(0.15, '', 0, 0.5, 0.01, 'Tail share'), tailR: pd(0.6, '', 0, 1, 0.01, 'Tail radius'), sides: pd(16, '', 4, 48, 1, 'Sides', true) },
+    gen: p => {
+      const L = p.len, prof = [[0, L / 2]], nl = p.nose * L;
+      if (nl > 0.001) for (let k = 1; k <= 6; k++) { const a = k / 6 * Math.PI / 2; prof.push([p.r * Math.sin(a), L / 2 - nl * (1 - Math.cos(a))]); }
+      else prof.push([p.r, L / 2]);
+      prof.push([p.r, -L / 2 + p.tail * L]); prof.push([p.r * p.tailR, -L / 2]); prof.push([0, -L / 2]);
+      return lathe(prof, p.sides);
+    } },
+  wing: { label: 'Wing / fin', zone: 'hull', p: { span: pd(10, 'x', 0.2, 400, 0.1, 'Span'), root: pd(12, 'y', 0.2, 400, 0.1, 'Root chord'), tip: pd(4, 'y', 0.05, 400, 0.1, 'Tip chord'),
+      sweep: pd(6, 'y', -200, 400, 0.1, 'Sweep back'), thick: pd(0.8, 'z', 0.05, 50, 0.05, 'Thickness'), tipT: pd(0.5, '', 0.05, 1, 0.01, 'Tip thickness') },
+    gen: p => {
+      const t = p.thick / 2, tt = t * p.tipT, sy = -p.sweep;
+      const v = [[0, p.root / 2, t], [0, -p.root / 2, t], [p.span, sy - p.tip / 2, tt], [p.span, sy + p.tip / 2, tt],
+        [0, p.root / 2, -t], [0, -p.root / 2, -t], [p.span, sy - p.tip / 2, -tt], [p.span, sy + p.tip / 2, -tt]];
+      return { v, f: [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [3, 2, 6, 7], [0, 3, 7, 4], [1, 5, 6, 2]] };
+    } },
+  turret: { label: 'Turret', zone: 'secondary', p: { size: pd(3, 'u', 0.2, 60, 0.1, 'Size'), barrels: pd(2, '', 1, 4, 1, 'Barrels', true), blen: pd(6, 'y', 0.2, 100, 0.1, 'Barrel length') },
+    gen: p => {
+      const s = p.size, m = yToZ(lathe([[s * 0.5, 0], [s * 0.45, s * 0.2]], 16));
+      merge(m, tr(loft(octa(s * 0.75, s * 0.35, 0.25), -s * 0.4, octa(s * 0.55, s * 0.28, 0.25), s * 0.35), 0, 0, s * 0.375));
+      for (let i = 0; i < p.barrels; i++) merge(m, tr(lathe([[s * 0.05, 0], [s * 0.04, p.blen]], 8), (i - (p.barrels - 1) / 2) * s * 0.18, s * 0.3, s * 0.38));
+      return m;
+    } },
+  radiator: { label: 'Radiator', zone: 'accent', p: { w: pd(8, 'x', 0.2, 400, 0.1, 'Width X'), l: pd(12, 'y', 0.2, 600, 0.1, 'Length Y'), t: pd(0.3, 'z', 0.02, 20, 0.02, 'Thickness'), ribs: pd(6, '', 0, 40, 1, 'Ribs', true) },
+    gen: p => { const m = box(p.w, p.l, p.t); for (let i = 0; i < p.ribs; i++) merge(m, box(p.w, p.l / p.ribs * 0.15, p.t * 2.5, 0, -p.l / 2 + (i + 0.5) * p.l / p.ribs, 0)); return m; } },
+  hangar: { label: 'Hangar bay', zone: 'dark', p: { w: pd(12, 'x', 0.5, 400, 0.1, 'Width'), h: pd(6, 'z', 0.5, 400, 0.1, 'Height'), d: pd(16, 'y', 0.5, 600, 0.1, 'Depth'), wall: pd(0.8, 'u', 0.05, 20, 0.05, 'Wall') },
+    gen: p => {
+      const { w, h, d, wall } = p, m = box(w, d, wall, 0, 0, -h / 2 + wall / 2);
+      merge(m, box(w, d, wall, 0, 0, h / 2 - wall / 2)); merge(m, box(wall, d, h, w / 2 - wall / 2, 0, 0)); merge(m, box(wall, d, h, -w / 2 + wall / 2, 0, 0));
+      return merge(m, box(w, wall, h, 0, -d / 2 + wall / 2, 0));
+    } },
+  greebles: { label: 'Greeble patch', zone: 'secondary', p: { w: pd(8, 'x', 0.2, 400, 0.1, 'Width X'), l: pd(14, 'y', 0.2, 600, 0.1, 'Length Y'), n: pd(24, '', 1, 200, 1, 'Count', true), hmax: pd(0.8, 'z', 0.05, 30, 0.05, 'Max height'), seed: pd(1, '', 1, 999, 1, 'Seed', true) },
+    gen: p => {
+      const rnd = mulberry(p.seed * 7919), m = M();
+      for (let i = 0; i < p.n; i++) {
+        const sx = p.w * (0.04 + rnd() * 0.22), sy = p.l * (0.03 + rnd() * 0.16), sz = p.hmax * (0.15 + rnd() * 0.85);
+        merge(m, box(sx, sy, sz, (rnd() - 0.5) * (p.w - sx), (rnd() - 0.5) * (p.l - sy), sz / 2));
+      }
+      return m;
+    } },
+  dome: { label: 'Dome / bridge', zone: 'glass', p: { r: pd(2, 'u', 0.05, 200, 0.05, 'Radius'), squash: pd(0.6, '', 0.1, 3, 0.05, 'Height ratio'), stretch: pd(1.6, '', 0.2, 6, 0.05, 'Length ratio'), half: pd(1, '', 0, 1, 1, 'Half dome', true) },
+    gen: p => {
+      const prof = [], n = p.half ? 6 : 12;
+      for (let k = 0; k <= n; k++) { const a = k / 12 * Math.PI; prof.push([p.r * Math.sin(a), p.r * Math.cos(a)]); }
+      if (p.half) prof.push([0, 0]);
+      return xf(lathe(prof, 20), q => [q[0], -q[2] * p.stretch, q[1] * p.squash]);
+    } },
+  ring: { label: 'Ring', zone: 'secondary', p: { R: pd(30, 'r', 1, 600, 0.5, 'Ring radius'), th: pd(3, 'u', 0.1, 100, 0.1, 'Ring thickness'), wd: pd(6, 'y', 0.1, 200, 0.1, 'Ring width'),
+      spokes: pd(4, '', 0, 12, 1, 'Spokes', true), segs: pd(40, '', 6, 96, 1, 'Segments', true) },
+    gen: p => {
+      // lathe a rectangular cross-section around Y, then turn so the ring wraps the ship's long axis
+      const prof = [[p.R - p.th / 2, -p.wd / 2], [p.R + p.th / 2, -p.wd / 2], [p.R + p.th / 2, p.wd / 2], [p.R - p.th / 2, p.wd / 2]];
+      const m = lathe(prof, p.segs, { closed: true, caps: false });
+      // lathe ring sits in local XZ around Y: already wraps the long axis
+      for (let i = 0; i < p.spokes; i++) merge(m, rotY(box(p.R, p.th * 0.35, p.th * 0.35, p.R / 2, 0, 0), i / p.spokes * Math.PI * 2 + Math.PI / 4));
+      return m;
+    } },
+};
+// lathe(closed) on a 4-point profile treats each profile point as a ring and connects
+// ring i to i+1 including last->first, so the rectangular section closes. Good.
+
+// buttons in the "Add part" palette: type + overrides
+Object.assign(TYPES, {
+  tiers: { label: 'Tiered tower', zone: 'hull', p: { count: pd(5, '', 1, 14, 1, 'Tiers', true), w: pd(30, 'x', 0.5, 400, 0.5, 'Base width'), h: pd(30, 'z', 0.5, 400, 0.5, 'Base depth'),
+      tl: pd(26, 'y', 0.5, 300, 0.5, 'Tier height'), setback: pd(0.14, '', 0, 0.45, 0.01, 'Setback'), ledge: pd(1.2, 'y', 0, 30, 0.1, 'Ledge thick'), over: pd(1.2, 'u', 0, 30, 0.1, 'Ledge overhang'),
+      bands: pd(4, '', 0, 20, 1, 'Lit floor bands', true), cham: pd(0.05, '', 0, 0.45, 0.01, 'Corner bevel') },
+    gen: p => {
+      // base sits at local y=0 and the tower grows toward +Y (the nose); floors stack across the thrust axis
+      const m = M();
+      for (let i = 0; i < p.count; i++) {
+        const k = Math.pow(1 - p.setback, i), w = p.w * k, h = p.h * k, y0 = i * p.tl, y1 = y0 + p.tl - p.ledge;
+        merge(m, loft(octa(w, h, p.cham), y0, octa(w, h, p.cham), y1));
+        if (p.ledge > 0.01) merge(m, loft(octa(w + 2 * p.over, h + 2 * p.over, p.cham), y1, octa(w + 2 * p.over, h + 2 * p.over, p.cham), y0 + p.tl));
+        const bh = (y1 - y0) / Math.max(1, p.bands) * 0.22, o = Math.max(0.06, w * 0.008);
+        for (let b = 0; b < p.bands; b++) { const yb = y0 + (b + 1) * (y1 - y0) / (p.bands + 1); merge(m, loft(octa(w + o * 2, h + o * 2, p.cham), yb - bh / 2, octa(w + o * 2, h + o * 2, p.cham), yb + bh / 2), 'glass'); }
+      }
+      return m;
+    } },
+  truss: { label: 'Truss', zone: 'dark', p: { len: pd(60, 'y', 1, 800, 0.5, 'Length'), w: pd(6, 'x', 0.2, 100, 0.1, 'Width'), h: pd(6, 'z', 0.2, 100, 0.1, 'Height'),
+      bays: pd(8, '', 1, 60, 1, 'Bays', true), t: pd(0.5, 'u', 0.02, 10, 0.02, 'Member thickness') },
+    gen: p => {
+      const m = M(), a = p.w / 2, b = p.h / 2, C = [[a, b], [-a, b], [-a, -b], [a, -b]], y = i => -p.len / 2 + i * p.len / p.bays;
+      for (const [x, z] of C) merge(m, beam([x, -p.len / 2, z], [x, p.len / 2, z], p.t));
+      for (let i = 0; i <= p.bays; i++) for (let c = 0; c < 4; c++) { const [x1, z1] = C[c], [x2, z2] = C[(c + 1) % 4]; merge(m, beam([x1, y(i), z1], [x2, y(i), z2], p.t * 0.8)); }
+      for (let i = 0; i < p.bays; i++) for (let c = 0; c < 4; c++) { const [x1, z1] = C[c], [x2, z2] = C[(c + 1) % 4], f = (i + c) % 2; merge(m, beam([x1, y(i + f), z1], [x2, y(i + 1 - f), z2], p.t * 0.6)); }
+      return m;
+    } },
+  sketch: { label: 'Drawn shape', zone: 'hull', p: { thick: pd(4, '', 0.05, 400, 0.05, 'Thickness') },
+    gen: p => sketchMesh(p.pts, p.plane, p.thick) },
+});
+
+const ADDS = [
+  ['Hull block', 'hull', {}], ['Nose wedge', 'hull', { len: 12, wF: 1.2, hF: 0.8, zF: -1.2 }],
+  ['Tail taper', 'hull', { len: 8, wB: 6, hB: 4.5, wF: 8, hF: 6 }], ['Box / slab', 'box', {}],
+  ['Spine tube', 'tube', {}], ['Antenna', 'tube', { len: 5, rB: 0.2, rF: 0.04, sides: 6 }, { rot: [90, 0, 0] }],
+  ['Engine bell', 'engine', {}, { mirror: true }], ['Plume', 'plume', {}, { mirror: true }],
+  ['Nacelle / pod', 'nacelle', {}, { mirror: true }], ['Wing', 'wing', {}, { mirror: true }],
+  ['Fin', 'wing', { span: 5, root: 8, tip: 3, sweep: 4 }, { rot: [0, -90, 0] }], ['Turret', 'turret', {}],
+  ['PDC', 'turret', { size: 1, barrels: 1, blen: 1.8 }, { mirror: true }], ['Radiator', 'radiator', {}, { mirror: true }],
+  ['Hangar bay', 'hangar', {}], ['Greebles', 'greebles', {}],
+  ['Bridge dome', 'dome', {}], ['Ring', 'ring', {}],
+  ['Tiered tower', 'tiers', {}], ['Truss', 'truss', {}],
+  ['Spire', 'tube', { len: 24, rB: 1.4, rF: 0.05, sides: 4 }], ['Window strip', 'box', { sx: 8, sy: 0.8, sz: 0.3 }, { zone: 'glass' }],
+  ['Cargo pod', 'box', { sx: 8, sy: 12, sz: 8 }, { zone: 'accent', mirror: true }], ['Buttress', 'hull', { len: 40, wB: 2.5, hB: 12, wF: 1.5, hF: 1.5, cham: 0 }, { mirror: true }],
+];
+
+const ZONES = ['hull', 'secondary', 'accent', 'dark', 'glow', 'glass'];
+const DEFAULT_PAL = { hull: '#8b9098', secondary: '#5b636d', accent: '#c4502c', dark: '#26292e', glow: '#61d4ff', glass: '#ffc46b' };
+
+// ---------------- ship model ----------------
+let uid = 1;
+function mkPart(type, over = {}, extra = {}) {
+  const T = TYPES[type], p = {};
+  for (const k in T.p) p[k] = over[k] ?? T.p[k].v;
+  for (const k in over) if (!(k in T.p)) p[k] = JSON.parse(JSON.stringify(over[k])); // e.g. drawn outline points
+  return { id: 'p' + (uid++), name: extra.name || '', type, p, pos: extra.pos ? [...extra.pos] : [0, 0, 0], rot: extra.rot ? [...extra.rot] : [0, 0, 0], mirror: !!extra.mirror, zone: extra.zone || T.zone, note: extra.note || '' };
+}
+function newShip(name = 'Unnamed hull') { return { name, cls: '', role: '', notes: '', direction: (typeof ship !== 'undefined' && ship && ship.direction) || 'tower', palette: { ...DEFAULT_PAL }, parts: [], refs: [] }; }
+const DIRS = {
+  tower: { label: 'Space skyscraper', brief: 'Space-real "skyscraper" ship, NOT an aircraft. The thrust axis is the building\'s vertical: engines at the base (-Y), the top of the building is the nose (+Y). Decks and floors stack across the thrust axis like storeys. Flat faces, hard edges, setbacks, ledges, lit window/floor bands, structural buttresses, an antenna spire on top. No wings, no pointed or swept aerodynamic noses, no streamlining.' },
+  industrial: { label: 'Industrial hauler', brief: 'Space-real industrial: exposed truss, bolted-on modules, tanks and cargo pods, big radiators, function over form, grimy and used. No wings, no aerodynamic shaping.' },
+  aircraft: { label: 'Sci-fi aircraft', brief: 'Aerodynamic sci-fi look: wings, swept surfaces and a sleek canopy are fine.' },
+  none: { label: 'No preset (my notes only)', brief: '' },
+};
+function uniqueNames(ship) {
+  const seen = {};
+  for (const pt of ship.parts) {
+    let base = (pt.name || pt.type).replace(/[^\w\-]+/g, '_'), n = base, i = 2;
+    while (seen[n]) n = base + '_' + (i++);
+    seen[n] = 1; pt.name = n;
+  }
+}
+const P = (type, name, over, pos, extra = {}) => mkPart(type, over, { ...extra, name, pos });
+
+const TEMPLATES = {
+  'Skyscraper': () => {
+    const s = newShip('Skyscraper'); s.direction = 'tower'; s.cls = 'Tower ship'; s.role = 'Capital ship that looks like a building flying on its engines';
+    s.parts = [
+      P('hull', 'drive_block', { len: 22, wB: 40, hB: 40, wF: 36, hF: 36, cham: 0.06 }, [0, -11, 0], { zone: 'secondary' }),
+      P('engine', 'drive_upper', { len: 14, rT: 4, rE: 8, hl: 2, flare: 2 }, [10, -22, 10], { mirror: true }),
+      P('engine', 'drive_lower', { len: 14, rT: 4, rE: 8, hl: 2, flare: 2 }, [10, -22, -10], { mirror: true }),
+      P('plume', 'plume_upper', { len: 50, r: 7 }, [10, -36, 10], { mirror: true }),
+      P('plume', 'plume_lower', { len: 50, r: 7 }, [10, -36, -10], { mirror: true }),
+      P('tiers', 'tower', { count: 5, w: 32, h: 32, tl: 28, setback: 0.14, ledge: 1.2, over: 1.2, bands: 4, cham: 0.05 }, [0, 0, 0]),
+      P('hull', 'crown', { len: 14, wB: 16, hB: 16, wF: 6, hF: 6, cham: 0.1 }, [0, 147, 0], { zone: 'secondary' }),
+      P('tube', 'spire', { len: 30, rB: 1.2, rF: 0.05, sides: 4 }, [0, 169, 0]),
+      P('hull', 'buttress_side', { len: 70, wB: 3, hB: 14, wF: 2, hF: 2, cham: 0 }, [17.5, 35, 0], { mirror: true, zone: 'secondary' }),
+      P('hull', 'buttress_top', { len: 70, wB: 3, hB: 14, wF: 2, hF: 2, cham: 0 }, [0, 35, 17.5], { rot: [0, 90, 0], zone: 'secondary' }),
+      P('hull', 'buttress_bottom', { len: 70, wB: 3, hB: 14, wF: 2, hF: 2, cham: 0 }, [0, 35, -17.5], { rot: [0, 90, 0], zone: 'secondary' }),
+      P('radiator', 'radiator_vane', { w: 20, l: 30, t: 0.5, ribs: 8 }, [31, 22, 0], { mirror: true }),
+      P('turret', 'pdc', { size: 2, barrels: 1, blen: 3 }, [10.6, 98, 0], { rot: [0, 90, 0], mirror: true }),
+      P('ring', 'dock_ring', { R: 24, th: 2.5, wd: 4, spokes: 0, segs: 8 }, [0, 3, 0]),
+    ];
+    return s;
+  },
+  'Truss hauler': () => {
+    const s = newShip('Truss hauler'); s.direction = 'industrial'; s.cls = 'Freighter'; s.role = 'Bulk hauler, ugly and honest';
+    s.parts = [
+      P('truss', 'spine', { len: 160, w: 8, h: 8, bays: 10, t: 0.6 }, [0, 0, 0]),
+      P('tiers', 'hab', { count: 3, w: 18, h: 18, tl: 12, setback: 0.15, ledge: 0.8, over: 0.8, bands: 3, cham: 0.1 }, [0, 80, 0]),
+      P('tube', 'antenna', { len: 14, rB: 0.6, rF: 0.05, sides: 4 }, [0, 122, 0]),
+      P('hull', 'drive_block', { len: 16, wB: 16, hB: 16, wF: 12, hF: 12, cham: 0.1 }, [0, -88, 0], { zone: 'secondary' }),
+      P('engine', 'drive', { len: 10, rT: 3, rE: 6.5, hl: 1, flare: 2 }, [0, -96, 0]),
+      P('plume', 'plume', { len: 40, r: 6 }, [0, -106, 0]),
+      ...[-45, -15, 15, 45].map((y, i) => P('box', 'cargo_side_' + (i + 1), { sx: 10, sy: 26, sz: 10 }, [9.5, y, 0], { mirror: true, zone: 'accent' })),
+      ...[-45, -15, 15, 45].map((y, i) => P('box', 'cargo_top_' + (i + 1), { sx: 10, sy: 26, sz: 10 }, [0, y, 9.5], { zone: i % 2 ? 'accent' : 'secondary' })),
+      P('radiator', 'radiator_top', { w: 24, l: 40, t: 0.5, ribs: 10 }, [0, -62, 17], { rot: [0, 90, 0] }),
+      P('radiator', 'radiator_bottom', { w: 24, l: 40, t: 0.5, ribs: 10 }, [0, -62, -17], { rot: [0, 90, 0] }),
+    ];
+    return s;
+  },
+  'Corvette': () => {
+    const s = newShip('Corvette'); s.cls = 'Corvette'; s.direction = 'aircraft'; s.role = 'Fast patrol gunship';
+    s.parts = [
+      P('hull', 'hull_main', { len: 34, wB: 10, hB: 7, wF: 9, hF: 6, cham: 0.2 }, [0, 0, 0]),
+      P('hull', 'nose', { len: 14, wB: 9, hB: 6, wF: 2, hF: 1.4, zF: -1, cham: 0.2 }, [0, 24, 0]),
+      P('hull', 'tail', { len: 8, wB: 8, hB: 6, wF: 10, hF: 7, cham: 0.2 }, [0, -21, 0]),
+      P('hull', 'bridge', { len: 10, wB: 5, hB: 2.5, wF: 3.5, hF: 2, cham: 0.3, zF: -0.3 }, [0, 8, 4.6], { zone: 'secondary' }),
+      P('dome', 'canopy', { r: 1.4, squash: 0.5, stretch: 1.8 }, [0, 11.5, 5.6]),
+      P('engine', 'engine', { len: 5, rT: 1.2, rE: 2.3, hl: 3 }, [3, -25, 0.3], { mirror: true }),
+      P('plume', 'plume', { len: 14, r: 2 }, [3, -30, 0.3], { mirror: true }),
+      P('wing', 'wing', { span: 9, root: 14, tip: 5, sweep: 7, thick: 1 }, [4.5, -11, -1.5], { rot: [0, 12, 0], mirror: true }),
+      P('radiator', 'radiator', { w: 7, l: 10, t: 0.3, ribs: 5 }, [8.5, 1, 1.5], { rot: [0, -8, 0], mirror: true }),
+      P('turret', 'main_gun', { size: 3, barrels: 2, blen: 6 }, [0, 17, 3]),
+      P('turret', 'pdc', { size: 1, barrels: 1, blen: 1.8 }, [4.6, -4, 3.3], { mirror: true }),
+      P('turret', 'pdc_belly', { size: 1, barrels: 1, blen: 1.8 }, [3.5, 14, -3.1], { rot: [0, 180, 0], mirror: true }),
+      P('greebles', 'greebles_top', { w: 7, l: 12, n: 30, hmax: 0.7, seed: 7 }, [0, -9, 3.5]),
+      P('tube', 'antenna', { len: 4, rB: 0.2, rF: 0.04, sides: 6 }, [1.2, 3, 7.5], { rot: [90, 0, 0] }),
+    ];
+    return s;
+  },
+  'Brick frigate': () => {
+    const s = newShip('Brick frigate'); s.cls = 'Frigate'; s.direction = 'industrial'; s.role = 'Ugly, armoured, keeps shooting';
+    s.parts = [
+      P('hull', 'core', { len: 60, wB: 18, hB: 16, wF: 18, hF: 16, cham: 0.08 }, [0, 0, 0]),
+      P('hull', 'bow', { len: 20, wB: 18, hB: 16, wF: 12, hF: 9, zF: -1.5, cham: 0.08 }, [0, 40, 0]),
+      P('hull', 'drive_section', { len: 22, wB: 22, hB: 20, wF: 20, hF: 18, cham: 0.1 }, [0, -41, 0], { zone: 'secondary' }),
+      P('box', 'armour_belt', { sx: 20, sy: 34, sz: 6 }, [0, 4, -2], { zone: 'secondary' }),
+      P('engine', 'main_drive', { len: 9, rT: 3, rE: 6, hl: 2, flare: 2 }, [0, -52, 0]),
+      P('engine', 'aux_drive', { len: 6, rT: 1.6, rE: 3.4, hl: 2 }, [7.5, -52, 6], { mirror: true }),
+      P('engine', 'aux_drive_low', { len: 6, rT: 1.6, rE: 3.4, hl: 2 }, [7.5, -52, -6], { mirror: true }),
+      P('plume', 'main_plume', { len: 40, r: 5.5 }, [0, -61, 0]),
+      P('turret', 'railgun_top', { size: 6, barrels: 1, blen: 22 }, [0, 22, 8]),
+      P('turret', 'pdc_fwd', { size: 1.4, barrels: 1, blen: 2.5 }, [9.2, 30, 6], { rot: [0, -60, 0], mirror: true }),
+      P('turret', 'pdc_mid', { size: 1.4, barrels: 1, blen: 2.5 }, [9.2, -8, 6], { rot: [0, -60, 0], mirror: true }),
+      P('turret', 'pdc_low', { size: 1.4, barrels: 1, blen: 2.5 }, [9.2, 10, -6], { rot: [0, -120, 0], mirror: true }),
+      P('hangar', 'hangar', { w: 10, h: 6, d: 14, wall: 0.8 }, [0, 44, -4.5]),
+      P('radiator', 'radiator', { w: 14, l: 18, t: 0.4, ribs: 8 }, [17, -30, 0], { mirror: true }),
+      P('greebles', 'greebles_top', { w: 15, l: 50, n: 70, hmax: 1.6, seed: 3 }, [0, 0, 8]),
+      P('greebles', 'greebles_side', { w: 13, l: 50, n: 40, hmax: 1.2, seed: 11 }, [9, 0, 0], { rot: [0, 90, 0], mirror: true }),
+    ];
+    return s;
+  },
+  'Fighter': () => {
+    const s = newShip('Fighter'); s.cls = 'Fighter'; s.direction = 'aircraft'; s.role = 'Single seat interceptor';
+    s.parts = [
+      P('nacelle', 'fuselage', { len: 12, r: 1.1, nose: 0.4, tail: 0.1, tailR: 0.75, sides: 8 }, [0, 0, 0], { zone: 'hull' }),
+      P('dome', 'canopy', { r: 0.6, squash: 0.7, stretch: 2.2 }, [0, 1.8, 0.9]),
+      P('wing', 'wing', { span: 5.5, root: 6, tip: 1.2, sweep: 4.5, thick: 0.35 }, [0.8, -1.8, -0.2], { rot: [0, 4, 0], mirror: true }),
+      P('wing', 'tail_fin', { span: 2.4, root: 3, tip: 1, sweep: 2, thick: 0.2 }, [1, -4.6, 0.6], { rot: [0, -70, 0], mirror: true }),
+      P('nacelle', 'engine_pod', { len: 5, r: 0.55, nose: 0.2, tail: 0.1, tailR: 0.85, sides: 12 }, [1.5, -3.6, -0.1], { mirror: true }),
+      P('engine', 'nozzle', { len: 0.8, rT: 0.4, rE: 0.5, hl: 0, flare: 1 }, [1.5, -6.1, -0.1], { mirror: true }),
+      P('plume', 'plume', { len: 5, r: 0.45 }, [1.5, -6.9, -0.1], { mirror: true }),
+      P('tube', 'gun', { len: 3, rB: 0.08, rF: 0.06, sides: 6 }, [3.2, 0, -0.25], { mirror: true }),
+    ];
+    return s;
+  },
+  'Carrier': () => {
+    const s = newShip('Carrier'); s.cls = 'Carrier'; s.direction = 'none'; s.role = 'Fleet carrier, launches fighters from the hammerhead';
+    s.parts = [
+      P('tube', 'spine', { len: 180, rB: 7, rF: 7, sides: 8 }, [0, 0, 0]),
+      P('hull', 'hammerhead', { len: 60, wB: 70, hB: 22, wF: 56, hF: 16, zF: -2, cham: 0.12 }, [0, 110, 0]),
+      P('hull', 'prow', { len: 22, wB: 56, hB: 16, wF: 20, hF: 6, zF: -4, cham: 0.12 }, [0, 151, -2]),
+      P('hangar', 'flight_deck', { w: 22, h: 10, d: 40, wall: 1.5 }, [22, 125, -1], { mirror: true }),
+      P('hull', 'drive_block', { len: 50, wB: 40, hB: 30, wF: 30, hF: 22, cham: 0.15 }, [0, -100, 0], { zone: 'secondary' }),
+      P('engine', 'drive', { len: 16, rT: 5, rE: 9, hl: 4 }, [11, -125, 0], { mirror: true }),
+      P('plume', 'plume', { len: 70, r: 8 }, [11, -141, 0], { mirror: true }),
+      P('ring', 'hab_ring', { R: 34, th: 5, wd: 10, spokes: 4, segs: 48 }, [0, -40, 0]),
+      P('box', 'bridge_tower', { sx: 8, sy: 14, sz: 14 }, [0, 96, 17], { zone: 'secondary' }),
+      P('dome', 'bridge_glass', { r: 3, squash: 0.4, stretch: 1.3 }, [0, 100, 24]),
+      P('radiator', 'radiator', { w: 30, l: 50, t: 0.6, ribs: 10 }, [22, 20, 0], { mirror: true }),
+      P('turret', 'flak', { size: 4, barrels: 2, blen: 7 }, [18, 95, 11], { mirror: true }),
+      P('greebles', 'spine_greebles', { w: 9, l: 150, n: 80, hmax: 3, seed: 5 }, [0, 0, 6]),
+    ];
+    return s;
+  },
+};
+
+function rollTower(seed, industrial) {
+  const R = mulberry(seed), rr = (a, b) => a + R() * (b - a), ri = (a, b) => Math.floor(rr(a, b + 1));
+  const s = newShip((industrial ? 'Rolled hauler #' : 'Rolled tower #') + (seed % 1000)); s.direction = industrial ? 'industrial' : 'tower'; s.cls = 'Random';
+  const W = rr(14, 50), D = W * rr(0.6, 1.2), tiers = ri(2, 7), tl = W * rr(0.5, 1.2), set = rr(0, 0.22), cham = rr(0, 0.18);
+  const baseLen = W * rr(0.4, 0.8), spineLen = industrial ? W * rr(2, 5) : 0;
+  s.parts.push(P('hull', 'drive_block', { len: baseLen, wB: W * 1.15, hB: D * 1.15, wF: W, hF: D, cham }, [0, -baseLen / 2, 0], { zone: 'secondary' }));
+  const nE = [1, 2, 4, 4, 6][ri(0, 4)], rE = Math.min(W, D) * (nE === 1 ? 0.35 : 0.2);
+  const eng = (name, x, z, mir) => { s.parts.push(P('engine', name, { len: rE * 1.8, rT: rE * 0.5, rE, hl: rE * 0.3, flare: 2 }, [x, -baseLen, z], { mirror: mir })); s.parts.push(P('plume', name + '_plume', { len: rE * 7, r: rE * 0.9 }, [x, -baseLen - rE * 1.8, z], { mirror: mir })); };
+  if (nE === 1) eng('drive', 0, 0, false);
+  else if (nE === 2) eng('drive', W * 0.27, 0, true);
+  else if (nE === 4) { eng('drive_up', W * 0.25, D * 0.25, true); eng('drive_low', W * 0.25, -D * 0.25, true); }
+  else { eng('drive_up', W * 0.3, D * 0.25, true); eng('drive_low', W * 0.3, -D * 0.25, true); eng('drive_mid', 0, 0, false); }
+  let y = 0;
+  if (industrial) {
+    s.parts.push(P('truss', 'spine', { len: spineLen, w: W * 0.3, h: W * 0.3, bays: Math.max(3, Math.round(spineLen / (W * 0.35))), t: W * 0.025 }, [0, spineLen / 2, 0]));
+    const pods = ri(2, 5), pl = spineLen / pods * 0.8;
+    for (let i = 0; i < pods; i++) s.parts.push(P('box', 'cargo_' + (i + 1), { sx: W * 0.35, sy: pl, sz: W * 0.35 }, [W * 0.33, (i + 0.5) * spineLen / pods, 0], { mirror: true, zone: R() < 0.5 ? 'accent' : 'secondary' }));
+    if (R() < 0.6) for (let i = 0; i < pods; i++) s.parts.push(P('tube', 'tank_' + (i + 1), { len: pl, rB: W * 0.15, rF: W * 0.15, sides: 12 }, [0, (i + 0.5) * spineLen / pods, W * 0.33]));
+    y = spineLen;
+  }
+  const twin = !industrial && R() < 0.25, tw = twin ? W * 0.45 : W, td = twin ? D * 0.8 : D;
+  const tierP = { count: industrial ? ri(1, 3) : tiers, w: tw, h: td, tl, setback: set, ledge: tl * rr(0.02, 0.08), over: tw * rr(0, 0.05), bands: ri(0, 6), cham };
+  s.parts.push(P('tiers', 'tower', tierP, [twin ? W * 0.3 : 0, y, 0], { mirror: twin }));
+  const k = Math.pow(1 - set, tierP.count - 1), top = y + tierP.count * tl, cw = tw * k;
+  if (R() < 0.7) s.parts.push(P('hull', 'crown', { len: tl * rr(0.3, 0.7), wB: cw * 0.9, hB: td * k * 0.9, wF: cw * rr(0.1, 0.6), hF: td * k * rr(0.1, 0.6), cham }, [twin ? W * 0.3 : 0, top + tl * 0.25, 0], { mirror: twin, zone: 'secondary' }));
+  s.parts.push(P('tube', 'spire', { len: tl * rr(0.4, 1.5), rB: cw * 0.06, rF: 0.05, sides: 4 }, [twin ? W * 0.3 : 0, top + tl * 0.6, 0], { mirror: twin }));
+  if (!industrial && R() < 0.6) s.parts.push(P('hull', 'buttress', { len: tierP.count * tl * 0.5, wB: W * 0.1, hB: D * 0.45, wF: W * 0.06, hF: W * 0.06, cham: 0 }, [W * 0.55, y + tierP.count * tl * 0.25, 0], { mirror: true, zone: 'secondary' }));
+  if (R() < 0.7) s.parts.push(P('radiator', 'radiator_vane', { w: W * 0.6, l: tl * 1.2, t: W * 0.015, ribs: 8 }, [W * 0.95, y + tl * 0.6, 0], { mirror: true }));
+  if (R() < 0.3) s.parts.push(P('ring', 'ring', { R: W * 0.9, th: W * 0.08, wd: W * 0.15, spokes: ri(0, 4), segs: R() < 0.5 ? 8 : 40 }, [0, y + tl * 0.5, 0]));
+  if (R() < 0.6) s.parts.push(P('turret', 'pdc', { size: W * 0.06, barrels: 1, blen: W * 0.1 }, [tw / 2 * Math.pow(1 - set, 1) + (twin ? W * 0.3 : 0), y + tl * 1.5, 0], { rot: [0, 90, 0], mirror: true }));
+  return s;
+}
+function rollShip(seed = (Math.random() * 1e9) | 0) {
+  const d = ship?.direction || 'tower';
+  if (d === 'tower' || d === 'industrial') return rollTower(seed, d === 'industrial');
+  return rollPlane(seed);
+}
+function rollPlane(seed) {
+  const R = mulberry(seed), rr = (a, b) => a + R() * (b - a), pick = a => a[(R() * a.length) | 0];
+  const s = newShip('Rolled hull #' + (seed % 1000)); s.cls = 'Random'; s.role = '';
+  const L = rr(40, 260), W = L * rr(0.12, 0.3), H = W * rr(0.45, 0.9), cham = rr(0, 0.3);
+  const nSeg = 2 + ((R() * 3) | 0);
+  let y = -L / 2, w = W * rr(0.7, 1), h = H * rr(0.7, 1);
+  const segLen = L * 0.8 / nSeg;
+  const tailLen = L * 0.08;
+  s.parts.push(P('hull', 'tail', { len: tailLen, wB: w * 0.8, hB: h * 0.8, wF: w, hF: h, cham }, [0, y + tailLen / 2, 0], { zone: 'secondary' }));
+  y += tailLen;
+  for (let i = 0; i < nSeg; i++) {
+    const w2 = W * rr(0.6, 1.1), h2 = H * rr(0.6, 1.05);
+    s.parts.push(P('hull', 'hull_' + (i + 1), { len: segLen, wB: w, hB: h, wF: w2, hF: h2, cham }, [0, y + segLen / 2, 0]));
+    y += segLen; w = w2; h = h2;
+  }
+  const noseLen = L / 2 - y;
+  s.parts.push(P('hull', 'nose', { len: noseLen, wB: w, hB: h, wF: w * rr(0.05, 0.5), hF: h * rr(0.05, 0.5), zF: -h * rr(0, 0.3), cham }, [0, y + noseLen / 2, 0]));
+  const eng = pick([1, 2, 2, 3, 4]), rE = Math.min(W, H) * (eng === 1 ? 0.35 : 0.2);
+  const ex = eng === 1 ? [0] : eng === 2 ? [W * 0.25] : eng === 3 ? [0, W * 0.3] : [W * 0.22, W * 0.22];
+  ex.forEach((x, i) => {
+    const z = eng === 4 ? (i ? -H * 0.2 : H * 0.2) : 0;
+    s.parts.push(P('engine', 'engine_' + (i + 1), { len: rE * 2.2, rT: rE * 0.5, rE, hl: rE }, [x, -L / 2, z], { mirror: x > 0.01 }));
+    s.parts.push(P('plume', 'plume_' + (i + 1), { len: rE * 6, r: rE * 0.9 }, [x, -L / 2 - rE * 2.2, z], { mirror: x > 0.01 }));
+  });
+  if (R() < 0.5) s.parts.push(P('wing', 'wing', { span: W * rr(0.4, 1), root: L * rr(0.12, 0.3), tip: L * rr(0.03, 0.1), sweep: L * rr(0.05, 0.2), thick: H * 0.08 }, [W * 0.4, -L * rr(0.05, 0.25), -H * rr(0, 0.3)], { rot: [0, rr(-10, 20), 0], mirror: true }));
+  if (R() < 0.5) s.parts.push(P('radiator', 'radiator', { w: W * 0.8, l: L * 0.18, t: H * 0.03, ribs: 6 }, [W * 0.95, -L * 0.15, 0], { mirror: true }));
+  if (R() < 0.6) s.parts.push(P('hull', 'bridge', { len: L * 0.12, wB: W * 0.4, hB: H * 0.3, wF: W * 0.3, hF: H * 0.22, cham: 0.3 }, [0, L * rr(-0.1, 0.25), H * 0.6], { zone: 'secondary' }));
+  const nt = (R() * 3) | 0;
+  for (let i = 0; i < nt; i++) s.parts.push(P('turret', 'turret_' + (i + 1), { size: W * 0.18, barrels: 1 + ((R() * 3) | 0), blen: W * 0.4 }, [0, L * rr(0, 0.35), H * 0.5]));
+  if (R() < 0.7) s.parts.push(P('turret', 'pdc', { size: W * 0.07, barrels: 1, blen: W * 0.12 }, [W * 0.45, L * rr(-0.2, 0.2), H * 0.45], { mirror: true }));
+  s.parts.push(P('greebles', 'greebles', { w: W * 0.6, l: L * 0.35, n: 40, hmax: H * 0.08, seed: (R() * 999) | 1 }, [0, -L * 0.1, H * 0.45]));
+  if (L > 150 && R() < 0.25) s.parts.push(P('ring', 'ring', { R: W * 1.4, th: W * 0.12, wd: W * 0.25, spokes: 4, segs: 40 }, [0, -L * 0.15, 0]));
+  return s;
+}
+
+// ---------------- state, undo ----------------
+let ship = null, sel = null;
+let undoS = [], redoS = [], lastKey = null, lastT = 0;
+function snapshot() { return JSON.stringify(ship); }
+function change(fn, key = null, level = 'all') {
+  const now = performance.now();
+  if (!(key && key === lastKey && now - lastT < 1200)) { undoS.push(snapshot()); if (undoS.length > 300) undoS.shift(); redoS = []; }
+  lastKey = key; lastT = now;
+  fn(); refresh(level);
+}
+function restore(json) { ship = JSON.parse(json); fixUid(); if (sel && !ship.parts.find(p => p.id === sel)) sel = null; refresh('all'); }
+function doUndo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); lastKey = null; }
+function doRedo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); lastKey = null; }
+function fixUid() { for (const p of ship.parts) { const n = parseInt(p.id.slice(1)); if (n >= uid) uid = n + 1; } }
+const part = id => ship.parts.find(p => p.id === id);
+let saveT = 0;
+function autosave() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('shipyard.v1', snapshot()); } catch (e) { try { localStorage.setItem('shipyard.v1', JSON.stringify({ ...ship, refs: [] })); toast('Images too big to autosave. Export the package to keep them.'); } catch (e2) { } } }, 300); }
+
+// ---------------- three.js view ----------------
+const cv = $('#cv'), viewEl = $('#view');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+renderer.setScissorTest(true);
+const scene = new THREE.Scene();
+const BG = new THREE.Color('#14110e'), SIL_BG = new THREE.Color('#d9d2c3');
+scene.add(new THREE.HemisphereLight(0xe8eefc, 0x2a2018, 1.1));
+const key = new THREE.DirectionalLight(0xfff1dc, 2.2); key.position.set(3, 5, -2); scene.add(key);
+const rim = new THREE.DirectionalLight(0x8fb8ff, 0.9); rim.position.set(-4, 2, 4); scene.add(rim);
+
+// Blender (x, y, z) -> three (x, z, -y)
+const B2T = (x, y, z) => new THREE.Vector3(x, z, -y);
+const root = new THREE.Group(); root.rotation.x = -Math.PI / 2; scene.add(root);
+const refGroup = new THREE.Group(); root.add(refGroup);
+const gridGroup = new THREE.Group(); scene.add(gridGroup);
+
+const matCache = {};
+function mat(zone, pal, selected = false) {
+  const k = zone + pal[zone] + selected;
+  if (matCache[k]) return matCache[k];
+  const c = new THREE.Color(pal[zone] || '#888');
+  let m;
+  if (zone === 'glow') m = new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: selected ? 0.85 : 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  else m = new THREE.MeshStandardMaterial({ color: c, metalness: zone === 'glass' ? 0.1 : 0.35, roughness: zone === 'glass' ? 0.2 : 0.62, flatShading: true, side: THREE.DoubleSide,
+    emissive: selected ? new THREE.Color('#ff7a10') : zone === 'glass' ? c.clone().multiplyScalar(0.35) : new THREE.Color(0), emissiveIntensity: selected ? 0.35 : 1 });
+  return matCache[k] = m;
+}
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4 });
+const edgeSel = new THREE.LineBasicMaterial({ color: 0xff9d3c });
+const silMat = new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.DoubleSide });
+
+// world-space (Blender) mesh for a part, with optional X mirror
+function partInstances(pt) {
+  const base = TYPES[pt.type].gen(pt.p, pt);
+  const out = [{ mesh: base, pos: pt.pos, rot: pt.rot, side: pt.mirror ? (pt.pos[0] >= 0 ? 'R' : 'L') : '' , mirrored: false }];
+  if (pt.mirror) {
+    const mm = { v: base.v.map(p => [-p[0], p[1], p[2]]), f: base.f.map(f => [...f].reverse()), fz: base.fz };
+    out.push({ mesh: mm, pos: [-pt.pos[0], pt.pos[1], pt.pos[2]], rot: [pt.rot[0], -pt.rot[1], -pt.rot[2]], side: pt.pos[0] >= 0 ? 'L' : 'R', mirrored: true });
+  }
+  return out;
+}
+function toGeo(m, zoneKeys = null) {
+  // faces grouped by zone so one mesh can carry several materials (e.g. lit window bands)
+  const pos = [], keys = [0];
+  if (m.fz) for (const z of m.fz) if (!keys.includes(z)) keys.push(z);
+  const g = new THREE.BufferGeometry();
+  keys.forEach((zk, mi) => {
+    const start = pos.length / 3;
+    m.f.forEach((f, fi) => { if ((m.fz ? m.fz[fi] : 0) !== zk) return; for (let i = 1; i < f.length - 1; i++) for (const k of [f[0], f[i], f[i + 1]]) pos.push(...m.v[k]); });
+    g.addGroup(start, pos.length / 3 - start, mi);
+  });
+  if (zoneKeys) zoneKeys.push(...keys);
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); return g;
+}
+function buildShip(s, { selId = null, edges = true, pickable = false } = {}) {
+  const g = new THREE.Group();
+  for (const pt of s.parts) {
+    for (const inst of partInstances(pt)) {
+      const zk = [], geo = toGeo(inst.mesh, zk), isSel = pt.id === selId;
+      const mesh = new THREE.Mesh(geo, zk.map(z => mat(z || pt.zone, s.palette, isSel)));
+      mesh.position.set(...inst.pos); mesh.rotation.set(inst.rot[0] * D2R, inst.rot[1] * D2R, inst.rot[2] * D2R, 'ZYX');
+      if (pickable) mesh.userData = { pid: pt.id, mirrored: inst.mirrored };
+      if (pt.zone === 'glow') mesh.renderOrder = 5;
+      g.add(mesh);
+      if (edges && pt.zone !== 'glow') { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 28), isSel ? edgeSel : edgeMat); e.userData.edge = true; mesh.add(e); }
+    }
+  }
+  return g;
+}
+function disposeTree(o) { o.traverse(c => { if (c.geometry) c.geometry.dispose(); }); }
+// bounding box in Blender coords
+function shipBox(s, all = false) { // plumes are VFX, not hull: they don't count toward the ship's size
+  const b = new THREE.Box3();
+  const g = buildShip({ ...s, parts: !all && s.parts.some(p => p.type !== 'plume') ? s.parts.filter(p => p.type !== 'plume') : s.parts }, { edges: false }); g.updateMatrixWorld(true);
+  b.setFromObject(g); disposeTree(g);
+  if (b.isEmpty()) b.set(new THREE.Vector3(-5, -10, -3), new THREE.Vector3(5, 10, 3));
+  return b; // group not under root, so these are Blender coords already
+}
+function niceStep(x) { const p = 10 ** Math.floor(Math.log10(x)), m = x / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
+
+let shipGroup = null, bbox = null, silhouette = false, refMode = 'human';
+function makeRef(b) {
+  const g = new THREE.Group(), m = new THREE.MeshStandardMaterial({ color: 0xffd27a, flatShading: true, emissive: 0x332200 });
+  const x0 = b.max.x + Math.max(2, (b.max.x - b.min.x) * 0.15);
+  if (refMode === 'human' || refMode === 'both') {
+    const hm = yToZ(lathe([[0.16, 0], [0.2, 0.85], [0.24, 1.35], [0.1, 1.5], [0.12, 1.58], [0.11, 1.75], [0, 1.8]], 10));
+    const h = new THREE.Mesh(toGeo(hm), m); h.position.set(x0, b.max.y, b.min.z); g.add(h);
+  }
+  if (refMode === 'fighter' || refMode === 'both') {
+    const f = TEMPLATES['Fighter']();
+    const fg = buildShip(f, { edges: true }); fg.traverse(c => { if (c.isMesh) c.material = m; });
+    fg.position.set(x0 + 9, (b.min.y + b.max.y) / 2, b.min.z + 1.2); g.add(fg);
+  }
+  return g;
+}
+function rebuildGrids(b) {
+  disposeTree(gridGroup); gridGroup.clear();
+  const size = b.getSize(new THREE.Vector3()), ext = Math.max(size.x, size.y, size.z, 4);
+  const step = niceStep(ext / 10), S = Math.ceil(ext * 1.8 / step) * step, div = Math.round(S / step);
+  const c = b.getCenter(new THREE.Vector3());
+  const mk = (layer, setup) => { const gh = new THREE.GridHelper(S, div, 0x5a4a36, 0x2c251d); gh.material.transparent = true; gh.material.opacity = 0.8; setup(gh); gh.layers.set(layer); gridGroup.add(gh); };
+  mk(1, gh => gh.position.copy(B2T(c.x, c.y, b.min.z - 0.05)));                                      // ground (3D + top)
+  mk(2, gh => { gh.rotation.z = Math.PI / 2; gh.position.copy(B2T(b.min.x - 1, c.y, c.z)); });       // side view backdrop
+  mk(3, gh => { gh.rotation.x = Math.PI / 2; gh.position.copy(B2T(c.x, b.min.y - 1, c.z)); });       // front view backdrop
+  gridStep = step;
+}
+let gridStep = 1;
+function rebuildScene() {
+  if (shipGroup) { disposeTree(shipGroup); root.remove(shipGroup); }
+  shipGroup = buildShip(ship, { selId: sel, edges: !silhouette, pickable: true }); root.add(shipGroup);
+  bbox = shipBox(ship, true);
+  disposeTree(refGroup); refGroup.clear(); if (refMode !== 'none') refGroup.add(makeRef(bbox));
+  rebuildGrids(bbox);
+  if (silhouette) { shipGroup.traverse(c => { if (c.isMesh) c.material = silMat; }); }
+  if (typeof rebuildRefPlanes === 'function' && refPlanes) rebuildRefPlanes();
+  const s = shipBox(ship).getSize(new THREE.Vector3());
+  $('#fDims').innerHTML = `Length <b>${fmt(s.y)} m</b> · Beam <b>${fmt(s.x)} m</b> · Height <b>${fmt(s.z)} m</b> · grid ${gridStep} m`;
+  $('#fRef').textContent = refMode === 'none' ? '' : 'Yellow = scale ref' + (refMode !== 'fighter' ? ' (human 1.8 m)' : '') + (refMode !== 'human' ? ' (fighter 16 m)' : '');
+}
+
+// cameras
+const persp = new THREE.PerspectiveCamera(38, 1, 0.1, 50000); persp.layers.enable(1);
+const orth = { top: new THREE.OrthographicCamera(), side: new THREE.OrthographicCamera(), front: new THREE.OrthographicCamera() };
+orth.top.layers.enable(1); orth.side.layers.enable(2); orth.front.layers.enable(3);
+const controls = new OrbitControls(persp, cv); controls.enableDamping = false; controls.screenSpacePanning = true;
+const vstate = { zoom: 1, pan: { top: [0, 0], side: [0, 0], front: [0, 0] } };
+let layout = 'quad';
+const LABEL = { persp: '3D (drag = orbit)', top: 'TOP · nose →', side: 'SIDE · nose →', front: 'FRONT · nose at you' };
+
+function fitPersp() {
+  const c = bbox.getCenter(new THREE.Vector3()), s = bbox.getSize(new THREE.Vector3()), r = Math.max(s.x, s.y, s.z) * 0.5 + 1;
+  const t = B2T(c.x, c.y, c.z), dir = new THREE.Vector3(1.0, 0.55, -1.15).normalize();
+  controls.target.copy(t); persp.position.copy(t).addScaledVector(dir, r * 2.6); persp.near = r * 0.01; persp.far = r * 100; persp.updateProjectionMatrix(); controls.update();
+}
+function fitAll() { vstate.zoom = 1; for (const k in vstate.pan) vstate.pan[k] = [0, 0]; fitPersp(); }
+// extents of each ortho view, in Blender axes: [horizontal, vertical]
+function orthoExtent(v, s) { return v === 'top' ? [s.y, s.x] : v === 'side' ? [s.y, s.z] : [s.x, s.z]; }
+function setupOrtho(v, cam, aspect, b = bbox, zoom = vstate.zoom, pan = vstate.pan[v]) {
+  const c = b.getCenter(new THREE.Vector3()), s = b.getSize(new THREE.Vector3()), D = Math.max(s.x, s.y, s.z) * 4 + 50;
+  let need = 0;
+  for (const k of ['top', 'side', 'front']) { const [h, vv] = orthoExtent(k, s); need = Math.max(need, vv, h / aspect); }
+  const half = need * 0.6 / zoom, t = B2T(c.x, c.y, c.z);
+  cam.left = -half * aspect + pan[0]; cam.right = half * aspect + pan[0]; cam.top = half + pan[1]; cam.bottom = -half + pan[1];
+  cam.near = 0.1; cam.far = D * 3;
+  if (v === 'top') { cam.position.copy(t).add(new THREE.Vector3(0, D, 0)); cam.up.set(-1, 0, 0); }
+  if (v === 'side') { cam.position.copy(t).add(new THREE.Vector3(D, 0, 0)); cam.up.set(0, 1, 0); }
+  if (v === 'front') { cam.position.copy(t).add(new THREE.Vector3(0, 0, -D)); cam.up.set(0, 1, 0); }
+  cam.lookAt(t); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  return half;
+}
+function viewports() {
+  const W = viewEl.clientWidth, H = viewEl.clientHeight;
+  if (layout !== 'quad') return [{ v: layout, x: 0, y: 0, w: W, h: H }];
+  const w2 = Math.floor(W / 2), h2 = Math.floor(H / 2);
+  return [{ v: 'top', x: 0, y: 0, w: w2, h: h2 }, { v: 'persp', x: w2, y: 0, w: W - w2, h: h2 }, { v: 'side', x: 0, y: h2, w: w2, h: H - h2 }, { v: 'front', x: w2, y: h2, w: W - w2, h: H - h2 }];
+}
+function drawOverlay() {
+  const ov = $('#overlay'); ov.innerHTML = '';
+  for (const vp of viewports()) {
+    ov.insertAdjacentHTML('beforeend', `<div class="vborder" style="left:${vp.x}px;top:${vp.y}px;width:${vp.w}px;height:${vp.h}px"></div><div class="vlabel" style="left:${vp.x}px;top:${vp.y}px">${LABEL[vp.v]}</div>`);
+  }
+}
+function resize() { renderer.setSize(viewEl.clientWidth, viewEl.clientHeight, false); drawOverlay(); }
+new ResizeObserver(resize).observe(viewEl);
+function camFor(vp) { if (vp.v === 'persp') { persp.aspect = vp.w / vp.h; persp.updateProjectionMatrix(); return persp; } setupOrtho(vp.v, orth[vp.v], vp.w / vp.h); return orth[vp.v]; }
+function frame() {
+  requestAnimationFrame(frame);
+  if (!bbox) return;
+  const H = viewEl.clientHeight;
+  scene.background = silhouette ? SIL_BG : BG; gridGroup.visible = !silhouette;
+  for (const vp of viewports()) {
+    const cam = camFor(vp);
+    renderer.setViewport(vp.x, H - vp.y - vp.h, vp.w, vp.h); renderer.setScissor(vp.x, H - vp.y - vp.h, vp.w, vp.h);
+    renderer.render(scene, cam);
+  }
+}
+
+// ---------------- picking & dragging ----------------
+const ray = new THREE.Raycaster();
+function vpAt(e) { const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; return viewports().find(v => x >= v.x && x < v.x + v.w && y >= v.y && y < v.y + v.h) ? { vp: viewports().find(v => x >= v.x && x < v.x + v.w && y >= v.y && y < v.y + v.h), x, y } : null; }
+function ndc(h) { return new THREE.Vector2((h.x - h.vp.x) / h.vp.w * 2 - 1, -((h.y - h.vp.y) / h.vp.h) * 2 + 1); }
+function pick(h) {
+  const cam = camFor(h.vp); ray.setFromCamera(ndc(h), cam);
+  const hits = ray.intersectObjects(shipGroup.children, false);
+  return hits.length ? hits[0].object.userData : null;
+}
+function worldAt(h) { const cam = camFor(h.vp), n = ndc(h), p = new THREE.Vector3(n.x, n.y, 0).unproject(cam); return [p.x, -p.z, p.y]; } // three -> Blender
+let drag = null;
+cv.addEventListener('pointerdown', e => {
+  if (drawMode) { controls.enabled = false; return; }
+  const h = vpAt(e); if (!h) return;
+  controls.enabled = h.vp.v === 'persp';
+  drag = { h0: h, sx: e.clientX, sy: e.clientY, moved: false, mode: null, btn: e.button };
+  if (h.vp.v !== 'persp') {
+    cv.setPointerCapture(e.pointerId);
+    const u = e.button === 0 ? pick(h) : null;
+    if (u) {
+      if (sel !== u.pid) { sel = u.pid; refresh('all'); }
+      const pt = part(u.pid);
+      drag.mode = 'move'; drag.pid = u.pid; drag.mir = u.mirrored; drag.w0 = worldAt(h); drag.p0 = [...pt.pos];
+    } else { drag.mode = 'pan'; drag.pan0 = [...vstate.pan[h.vp.v]]; }
+  }
+}, { capture: true });
+cv.addEventListener('pointermove', e => {
+  if (!drag || drawMode) return;
+  if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 3) drag.moved = true;
+  if (!drag.moved) return;
+  const v = drag.h0.vp.v;
+  if (drag.mode === 'move') {
+    const h = { ...drag.h0, x: drag.h0.x + e.clientX - drag.sx, y: drag.h0.y + e.clientY - drag.sy };
+    const w = worldAt(h), d = [w[0] - drag.w0[0], w[1] - drag.w0[1], w[2] - drag.w0[2]];
+    if (drag.mir) d[0] = -d[0];
+    const snap = e.altKey ? 0 : gridStep / 4;
+    const sn = (x) => snap ? Math.round(x / snap) * snap : x;
+    // only move along the two axes that view shows
+    const axes = v === 'top' ? [0, 1] : v === 'side' ? [1, 2] : [0, 2];
+    change(() => { const pt = part(drag.pid); for (const a of axes) pt.pos[a] = r3(sn(drag.p0[a] + d[a])); }, 'drag' + drag.pid, 'scene');
+    syncInspector();
+  } else if (drag.mode === 'pan') {
+    const cam = orth[v], vp = drag.h0.vp, k = (cam.right - cam.left) / vp.w;
+    vstate.pan[v] = [drag.pan0[0] - (e.clientX - drag.sx) * k, drag.pan0[1] + (e.clientY - drag.sy) * k];
+  }
+});
+cv.addEventListener('pointerup', e => {
+  if (!drag || drawMode) { drag = null; return; }
+  if (!drag.moved && drag.btn === 0) {
+    const u = pick(drag.h0);
+    sel = u ? u.pid : null; refresh('all');
+  }
+  if (drag.mode === 'move') { lastKey = null; refresh('all'); }
+  drag = null; controls.enabled = true;
+});
+cv.addEventListener('wheel', e => {
+  const h = vpAt(e); if (!h) return;
+  controls.enabled = h.vp.v === 'persp';
+  if (h.vp.v !== 'persp') { e.preventDefault(); vstate.zoom = clamp(vstate.zoom * (e.deltaY > 0 ? 1 / 1.12 : 1.12), 0.1, 50); }
+}, { capture: true, passive: false });
+
+// ---------------- UI ----------------
+function toast(t) { const el = $('#toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(el._t); el._t = setTimeout(() => el.style.display = 'none', 2200); }
+function refresh(level = 'all') {
+  uniqueNames(ship);
+  rebuildScene();
+  if (level === 'all') { renderList(); renderInspector(); $('#shipName').value = ship.name; syncDir(); }
+  autosave();
+}
+function renderList() {
+  $('#pcount').textContent = `(${ship.parts.length})`;
+  $('#plist').innerHTML = ship.parts.map(pt => `<div class="prow ${pt.id === sel ? 'sel' : ''}" data-id="${pt.id}"><span class="sw" style="background:${ship.palette[pt.zone]}"></span><span class="nm">${pt.name}</span><span class="tg">${pt.mirror ? '⇋ ' : ''}${TYPES[pt.type].label}</span></div>`).join('') || '<div class="hint" style="padding:6px">Empty. Pick a template or add parts.</div>';
+  const s = $('#plist .sel'); if (s) s.scrollIntoView({ block: 'nearest' });
+}
+$('#plist').addEventListener('click', e => { const r = e.target.closest('.prow'); if (r) { sel = r.dataset.id; refresh('all'); } });
+
+function numField(lab, val, min, max, st, onIn, attrs = '') {
+  return `<div class="field" ${attrs}><label title="${lab}">${lab}</label><input type="range" min="${min}" max="${max}" step="${st}" value="${val}"><input type="number" min="${min}" max="${max}" step="${st}" value="${r3(val)}"></div>`;
+}
+function wireField(el, onIn, key) {
+  const [rg, nb] = el.querySelectorAll('input');
+  rg.addEventListener('input', () => { nb.value = rg.value; onIn(+rg.value, key); });
+  nb.addEventListener('input', () => { if (nb.value === '' || isNaN(+nb.value)) return; rg.value = nb.value; onIn(+nb.value, key); });
+  rg.addEventListener('change', () => { lastKey = null; });
+}
+function syncInspector() {
+  const pt = sel && part(sel); if (!pt) return;
+  document.querySelectorAll('[data-pos]').forEach(el => { const i = +el.dataset.pos, [rg, nb] = el.querySelectorAll('input'); rg.value = pt.pos[i]; nb.value = r3(pt.pos[i]); });
+}
+function renderInspector() {
+  const el = $('#insp'), pt = sel && part(sel);
+  const span = bbox ? Math.max(60, Math.ceil(Math.max(...bbox.getSize(new THREE.Vector3()).toArray()) * 1.2 / 10) * 10) : 100;
+  if (!pt) {
+    el.innerHTML = `<h3>Ship</h3>
+      <div class="row"><label style="width:60px">Class</label><input type="text" id="sCls" value="${esc(ship.cls)}" style="flex:1" placeholder="corvette, carrier, junk..."></div>
+      <div class="row"><label style="width:60px">Role</label><input type="text" id="sRole" value="${esc(ship.role)}" style="flex:1" placeholder="what it does in the game"></div>
+      <h3>Vibe / notes for Claude</h3>
+      <textarea id="sNotes" rows="7" placeholder="Words for what the shapes can't say: 'used and dirty, Expanse-style, no shiny sci-fi', 'engines glow blue', 'hangar opens at the front'...">${esc(ship.notes)}</textarea>
+      <h3>Reference images</h3>
+      <div class="hint" style="margin-top:0">Pics you found online. "Trace" puts it behind the Top/Side/Front view so you can sketch over it. "Mood" just ships with the brief so Claude matches the look.</div>
+      <div id="refList"></div>
+      <button id="refAdd" style="width:100%">+ Add image(s)</button>
+      <h3>Colour zones</h3>
+      <div class="pal">${ZONES.map(z => `<label><input type="color" data-zone="${z}" value="${ship.palette[z]}">${z}</label>`).join('')}</div>
+      <div class="hint">Every part belongs to one zone. Blender gets one material per zone.</div>
+      <div class="hint">Click a part to edit it. Nothing selected means the shape buttons hit the whole ship.</div>`;
+    $('#sCls').oninput = e => change(() => ship.cls = e.target.value, 'cls', 'none');
+    $('#sRole').oninput = e => change(() => ship.role = e.target.value, 'role', 'none');
+    $('#sNotes').oninput = e => change(() => ship.notes = e.target.value, 'notes', 'none');
+    renderRefs();
+    el.querySelectorAll('[data-zone]').forEach(c => c.oninput = () => change(() => ship.palette[c.dataset.zone] = c.value, 'pal' + c.dataset.zone, 'scene'));
+    return;
+  }
+  const T = TYPES[pt.type];
+  let h = `<h3>${T.label}</h3>
+    <div class="row"><input type="text" id="pName" value="${esc(pt.name)}" style="flex:1"></div>
+    <div class="row"><label><input type="checkbox" id="pMir" ${pt.mirror ? 'checked' : ''}> Mirror left/right</label>
+      <select id="pZone">${ZONES.map(z => `<option ${z === pt.zone ? 'selected' : ''}>${z}</option>`).join('')}</select></div>
+    <div class="row"><button id="pDup">Duplicate</button><button id="pDel">Delete</button><button id="pFlip" title="Move to the other side">Flip side</button></div>
+    <h3>Shape</h3>`;
+  for (const k in T.p) { const d = T.p[k]; h += numField(d.lab, pt.p[k], d.min, d.a && d.max > span * 2 ? Math.max(d.min + 1, span * 2) : d.max, d.st).replace('class="field"', `class="field" data-p="${k}"`); }
+  h += `<h3>Position (m)</h3>`;
+  ['X right', 'Y forward', 'Z up'].forEach((l, i) => h += numField(l, pt.pos[i], -span, span, 0.1).replace('class="field"', `class="field" data-pos="${i}"`));
+  h += `<h3>Rotation (deg)</h3>`;
+  ['Pitch (X)', 'Roll (Y)', 'Yaw (Z)'].forEach((l, i) => h += numField(l, pt.rot[i], -180, 180, 1).replace('class="field"', `class="field" data-rot="${i}"`));
+  h += `<h3>Note for Claude</h3><textarea id="pNote" rows="3" placeholder="e.g. 'this is the main gun, should look like a railgun with coils'">${esc(pt.note)}</textarea>`;
+  el.innerHTML = h;
+  el.querySelectorAll('[data-p]').forEach(f => wireField(f, v => change(() => { pt.p[f.dataset.p] = TYPES[pt.type].p[f.dataset.p].int ? Math.round(v) : v; }, 'p' + pt.id + f.dataset.p, 'scene')));
+  el.querySelectorAll('[data-pos]').forEach(f => wireField(f, v => change(() => { pt.pos[+f.dataset.pos] = v; }, 'pos' + pt.id + f.dataset.pos, 'scene')));
+  el.querySelectorAll('[data-rot]').forEach(f => wireField(f, v => change(() => { pt.rot[+f.dataset.rot] = v; }, 'rot' + pt.id + f.dataset.rot, 'scene')));
+  $('#pName').onchange = e => change(() => pt.name = e.target.value || pt.type);
+  $('#pMir').onchange = e => change(() => pt.mirror = e.target.checked);
+  $('#pZone').onchange = e => change(() => pt.zone = e.target.value);
+  $('#pNote').oninput = e => change(() => pt.note = e.target.value, 'note' + pt.id, 'none');
+  $('#pDup').onclick = dupSel; $('#pDel').onclick = delSel;
+  $('#pFlip').onclick = () => change(() => { pt.pos[0] = -pt.pos[0]; pt.rot[1] = -pt.rot[1]; pt.rot[2] = -pt.rot[2]; });
+}
+function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+function dupSel() { const pt = sel && part(sel); if (!pt) return; change(() => { const c = JSON.parse(JSON.stringify(pt)); c.id = 'p' + (uid++); c.pos[2] += gridStep; ship.parts.push(c); sel = c.id; }); }
+function delSel() { if (!sel) return; change(() => { ship.parts = ship.parts.filter(p => p.id !== sel); sel = null; }); }
+
+function addPart(label, type, over, extra = {}) {
+  const b = bbox, s = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3()), empty = !ship.parts.length;
+  const pt = mkPart(type, over, { ...extra, name: label.toLowerCase().replace(/[^a-z]+/g, '_').replace(/_$/, '') });
+  if (!empty) {
+    const side = extra.mirror ? b.max.x + 1 + (pt.p.w || pt.p.r || 2) / 2 : 0;
+    if (type === 'engine') pt.pos = [extra.mirror ? s.x * 0.25 : 0, b.min.y, c.z];
+    else if (type === 'plume') pt.pos = [extra.mirror ? s.x * 0.25 : 0, b.min.y - 1, c.z];
+    else if (type === 'wing') pt.pos = extra.rot ? [0, c.y - s.y * 0.3, b.max.z] : [b.max.x * 0.8, c.y - s.y * 0.15, c.z];
+    else if (type === 'hull' && over.wF < 2) pt.pos = [0, b.max.y + pt.p.len / 2, c.z];
+    else if (type === 'hull' && label.startsWith('Tail')) pt.pos = [0, b.min.y - pt.p.len / 2, c.z];
+    else if (type === 'turret' || type === 'greebles' || type === 'dome' || type === 'tube' && extra.rot) pt.pos = [extra.mirror ? s.x * 0.3 : 0, c.y, b.max.z];
+    else if (type === 'ring' || (type === 'tube' && !extra.rot)) pt.pos = [0, c.y, c.z];
+    else pt.pos = [side, c.y, c.z];
+    pt.pos = pt.pos.map(r3);
+  }
+  change(() => { ship.parts.push(pt); sel = pt.id; });
+  toast(`${label} added. Drag it in the Top/Side/Front views.`);
+}
+
+// style pushes. Operate on the selected part, or everything.
+function scaleParts(parts, kx, ky, kz, movePos = true) {
+  const kr = Math.sqrt(kx * kz), ku = Math.cbrt(kx * ky * kz);
+  for (const pt of parts) {
+    if (movePos) { pt.pos[0] *= kx; pt.pos[1] *= ky; pt.pos[2] *= kz; }
+    const T = TYPES[pt.type].p;
+    for (const k in T) { const a = T[k].a, f = a === 'x' ? kx : a === 'y' ? ky : a === 'z' ? kz : a === 'r' ? kr : a === 'u' ? ku : 1; pt.p[k] = r3(clamp(pt.p[k] * f, T[k].min, T[k].max)); }
+    if (pt.type === 'sketch') {
+      const [ku2, kv2, kw2] = pt.p.plane === 'side' ? [ky, kz, kx] : pt.p.plane === 'top' ? [kx, ky, kz] : [kx, kz, ky];
+      pt.p.pts = pt.p.pts.map(([u, v]) => [r3(u * ku2), r3(v * kv2)]); pt.p.thick = r3(pt.p.thick * kw2);
+    }
+    pt.pos = pt.pos.map(r3);
+  }
+}
+function meaner(parts, k) { // k>0 meaner, k<0 softer
+  for (const pt of parts) {
+    const p = pt.p;
+    if (pt.type === 'hull') {
+      if (k > 0) { if (p.wF < p.wB) p.wF *= 0.85; if (p.hF < p.hB) p.hF *= 0.88; p.cham = Math.max(0, p.cham - 0.04); }
+      else { p.wF += (p.wB - p.wF) * 0.25; p.hF += (p.hB - p.hF) * 0.25; p.cham = Math.min(0.45, p.cham + 0.05); }
+    }
+    if (pt.type === 'wing') { p.sweep += k * p.span * 0.18; p.tip *= k > 0 ? 0.85 : 1.15; }
+    if (pt.type === 'nacelle') p.nose = clamp(p.nose + k * 0.06, 0, 0.5);
+    if (pt.type === 'engine') p.rE *= k > 0 ? 1.08 : 0.94;
+    if (pt.type === 'turret') p.blen *= k > 0 ? 1.15 : 0.9;
+    for (const key in p) p[key] = TYPES[pt.type].p[key].int ? p[key] : r3(p[key]);
+  }
+}
+const STYLES = [
+  ['Longer', s => scaleParts(s, 1, 1.12, 1)], ['Shorter', s => scaleParts(s, 1, 1 / 1.12, 1)],
+  ['Bulkier', s => scaleParts(s, 1.12, 1, 1.12)], ['Sleeker', s => scaleParts(s, 1 / 1.12, 1, 1 / 1.12)],
+  ['Taller', s => scaleParts(s, 1, 1, 1.12)], ['Flatter', s => scaleParts(s, 1, 1, 1 / 1.12)],
+  ['Meaner', s => meaner(s, 1)], ['Softer', s => meaner(s, -1)],
+  ['Bigger', s => scaleParts(s, 1.25, 1.25, 1.25)], ['Smaller', s => scaleParts(s, 0.8, 0.8, 0.8)],
+];
+
+// ---------------- variations ----------------
+function mutate(src, seed, str) {
+  const R = mulberry(seed), j = a => 1 + (R() - 0.5) * 2 * a * str, s = JSON.parse(JSON.stringify(src));
+  scaleParts(s.parts, j(0.25), j(0.3), j(0.25));
+  if (R() < 0.5) meaner(s.parts, R() < 0.5 ? 1 : -1);
+  for (const pt of s.parts) {
+    const T = TYPES[pt.type].p;
+    for (const k in T) if (T[k].a) pt.p[k] = r3(clamp(pt.p[k] * j(0.3), T[k].min, T[k].max));
+    if (pt.type === 'hull') pt.p.cham = r3(clamp(pt.p.cham + (R() - 0.5) * 0.15 * str, 0, 0.45));
+    if (pt.type === 'wing') pt.rot[1] = r3(pt.rot[1] + (R() - 0.5) * 20 * str);
+    if (pt.type !== 'hull' && pt.type !== 'plume') { pt.pos[1] = r3(pt.pos[1] + (R() - 0.5) * 0.08 * str * shipLen(src)); }
+  }
+  // keep plumes stuck to their engines' new exits
+  for (const pl of s.parts.filter(p => p.type === 'plume')) {
+    const en = s.parts.filter(p => p.type === 'engine').sort((a, b) => Math.hypot(a.pos[0] - pl.pos[0], a.pos[2] - pl.pos[2]) - Math.hypot(b.pos[0] - pl.pos[0], b.pos[2] - pl.pos[2]))[0];
+    if (en) { pl.pos[1] = r3(en.pos[1] - en.p.len); pl.p.r = r3(en.p.rE * 0.9); }
+  }
+  return s;
+}
+const shipLen = s => { const b = shipBox(s); return b.max.y - b.min.y; };
+let offR = null;
+function offRenderer(w, h) { if (!offR) offR = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); offR.setPixelRatio(1); offR.setSize(w, h, false); return offR; }
+function renderShot(s, view, w, h, { bg = '#14110e', grid = true, sil = false } = {}) {
+  const r = offRenderer(w, h), sc = new THREE.Scene(); sc.background = new THREE.Color(sil ? '#d9d2c3' : bg);
+  sc.add(new THREE.HemisphereLight(0xe8eefc, 0x2a2018, 1.1)); const k = key.clone(); sc.add(k); sc.add(rim.clone());
+  const rt = new THREE.Group(); rt.rotation.x = -Math.PI / 2; sc.add(rt);
+  const g = buildShip(s, { edges: !sil }); if (sil) g.traverse(c => { if (c.isMesh) c.material = silMat; }); rt.add(g);
+  const b = shipBox(s, true);
+  if (refMode !== 'none' && !sil) rt.add(makeRef(b));
+  let cam;
+  if (view === 'persp') {
+    const c = b.getCenter(new THREE.Vector3()), sz = b.getSize(new THREE.Vector3()), rad = Math.max(sz.x, sz.y, sz.z) * 0.5 + 1, t = B2T(c.x, c.y, c.z);
+    cam = new THREE.PerspectiveCamera(32, w / h, rad * 0.01, rad * 100); cam.position.copy(t).addScaledVector(new THREE.Vector3(1.0, 0.6, -1.1).normalize(), rad * (w < 500 ? 2.3 : 3.1)); cam.lookAt(t);
+  } else {
+    cam = new THREE.OrthographicCamera(); setupOrtho(view, cam, w / h, b, 1.05, [0, 0]);
+    if (grid && !sil) {
+      const sz = b.getSize(new THREE.Vector3()), ext = Math.max(sz.x, sz.y, sz.z, 4), step = niceStep(ext / 10), S = Math.ceil(ext * 1.8 / step) * step, c = b.getCenter(new THREE.Vector3());
+      const gh = new THREE.GridHelper(S, Math.round(S / step), 0x5a4a36, 0x2c251d);
+      if (view === 'top') gh.position.copy(B2T(c.x, c.y, b.min.z - 0.05));
+      if (view === 'side') { gh.rotation.z = Math.PI / 2; gh.position.copy(B2T(b.min.x - 1, c.y, c.z)); }
+      if (view === 'front') { gh.rotation.x = Math.PI / 2; gh.position.copy(B2T(c.x, b.min.y - 1, c.z)); }
+      sc.add(gh);
+    }
+  }
+  r.render(sc, cam);
+  const out = { canvas: r.domElement, cam, box: shipBox(s) };
+  disposeTree(sc);
+  return out;
+}
+let varBase = null, varSeed = 1;
+function openVariations() {
+  varBase = JSON.parse(snapshot()); $('#modal').classList.add('open'); rollVariations();
+}
+function rollVariations() {
+  const str = +$('#vStr').value, el = $('#vars'); el.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const seed = (varSeed++ * 2654435761) >>> 0, v = mutate(varBase, seed, str);
+    const shot = renderShot(v, 'persp', 330, 200), url = shot.canvas.toDataURL('image/png');
+    const card = document.createElement('div'); card.className = 'card'; card.innerHTML = `<img src="${url}"><span>#${i + 1}</span>`;
+    card.onclick = () => { change(() => { ship = v; }); varBase = JSON.parse(snapshot()); toast('Adopted. Rolling more around it.'); rollVariations(); };
+    el.appendChild(card);
+  }
+}
+
+// ---------------- export ----------------
+function specJSON() {
+  uniqueNames(ship);
+  const b = shipBox(ship), s = b.getSize(new THREE.Vector3());
+  return {
+    format: 'shipyard/1', units: 'metres', axes: { up: '+Z', forward_nose: '+Y', starboard: '+X', rotation: 'Blender XYZ Euler, degrees' },
+    ship: { name: ship.name, class: ship.cls, role: ship.role, notes: ship.notes, art_direction: ship.direction || 'none', art_direction_text: (DIRS[ship.direction] || {}).brief || '' },
+    reference_images: (ship.refs || []).map(r => ({ file: 'refs/' + refFile(r), use: r.use, width_m: r.w, offset_m: [r.u, r.v], note: r.note || '' })),
+    bounds: { length_y: r3(s.y), beam_x: r3(s.x), height_z: r3(s.z), min: b.min.toArray().map(r3), max: b.max.toArray().map(r3) },
+    palette: ship.palette,
+    parts: ship.parts.map(pt => ({ id: pt.id, name: pt.name, type: pt.type, type_label: TYPES[pt.type].label, params: pt.p, location: pt.pos, rotation_deg: pt.rot, mirror_x: pt.mirror, zone: pt.zone, note: pt.note })),
+  };
+}
+function describe(pt) {
+  const p = pt.p, f = n => fmt(n, 1);
+  switch (pt.type) {
+    case 'hull': return `tapered hull block ${f(p.len)} m long, ${f(p.wB)}×${f(p.hB)} m at the rear to ${f(p.wF)}×${f(p.hF)} m at the front${p.zF ? `, front shifted ${f(p.zF)} m in Z` : ''}, corner bevel ${p.cham}`;
+    case 'box': return `box ${f(p.sx)} × ${f(p.sy)} × ${f(p.sz)} m (X×Y×Z)`;
+    case 'tube': return `${p.sides}-sided tube ${f(p.len)} m long, radius ${f(p.rB)} → ${f(p.rF)} m`;
+    case 'engine': return `engine bell, throat r ${f(p.rT)} m, exit r ${f(p.rE)} m, ${f(p.len)} m long, pointing -Y, housing ${f(p.hl)} m`;
+    case 'plume': return `glowing exhaust plume ${f(p.len)} m long, radius ${f(p.r)} m (emissive, can be a VFX instead of geometry)`;
+    case 'nacelle': return `rounded pod ${f(p.len)} m long, radius ${f(p.r)} m`;
+    case 'wing': return `wing/fin: span ${f(p.span)} m, root chord ${f(p.root)} m, tip chord ${f(p.tip)} m, swept back ${f(p.sweep)} m, ${f(p.thick)} m thick`;
+    case 'turret': return `turret size ${f(p.size)} m with ${p.barrels} barrel(s) ${f(p.blen)} m long, facing +Y before rotation`;
+    case 'radiator': return `radiator panel ${f(p.w)} × ${f(p.l)} m, ${p.ribs} ribs`;
+    case 'hangar': return `hangar bay opening toward local +Y, ${f(p.w)} wide × ${f(p.h)} high × ${f(p.d)} m deep`;
+    case 'greebles': return `greeble patch ${f(p.w)} × ${f(p.l)} m, ${p.n} boxes up to ${f(p.hmax)} m tall (stand-in for surface detail: replace with proper kitbash)`;
+    case 'dome': return `${p.half ? 'half ' : ''}dome radius ${f(p.r)} m, height ratio ${p.squash}, length ratio ${p.stretch}`;
+    case 'tiers': return `tiered tower: ${p.count} tiers, base ${f(p.w)} × ${f(p.h)} m, each tier ${f(p.tl)} m tall along +Y with ${Math.round(p.setback * 100)}% setback, ledges ${f(p.ledge)} m, ${p.bands} lit floor bands per tier (glass zone). Base at the part origin, grows toward the nose`;
+    case 'truss': return `open lattice truss ${f(p.len)} m long, ${f(p.w)} × ${f(p.h)} m section, ${p.bays} bays`;
+    case 'sketch': return `freehand outline drawn in the ${p.plane} view (${p.pts.length} points, exact outline in spec.json), extruded ${f(p.thick)} m thick. Treat it as the intended outline of that mass`;
+    case 'ring': return `ring radius ${f(p.R)} m around the long axis, ${f(p.th)} m thick, ${f(p.wd)} m wide, ${p.spokes} spokes`;
+  }
+  return pt.type;
+}
+function briefMD() {
+  const sp = specJSON(), bd = sp.bounds, s = ship;
+  let t = `# Ship brief: ${s.name}\n\n`;
+  if (s.cls || s.role) t += `**Class:** ${s.cls || '-'}  ·  **Role:** ${s.role || '-'}\n\n`;
+  t += `**Size:** ${fmt(bd.length_y)} m long (Y) × ${fmt(bd.beam_x)} m beam (X) × ${fmt(bd.height_z)} m tall (Z).\n\n`;
+  t += `**Axes:** Blender units are metres. +Z is up, the nose points **+Y**, +X is starboard. Mirrored parts are built on both sides.\n\n`;
+  const dir = DIRS[s.direction || 'none'];
+  if (dir && dir.brief) t += `## Art direction: ${dir.label}\n\n${dir.brief}\n\n`;
+  if (s.notes.trim()) t += `## What I want (my words)\n\n${s.notes.trim()}\n\n`;
+  const refs = s.refs || [];
+  if (refs.length) {
+    t += `## Reference images (in refs/)\n\n`;
+    for (const r of refs) t += r.use === 'mood' ? `- \`refs/${refFile(r)}\`: mood/style reference. Match its look, materials and feel, not its exact shapes.${r.note ? ' ' + r.note : ''}\n` : `- \`refs/${refFile(r)}\`: traced under the ${r.use} view at ${fmt(r.w)} m wide. The blockout follows this outline, so it's a strong shape reference.${r.note ? ' ' + r.note : ''}\n`;
+    t += `\n`;
+  }
+  t += `## How to use this package\n\n`;
+  t += `1. Run \`blockout.py\` in Blender (Scripting tab, open, Run Script). It builds the collection \`SHIPYARD_${safe(s.name)}\` with one object per part: exact proxy geometry, one material per colour zone, and each part's type, parameters and notes stored as custom properties.\n`;
+  t += `2. The blockout is the source of truth for the **silhouette, proportions and placement**. Keep every major mass where it is and within about 5% of its size. Don't add or remove big masses without asking me.\n`;
+  t += `3. Detail on top of it freely: bevels, panel lines, plating, kitbash, smoothing the proxy shapes, real greebles instead of the greeble boxes. Check against \`sheet.png\`: the outline in the top, side and front views should still match.\n`;
+  t += `4. Colour zones become materials: ${ZONES.map(z => `${z} ${s.palette[z]}`).join(', ')}. "glow" is emissive, "glass" is a lit window/canopy.\n\n`;
+  t += `## Parts (${s.parts.length}${s.parts.some(p => p.mirror) ? ', ⇋ = mirrored to both sides' : ''})\n\n`;
+  for (const pt of s.parts) {
+    t += `- **${pt.name}**${pt.mirror ? ' ⇋' : ''} [${pt.zone}] at (${pt.pos.map(v => fmt(v)).join(', ')})${pt.rot.some(v => v) ? `, rotated (${pt.rot.map(v => fmt(v, 0)).join(', ')})°` : ''}: ${describe(pt)}.${pt.note ? ` *Note: ${pt.note}*` : ''}\n`;
+  }
+  return t;
+}
+const refFile = r => `${safe(r.name.replace(/\.[^.]+$/, ''))}_${r.use}.${r.src.startsWith('data:image/png') ? 'png' : 'jpg'}`;
+const safe = n => (n || 'ship').replace(/[^\w\-]+/g, '_');
+function blockoutPy() {
+  uniqueNames(ship);
+  const sp = specJSON(), objs = [];
+  for (const pt of ship.parts) for (const inst of partInstances(pt)) {
+    objs.push({
+      name: pt.name + (inst.side ? '.' + inst.side : ''), part: pt.name, type: pt.type, zone: pt.zone,
+      loc: inst.pos.map(r3), rot: inst.rot.map(v => r3(v * D2R)), params: pt.p, note: pt.note, mirrored: inst.mirrored,
+      v: inst.mesh.v.flat().map(r3), f: inst.mesh.f,
+      fz: inst.mesh.fz ? inst.mesh.fz.map(z => z || pt.zone) : null,
+    });
+  }
+  const pal = Object.fromEntries(ZONES.map(z => { const c = new THREE.Color(ship.palette[z]); c.convertSRGBToLinear(); return [z, [r3(c.r), r3(c.g), r3(c.b)]]; }));
+  const meta = { name: ship.name, class: ship.cls, role: ship.role, notes: ship.notes, bounds: sp.bounds };
+  return `# Shipyard blockout: ${ship.name}
+# Generated by Shipyard. Run in Blender (Scripting tab > Open > Run Script), or: blender --python blockout.py
+# Units: metres. +Z up, nose points +Y, +X is starboard. ".R" objects sit on +X, ".L" on -X.
+# Re-running replaces the previous SHIPYARD_ collection of the same name.
+# Each object keeps its part type, parameters and note as custom properties (shipyard_*),
+# so you can see what every proxy was meant to be. Geometry here is the exact proxy from the editor.
+import bpy, bmesh, json
+
+SHIP = json.loads(${pyStr(JSON.stringify(meta))})
+PALETTE = ${JSON.stringify(pal)}
+PARTS = json.loads(${pyStr(JSON.stringify(objs))})
+
+col_name = "SHIPYARD_" + ${pyStr(safe(ship.name))}
+old = bpy.data.collections.get(col_name)
+if old:
+    for ob in list(old.all_objects):
+        me = ob.data if ob.type == 'MESH' else None
+        bpy.data.objects.remove(ob, do_unlink=True)
+        if me and me.users == 0:
+            bpy.data.meshes.remove(me)
+    bpy.data.collections.remove(old)
+col = bpy.data.collections.new(col_name)
+bpy.context.scene.collection.children.link(col)
+
+def material(zone):
+    name = "SY_" + zone
+    m = bpy.data.materials.get(name)
+    if m is None:
+        m = bpy.data.materials.new(name)
+        m.use_nodes = True
+    r, g, b = PALETTE[zone]
+    m.diffuse_color = (r, g, b, 1.0)
+    bsdf = m.node_tree.nodes.get("Principled BSDF") if m.node_tree else None
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = (r, g, b, 1.0)
+        bsdf.inputs["Metallic"].default_value = 0.1 if zone == "glass" else 0.4
+        bsdf.inputs["Roughness"].default_value = 0.2 if zone == "glass" else 0.6
+        if zone in ("glow", "glass"):
+            for key in ("Emission Color", "Emission"):
+                if key in bsdf.inputs:
+                    bsdf.inputs[key].default_value = (r, g, b, 1.0)
+                    break
+            if "Emission Strength" in bsdf.inputs:
+                bsdf.inputs["Emission Strength"].default_value = 8.0 if zone == "glow" else 1.5
+    return m
+
+root = bpy.data.objects.new("SHIP_ROOT_" + ${pyStr(safe(ship.name))}, None)
+root.empty_display_type = 'ARROWS'
+root.empty_display_size = max(SHIP["bounds"]["length_y"] * 0.1, 1.0)
+root["shipyard_ship"] = json.dumps(SHIP)
+col.objects.link(root)
+
+for p in PARTS:
+    flat = p["v"]
+    verts = [(flat[i], flat[i + 1], flat[i + 2]) for i in range(0, len(flat), 3)]
+    me = bpy.data.meshes.new(p["name"])
+    me.from_pydata(verts, [], p["f"])
+    zones = [p["zone"]] + sorted(set(z for z in (p["fz"] or []) if z != p["zone"]))
+    for z in zones:
+        me.materials.append(material(z))
+    if p["fz"]:
+        me.polygons.foreach_set("material_index", [zones.index(z) for z in p["fz"]])
+    me.validate(clean_customdata=False)
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0005)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    bm.free()
+    me.update()
+    ob = bpy.data.objects.new(p["name"], me)
+    ob.location = p["loc"]
+    ob.rotation_mode = 'XYZ'
+    ob.rotation_euler = p["rot"]
+    ob.parent = root
+    ob["shipyard_part"] = p["part"]
+    ob["shipyard_type"] = p["type"]
+    ob["shipyard_zone"] = p["zone"]
+    ob["shipyard_params"] = json.dumps(p["params"])
+    ob["shipyard_mirrored_copy"] = p["mirrored"]
+    if p["note"]:
+        ob["shipyard_note"] = p["note"]
+    col.objects.link(ob)
+
+# big ships blow past the default 1 km clip distance
+try:
+    for area in bpy.context.screen.areas:
+        if area.type == 'VIEW_3D':
+            for space in area.spaces:
+                if space.type == 'VIEW_3D':
+                    space.clip_end = max(space.clip_end, SHIP["bounds"]["length_y"] * 20)
+except Exception:
+    pass
+
+bpy.context.view_layer.update()
+print("Shipyard: built %d objects in %s" % (len(PARTS), col_name))
+`;
+}
+const pyStr = s => JSON.stringify(s); // a JSON string literal is a valid Python string literal for our content
+async function sheetPNG() {
+  const W = 2400, Hh = 110, PW = 1200, PH = 720, Fh = 70, cvs = document.createElement('canvas');
+  cvs.width = W; cvs.height = Hh + PH * 2 + Fh;
+  const g = cvs.getContext('2d'); g.fillStyle = '#14110e'; g.fillRect(0, 0, cvs.width, cvs.height);
+  const views = [['top', 0, 0, 'TOP (looking down, nose →)'], ['persp', 1, 0, '3/4 VIEW'], ['side', 0, 1, 'SIDE (starboard side, nose →)'], ['front', 1, 1, 'FRONT (nose toward you)']];
+  for (const [v, cx, cy, lab] of views) {
+    const shot = renderShot(ship, v, PW, PH), ox = cx * PW, oy = Hh + cy * PH;
+    g.drawImage(shot.canvas, ox, oy);
+    g.strokeStyle = '#3a3128'; g.lineWidth = 2; g.strokeRect(ox + 1, oy + 1, PW - 2, PH - 2);
+    g.fillStyle = '#ff9d3c'; g.font = 'bold 26px monospace'; g.fillText(lab, ox + 18, oy + 38);
+    if (v !== 'persp') {
+      const b = shot.box, proj = (x, y, z) => { const p = B2T(x, y, z).project(shot.cam); return [ox + (p.x + 1) / 2 * PW, oy + (1 - p.y) / 2 * PH]; };
+      const [hAx, vAx] = v === 'top' ? ['y', 'x'] : v === 'side' ? ['y', 'z'] : ['x', 'z'];
+      const lenH = b.max[hAx] - b.min[hAx], lenV = b.max[vAx] - b.min[vAx];
+      const pts = [b.min, b.max].flatMap(a => [b.min, b.max].flatMap(c => [b.min, b.max].map(d => proj(a.x, c.y, d.z))));
+      const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      g.strokeStyle = '#61d4ff'; g.fillStyle = '#61d4ff'; g.lineWidth = 2; g.font = '24px monospace';
+      const yb = Math.min(oy + PH - 30, y1 + 34);
+      g.beginPath(); g.moveTo(x0, yb); g.lineTo(x1, yb); g.moveTo(x0, yb - 10); g.lineTo(x0, yb + 10); g.moveTo(x1, yb - 10); g.lineTo(x1, yb + 10); g.stroke();
+      const tH = fmt(lenH) + ' m'; g.fillText(tH, (x0 + x1) / 2 - g.measureText(tH).width / 2, yb - 10);
+      const xb = Math.min(ox + PW - 20, x1 + 30);
+      g.beginPath(); g.moveTo(xb, y0); g.lineTo(xb, y1); g.moveTo(xb - 10, y0); g.lineTo(xb + 10, y0); g.moveTo(xb - 10, y1); g.lineTo(xb + 10, y1); g.stroke();
+      g.save(); g.translate(xb + 28, (y0 + y1) / 2); g.rotate(-Math.PI / 2); const tV = fmt(lenV) + ' m'; g.fillText(tV, -g.measureText(tV).width / 2, 0); g.restore();
+    }
+  }
+  const sp = specJSON().bounds;
+  g.fillStyle = '#e8dcc6'; g.font = 'bold 40px monospace'; g.fillText(ship.name.toUpperCase(), 24, 52);
+  g.font = '24px monospace'; g.fillStyle = '#9a8b74';
+  g.fillText(`${ship.cls || ''}${ship.cls && ship.role ? ' · ' : ''}${ship.role || ''}   L ${fmt(sp.length_y)} m × W ${fmt(sp.beam_x)} m × H ${fmt(sp.height_z)} m · ${ship.parts.length} parts · +Z up, nose +Y`, 24, 90);
+  let x = 24; const fy = Hh + PH * 2 + 45;
+  for (const z of ZONES) { g.fillStyle = ship.palette[z]; g.fillRect(x, fy - 22, 28, 28); g.fillStyle = '#e8dcc6'; g.fillText(z, x + 36, fy); x += 70 + g.measureText(z).width; }
+  if (refMode !== 'none') { g.fillStyle = '#ffd27a'; g.fillText('yellow = scale ref' + (refMode !== 'fighter' ? ', human 1.8 m' : '') + (refMode !== 'human' ? ', fighter 16 m' : ''), x + 30, fy); }
+  return await new Promise(res => cvs.toBlob(res, 'image/png'));
+}
+function download(name, data, type = 'text/plain') {
+  const blob = data instanceof Blob ? data : new Blob([data], { type }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+function loadJSZip() {
+  if (window.JSZip) return Promise.resolve(window.JSZip);
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'; s.onload = () => res(window.JSZip); s.onerror = rej; document.head.appendChild(s); });
+}
+async function exportZip() {
+  const n = safe(ship.name);
+  try {
+    const JSZip = await loadJSZip(), z = new JSZip(), f = z.folder(n);
+    for (const r of ship.refs || []) f.file('refs/' + refFile(r), r.src.split(',')[1], { base64: true });
+    f.file('brief.md', briefMD()); f.file('spec.json', JSON.stringify(specJSON(), null, 2)); f.file('blockout.py', blockoutPy()); f.file('sheet.png', await sheetPNG());
+    download(n + '_handoff.zip', await z.generateAsync({ type: 'blob' }));
+    toast('Package downloaded. Drop the zip (or its 4 files) into the Blender chat.');
+  } catch (e) { console.error(e); toast('Zip library failed to load. Use the single-file exports.'); }
+}
+async function copyBrief() {
+  const t = briefMD();
+  try { await navigator.clipboard.writeText(t); toast('Brief copied.'); }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Brief copied.'); }
+}
+function importSpec(obj) {
+  const s = newShip(obj.ship?.name || 'Imported');
+  s.direction = obj.ship?.art_direction || 'none';
+  s.cls = obj.ship?.class || ''; s.role = obj.ship?.role || ''; s.notes = obj.ship?.notes || ''; s.palette = { ...DEFAULT_PAL, ...(obj.palette || {}) };
+  s.parts = (obj.parts || []).filter(p => TYPES[p.type]).map(p => mkPart(p.type, p.params, { name: p.name, pos: p.location, rot: p.rotation_deg, mirror: p.mirror_x, zone: p.zone, note: p.note }));
+  return s;
+}
+
+// ---------------- wiring ----------------
+$('#tpls').innerHTML = Object.keys(TEMPLATES).map(k => `<button data-t="${k}">${k}</button>`).join('') + `<button data-t="__roll" title="Random ship, then push it around">Roll a ship 🎲</button><button data-t="__blank">Blank</button>`;
+$('#tpls').onclick = e => {
+  const t = e.target.closest('button')?.dataset.t; if (!t) return;
+  change(() => { ship = t === '__roll' ? rollShip() : t === '__blank' ? newShip() : TEMPLATES[t](); fixUid(); sel = null; });
+  fitAll();
+};
+$('#adds').innerHTML = ADDS.map((a, i) => `<button data-i="${i}">${a[0]}</button>`).join('');
+$('#adds').onclick = e => { const i = e.target.closest('button')?.dataset.i; if (i == null) return; const [l, t, o, x] = ADDS[i]; addPart(l, t, o, x || {}); };
+$('#styles').innerHTML = STYLES.map((s, i) => `<button data-i="${i}">${s[0]}</button>`).join('');
+$('#styles').onclick = e => {
+  const i = e.target.closest('button')?.dataset.i; if (i == null) return;
+  change(() => { const ps = sel ? [part(sel)] : ship.parts; STYLES[i][1](ps); });
+};
+document.querySelectorAll('[data-lay]').forEach(b => b.onclick = () => setLayout(b.dataset.lay));
+function setLayout(l) { layout = l; document.querySelectorAll('[data-lay]').forEach(b => b.classList.toggle('on', b.dataset.lay === l)); drawOverlay(); }
+$('#bFit').onclick = fitAll;
+$('#bSil').onclick = () => { silhouette = !silhouette; $('#bSil').classList.toggle('on', silhouette); rebuildScene(); };
+$('#refSel').onchange = e => { refMode = e.target.value; rebuildScene(); };
+$('#bUndo').onclick = doUndo; $('#bRedo').onclick = doRedo;
+$('#shipName').oninput = e => change(() => ship.name = e.target.value, 'name', 'none');
+$('#bVar').onclick = openVariations; $('#vClose').onclick = () => $('#modal').classList.remove('open'); $('#vRoll').onclick = rollVariations;
+$('#modal').onclick = e => { if (e.target.id === 'modal') $('#modal').classList.remove('open'); };
+$('#bExp').onclick = e => { e.stopPropagation(); $('#expMenu').classList.toggle('open'); };
+document.addEventListener('click', e => { if (!e.target.closest('#expMenu')) $('#expMenu').classList.remove('open'); });
+$('#eZip').onclick = exportZip; $('#eBrief').onclick = copyBrief;
+$('#ePy').onclick = () => download(safe(ship.name) + '_blockout.py', blockoutPy());
+$('#ePng').onclick = async () => download(safe(ship.name) + '_sheet.png', await sheetPNG());
+$('#eJson').onclick = () => download(safe(ship.name) + '_spec.json', JSON.stringify(specJSON(), null, 2), 'application/json');
+$('#eImp').onclick = () => $('#fileIn').click();
+$('#fileIn').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { const obj = JSON.parse(await f.text()); change(() => { ship = importSpec(obj); sel = null; }); fitAll(); toast('Imported ' + ship.name); }
+  catch (err) { toast('That is not a Shipyard spec.'); }
+  e.target.value = '';
+};
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select')) return;
+  const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
+  if (mod && k === 'z') { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); }
+  else if (mod && k === 'y') { e.preventDefault(); doRedo(); }
+  else if (mod && k === 'd') { e.preventDefault(); dupSel(); }
+  else if (k === 'delete' || k === 'backspace') delSel();
+  else if (k === 'escape') { if (drawMode) setDraw(false); sel = null; $('#modal').classList.remove('open'); refresh('all'); }
+  else if (k === 'm' && sel) change(() => part(sel).mirror = !part(sel).mirror);
+  else if (k === 'f') fitAll();
+  else if (k === 's') $('#bSil').click();
+  else if (k === 'v') openVariations();
+  else if (k === 'k') setDraw(!drawMode);
+  else if ('12345'.includes(k) && !mod) setLayout(['quad', 'persp', 'top', 'side', 'front'][+k - 1]);
+});
+
+// ---------------- art direction ----------------
+$('#dirSel').innerHTML = Object.entries(DIRS).map(([k, d]) => `<option value="${k}">${d.label}</option>`).join('');
+$('#dirSel').onchange = e => { change(() => ship.direction = e.target.value); syncDir(); };
+function syncDir() { const d = ship.direction || 'none'; $('#dirSel').value = d; $('#dirHint').textContent = DIRS[d].brief ? DIRS[d].brief.split('. ').slice(0, 2).join('. ').replace(/\.$/, '') + '. Goes into the brief, and "Roll a ship" follows it.' : 'Only your own notes go into the brief.'; }
+
+// ---------------- reference images ----------------
+const texCache = {};
+const REF_LAYER = { top: 4, side: 5, front: 6 };
+orth.top.layers.enable(4); orth.side.layers.enable(5); orth.front.layers.enable(6);
+const refPlanes = new THREE.Group(); root.add(refPlanes);
+function refTex(r) {
+  if (texCache[r.id]) return texCache[r.id];
+  const t = new THREE.TextureLoader().load(r.src); t.colorSpace = THREE.SRGBColorSpace; return texCache[r.id] = t;
+}
+function rebuildRefPlanes() {
+  refPlanes.children.forEach(c => c.geometry.dispose()); refPlanes.clear();
+  if (silhouette || !bbox) return;
+  const c = bbox.getCenter(new THREE.Vector3());
+  for (const r of ship.refs || []) {
+    if (r.use === 'mood') continue;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(r.w, r.w * r.aspect), new THREE.MeshBasicMaterial({ map: refTex(r), transparent: true, opacity: r.op, depthWrite: false, side: THREE.DoubleSide }));
+    // basis in Blender space: image right/up as that view shows them, normal toward the viewer
+    const V = (x, y, z) => new THREE.Vector3(x, y, z), B = new THREE.Matrix4();
+    if (r.use === 'side') { B.makeBasis(V(0, 1, 0), V(0, 0, 1), V(1, 0, 0)); m.position.set(bbox.min.x - 2, c.y + r.u, c.z + r.v); }
+    if (r.use === 'top') { B.makeBasis(V(0, 1, 0), V(-1, 0, 0), V(0, 0, 1)); m.position.set(c.x - r.v, c.y + r.u, bbox.min.z - 2); }
+    if (r.use === 'front') { B.makeBasis(V(-1, 0, 0), V(0, 0, 1), V(0, 1, 0)); m.position.set(c.x - r.u, bbox.min.y - 2, c.z + r.v); }
+    m.quaternion.setFromRotationMatrix(B); m.layers.set(REF_LAYER[r.use]); m.renderOrder = -1;
+    refPlanes.add(m);
+  }
+}
+function addRefFiles(files, use = 'mood') {
+  for (const f of files) {
+    if (!f.type.startsWith('image/')) continue;
+    const fr = new FileReader();
+    fr.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        // shrink big images so autosave and the zip stay sane
+        const k = Math.min(1, 1600 / Math.max(img.width, img.height)), cvs = document.createElement('canvas');
+        cvs.width = Math.round(img.width * k); cvs.height = Math.round(img.height * k); cvs.getContext('2d').drawImage(img, 0, 0, cvs.width, cvs.height);
+        const src = f.type === 'image/png' ? cvs.toDataURL('image/png') : cvs.toDataURL('image/jpeg', 0.88);
+        const sz = bbox.getSize(new THREE.Vector3());
+        const w = use === 'front' ? Math.max(sz.x, 10) * 1.2 : Math.max(sz.y, 20) * 1.2;
+        change(() => { ship.refs = ship.refs || []; ship.refs.push({ id: 'r' + Date.now() + Math.random().toString(36).slice(2, 6), name: f.name, src, aspect: cvs.height / cvs.width, use, w: r3(w), u: 0, v: 0, op: 0.5, note: '' }); sel = null; });
+        toast(use === 'mood' ? 'Added to the mood board. Switch it to Top/Side/Front to trace over it.' : `Behind the ${use} view now. Hit ✏ Sketch and trace it.`);
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  }
+}
+function renderRefs() {
+  const el = $('#refList'); if (!el) return;
+  const refs = ship.refs || [];
+  el.innerHTML = refs.map((r, i) => `<div style="border:1px solid var(--line);border-radius:3px;padding:5px;margin:4px 0" data-ri="${i}">
+    <div class="row" style="margin:0"><img src="${r.src}" style="width:56px;height:40px;object-fit:cover;border-radius:2px">
+      <select data-k="use">${['mood', 'top', 'side', 'front'].map(u => `<option value="${u}" ${u === r.use ? 'selected' : ''}>${u === 'mood' ? 'Mood' : 'Trace: ' + u}</option>`).join('')}</select>
+      <button data-k="del" title="Remove">✕</button></div>
+    ${r.use === 'mood' ? '' : numField('Width m', r.w, 1, 2000, 0.5).replace('class="field"', 'class="field" data-rk="w"') + numField('Shift →', r.u, -1000, 1000, 0.5).replace('class="field"', 'class="field" data-rk="u"') + numField('Shift ↑', r.v, -1000, 1000, 0.5).replace('class="field"', 'class="field" data-rk="v"') + numField('Opacity', r.op, 0.05, 1, 0.05).replace('class="field"', 'class="field" data-rk="op"')}
+    <input type="text" data-k="note" value="${esc(r.note)}" placeholder="what to take from it" style="width:100%;margin-top:3px"></div>`).join('');
+  el.querySelectorAll('[data-ri]').forEach(box => {
+    const r = refs[+box.dataset.ri];
+    box.querySelector('[data-k=use]').onchange = e => change(() => r.use = e.target.value);
+    box.querySelector('[data-k=del]').onclick = () => change(() => ship.refs = ship.refs.filter(x => x !== r));
+    box.querySelector('[data-k=note]').oninput = e => change(() => r.note = e.target.value, 'refnote' + r.id, 'none');
+    box.querySelectorAll('[data-rk]').forEach(f => wireField(f, v => change(() => r[f.dataset.rk] = v, 'ref' + r.id + f.dataset.rk, 'scene')));
+  });
+  $('#refAdd').onclick = () => $('#refIn').click();
+}
+$('#refIn').onchange = e => { addRefFiles([...e.target.files]); e.target.value = ''; };
+viewEl.addEventListener('dragover', e => e.preventDefault());
+viewEl.addEventListener('drop', e => {
+  e.preventDefault(); const h = vpAt(e);
+  addRefFiles([...e.dataTransfer.files], h && h.vp.v !== 'persp' ? h.vp.v : 'mood');
+});
+
+// ---------------- freehand sketch ----------------
+let drawMode = false, stroke = null;
+const dc = $('#draw');
+function setDraw(on) {
+  drawMode = on; $('#bDraw').classList.toggle('on', on); cv.style.cursor = on ? 'crosshair' : '';
+  $('#fHint').textContent = on ? 'SKETCH: draw a closed-ish outline in Top, Side or Front. Mostly-straight lines get straightened. K or Esc to stop.' : "Can't draw? Good. Nobody's asking you to.";
+  if (on && layout === 'persp') setLayout('quad');
+}
+$('#bDraw').onclick = () => setDraw(!drawMode);
+function drawStroke() {
+  const g = dc.getContext('2d'); dc.width = viewEl.clientWidth; dc.height = viewEl.clientHeight; g.clearRect(0, 0, dc.width, dc.height);
+  if (!stroke || stroke.pts.length < 2) return;
+  g.strokeStyle = '#ff9d3c'; g.lineWidth = 2.5; g.lineJoin = 'round'; g.beginPath();
+  stroke.pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke();
+}
+function rdp(pts, eps) {
+  if (pts.length < 3) return pts;
+  const [a, b] = [pts[0], pts[pts.length - 1]], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1e-9;
+  let mi = 0, md = 0;
+  for (let i = 1; i < pts.length - 1; i++) { const d = Math.abs(dy * pts[i][0] - dx * pts[i][1] + b[0] * a[1] - b[1] * a[0]) / L; if (d > md) { md = d; mi = i; } }
+  if (md <= eps) return [a, b];
+  return rdp(pts.slice(0, mi + 1), eps).slice(0, -1).concat(rdp(pts.slice(mi), eps));
+}
+function finishStroke() {
+  const v = stroke.vp.v, H = stroke.vp, world = stroke.pts.map(([x, y]) => worldAt({ vp: H, x, y }));
+  stroke = null; drawStroke();
+  const uv = world.map(w => v === 'side' ? [w[1], w[2]] : v === 'top' ? [w[0], w[1]] : [w[0], w[2]]);
+  const us = uv.map(p => p[0]), vs = uv.map(p => p[1]), du = Math.max(...us) - Math.min(...us), dv = Math.max(...vs) - Math.min(...vs), ext = Math.hypot(du, dv);
+  if (ext < 0.5) return;
+  let pts = rdp(uv, ext * 0.025);
+  if (pts.length > 3 && Math.hypot(pts[0][0] - pts.at(-1)[0], pts[0][1] - pts.at(-1)[1]) < ext * 0.08) pts.pop();
+  // straighten nearly horizontal / vertical edges, snap to a fine grid
+  const sn = gridStep / 8;
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i], b = pts[(i + 1) % pts.length], ang = Math.abs(Math.atan2(b[1] - a[1], b[0] - a[0])) * 180 / Math.PI;
+    if (ang < 8 || ang > 172) b[1] = a[1]; else if (Math.abs(ang - 90) < 8) b[0] = a[0];
+  }
+  pts = pts.map(([a, b]) => [Math.round(a / sn) * sn, Math.round(b / sn) * sn]).filter((p, i, A) => i === 0 || Math.hypot(p[0] - A[i - 1][0], p[1] - A[i - 1][1]) > 1e-6);
+  if (pts.length > 2 && Math.hypot(pts[0][0] - pts.at(-1)[0], pts[0][1] - pts.at(-1)[1]) < 1e-6) pts.pop();
+  if (pts.length < 3) { toast('Too small or too straight. Draw an outline, not a line.'); return; }
+  const cu = (Math.min(...pts.map(p => p[0])) + Math.max(...pts.map(p => p[0]))) / 2, cvv = (Math.min(...pts.map(p => p[1])) + Math.max(...pts.map(p => p[1]))) / 2;
+  const rel = pts.map(([a, b]) => [r3(a - cu), r3(b - cvv)]);
+  const c = bbox.getCenter(new THREE.Vector3()), sz = bbox.getSize(new THREE.Vector3()), empty = !ship.parts.length;
+  let thick, pos, mirror = false;
+  if (v === 'side') { thick = empty ? Math.min(du, dv) * 0.5 : Math.max(1, Math.min(sz.x * 0.8, Math.min(du, dv))); pos = [0, cu, cvv]; }
+  else if (v === 'top') { thick = Math.max(0.5, Math.min(du, dv) * 0.3); pos = [cu, cvv, empty ? 0 : c.z]; mirror = Math.min(...pts.map(p => p[0])) > 0.2 || Math.max(...pts.map(p => p[0])) < -0.2; }
+  else { thick = empty ? Math.min(du, dv) : Math.max(1, sz.y * 0.3); pos = [cu, empty ? 0 : c.y, cvv]; mirror = Math.min(...pts.map(p => p[0])) > 0.2 || Math.max(...pts.map(p => p[0])) < -0.2; }
+  const pt = mkPart('sketch', { thick: r3(thick), pts: rel, plane: v }, { name: 'drawn_' + v, pos: pos.map(r3), mirror });
+  change(() => { ship.parts.push(pt); sel = pt.id; });
+  toast(`Shape added (${rel.length} corners)${mirror ? ', mirrored to the other side' : ''}. Set its thickness on the right.`);
+}
+cv.addEventListener('pointerdown', e => {
+  if (!drawMode) return;
+  const h = vpAt(e); if (!h) return;
+  e.stopImmediatePropagation();
+  if (h.vp.v === 'persp') { toast('Sketch in Top, Side or Front, not the 3D view.'); return; }
+  cv.setPointerCapture(e.pointerId);
+  stroke = { vp: h.vp, pts: [[h.x, h.y]] };
+}, { capture: true });
+cv.addEventListener('pointermove', e => {
+  if (!stroke) return; e.stopImmediatePropagation();
+  const r = cv.getBoundingClientRect(); stroke.pts.push([e.clientX - r.left, e.clientY - r.top]); drawStroke();
+}, { capture: true });
+cv.addEventListener('pointerup', e => { if (!stroke) return; e.stopImmediatePropagation(); finishStroke(); }, { capture: true });
+
+// boot
+try { const s = localStorage.getItem('shipyard.v1'); if (s) ship = JSON.parse(s); } catch (e) { }
+if (!ship || !Array.isArray(ship.parts)) ship = TEMPLATES['Corvette']();
+ship.palette = { ...DEFAULT_PAL, ...ship.palette }; ship.refs = ship.refs || []; ship.direction = ship.direction || 'none'; fixUid();
+resize(); refresh('all'); fitAll(); frame();
+
+// handles for headless testing
+window.__sy = { get ship() { return ship; }, set ship(s) { ship = s; fixUid(); sel = null; refresh('all'); fitAll(); }, TEMPLATES, rollShip, blockoutPy, briefMD, specJSON, sheetPNG, mutate, TYPES, select: id => { sel = id; refresh('all'); }, setLayout };
+</script>
+</body>
+</html>

@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ra'd · SFX forge</title>
+<style>
+:root{--bg:#0b0a08;--p1:#13110e;--p2:#1b1814;--p3:#24201a;--ln:#2f2921;--tx:#eadfcd;--dim:#8d7f6c;--acc:#ff9a3c;--acc2:#5fd4e8;--red:#ff5a4a;--ok:#86e39a;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:12px/1.35 var(--mono)}
+button,select,input{font:inherit;color:var(--tx)}
+button{background:var(--p2);border:1px solid var(--ln);border-radius:6px;padding:5px 9px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:#5a4a38}
+button.on{background:#3a2412;border-color:var(--acc);color:#fff}
+button.pri{background:#4a2a0e;border-color:var(--acc);color:#ffd7a8}
+button:disabled{opacity:.4;cursor:default}
+select{background:var(--p2);border:1px solid var(--ln);border-radius:5px;padding:2px 4px}
+input[type=text],input[type=number]{background:var(--p2);border:1px solid var(--ln);border-radius:5px;padding:4px 6px}
+#app{display:grid;grid-template-columns:230px minmax(0,1fr) 300px;grid-template-rows:auto minmax(0,1fr);height:100vh}
+header{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--ln);background:var(--p1);flex-wrap:wrap}
+#brand{display:flex;align-items:baseline;gap:8px;margin-right:6px}
+#brand b{letter-spacing:.35em;color:var(--acc);font-size:14px}
+#brand span{font-size:18px;color:#ffcf9a;font-family:"Noto Naskh Arabic","Geeza Pro",serif}
+#brand i{font-style:normal;color:var(--dim);font-size:11px}
+#pname{width:260px}
+.sp{flex:1}
+.kb{color:var(--dim);font-size:10px;margin-left:3px}
+aside,main{overflow:auto;min-height:0}
+aside{background:var(--p1);border-right:1px solid var(--ln);padding:8px}
+#right{border-right:0;border-left:1px solid var(--ln)}
+h3{margin:12px 0 6px;font-size:10px;letter-spacing:.22em;color:var(--dim);font-weight:normal;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+h3:first-child{margin-top:2px}
+h3 .sp{flex:1}
+.lib button{display:block;width:100%;text-align:left;margin:2px 0;border-color:transparent;background:transparent;padding:5px 7px;overflow:hidden;text-overflow:ellipsis}
+.lib button:hover{background:var(--p2)}
+.lib button.on{background:#2e1d0e;border-color:#6b4520}
+.lib .u{display:flex;gap:2px}.lib .u button:last-child{width:auto;flex:none;color:var(--dim)}
+main{padding:10px 12px 40px}
+#disp{position:relative;background:#070605;border:1px solid var(--ln);border-radius:8px;overflow:hidden;height:260px;cursor:pointer}
+#disp canvas{position:absolute;inset:0;width:100%;height:100%}
+#stats{display:flex;gap:14px;flex-wrap:wrap;color:var(--dim);font-size:11px;margin:6px 2px 10px}
+#stats b{color:var(--tx);font-weight:normal}
+#persp{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:10px}
+#persp button{text-align:left;padding:7px 8px;white-space:normal;line-height:1.25;min-height:58px}
+#persp button b{display:block;color:#ffd7a8;font-weight:normal;margin-bottom:2px}
+#persp button i{font-style:normal;color:var(--dim);font-size:10.5px}
+#persp button.on i{color:#d9b48a}
+#persp button.play{outline:2px solid var(--acc2)}
+#pdesc{color:var(--dim);margin:-4px 2px 12px;min-height:16px}
+#layers{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:8px}
+.card{background:var(--p1);border:1px solid var(--ln);border-radius:8px;padding:7px 8px;border-left:3px solid var(--c)}
+.card.off{opacity:.45}
+.card .hd{display:flex;gap:4px;align-items:center;margin-bottom:4px}
+.card .hd input{flex:1;min-width:0;background:transparent;border-color:transparent;font-weight:bold;padding:3px 4px}
+.card .hd input:focus{border-color:var(--ln);background:var(--p2)}
+.card .hd button{padding:2px 6px;font-size:11px}
+.card .hd .s.on{background:#0f3a40;border-color:var(--acc2)}
+details{border-top:1px solid #221d17;padding:2px 0}
+summary{cursor:pointer;color:var(--dim);font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:3px 0;list-style:none;display:flex;gap:6px}
+summary::before{content:"▸";color:#5a4c3c}
+details[open]>summary::before{content:"▾"}
+summary .lit{color:var(--acc)}
+.ctl{display:grid;grid-template-columns:88px minmax(0,1fr) 62px;align-items:center;gap:6px;margin:1px 0;min-height:21px}
+.ctl label{color:#b8a990;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.ctl output{text-align:right;color:#ffd7a8;font-size:11px;white-space:nowrap}
+.ctl select{width:100%}
+input[type=range]{width:100%;accent-color:var(--acc);height:14px;margin:0}
+.addrow{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.box{background:var(--p2);border:1px solid var(--ln);border-radius:8px;padding:7px 8px;margin-bottom:8px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0}
+.pchk{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;margin:4px 0}
+.pchk label{color:#b8a990}
+body.simple .pro{display:none!important}
+.nudges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.nudges button{padding:7px 12px;border-radius:999px}
+.nudges button:active{background:#4a2a0e}
+.macros{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:4px 18px;margin-bottom:6px}
+.mac{display:grid;grid-template-columns:96px 74px minmax(0,1fr) 110px;align-items:center;gap:8px;min-height:26px}
+.mac b{font-weight:normal;color:#ffd7a8}
+.mac span{color:var(--dim);font-size:10.5px}
+.mac span:first-of-type{text-align:right}
+.mac.moved b::after{content:" ●";color:var(--acc)}
+.six{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:12px}
+.take{background:var(--p1);border:1px solid var(--ln);border-radius:8px;padding:6px;cursor:pointer}
+.take.on{border-color:var(--acc2)}
+.take canvas{width:100%;height:46px;display:block;background:#070605;border-radius:4px}
+.take .row{justify-content:space-between;margin:5px 0 0}
+.take i{font-style:normal;color:var(--dim);font-size:10.5px}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#2a1a0c;border:1px solid var(--acc);padding:8px 14px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;max-width:80vw}
+.hint{color:var(--dim);font-size:10.5px;margin:4px 0}
+@media (max-width:1100px){#app{grid-template-columns:200px minmax(0,1fr)}#right{grid-column:1/-1;border-left:0;border-top:1px solid var(--ln)}#app{height:auto}aside,main{overflow:visible}#persp{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:700px){#app{display:block}#persp{grid-template-columns:repeat(2,1fr)}#pname{width:100%}}
+</style>
+</head>
+<body class="simple">
+<div id="app">
+<header>
+  <div id="brand"><b>RA'D</b><span>رعد</span><i>space-combat SFX forge</i></div>
+  <input id="pname" type="text" spellcheck="false" title="Preset name">
+  <button id="bPlay" class="pri">▶ Play<span class="kb">space</span></button>
+  <button id="bVary">🎲 Vary<span class="kb">R</span></button>
+  <button id="bMut" class="pro">Mutate<span class="kb">M</span></button>
+  <button id="bUndo" title="Ctrl+Z">↶</button><button id="bRedo" title="Ctrl+Shift+Z">↷</button>
+  <label class="hint" style="margin:0 4px"><input type="checkbox" id="auto" checked> play on change</label>
+  <span class="sp"></span>
+  <button id="bMode" title="Show every slider">Pro mode</button>
+  <button id="bWav">⤓ WAV</button>
+  <button id="bJson">⤓ JSON</button>
+  <button id="bLoad">⤒ Load JSON</button>
+  <input type="file" id="fJson" accept=".json,application/json" hidden>
+</header>
+<aside id="left">
+  <h3>Presets</h3>
+  <div id="lib" class="lib"></div>
+  <h3>Mine <span class="sp"></span><button id="bSave" title="Save to this browser">+ save</button></h3>
+  <div id="ulib" class="lib"></div>
+  <p class="hint">Saved in this browser only. Use ⤓ JSON to keep one for real.</p>
+</aside>
+<main>
+  <div id="disp" title="Click to play"><canvas id="cv"></canvas></div>
+  <div id="stats"></div>
+  <h3>Where are you?</h3>
+  <div id="persp"></div>
+  <div id="pdesc"></div>
+  <section class="simp">
+    <h3>Make it…</h3>
+    <div id="nudges" class="nudges"></div>
+    <h3>Knobs <span class="sp"></span><button id="bMacRes">reset knobs</button></h3>
+    <div id="macros" class="macros"></div>
+    <h3>Pick the best of six <span class="sp"></span><button id="bSix" class="pri">🎲 Give me 6 takes</button></h3>
+    <p class="hint">Six different takes on this sound. Click one to hear it, hit Keep on the one you like, then ask for six more. Repeat until it's perfect.</p>
+    <div id="six" class="six"></div>
+  </section>
+  <div class="pro">
+  <h3>Layers <span class="sp"></span><span class="hint" id="macnote"></span></h3>
+  <div id="layers"></div>
+  <div class="addrow" id="add"></div>
+  </div>
+</main>
+<aside id="right">
+  <div class="pro">
+  <h3>Perspective · tweak <span class="sp"></span><button id="bPRes" title="Back to the perspective's defaults">reset</button></h3>
+  <div class="box" id="pctl"></div>
+  <h3>Motion · distance & Doppler</h3>
+  <div class="box"><div class="row" id="mpath"></div><div id="mctl"></div><p class="hint">Space has no air, so the speed of sound is a dial: Doppler depth is speed ÷ that. Around 0.2–0.3 sounds cinematic; near 1 you get a sonic-boom smear.</p></div>
+  <h3>Variation</h3>
+  <div class="box"><div class="row"><label>Seed</label><input id="seed" type="number" style="width:90px"><span class="hint">🎲 Vary rolls a new one</span></div><div id="vctl"></div></div>
+  <h3>Output</h3>
+  <div class="box" id="octl"></div>
+  </div>
+  <h3>Export</h3>
+  <div class="box">
+    <div class="row"><select id="xsr"><option value="48000">48 kHz</option><option value="44100">44.1 kHz</option></select>
+      <select id="xbits"><option value="24">24-bit</option><option value="16">16-bit</option></select>
+      <select id="xch"><option value="2">stereo</option><option value="1">mono</option></select></div>
+    <div class="row"><label>How many</label><input id="xn" type="number" min="1" max="64" value="8" style="width:56px"></div>
+    <div class="hint">From which seats:</div>
+    <div class="pchk" id="xp"></div>
+    <div class="row"><button id="bBatch" class="pri">⤓ Batch ZIP</button><button id="bAll">▶ Audition all perspectives</button></div>
+    <p class="hint">Each file gets its own seed, so 8 PDC bursts are 8 different bursts. The ZIP carries the preset JSON too.</p>
+  </div>
+</aside>
+</div>
+<div id="toast"></div>
+<script>
+'use strict';
+/* =====================================================================
+   RA'D · procedural space-combat SFX. Everything is synthesised; no samples.
+   Pipeline per render:
+     1. layers   -> OfflineAudioContext (noise / osc+FM / granular, drive, filter, modal resonators, repeats)
+     2. motion   -> JS time-varying delay line (Doppler), 1/r gain, air absorption, pan sweep
+     3. space    -> OfflineAudioContext (structure-borne filtering, hull modes, panel rattle, generated IR, squash)
+     4. post     -> width, normalise, trim, seamless loop
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const dB=x=>Math.pow(10,x/20);
+const deep=o=>JSON.parse(JSON.stringify(o));
+function mulberry(seed){let s=seed>>>0;return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hash(...xs){let h=2166136261;for(const x of xs){const s=String(x);for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}h^=124;h=Math.imul(h,16777619);}return h>>>0;}
+
+/* ------------------------------ data model ------------------------------ */
+const LDEF={type:'noise',name:'Layer',on:true,solo:false,gain:0,t:0,pan:0,width:.4,
+  a:.002,h:0,d:.4,
+  color:'white',r0:1,r1:1,
+  wave:'sine',f0:80,f1:80,sw:.3,voices:1,det:12,fmi:0,fmr:1.41,fmd:.3,
+  gsrc:'click',dens:200,gdur:.02,gf:1200,gsp:.5,
+  ft:'none',ff0:2000,ff1:2000,fsw:.3,fq:.7,
+  drv:0,dmode:'tanh',
+  fla:0,flr:20,
+  ring:0,rmodel:'hull',rf:300,rdec:.6,rn:8,
+  rep:1,rrate:10,rjit:0,rvar:0,racc:0};
+const MDEF={on:false,speed:200,dmin:20,tc:1,c:1200,dir:1,air:.6,pw:.9};
+const VDEF={pitch:.6,time:.06,tone:.25,level:1.5};
+const ODEF={norm:true,peak:-1,loop:false,loopStart:.6,loopLen:3,loopXf:.4};
+
+const PERSP={
+  raw:{name:'Raw',sub:'design view',desc:'No perspective. The dry layers, for sculpting before you place the listener.',
+    p:{hp:15,lp:20000,low:0,midf:200,midg:0,couple:0,mf:200,md:.5,rattle:0,size:.5,bright:.5,metal:0,pre:0,wet:0,dry:1,width:1,comp:.15,comb:0,flutter:0,bloom:0}},
+  exterior:{name:'Exterior',sub:'cinematic space',desc:'Hollywood vacuum. Full bandwidth, wide, and a huge dark tail physics says should not exist. Pair it with Motion for flybys.',
+    p:{hp:20,lp:18000,low:2,midf:200,midg:0,couple:0,mf:200,md:.5,rattle:0,size:4.5,bright:.3,metal:0,pre:.03,wet:.3,dry:1,width:1.2,comp:.35,comb:0,flutter:0,bloom:.3}},
+  cockpit:{name:'Cockpit',sub:'strapped in',desc:'Sound arrives through the frame: highs gone, lows in your spine, panels buzzing, small hard room.',
+    p:{hp:28,lp:3400,low:5,midf:180,midg:3,couple:.22,mf:170,md:.45,rattle:.3,size:.4,bright:.65,metal:.3,pre:.002,wet:.32,dry:.9,width:.75,comp:.55,comb:0,flutter:0,bloom:0}},
+  hull:{name:'Deep hull',sub:'two decks away',desc:'Structure-borne thunder through steel: everything above 1 kHz eaten, the hull rings, the corridor flutters.',
+    p:{hp:22,lp:850,low:7,midf:110,midg:4,couple:.45,mf:85,md:1.6,rattle:.18,size:2.2,bright:.35,metal:.75,pre:.012,wet:.55,dry:.6,width:.85,comp:.6,comb:0,flutter:9,bloom:0}},
+  gunner:{name:'Gunner seat',sub:'bolted to the mount',desc:'Every round kicks through your chest. Mechanical clatter, tight turret pod, the mount buzzing at fire rate.',
+    p:{hp:30,lp:5500,low:6,midf:95,midg:5,couple:.28,mf:240,md:.22,rattle:.4,size:.22,bright:.75,metal:.5,pre:.001,wet:.26,dry:1,width:.6,comp:.7,comb:0,flutter:0,bloom:0}},
+  helmet:{name:'EVA helmet',sub:'vacuum, contact only',desc:'No air. Only what travels through your boots and suit, then rings around inside a fishbowl.',
+    p:{hp:35,lp:450,low:4,midf:160,midg:4,couple:.12,mf:140,md:.6,rattle:0,size:.14,bright:.85,metal:.9,pre:0,wet:.45,dry:.75,width:.25,comp:.75,comb:1150,flutter:0,bloom:0}},
+};
+const PKEYS=Object.keys(PERSP);
+
+/* ------------------------------ presets ------------------------------ */
+const Lr=(type,name,o)=>Object.assign({type,name},o);
+// one PDC round as a stack of layers that share the same repeat timing, so every part of a shot lands together
+const pdcRound=({t,rep,rrate})=>{const R={t,rep,rrate,rjit:.04,rvar:.3};return [
+  Lr('noise','Primer tick',{...R,a:.0002,d:.004,ft:'highpass',ff0:4000,ff1:4000,gain:-10}),
+  Lr('noise','Propellant blast',{...R,color:'pink',a:.0003,h:.002,d:.05,ft:'lowpass',ff0:9000,ff1:800,fsw:.025,drv:.6,dmode:'asym',width:.5}),
+  Lr('osc','Recoil kick',{...R,f0:160,f1:50,sw:.03,a:.0003,h:.004,d:.09,drv:.5}),
+  Lr('osc','Sub punch',{...R,f0:70,f1:40,sw:.06,a:.0005,d:.14,gain:-6}),
+  Lr('noise','Muzzle crack',{...R,a:.0002,d:.016,ft:'bandpass',ff0:2600,ff1:2600,fq:.8,drv:.5,gain:-5}),
+  Lr('noise','Bolt clack',{...R,color:'pink',a:.0004,d:.025,ft:'bandpass',ff0:1700,ff1:1700,fq:2,ring:.4,rmodel:'bar',rf:1050,rdec:.07,rn:5,gain:5}),
+  Lr('noise','Barrel ring',{...R,a:.0003,d:.006,ring:1,rmodel:'tube',rf:380,rdec:.25,rn:6,gain:-18})];};
+const pdcTail=t=>[
+  Lr('osc','Motor wind-down',{wave:'sawtooth',f0:380,f1:70,sw:.9,t,a:.005,d:1,voices:2,det:7,ft:'bandpass',ff0:1400,ff1:500,fsw:.9,fq:3,gain:-11}),
+  Lr('noise','Barrel ring-out',{t,a:.0003,d:.01,ring:1,rmodel:'tube',rf:380,rdec:1.3,rn:6,gain:-14}),
+  Lr('osc','Mount settle',{f0:90,f1:40,sw:.15,t:t+.03,a:.002,d:.35,drv:.3,gain:-8})];
+const RAW_PRESETS=[
+{id:'torp-launch-hull',cat:'Torpedo',name:'Torpedo launch · felt in the hull',persp:'hull',
+ desc:'Mag clamps let go, the rail charges, the tube slams it out, the hull rings, the drive lights somewhere far off.',
+ layers:[
+  Lr('noise','Mag-clamp release',{color:'pink',a:.0008,d:.2,ft:'lowpass',ff0:3000,ff1:500,fsw:.08,fq:1.2,drv:.5,ring:.55,rmodel:'hull',rf:150,rdec:1.2,rn:10,gain:-2}),
+  Lr('osc','Rail charge',{wave:'sawtooth',f0:70,f1:780,sw:.6,voices:3,det:18,t:.04,a:.45,h:.05,d:.12,ft:'bandpass',ff0:500,ff1:2200,fsw:.55,fq:2.5,gain:-12,width:.6}),
+  Lr('osc','Ejection slam',{f0:90,f1:26,sw:.4,t:.6,a:.002,h:.05,d:1.6,drv:.35,ft:'lowpass',ff0:400,ff1:400,gain:2}),
+  Lr('noise','Tube blast',{color:'brown',t:.6,a:.003,h:.08,d:1,ft:'lowpass',ff0:2400,ff1:180,fsw:.7,drv:.55,fla:.35,flr:26,gain:-2,width:.7}),
+  Lr('noise','Hull ring',{t:.6,a:.0005,d:.015,ring:1,rmodel:'plate',rf:205,rdec:2.4,rn:12,gain:-6}),
+  Lr('noise','Drive lights (far)',{color:'brown',t:1,a:.35,h:.8,d:1.6,ft:'lowpass',ff0:380,ff1:380,fla:.55,flr:13,gain:-10,width:.8})]},
+{id:'torp-launch-ext',cat:'Torpedo',name:'Torpedo launch · exterior',persp:'exterior',
+ motion:{on:true,speed:280,dmin:12,tc:.5,dir:1,c:1000,air:.6,pw:.9},
+ desc:'Rail cough, ignition crackle, drive roar pulling away with Doppler.',
+ layers:[
+  Lr('noise','Rail cough',{color:'pink',a:.001,h:.01,d:.45,ft:'bandpass',ff0:1400,ff1:280,fsw:.3,fq:1.1,drv:.4,gain:-1,width:.6}),
+  Lr('osc','Kick',{f0:110,f1:38,sw:.25,a:.001,d:.6,drv:.3}),
+  Lr('grain','Ignition crackle',{gsrc:'click',t:.25,dens:900,gf:2500,gsp:1.2,a:.02,h:.4,d:1.2,ft:'highpass',ff0:900,ff1:900,gain:-8,width:.8}),
+  Lr('noise','Drive roar',{color:'brown',t:.28,a:.12,h:1.6,d:1.4,ft:'lowpass',ff0:1600,ff1:900,fsw:2,drv:.6,dmode:'asym',fla:.5,flr:24,width:.7}),
+  Lr('noise','Plume hiss',{color:'pink',t:.3,a:.2,h:1.5,d:1.2,ft:'bandpass',ff0:3200,ff1:2400,fsw:1.5,fq:.6,fla:.3,flr:40,gain:-9,width:.9}),
+  Lr('osc','Turbine whine',{wave:'sawtooth',f0:420,f1:760,sw:1.2,voices:3,det:9,t:.3,a:.4,h:1.2,d:1,ft:'bandpass',ff0:1500,ff1:1500,fq:3,gain:-16})]},
+{id:'torp-flyby',cat:'Torpedo',name:'Torpedo flyby',persp:'exterior',
+ motion:{on:true,speed:320,dmin:18,tc:1.8,dir:-1,c:1300,air:.7,pw:1},
+ desc:'A torpedo screams past a few dozen metres off. Doppler drop, pan sweep, air eats the far end.',
+ layers:[
+  Lr('noise','Roar',{color:'brown',a:.05,h:3.4,d:.4,ft:'lowpass',ff0:2200,ff1:2200,drv:.6,dmode:'asym',fla:.5,flr:22,width:.6}),
+  Lr('grain','Crackle',{gsrc:'click',dens:700,gf:2600,gsp:1.2,a:.05,h:3.4,d:.4,ft:'highpass',ff0:700,ff1:700,gain:-9,width:.7}),
+  Lr('noise','Hiss',{color:'pink',a:.05,h:3.4,d:.4,ft:'bandpass',ff0:4200,ff1:4200,fq:.8,gain:-12}),
+  Lr('osc','Whine',{wave:'sawtooth',f0:520,f1:520,voices:4,det:12,a:.1,h:3.3,d:.4,ft:'bandpass',ff0:1600,ff1:1600,fq:2,gain:-11}),
+  Lr('osc','Sub',{f0:48,f1:48,a:.2,h:3,d:.6,drv:.3,gain:-6})]},
+{id:'torp-impact-hull',cat:'Torpedo',name:'Torpedo hit · inside the ship',persp:'hull',
+ desc:'You took one. Sub boom, crunching steel, the whole hull groans, debris rains in the dark.',
+ layers:[
+  Lr('osc','Boom',{f0:62,f1:20,sw:.9,a:.001,h:.1,d:3,drv:.5,gain:2}),
+  Lr('noise','Crunch',{a:.0005,h:.02,d:.35,ft:'lowpass',ff0:7000,ff1:500,fsw:.25,drv:.85,dmode:'asym',ring:.35,rmodel:'hull',rf:95,rdec:2.6,rn:12,gain:-1}),
+  Lr('noise','Shock rumble',{color:'brown',a:.01,h:.4,d:3.2,ft:'lowpass',ff0:300,ff1:300,fla:.6,flr:9,gain:-2,width:.8}),
+  Lr('grain','Debris',{gsrc:'chunk',dens:45,gf:800,gsp:.7,t:.08,a:.05,h:.3,d:1.8,gain:-12,width:.9}),
+  Lr('osc','Hull groan',{wave:'sawtooth',f0:55,f1:41,sw:2.5,voices:3,det:25,t:.2,a:.4,h:.4,d:2.5,ft:'lowpass',ff0:220,ff1:220,fq:2,fmi:1.5,fmr:.51,fmd:3,gain:-10})]},
+{id:'missile-salvo',cat:'Missile',name:'Missile salvo · six from the rack',persp:'exterior',
+ desc:'Six birds off the rails in quick, ragged succession. Every shot is its own shot.',
+ layers:[
+  Lr('noise','Pop',{a:.0004,d:.05,ft:'bandpass',ff0:2400,ff1:2400,fq:.8,drv:.3,gain:-4,rep:6,rrate:4.5,rjit:.35,rvar:.4}),
+  Lr('noise','Whoosh',{color:'pink',a:.03,h:.15,d:.7,ft:'bandpass',ff0:350,ff1:2800,fsw:.7,fq:1.3,fla:.3,flr:30,gain:-3,width:.8,rep:6,rrate:4.5,rjit:.35,rvar:.4}),
+  Lr('osc','Thump',{f0:95,f1:42,sw:.2,d:.35,drv:.25,gain:-2,rep:6,rrate:4.5,rjit:.35,rvar:.4}),
+  Lr('grain','Ignition crackle',{dens:600,gf:2400,gsp:1,a:.01,h:.2,d:.5,ft:'highpass',ff0:1200,ff1:1200,gain:-10,rep:6,rrate:4.5,rjit:.35,rvar:.4}),
+  Lr('noise','Exhaust wash',{color:'brown',t:.2,a:.4,h:1.4,d:2,ft:'lowpass',ff0:900,ff1:600,fsw:2,fla:.4,flr:18,gain:-8,width:.9})]},
+{id:'missile-flyby',cat:'Missile',name:'Missile flyby · close',persp:'exterior',
+ motion:{on:true,speed:420,dmin:6,tc:1.3,dir:1,c:1500,air:.8,pw:1},
+ desc:'A missile tears past six metres away. Fast Doppler, savage pan.',
+ layers:[
+  Lr('noise','Roar',{color:'brown',a:.03,h:2.4,d:.3,ft:'lowpass',ff0:3000,ff1:3000,drv:.55,dmode:'asym',fla:.45,flr:30,width:.5}),
+  Lr('osc','Whistle',{f0:1900,f1:1900,voices:2,det:8,a:.05,h:2.3,d:.3,fmi:.3,fmr:2.01,fmd:5,gain:-12}),
+  Lr('grain','Crackle',{dens:1200,gf:3000,gsp:1,a:.03,h:2.4,d:.3,ft:'highpass',ff0:1000,ff1:1000,gain:-9}),
+  Lr('noise','Hiss',{a:.03,h:2.4,d:.3,ft:'bandpass',ff0:5000,ff1:5000,fq:.7,gain:-14})]},
+{id:'missile-launch-cockpit',cat:'Missile',name:'Missile launch · from the cockpit',persp:'cockpit',
+ desc:'Your own rack firing four. Clunk, whoomp, the frame shudders each time.',
+ layers:[
+  Lr('noise','Rack release',{color:'pink',a:.0008,d:.12,ft:'lowpass',ff0:2000,ff1:400,fsw:.06,drv:.4,ring:.5,rmodel:'hull',rf:230,rdec:.8,rn:10,rep:4,rrate:3.2,rjit:.25,rvar:.3}),
+  Lr('osc','Launch whoomp',{f0:70,f1:34,sw:.3,t:.03,d:.7,drv:.3,rep:4,rrate:3.2,rjit:.25,rvar:.3}),
+  Lr('noise','Blast',{color:'brown',t:.03,a:.004,h:.05,d:.8,ft:'lowpass',ff0:1500,ff1:200,fsw:.4,drv:.5,fla:.3,flr:25,gain:-2,rep:4,rrate:3.2,rjit:.25,rvar:.3})]},
+{id:'pdc-gunner',cat:'PDC',name:'PDC burst · gunner seat',persp:'gunner',
+ desc:'The full thing, matched to Fog of War: motor spins up, one 1 s burst of 100 rounds (6000 rpm, PointDefense.Rate), motor winds down and the barrel rings out. Every round is primer tick, propellant blast, recoil kick and bolt clack.',
+ layers:[
+  Lr('osc','Spin-up motor',{wave:'sawtooth',f0:120,f1:380,sw:.3,a:.06,h:1.24,d:.2,voices:2,det:7,ft:'bandpass',ff0:900,ff1:1400,fsw:.3,fq:3.5,gain:-15}),
+  ...pdcRound({t:.3,rep:100,rrate:100}),
+  Lr('noise','Mount buzz',{color:'brown',t:.3,a:.01,h:.95,d:.25,ft:'lowpass',ff0:240,ff1:240,fla:.75,flr:100,gain:-6}),
+  ...pdcTail(1.3)]},
+{id:'pdc-round',cat:'PDC',name:'PDC kit · single round',persp:'gunner',
+ desc:'One round, for games that fire a sound per shot. Export 12+ variations and cycle through them (round-robin) so it never machine-guns the same sample.',
+ vary:{pitch:.8,time:.1,tone:.3,level:1.5},
+ layers:pdcRound({t:0,rep:1,rrate:100})},
+{id:'pdc-loop',cat:'PDC',name:'PDC kit · burst loop',persp:'gunner',out:{loop:true,loopStart:.5,loopLen:2,loopXf:.2},
+ desc:'Seamless 2 s loop of sustained fire at 6000 rpm (100 rounds/s, the game\'s PointDefense.Rate). Play it while the trigger is held, then play the tail on release.',
+ layers:[...pdcRound({t:0,rep:340,rrate:100}),
+  Lr('noise','Mount buzz',{color:'brown',a:.01,h:3.3,d:.25,ft:'lowpass',ff0:240,ff1:240,fla:.75,flr:100,gain:-6}),
+  Lr('osc','Motor',{wave:'sawtooth',f0:380,f1:380,voices:2,det:7,a:.01,h:3.3,d:.2,ft:'bandpass',ff0:1400,ff1:1400,fq:3.5,gain:-17})]},
+{id:'pdc-spinup',cat:'PDC',name:'PDC kit · spin-up',persp:'gunner',
+ desc:'Feed latches, motor winds up. Play it on trigger press, then start the loop.',
+ layers:[
+  Lr('noise','Feed latch',{color:'pink',a:.0006,d:.06,ft:'bandpass',ff0:1500,ff1:1500,fq:1.5,drv:.3,ring:.4,rmodel:'bar',rf:900,rdec:.1,rn:5,gain:-4}),
+  Lr('osc','Spin-up motor',{wave:'sawtooth',f0:120,f1:380,sw:.3,a:.05,h:.05,d:.05,voices:2,det:7,ft:'bandpass',ff0:900,ff1:1400,fsw:.3,fq:3.5,gain:-6}),
+  Lr('noise','Mount hum',{color:'brown',a:.2,h:.1,d:.05,ft:'lowpass',ff0:200,ff1:200,gain:-10})]},
+{id:'pdc-tail',cat:'PDC',name:'PDC kit · release tail',persp:'gunner',
+ desc:'Trigger released: the last round, the motor winding down, the barrel ringing out and the mount settling.',
+ layers:[...pdcRound({t:0,rep:1,rrate:100}),...pdcTail(.02)]},
+{id:'pdc-exterior',cat:'PDC',name:'PDC burst · 300 m out',persp:'exterior',
+ motion:{on:true,speed:0,dmin:300,tc:0,dir:1,c:343,air:.7,pw:0},
+ desc:'Someone else\'s PDC, a few hundred metres off. The rounds smear into one angry BRRRT.',
+ layers:[
+  Lr('noise','Crack',{a:.0003,d:.02,ft:'bandpass',ff0:3200,ff1:3200,fq:.7,drv:.5,gain:-2,rep:100,rrate:100,rjit:.05,rvar:.3}),
+  Lr('osc','Thump',{f0:220,f1:90,sw:.02,d:.04,drv:.4,gain:-4,rep:100,rrate:100,rjit:.05,rvar:.3}),
+  Lr('noise','Hiss tail',{color:'pink',a:.02,h:1,d:.5,ft:'highpass',ff0:2000,ff1:2000,fla:.5,flr:100,gain:-14})]},
+{id:'pdc-hull',cat:'PDC',name:'PDC burst · through the hull',persp:'hull',
+ desc:'Your PDCs firing somewhere aft. A long thrumming growl through the deck plates.',
+ layers:[
+  Lr('osc','Round kick',{f0:120,f1:50,sw:.03,a:.0004,h:.004,d:.07,drv:.6,rep:100,rrate:100,rjit:.05,rvar:.25}),
+  Lr('noise','Crack',{a:.0003,d:.02,ft:'bandpass',ff0:900,ff1:900,fq:1,drv:.4,gain:-6,rep:100,rrate:100,rjit:.05,rvar:.25}),
+  Lr('noise','Mount buzz',{color:'brown',a:.02,h:1,d:.4,ft:'lowpass',ff0:240,ff1:240,fla:.7,flr:100,gain:-4})]},
+{id:'hull-hits',cat:'Impacts',name:'Rounds hitting the hull · cockpit',persp:'cockpit',
+ desc:'Somebody else\'s PDC found you. Ragged metallic pings and thuds walking across the plating.',
+ layers:[
+  Lr('noise','Ping',{a:.0003,d:.01,ring:1,rmodel:'bar',rf:1250,rdec:.45,rn:6,gain:-4,rep:22,rrate:26,rjit:.7,rvar:.6}),
+  Lr('osc','Thud',{f0:140,f1:70,sw:.03,d:.1,drv:.4,gain:-2,rep:22,rrate:26,rjit:.7,rvar:.6}),
+  Lr('grain','Spall',{gsrc:'chunk',dens:50,gf:1300,gsp:.7,a:.01,h:.9,d:.5,gain:-14,width:.9})]},
+{id:'torp-detonation-far',cat:'Impacts',name:'Torpedo detonation · far',persp:'exterior',
+ motion:{on:true,speed:0,dmin:900,tc:0,dir:1,c:343,air:.5,pw:0},
+ desc:'A warhead goes off a long way out. All weight, no edges, a tail that keeps rolling.',
+ layers:[
+  Lr('osc','Boom',{f0:55,f1:22,sw:1.2,a:.002,h:.15,d:3.5,drv:.55}),
+  Lr('noise','Blast',{color:'brown',a:.002,h:.1,d:2.5,ft:'lowpass',ff0:3000,ff1:250,fsw:1.2,drv:.7,fla:.5,flr:7,width:.9}),
+  Lr('grain','Crackle',{dens:400,gf:1500,gsp:1.5,a:.01,h:.3,d:1.5,ft:'highpass',ff0:600,ff1:600,gain:-10,width:1})]},
+{id:'rcs-cockpit',cat:'Thrusters',name:'RCS puffs · cockpit',persp:'cockpit',
+ desc:'Manoeuvring thrusters correcting: valve tick, solenoid thunk, pfft. Three, ragged.',
+ layers:[
+  Lr('noise','Valve tick',{a:.0003,d:.006,ring:.6,rmodel:'tube',rf:2600,rdec:.08,rn:6,gain:-6,rep:3,rrate:5,rjit:.4,rvar:.3}),
+  Lr('osc','Solenoid',{f0:190,f1:120,sw:.03,d:.05,drv:.3,gain:-6,rep:3,rrate:5,rjit:.4,rvar:.3}),
+  Lr('noise','Puff',{color:'pink',t:.004,a:.004,h:.07,d:.14,ft:'bandpass',ff0:1800,ff1:1200,fsw:.1,fq:.7,fla:.2,flr:70,width:.5,rep:3,rrate:5,rjit:.4,rvar:.3})]},
+{id:'drive-ignite-cockpit',cat:'Thrusters',name:'Main drive ignition · cockpit',persp:'cockpit',
+ desc:'Igniters spit, the plume catches with a gut punch, then the burn: roar through the frame, pump whine, crackle, everything rattling.',
+ layers:[
+  Lr('grain','Igniter',{dens:350,gf:3000,gsp:1,a:.01,h:.25,d:.15,ft:'highpass',ff0:1500,ff1:1500,gain:-8}),
+  Lr('osc','Catch whump',{f0:64,f1:28,sw:.5,t:.35,d:1.8,drv:.45}),
+  Lr('noise','Roar',{color:'brown',t:.35,a:.3,h:3.6,d:1.4,ft:'lowpass',ff0:900,ff1:700,fsw:3,drv:.5,dmode:'asym',fla:.45,flr:21,width:.7}),
+  Lr('noise','Plume hiss',{color:'pink',t:.4,a:.7,h:3.2,d:1.2,ft:'bandpass',ff0:2600,ff1:2600,fq:.5,fla:.3,flr:37,gain:-9,width:.9}),
+  Lr('osc','Frame hum',{wave:'sawtooth',f0:36,f1:44,sw:2,voices:3,det:22,t:.45,a:1.1,h:3,d:1.2,ft:'lowpass',ff0:170,ff1:170,gain:-7}),
+  Lr('osc','Turbopump',{wave:'triangle',f0:500,f1:1350,sw:1.6,voices:2,det:5,t:.2,a:.9,h:2.8,d:1.2,ft:'bandpass',ff0:1300,ff1:1300,fq:3,gain:-14}),
+  Lr('grain','Burn crackle',{dens:160,gf:1800,gsp:1.4,t:.5,a:.5,h:3,d:1,ft:'highpass',ff0:1200,ff1:1200,gain:-12})]},
+{id:'drive-burn-loop',cat:'Thrusters',name:'Drive burn · cockpit loop',persp:'cockpit',out:{loop:true,loopStart:1,loopLen:4,loopXf:.6},
+ desc:'Sustained hard burn as a seamless loop. Drop it on an engine emitter and modulate pitch/volume in-game.',
+ layers:[
+  Lr('noise','Roar',{color:'brown',a:.2,h:6.5,d:.5,ft:'lowpass',ff0:800,ff1:800,drv:.5,dmode:'asym',fla:.45,flr:21,width:.7}),
+  Lr('noise','Plume hiss',{color:'pink',a:.2,h:6.5,d:.5,ft:'bandpass',ff0:2600,ff1:2600,fq:.5,fla:.3,flr:37,gain:-10,width:.9}),
+  Lr('osc','Frame hum',{wave:'sawtooth',f0:41,f1:41,voices:3,det:22,a:.2,h:6.5,d:.5,ft:'lowpass',ff0:170,ff1:170,gain:-7}),
+  Lr('osc','Turbopump',{wave:'triangle',f0:1300,f1:1300,voices:2,det:5,a:.2,h:6.5,d:.5,ft:'bandpass',ff0:1300,ff1:1300,fq:3,gain:-15}),
+  Lr('grain','Crackle',{dens:160,gf:1800,gsp:1.4,a:.2,h:6.5,d:.5,ft:'highpass',ff0:1200,ff1:1200,gain:-12})]},
+{id:'drive-flyby',cat:'Thrusters',name:'Capital ship drive · flyby',persp:'exterior',
+ motion:{on:true,speed:650,dmin:50,tc:2.2,dir:1,c:2400,air:.5,pw:.8},
+ desc:'A ship under hard burn rips past. Big low roar, Doppler sag, sub you feel more than hear.',
+ layers:[
+  Lr('noise','Roar',{color:'brown',a:.2,h:4,d:.5,ft:'lowpass',ff0:1400,ff1:1400,drv:.6,dmode:'asym',fla:.5,flr:18,width:.7}),
+  Lr('noise','Plume',{color:'pink',a:.2,h:4,d:.5,ft:'bandpass',ff0:2000,ff1:2000,fq:.5,fla:.3,flr:33,gain:-8,width:.9}),
+  Lr('osc','Sub',{f0:32,f1:32,a:.3,h:3.8,d:.6,drv:.35,gain:-4}),
+  Lr('grain','Crackle',{dens:300,gf:1500,gsp:1.3,a:.2,h:4,d:.5,ft:'highpass',ff0:900,ff1:900,gain:-11})]},
+{id:'breach-cockpit',cat:'Impacts',name:'Hull breach · cockpit',persp:'cockpit',
+ desc:'Something punched through. Blast, then the air screaming out and debris getting sucked along with it.',
+ layers:[
+  Lr('osc','Boom',{f0:50,f1:18,sw:.8,a:.001,h:.08,d:2.5,drv:.6}),
+  Lr('noise','Blast',{a:.0005,h:.01,d:.6,ft:'lowpass',ff0:9000,ff1:600,fsw:.4,drv:.9,dmode:'asym',ring:.3,rmodel:'hull',rf:140,rdec:1.5,rn:10}),
+  Lr('noise','Decompression',{t:.15,a:.05,h:2,d:1.5,ft:'bandpass',ff0:3000,ff1:1800,fsw:3,fq:1.5,fla:.5,flr:9,gain:-6,width:.6}),
+  Lr('grain','Debris',{gsrc:'chunk',dens:60,gf:900,gsp:.8,a:.02,h:.6,d:1.6,gain:-10,width:1})]},
+{id:'pdc-tracking',cat:'PDC',name:'PDC tracking · gunner seat',persp:'gunner',
+ desc:'The turret slewing onto a target: servo whine climbing and hunting, gear chatter, before a single round goes out.',
+ layers:[
+  Lr('osc','Slew servo',{wave:'sawtooth',f0:140,f1:520,sw:.9,voices:2,det:8,a:.08,h:1.1,d:.35,ft:'bandpass',ff0:900,ff1:1800,fsw:.9,fq:3,fla:.35,flr:9,gain:-6}),
+  Lr('osc','Gear whine',{f0:1300,f1:2100,sw:.9,fmi:.6,fmr:3.01,fmd:2,a:.1,h:1,d:.3,gain:-18}),
+  Lr('noise','Gear chatter',{color:'pink',a:.0004,d:.01,ft:'bandpass',ff0:2500,ff1:2500,fq:3,ring:.4,rmodel:'bar',rf:1700,rdec:.05,rn:5,gain:-10,rep:30,rrate:24,rjit:.5,rvar:.5}),
+  Lr('noise','Stop clunk',{color:'pink',t:1.35,a:.0008,d:.12,ft:'lowpass',ff0:2500,ff1:500,fsw:.06,drv:.4,ring:.5,rmodel:'hull',rf:260,rdec:.5,rn:8,gain:-4})]},
+{id:'flak-burst',cat:'Missile',name:'Proximity warhead · exterior',persp:'exterior',
+ motion:{on:true,speed:0,dmin:150,tc:0,dir:1,c:1200,air:.5,pw:0},
+ desc:'A missile pops its warhead near a target: sharp crack, fragment spray, a boom that rolls off into nothing.',
+ layers:[
+  Lr('noise','Crack',{a:.0002,d:.05,ft:'highpass',ff0:600,ff1:600,drv:.8,dmode:'asym'}),
+  Lr('osc','Boom',{f0:90,f1:30,sw:.4,a:.001,h:.03,d:1.4,drv:.5}),
+  Lr('grain','Fragments',{gsrc:'click',dens:1500,gf:3500,gsp:1.3,a:.002,h:.05,d:.6,ft:'highpass',ff0:1500,ff1:1500,gain:-6,width:1}),
+  Lr('noise','Roll-off',{color:'brown',t:.02,a:.02,h:.1,d:2.5,ft:'lowpass',ff0:1200,ff1:200,fsw:2,fla:.4,flr:6,gain:-4,width:.9})]},
+{id:'torp-lock',cat:'Torpedo',name:'Torpedo lock-on tone · cockpit',persp:'cockpit',
+ desc:'Fire-control acquiring: chirps speeding up, then the solid LOCK tone. Not a weapon sound, but you\'ll need it.',
+ layers:[
+  Lr('osc','Seek chirps',{wave:'square',f0:1250,f1:1250,a:.003,h:.05,d:.04,ft:'lowpass',ff0:4000,ff1:4000,gain:-6,rep:8,rrate:4,racc:-.14}),
+  Lr('osc','Lock tone',{wave:'square',f0:1680,f1:1680,t:1.55,a:.004,h:.75,d:.08,voices:2,det:4,ft:'lowpass',ff0:4000,ff1:4000,fla:.2,flr:16,gain:-4})]},
+{id:'missile-hit-cockpit',cat:'Impacts',name:'Missile hits your ship · cockpit',persp:'cockpit',
+ desc:'Took a missile somewhere aft. A hard slam through the frame, panels shrieking, alarms are your problem.',
+ layers:[
+  Lr('osc','Slam',{f0:75,f1:24,sw:.6,a:.001,h:.06,d:2,drv:.6}),
+  Lr('noise','Crunch',{a:.0004,h:.015,d:.4,ft:'lowpass',ff0:8000,ff1:700,fsw:.3,drv:.8,dmode:'asym',ring:.4,rmodel:'hull',rf:160,rdec:1.8,rn:12}),
+  Lr('osc','Frame shriek',{wave:'sawtooth',f0:620,f1:380,sw:1.2,t:.05,voices:3,det:30,fmi:2,fmr:1.37,fmd:1.5,a:.05,h:.2,d:1.2,ft:'bandpass',ff0:1200,ff1:700,fsw:1.2,fq:2,gain:-12}),
+  Lr('grain','Debris',{gsrc:'chunk',dens:50,gf:850,gsp:.7,t:.05,a:.02,h:.5,d:1.4,gain:-11,width:1}),
+  Lr('noise','Rumble',{color:'brown',a:.01,h:.3,d:2.6,ft:'lowpass',ff0:250,ff1:250,fla:.5,flr:8,gain:-4,width:.8})]},
+{id:'debris-pings',cat:'Impacts',name:'Debris pinging the hull · cockpit',persp:'cockpit',
+ desc:'Flying through the wreckage of something. Sparse, random ticks and pings across the hull.',
+ layers:[
+  Lr('noise','Ping',{a:.0003,d:.008,ft:'lowpass',ff0:3000,ff1:3000,ring:.8,rmodel:'hull',rf:420,rdec:.35,rn:10,gain:-3,rep:14,rrate:4,rjit:1,rvar:1}),
+  Lr('noise','Tick',{a:.0002,d:.004,ft:'highpass',ff0:2500,ff1:2500,gain:-8,rep:26,rrate:7,rjit:1,rvar:1}),
+  Lr('osc','Knock',{f0:180,f1:90,sw:.03,d:.08,drv:.3,gain:-8,rep:5,rrate:1.2,rjit:1,rvar:.8})]},
+{id:'explosion-close',cat:'Impacts',name:'Ship explodes · close exterior',persp:'exterior',
+ desc:'A frigate going up close enough to fill the screen. Flash crack, reactor whump, secondaries, a long burning tail.',
+ layers:[
+  Lr('noise','Flash crack',{a:.0002,d:.08,ft:'highpass',ff0:400,ff1:400,drv:.9,dmode:'asym'}),
+  Lr('osc','Reactor whump',{f0:70,f1:16,sw:1.5,a:.002,h:.2,d:4,drv:.6,gain:2}),
+  Lr('noise','Fireball',{color:'brown',a:.01,h:.6,d:4,ft:'lowpass',ff0:4000,ff1:300,fsw:3,drv:.7,dmode:'asym',fla:.5,flr:11,width:1}),
+  Lr('noise','Secondaries',{color:'pink',t:.4,a:.002,d:.6,ft:'lowpass',ff0:3000,ff1:400,fsw:.4,drv:.6,gain:-4,rep:5,rrate:1.6,rjit:.9,rvar:.7}),
+  Lr('grain','Debris crackle',{dens:800,gf:2000,gsp:1.5,a:.05,h:1,d:3,ft:'highpass',ff0:800,ff1:800,gain:-9,width:1})]},
+{id:'rcs-exterior',cat:'Thrusters',name:'RCS burst · exterior',persp:'exterior',
+ desc:'A ship\'s manoeuvring jets from outside: sharp hissing bursts with a cold edge.',
+ layers:[
+  Lr('noise','Jet',{a:.003,h:.18,d:.25,ft:'bandpass',ff0:3500,ff1:2200,fsw:.2,fq:.6,fla:.25,flr:60,width:.6,rep:2,rrate:2.5,rjit:.4,rvar:.4}),
+  Lr('noise','Body',{color:'pink',a:.003,h:.15,d:.2,ft:'lowpass',ff0:900,ff1:900,gain:-6,rep:2,rrate:2.5,rjit:.4,rvar:.4}),
+  Lr('noise','Pop',{a:.0003,d:.01,ft:'highpass',ff0:1500,ff1:1500,gain:-6,rep:2,rrate:2.5,rjit:.4,rvar:.4})]},
+{id:'drive-shutdown',cat:'Thrusters',name:'Main drive cut-off · cockpit',persp:'cockpit',
+ desc:'Burn ends: the roar collapses, the pumps wind down, the frame ticks as it cools.',
+ layers:[
+  Lr('noise','Roar collapse',{color:'brown',a:.01,h:.25,d:1.4,r0:1,r1:.45,sw:1.2,ft:'lowpass',ff0:900,ff1:200,fsw:1.2,drv:.5,dmode:'asym',fla:.45,flr:21,width:.7}),
+  Lr('osc','Pump wind-down',{wave:'triangle',f0:1350,f1:180,sw:2.2,voices:2,det:5,a:.01,h:.1,d:2.4,ft:'bandpass',ff0:1300,ff1:400,fsw:2,fq:3,gain:-12}),
+  Lr('noise','Valve clunk',{color:'pink',t:.3,a:.0008,d:.12,ft:'lowpass',ff0:2500,ff1:400,fsw:.06,drv:.4,ring:.5,rmodel:'hull',rf:200,rdec:.7,rn:10,gain:-5}),
+  Lr('noise','Cooling ticks',{t:.8,a:.0002,d:.006,ring:.7,rmodel:'bar',rf:1900,rdec:.15,rn:5,gain:-12,rep:9,rrate:3,rjit:1,rvar:.8})]},
+{id:'reactor-loop',cat:'Ship systems',name:'Reactor hum · hull loop',persp:'hull',out:{loop:true,loopStart:.8,loopLen:4,loopXf:.6},
+ desc:'The ship\'s heartbeat. Loop it under everything inside the ship.',
+ layers:[
+  Lr('osc','Mains hum',{wave:'sawtooth',f0:50,f1:50,voices:3,det:6,a:.4,h:6,d:.5,ft:'lowpass',ff0:400,ff1:400,gain:-6}),
+  Lr('osc','Second harmonic',{f0:100,f1:100,a:.4,h:6,d:.5,fla:.15,flr:.7,gain:-10}),
+  Lr('noise','Coolant flow',{color:'pink',a:.4,h:6,d:.5,ft:'bandpass',ff0:700,ff1:700,fq:.8,fla:.3,flr:3,gain:-12,width:.8}),
+  Lr('noise','Deep rumble',{color:'brown',a:.4,h:6,d:.5,ft:'lowpass',ff0:120,ff1:120,fla:.25,flr:1.5,gain:-4})]},
+{id:'cockpit-idle-loop',cat:'Ship systems',name:'Cockpit idle · loop',persp:'cockpit',out:{loop:true,loopStart:.8,loopLen:4,loopXf:.6},
+ desc:'Sitting at the console with the drive off: fans, electronics whine, the faint ship hum.',
+ layers:[
+  Lr('noise','Air handler',{color:'pink',a:.4,h:6,d:.5,ft:'lowpass',ff0:1800,ff1:1800,fla:.12,flr:2,gain:-6,width:.9}),
+  Lr('osc','Electronics whine',{f0:7800,f1:7800,voices:2,det:3,a:.4,h:6,d:.5,gain:-34}),
+  Lr('osc','Fan',{wave:'triangle',f0:118,f1:118,voices:2,det:4,a:.4,h:6,d:.5,ft:'lowpass',ff0:600,ff1:600,fla:.2,flr:7,gain:-14}),
+  Lr('noise','Hull hum',{color:'brown',a:.4,h:6,d:.5,ft:'lowpass',ff0:150,ff1:150,gain:-8})]},
+{id:'airlock-cycle',cat:'Ship systems',name:'Airlock cycle · inside',persp:'cockpit',
+ desc:'Hatch seals, pumps pull the air out with a falling hiss, the outer clamps release.',
+ layers:[
+  Lr('noise','Seal clunk',{color:'pink',a:.0008,d:.2,ft:'lowpass',ff0:2200,ff1:400,fsw:.08,drv:.4,ring:.55,rmodel:'hull',rf:190,rdec:1,rn:10}),
+  Lr('noise','Evacuation hiss',{t:.35,a:.08,h:.6,d:1.6,ft:'bandpass',ff0:3500,ff1:500,fsw:2.2,fq:1.2,fla:.2,flr:30,gain:-4,width:.7}),
+  Lr('osc','Pump',{wave:'sawtooth',f0:95,f1:70,sw:2,voices:2,det:10,t:.3,a:.2,h:1.6,d:.4,ft:'lowpass',ff0:400,ff1:250,fsw:2,fla:.4,flr:12,gain:-10}),
+  Lr('noise','Clamp release',{color:'pink',t:2.6,a:.0008,d:.15,ft:'lowpass',ff0:1600,ff1:300,fsw:.08,drv:.4,ring:.5,rmodel:'hull',rf:140,rdec:1.2,rn:10,gain:-3,rep:2,rrate:6,rjit:.2})]},
+{id:'docking-clamps',cat:'Ship systems',name:'Docking clamps engage · hull',persp:'hull',
+ desc:'Four heavy mag-clamps slamming onto the station one after another. The whole ship rings.',
+ layers:[
+  Lr('osc','Slam',{f0:85,f1:35,sw:.2,a:.001,d:.9,drv:.45,rep:4,rrate:2.4,rjit:.3,rvar:.3}),
+  Lr('noise','Clang',{color:'pink',a:.0006,d:.12,ft:'lowpass',ff0:3500,ff1:600,fsw:.06,drv:.5,ring:.65,rmodel:'plate',rf:150,rdec:2,rn:12,rep:4,rrate:2.4,rjit:.3,rvar:.3}),
+  Lr('osc','Mag hum',{wave:'sawtooth',f0:60,f1:60,voices:2,det:8,t:.05,a:.05,h:1.6,d:.6,ft:'lowpass',ff0:300,ff1:300,gain:-12})]},
+{id:'klaxon',cat:'Ship systems',name:'General quarters klaxon · inside',persp:'cockpit',
+ desc:'Battle stations. A nasty two-tone blare that echoes down the corridors.',
+ layers:[
+  Lr('osc','Blare',{wave:'sawtooth',f0:440,f1:330,sw:.5,voices:3,det:12,a:.01,h:.4,d:.12,ft:'bandpass',ff0:1200,ff1:1200,fq:1.2,drv:.4,gain:-2,rep:3,rrate:1.3}),
+  Lr('osc','Undertone',{wave:'square',f0:220,f1:165,sw:.5,a:.01,h:.4,d:.12,ft:'lowpass',ff0:900,ff1:900,gain:-10,rep:3,rrate:1.3})]},
+{id:'hull-creak',cat:'Ship systems',name:'Hull groaning under g · hull',persp:'hull',
+ desc:'Hard burn, the frame complaining: slow metal groans and pops from all over the ship.',
+ layers:[
+  Lr('osc','Groan',{wave:'sawtooth',f0:68,f1:52,sw:2.5,voices:3,det:30,fmi:1.2,fmr:.507,fmd:4,a:.8,h:1.2,d:1.4,ft:'bandpass',ff0:300,ff1:220,fsw:2.5,fq:2,fla:.4,flr:3,gain:-4}),
+  Lr('noise','Pops',{a:.0003,d:.01,ring:.8,rmodel:'hull',rf:240,rdec:.9,rn:10,gain:-4,rep:6,rrate:1.8,rjit:1,rvar:1}),
+  Lr('noise','Stress rumble',{color:'brown',a:.5,h:1.8,d:1.2,ft:'lowpass',ff0:180,ff1:180,fla:.4,flr:2,gain:-6})]},
+{id:'battle-far-loop',cat:'Ambience',name:'Distant battle · hull loop',persp:'hull',out:{loop:true,loopStart:.6,loopLen:6,loopXf:1},
+ desc:'A fight happening somewhere outside, felt through the ship: far booms, PDC grumbles, constant rumble. Loop it during combat.',
+ layers:[
+  Lr('osc','Far booms',{f0:60,f1:25,sw:.8,a:.005,h:.05,d:1.5,drv:.4,gain:-2,rep:7,rrate:1.1,rjit:1,rvar:1}),
+  Lr('osc','PDC grumble',{f0:110,f1:50,sw:.03,d:.07,drv:.5,t:2.1,gain:-6,rep:70,rrate:55,rjit:.05,rvar:.3}),
+  Lr('noise','Rumble bed',{color:'brown',a:.5,h:7,d:.5,ft:'lowpass',ff0:150,ff1:150,fla:.45,flr:1.2,gain:-4,width:.9})]},
+{id:'railgun-gunner',cat:'Railgun',name:'Railgun shot · gunner seat',persp:'gunner',
+ desc:'Capacitors climb, coils sing, then the slug leaves and the whole mount slams back.',
+ layers:[
+  Lr('osc','Capacitor charge',{wave:'sawtooth',f0:120,f1:2400,sw:1.1,voices:3,det:10,a:1,h:.05,d:.03,ft:'bandpass',ff0:800,ff1:4000,fsw:1.1,fq:3,gain:-6}),
+  Lr('osc','Coil whine',{f0:3000,f1:3000,fmi:4,fmr:1.5,fmd:2,a:.8,h:.25,d:.05,gain:-16}),
+  Lr('noise','Shot crack',{t:1.12,a:.0002,d:.04,ft:'highpass',ff0:800,ff1:800,drv:.7}),
+  Lr('osc','Recoil slam',{f0:80,f1:30,sw:.25,t:1.12,d:1,drv:.5}),
+  Lr('noise','Rail ring',{t:1.12,a:.0005,d:.01,ring:1,rmodel:'bar',rf:420,rdec:1.6,rn:8,gain:-8}),
+  Lr('noise','Rail hiss',{color:'pink',t:1.12,a:.002,h:.05,d:.6,ft:'highpass',ff0:3000,ff1:3000,gain:-14})]},
+];
+function normPreset(p){p=deep(p);p.layers=(p.layers||[]).map(l=>Object.assign({},LDEF,l));
+  p.motion=Object.assign({},MDEF,p.motion||{});p.vary=Object.assign({},VDEF,p.vary||{});p.out=Object.assign({},ODEF,p.out||{});
+  p.po=p.po||{};p.mac=Object.assign({},p.mac||{});if(!PERSP[p.persp])p.persp='raw';if(p.seed==null)p.seed=1;p.name=p.name||'Untitled';return p;}
+const CATS=['Torpedo','Missile','PDC','Railgun','Thrusters','Impacts','Ship systems','Ambience'];
+const PRESETS=RAW_PRESETS.map(normPreset).sort((a,b)=>CATS.indexOf(a.cat)-CATS.indexOf(b.cat));
+
+/* ------------------------------ DSP helpers ------------------------------ */
+const NB={};
+function noiseData(color,n,R){const d=new Float32Array(n);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,y=0,prev=0;
+  for(let i=0;i<n;i++){const w=R()*2-1;let v;
+    if(color==='pink'){b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;v=b0+b1+b2+b3+b4+b5+b6+w*.5362;b6=w*.115926;}
+    else if(color==='brown'){y=(y+.02*w)/1.02;v=y;}
+    else if(color==='blue'){v=w-prev;prev=w;}
+    else if(color==='velvet'){v=R()<.04?(R()<.5?-1:1):0;}
+    else v=w;
+    d[i]=v;}
+  // remove DC, normalise RMS, crossfade the seam so loops are silent at the join
+  let m=0;for(let i=0;i<n;i++)m+=d[i];m/=n;let s=0;for(let i=0;i<n;i++){d[i]-=m;s+=d[i]*d[i];}const g=.35/Math.sqrt(s/n||1);
+  for(let i=0;i<n;i++)d[i]*=g;const xf=Math.min(2048,n>>3);for(let i=0;i<xf;i++){const a=i/xf;d[i]=d[i]*a+d[n-xf+i]*(1-a);}
+  return d.subarray(0,n-xf);}
+function noiseBuf(c,color,R){const sr=c.sampleRate,n=Math.floor(sr*4);const d=noiseData(color,n,R);const b=c.createBuffer(1,d.length,sr);b.copyToChannel(d,0);return b;}
+const curves={};
+function shapeCurve(mode,amt){const k=mode+amt.toFixed(3);if(curves[k])return curves[k];const n=4096,a=new Float32Array(n),g=1+amt*30;
+  for(let i=0;i<n;i++){const x=i/(n-1)*2-1;let y;
+    if(mode==='fold')y=Math.sin(x*(1+amt*7)*Math.PI/2);
+    else if(mode==='asym'){const b=.35*amt;y=(Math.tanh(g*x+b)-Math.tanh(b))/(1+Math.tanh(b));}
+    else if(mode==='crush'){const t=Math.tanh(g*.3*x)/Math.tanh(g*.3),st=Math.max(2,Math.round(Math.pow(2,8-amt*6.5)));y=Math.round(t*st)/st;}
+    else y=Math.tanh(g*x)/Math.tanh(g);
+    a[i]=y;}
+  return curves[k]=a;}
+const RATIOS={plate:[1,1.594,2.136,2.296,2.653,2.918,3.156,3.501,3.6,4.06,4.15,4.6,4.85,5.1,5.4,5.8],
+  bar:[1,2.756,5.404,8.933,13.344,18.64,24.81,31.86,39.8,48.6,58.2,68.7,80,92,105,119],
+  bell:[.5,1,1.183,1.506,2,2.514,2.662,3.011,4.166,5.433,6.796,8.215,9.8,11.4,13.1,15]};
+function modalFreqs(model,f,n,R){const out=[];
+  for(let k=0;k<n;k++){let r;
+    if(model==='tube')r=(k+1)*(1+.012*(k+1)*(k+1));
+    else if(model==='hull')r=k===0?1:Math.exp(R()*Math.log(14));
+    else r=RATIOS[model][k%16]*(k>=16?1.07:1);
+    out.push({f:f*r,a:(.6+.4*R())/(1+k*.35),k});}
+  return out;}
+// modal resonator: a bank of two-pole resonators at inharmonic ratios (decaying sinusoids = struck metal).
+// The wet signal is auto-levelled to the dry peak, so "mix" means the same thing for a click or a roar.
+function modalJS(ch,model,f,dec,n,R,sr,mix){if(!(mix>0))return ch;const N=ch[0].length,ny=sr*.45,modes=modalFreqs(model,f,n,R).filter(m=>m.f<ny&&m.f>15);if(!modes.length)return ch;
+  const out=[];let dpk=0,wpk=0;const wet=[new Float32Array(N),new Float32Array(N)];
+  for(let c=0;c<2;c++){const x=ch[c],w=wet[c];for(let i=0;i<N;i++){const v=Math.abs(x[i]);if(v>dpk)dpk=v;}
+    for(const m of modes){const T=dec/(1+m.k*.12),r=Math.exp(-6.9/(T*sr)),th=2*Math.PI*m.f*(1+c*.0015)/sr,b1=2*r*Math.cos(th),b2=-r*r,g=m.a*(1-r);let y1=0,y2=0;
+      for(let i=0;i<N;i++){const y=x[i]*g+b1*y1+b2*y2;y2=y1;y1=y;w[i]+=y;}}
+    for(let i=0;i<N;i++){const v=Math.abs(w[i]);if(v>wpk)wpk=v;}}
+  if(wpk<1e-12)return ch;const k=mix*dpk/wpk,dm=1-mix*.85;
+  for(let c=0;c<2;c++){const o=new Float32Array(N),x=ch[c],w=wet[c];for(let i=0;i<N;i++)o[i]=x[i]*dm+w[i]*k;out.push(o);}
+  return out;}
+function ramp(p,t,a,b,dur){p.setValueAtTime(a,t);if(Math.abs(a-b)>1e-6*Math.abs(a))p.exponentialRampToValueAtTime(b,t+dur);}
+function envelope(p,t,a,h,d,pk){p.setValueAtTime(0,t);p.linearRampToValueAtTime(pk,t+a);p.setValueAtTime(pk,t+a+h);p.setTargetAtTime(0,t+a+h,d/6.9);}
+function envAt(x,a,h,d){return x<a?x/a:x<a+h?1:Math.exp(-6.9*(x-a-h)/d);}
+const qdB=q=>20*Math.log10(Math.max(.05,q));
+function repTimes(L,seed){const n=Math.max(1,Math.round(L.rep));const R=mulberry(hash(seed,'rep',n,L.rrate,L.t,L.racc));const ts=[];let t=L.t,iv=1/Math.max(.05,L.rrate);
+  for(let k=0;k<n;k++){const j=k?(R()*2-1)*L.rjit*iv*.5:0;ts.push(Math.max(0,t+j));t+=iv;iv=clamp(iv*(1+L.racc),.003,20);}return ts;}
+function layerEnd(L,V){const ts=repTimes(L,V.seed);return ts[ts.length-1]+(L.a+L.h+L.d*1.3)*V.time+(L.ring>0?L.rdec:0)+(L.fmi>0?0:0)+.05;}
+function activeLayers(P){const on=P.layers.filter(l=>l.on);const solo=on.filter(l=>l.solo);return solo.length?solo:on;}
+
+/* ------------------------------ grain sources ------------------------------ */
+const GBASE=1000;
+function grainBuf(sr,src,R){let n,d;
+  if(src==='click'){n=Math.floor(sr*.006);d=new Float32Array(n);d[0]=1;d[1]=-.6;for(let i=2;i<n;i++)d[i]=(R()*2-1)*.6*Math.exp(-i/(sr*.0007));}
+  else if(src==='metal'){n=Math.floor(sr*.25);d=new Float32Array(n);const ms=modalFreqs('bar',GBASE*.5,5,R).concat(modalFreqs('hull',GBASE,6,R));
+    for(const m of ms){const ph=R()*6.28,T=.25/(1+m.k*.5);for(let i=0;i<n;i++)d[i]+=m.a*Math.sin(2*Math.PI*m.f*i/sr+ph)*Math.exp(-6.9*i/sr/T)*.4;}
+    for(let i=0;i<40;i++)d[i]*=i/40;}
+  else if(src==='chunk'){n=Math.floor(sr*.07);d=new Float32Array(n);const ms=modalFreqs('hull',GBASE*.55,6,R);
+    for(const m of ms){const ph=R()*6.28,T=.045/(1+m.k*.4);for(let i=0;i<n;i++)d[i]+=m.a*Math.sin(2*Math.PI*m.f*i/sr+ph)*Math.exp(-6.9*i/sr/T)*.5;}
+    let y=0;for(let i=0;i<n;i++){y+=.25*((R()*2-1)*Math.exp(-i/(sr*.006))-y);d[i]+=y*1.5;}for(let i=0;i<24;i++)d[i]*=i/24;}
+  else if(src==='sine'){n=Math.floor(sr*.5);d=new Float32Array(n);for(let i=0;i<n;i++)d[i]=Math.sin(2*Math.PI*GBASE*i/sr);}
+  else{n=Math.floor(sr*.5);d=noiseData('white',n+2048,R);n=d.length;}
+  return d;}
+
+/* ------------------------------ pass 1: layers ------------------------------ */
+function flutterBuf(c,L,R,len){const sr=c.sampleRate,n=Math.ceil(len*sr),d=new Float32Array(n);let tgt=1,y=1,cnt=0;const step=Math.max(1,Math.round(sr/L.flr)),al=1-Math.exp(-1/(step*.35));
+  for(let i=0;i<n;i++){if(--cnt<=0){cnt=step*(.5+R());tgt=Math.min(3,-Math.log(1-R()*.995));}y+=al*(tgt-y);d[i]=L.fla*y;}
+  const b=c.createBuffer(1,n,sr);b.copyToChannel(d,0);return b;}
+function buildLayer(c,L,out,V,lseed,end){
+  const R=mulberry(lseed),T=V.time,Pm=V.pitch,ny=c.sampleRate*.45;
+  const a=Math.max(.0003,L.a*T),h=L.h*T,d=Math.max(.003,L.d*T),sl=a+h+d;
+  const inp=c.createGain();let x=inp;
+  if(L.fla>0){const fl=c.createGain();fl.gain.value=1-L.fla;const s=c.createBufferSource();s.buffer=flutterBuf(c,L,R,end);s.connect(fl.gain);s.start(0);x.connect(fl);x=fl;}
+  if(L.drv>0){const ws=c.createWaveShaper();ws.curve=shapeCurve(L.dmode,L.drv);ws.oversample='4x';const pg=c.createGain();pg.gain.value=1/(1+L.drv*.8);x.connect(ws);ws.connect(pg);x=pg;}
+  let flt=null;if(L.ft!=='none'){flt=c.createBiquadFilter();flt.type=L.ft;flt.Q.value=(L.ft==='lowpass'||L.ft==='highpass')?qdB(L.fq):L.fq;x.connect(flt);x=flt;}
+  x.connect(out);
+  const nb=L.type==='noise'?noiseBuf(c,L.color,R):null,gb=L.type==='grain'?grainBuf(c.sampleRate,L.gsrc,R):null,G=gb?{sr:c.sampleRate,n:Math.ceil(end*c.sampleRate),L:null,R:null}:null;
+  if(G){G.L=new Float32Array(G.n);G.R=new Float32Array(G.n);}
+  const times=repTimes(L,V.seed);
+  for(const ts of times){
+    const pj=Math.pow(2,(R()*2-1)*L.rvar*.15),lj=dB(-R()*L.rvar*8);
+    if(flt){const f0=clamp(L.ff0*V.tone*(L.rvar?pj:1),15,ny),f1=clamp(L.ff1*V.tone*(L.rvar?pj:1),15,ny);ramp(flt.frequency,ts,f0,f1,Math.max(.001,L.fsw*T));}
+    if(G){grains(G,L,ts,a,h,d,Pm*pj,lj,R,gb);continue;}
+    const eg=c.createGain();eg.gain.value=0;envelope(eg.gain,ts,a,h,d,lj);eg.connect(inp);
+    const stop=ts+a+h+d*1.3+.02;
+    if(L.type==='osc')oscSrc(c,L,eg,ts,stop,Pm*pj,T,R);else noiseSrc(c,L,eg,ts,stop,Pm*pj,T,R,nb);
+  }
+  if(G){const b=c.createBuffer(2,G.n,G.sr);b.copyToChannel(G.L,0);b.copyToChannel(G.R,1);const s=c.createBufferSource();s.buffer=b;s.connect(inp);s.start(0);}
+}
+function oscSrc(c,L,dst,t,stop,pm,T,R){const n=clamp(Math.round(L.voices),1,7),sw=Math.max(.001,L.sw*T),ny=c.sampleRate*.45;
+  const f0=clamp(L.f0*pm,5,ny),f1=clamp(L.f1*pm,5,ny);let mod=null;
+  if(L.fmi>0){const m=c.createOscillator();ramp(m.frequency,t,clamp(f0*L.fmr,.1,ny),clamp(f1*L.fmr,.1,ny),sw);const g1=c.createGain();g1.gain.value=0;ramp(g1.gain,t,f0,f1,sw);
+    const g2=c.createGain();g2.gain.setValueAtTime(L.fmi,t);g2.gain.setTargetAtTime(L.fmi*.03,t,Math.max(.001,L.fmd*T)/6.9);m.connect(g1);g1.connect(g2);m.start(t);m.stop(stop);mod=g2;}
+  for(let v=0;v<n;v++){const o=c.createOscillator();o.type=L.wave;ramp(o.frequency,t,f0,f1,sw);
+    const sp=n>1?v/(n-1)*2-1:0;o.detune.value=sp*L.det+(n>1?(R()*2-1)*L.det*.2:0);if(mod)mod.connect(o.frequency);
+    const g=c.createGain();g.gain.value=1/Math.sqrt(n);o.connect(g);
+    if(n>1&&L.width>0){const p=c.createStereoPanner();p.pan.value=sp*L.width;g.connect(p);p.connect(dst);}else g.connect(dst);
+    o.start(t);o.stop(stop);}}
+function noiseSrc(c,L,dst,t,stop,pm,T,R,buf){const sw=Math.max(.001,L.sw*T);
+  const mk=()=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;ramp(s.playbackRate,t,clamp(L.r0*pm,.01,16),clamp(L.r1*pm,.01,16),sw);s.start(t,R()*(buf.duration-.05));s.stop(stop);return s;};
+  const a=mk();if(L.width<=.01){a.connect(dst);return;}
+  const b=mk(),m=c.createChannelMerger(2),ga=c.createGain(),gb=c.createGain();ga.gain.value=1-L.width;gb.gain.value=L.width;
+  a.connect(m,0,0);a.connect(ga);b.connect(gb);ga.connect(m,0,1);gb.connect(m,0,1);m.connect(dst);}
+// granular layers are mixed straight into a JS buffer: thousands of grains as audio nodes would crawl
+function grains(G,L,t0,a,h,d,pm,lj,R,gd0){const sr=G.sr,sl=a+h+d*1.2,dens=Math.max(.1,L.dens),src=gd0,sn=src.length;let tau=0,cnt=0;
+  const fixed=L.gsrc==='click'||L.gsrc==='metal'||L.gsrc==='chunk',gd=Math.max(.001,L.gdur);
+  while(cnt<4000){tau+=-Math.log(1-R()*.9999)/dens;if(tau>=sl)break;const e=envAt(tau,a,h,d);if(R()>e)continue;cnt++;
+    const rate=clamp(L.gf/GBASE*pm*Math.pow(2,(R()*2-1)*L.gsp),.03,16),amp=Math.min(4,-Math.log(1-R()*.999))*.6*lj,p=(R()*2-1)*L.width,gl=Math.min(1,1-p),gr=Math.min(1,1+p);
+    const i0=Math.floor((t0+tau)*sr);let pos=fixed?0:R()*sn*.6;const len=fixed?Math.floor((sn-1)/rate):Math.floor(gd*sr),at=Math.max(1,Math.floor(len*.3));
+    for(let j=0;j<len;j++){const o=i0+j;if(o>=G.n)break;const k=pos|0;if(k>=sn-1)break;const v=(src[k]+(src[k+1]-src[k])*(pos-k))*amp*(fixed?1:(j<at?j/at:(len-j)/(len-at)));G.L[o]+=v*gl;G.R[o]+=v*gr;pos+=rate;}}}
+// each layer renders in its own context (in parallel), then JS adds resonator, pan and gain and sums
+async function renderLayer(L,V,sr,lseed){const end=Math.min(30,layerEnd(L,V));const c=new OfflineAudioContext(2,Math.ceil(end*sr),sr);
+  buildLayer(c,L,c.destination,V,lseed,end);const b=await c.startRendering();let ch=[b.getChannelData(0),b.getChannelData(1)];
+  if(L.ring>0)ch=modalJS(ch,L.rmodel,L.rf*V.pitch,L.rdec,Math.round(L.rn),mulberry(hash(lseed,'ring')),sr,L.ring);
+  const p=clamp(L.pan,-1,1),ang=(p+1)*Math.PI/4,g=dB(L.gain);return {L:ch[0],R:ch[1],gl:Math.cos(ang)*Math.SQRT2*g,gr:Math.sin(ang)*Math.SQRT2*g};}
+async function renderDry(P,V,sr){const ls=activeLayers(P);
+  const parts=await Promise.all(ls.map((L,i)=>renderLayer(L,V,sr,hash(V.seed,P.layers.indexOf(L),L.name,L.type))));
+  let n=Math.ceil(.1*sr);for(const q of parts)n=Math.max(n,q.L.length);const A=new Float32Array(n),B=new Float32Array(n);
+  for(const q of parts){for(let i=0;i<q.L.length;i++){A[i]+=q.L[i]*q.gl;B[i]+=q.R[i]*q.gr;}}
+  return [A,B];}
+
+/* ------------------------------ pass 2: motion ------------------------------ */
+function applyMotion(ch,M,sr){const n=ch[0].length,mono=new Float32Array(n);for(let i=0;i<n;i++)mono[i]=(ch[0][i]+ch[1][i])*.5;
+  const cs=Math.max(1,M.c),v=Math.min(M.speed,cs*.92),y=Math.max(.5,M.dmin),dir=M.dir<0?-1:1;
+  const px=t=>dir*v*(t-M.tc),r=t=>Math.hypot(px(t),y);
+  // start the file when the first sound arrives, not after the propagation delay
+  const D0=(r(0)-y)/cs,extra=clamp((r(n/sr)-y)/cs-D0,0,4);const N=n+Math.ceil(extra*sr)+64;
+  const L=new Float32Array(N),Rr=new Float32Array(N);let lp=0,lp2=0,te=0;
+  for(let i=0;i<N;i++){const t=i/sr+D0;te=Math.min(te,t);for(let k=0;k<5;k++)te=t-(r(te)-y)/cs;
+    const xi=te*sr;let s=0;if(xi>=0&&xi<n-1){const j=xi|0,f=xi-j;s=mono[j]+(mono[j+1]-mono[j])*f;}
+    const rr=r(te),g=Math.min(4,y/rr);
+    const fc=Math.min(sr*.45,300+19000*Math.exp(-M.air*rr/600));const al=1-Math.exp(-2*Math.PI*fc/sr);lp+=al*(s-lp);lp2+=al*(lp-lp2);
+    const pan=clamp(px(te)/rr*M.pw,-1,1),ang=(pan+1)*Math.PI/4;const o=lp2*g;L[i]=o*Math.cos(ang)*1.414;Rr[i]=o*Math.sin(ang)*1.414;}
+  return [L,Rr];}
+
+/* ------------------------------ pass 3: space ------------------------------ */
+const IRC=new Map();
+function genIR(c,S){const key=[c.sampleRate,S.size,S.pre,S.metal,S.bright,S.comb,S.flutter,S.bloom].join('|');let hit=IRC.get(key);
+  if(!hit){hit=genIRData(c.sampleRate,S);if(IRC.size>12)IRC.clear();IRC.set(key,hit);}
+  const b=c.createBuffer(2,hit[0].length,c.sampleRate);b.copyToChannel(hit[0],0);b.copyToChannel(hit[1],1);return b;}
+function genIRData(sr,S){const T=Math.max(.05,S.size),pre=Math.floor(S.pre*sr),n=pre+Math.ceil(T*1.15*sr),out=[new Float32Array(n),new Float32Array(n)];
+  const R=mulberry(hash('room',T,S.metal,S.bright,S.comb,S.flutter));
+  const modes=[];if(S.metal>0)for(let k=0;k<28;k++)modes.push({f:120*Math.pow(2,R()*5.2),ph:R()*6.28,a:.5+R()*.5,T:T*(.25+R()*.8)});
+  for(let ch=0;ch<2;ch++){const d=out[ch];let y=0;
+    for(let i=pre;i<n;i++){const t=(i-pre)/sr,e=Math.exp(-6.9*t/T),br=S.bright*Math.pow(e,.35)+.012;y+=br*((R()*2-1)*e-y);d[i]=y*(.25+br*1.2);}
+    const ne=Math.round(6+16*Math.min(1,.2/T+.3)),span=Math.min(.06,T*.12);
+    for(let k=0;k<ne;k++){const p=pre+Math.floor((.0006+R()*span)*sr);if(p<n)d[p]+=(R()*2-1)*.6*(1-k/ne)*(.4+S.bright);}
+    if(S.flutter>0){const per=Math.floor(S.flutter/1000*sr);let a=.5*S.metal;for(let p=pre+per+ch*7;p<n&&a>.01;p+=per){d[p]+=a*(ch?-1:1);a*=.86;}}
+    if(modes.length){for(const m of modes){const w=2*Math.PI*m.f*(1+ch*.003)/sr;let amp=m.a*S.metal*.035;for(let i=pre;i<n;i++){const t=(i-pre)/sr;d[i]+=amp*Math.sin(w*(i-pre)+m.ph)*Math.exp(-6.9*t/m.T);}}}
+    if(S.comb>0){const D=Math.max(2,Math.round(sr/S.comb));for(let i=D;i<n;i++)d[i]+=.72*d[i-D];}
+    if(S.bloom>0){const bn=Math.floor(S.bloom*sr);for(let i=0;i<bn&&pre+i<n;i++)d[pre+i]*=Math.pow(i/bn,1.5);}
+    let s=0;for(let i=0;i<n;i++)s+=d[i]*d[i];const g=1/Math.sqrt(s||1)*.9;for(let i=0;i<n;i++)d[i]*=g;
+    const fi=Math.floor(sr*.0015);for(let i=0;i<fi;i++)d[pre+i]*=i/fi;}
+  return out;}
+// RBJ band-pass for the JS rattle model
+function bpJS(f,q,sr){const w=2*Math.PI*f/sr,al=Math.sin(w)/(2*q),a0=1+al,b0=al/a0,b2=-al/a0,a1=-2*Math.cos(w)/a0,a2=(1-al)/a0;let x1=0,x2=0,y1=0,y2=0;
+  return x=>{const y=b0*x+b2*x2-a1*y1-a2*y2;x2=x1;x1=x;y2=y1;y1=y;return y;};}
+// loose panels: the low end of the sound shakes the structure; where the shake exceeds a panel's gap it slaps its stop.
+// That contact nonlinearity makes a dull buzz that follows the sound, through low-Q panel resonances. No random pings.
+function rattle(ch,S,sr){if(!(S.rattle>0))return null;const n=ch[0].length,o=new Float32Array(n);
+  let pk=0;for(let i=0;i<n;i++)pk=Math.max(pk,Math.abs(ch[0][i]+ch[1][i])*.5);if(pk<1e-6)return null;
+  const al=1-Math.exp(-2*Math.PI*180/sr),v=new Float32Array(n);let l1=0,l2=0,vp=0;
+  for(let i=0;i<n;i++){l1+=al*((ch[0][i]+ch[1][i])*.5-l1);l2+=al*(l1-l2);v[i]=l2;vp=Math.max(vp,Math.abs(l2));}if(vp<1e-9)return null;
+  const gap=vp*.3,res=[[bpJS(310,1.8,sr),1],[bpJS(640,2.2,sr),.7],[bpJS(1150,2.6,sr),.3]],ao=1-Math.exp(-2*Math.PI*2200/sr);let lo=0;
+  for(let i=0;i<n;i++){const x=v[i],c=Math.sign(x)*Math.max(0,Math.abs(x)-gap);let y=0;for(const [r,w] of res)y+=r(c)*w;lo+=ao*(y-lo);o[i]=lo;}
+  let m=0;for(let i=0;i<n;i++)m=Math.max(m,Math.abs(o[i]));if(m<1e-9)return null;const g=pk*S.rattle*.3/m;for(let i=0;i<n;i++)o[i]*=g;return o;}
+async function applySpace(ch,S,sr){
+  // known level into the master section
+  let pk=0;for(const c of ch)for(let i=0;i<c.length;i++)pk=Math.max(pk,Math.abs(c[i]));const ng=pk>0?.5/pk:1;for(const c of ch)for(let i=0;i<c.length;i++)c[i]*=ng;
+  if(S.couple>0)ch=modalJS(ch,'hull',S.mf,S.md,12,mulberry(hash('ship',S.mf)),sr,S.couple*.8);
+  const n=ch[0].length,tail=(S.wet>0?S.size*1.15+S.pre:0)+.12,N=n+Math.ceil(tail*sr);
+  const c=new OfflineAudioContext(2,N,sr);const b=c.createBuffer(2,n,sr);b.copyToChannel(ch[0],0);b.copyToChannel(ch[1],1);
+  const src=c.createBufferSource();src.buffer=b;let x=src;
+  const f=(type,fr,q,g)=>{const z=c.createBiquadFilter();z.type=type;z.frequency.value=clamp(fr,10,sr*.45);if(q!=null)z.Q.value=q;if(g!=null)z.gain.value=g;x.connect(z);x=z;};
+  f('highpass',S.hp,-3);if(S.lp<19000){f('lowpass',S.lp,-3);f('lowpass',S.lp*1.15,-3);}
+  if(S.low)f('lowshelf',140,null,S.low);if(S.tilt)f('highshelf',2800,null,S.tilt);if(S.midg)f('peaking',S.midf,.9,S.midg);
+  const pre=c.createGain();x.connect(pre);
+  const rt=rattle(ch,S,sr);if(rt){const rb=c.createBuffer(1,n,sr);rb.copyToChannel(rt,0);const rs=c.createBufferSource();rs.buffer=rb;rs.connect(pre);rs.start(0);}
+  const mix=c.createGain(),dry=c.createGain();dry.gain.value=S.dry;pre.connect(dry);dry.connect(mix);
+  if(S.wet>0){const cv=c.createConvolver();cv.normalize=false;cv.buffer=genIR(c,S);const wg=c.createGain();wg.gain.value=S.wet;pre.connect(cv);cv.connect(wg);wg.connect(mix);}
+  const cp=c.createDynamicsCompressor();cp.threshold.value=-10-S.comp*22;cp.ratio.value=1.5+S.comp*6;cp.knee.value=8;cp.attack.value=.006;cp.release.value=.18;
+  const mk=c.createGain();mk.gain.value=dB(S.comp*8);
+  const lim=c.createDynamicsCompressor();lim.threshold.value=-2;lim.ratio.value=20;lim.knee.value=0;lim.attack.value=.001;lim.release.value=.08;
+  mix.connect(cp);cp.connect(mk);mk.connect(lim);lim.connect(c.destination);src.start(0);
+  const o=await c.startRendering();return [o.getChannelData(0).slice(),o.getChannelData(1).slice()];}
+/* ---------- plain-English knobs: non-destructive transforms applied on top of the preset at render time ---------- */
+const MACS=[
+  {k:'size',l:'Size',lo:'small',hi:'huge'},
+  {k:'punch',l:'Punch',lo:'soft',hi:'slams'},
+  {k:'grit',l:'Dirt',lo:'clean',hi:'filthy'},
+  {k:'rumble',l:'Rumble',lo:'thin',hi:'gut-shaking'},
+  {k:'metal',l:'Metal',lo:'dead',hi:'rings like a bell'},
+  {k:'bright',l:'Tone',lo:'muffled',hi:'crisp'},
+  {k:'length',l:'Length',lo:'short',hi:'long'},
+  {k:'dist',l:'Distance',lo:'in your face',hi:'far away'},
+  {k:'chaos',l:'Variety',lo:'all identical',hi:'every one differs'},
+  {k:'rate',l:'Fire rate',lo:'slow',hi:'buzzsaw',when:P=>P.layers.some(l=>l.on&&l.rep>1)},
+  {k:'burst',l:'Burst',lo:'few shots',hi:'long burst',when:P=>P.layers.some(l=>l.on&&l.rep>1)},
+  {k:'speed',l:'Flyby speed',lo:'lazy',hi:'screaming',when:P=>P.motion.on&&P.motion.speed>0}];
+const mv=(P,k)=>(P.mac&&P.mac[k]!=null?P.mac[k]:.5)-.5;
+const isTrans=L=>L.a<.006&&L.h<.05;
+const isLow=L=>(L.type==='osc'&&Math.max(L.f0,L.f1)<170)||(L.type==='noise'&&L.color==='brown');
+function applyMacros(P){const u=k=>mv(P,k);if(!MACS.some(m=>u(m.k)!==0))return P;const Q=deep(P);
+  const ps=Math.pow(2,-u('size')*1.6),ts=Math.pow(2,u('size')),lt=Math.pow(2,u('length')*2.4),tone=Math.pow(2,u('bright')*2.5);
+  // repeats: rate and burst length, and stretch whatever is wrapped around the burst
+  const reps=Q.layers.filter(l=>l.rep>1);let b0=0,b1=0,b2=0;
+  if(reps.length){const r0=reps[0];b0=r0.t;b1=r0.t+(r0.rep-1)/r0.rrate;const rf=Math.pow(2,u('rate')*2),bf=Math.pow(2,u('burst')*3);
+    for(const L of reps){L.rrate*=rf;L.rep=Math.max(1,Math.round(L.rep*bf));L.t=b0+(L.t-b0)/rf;}b2=reps[0].t+(reps[0].rep-1)/reps[0].rrate;}
+  const span=b1>b0?(b2-b0)/(b1-b0):1;
+  for(const L of Q.layers){
+    if(reps.length&&L.rep<=1){if(L.t>=b1-.05)L.t=b2+(L.t-b1);else if(L.t+L.a+L.h>b0)L.h=Math.max(0,L.h*span);}
+    L.f0*=ps;L.f1*=ps;L.gf*=ps;L.rf*=ps;L.r0=clamp(L.r0*ps,.05,8);L.r1=clamp(L.r1*ps,.05,8);
+    const tr=isTrans(L);L.d*=lt*ts;L.rdec*=lt*ts;if(!tr){L.h*=lt*ts;L.a*=Math.pow(ts,.5)*Math.pow(2,-u('punch')*1.5);}
+    L.gain+=tr?u('punch')*14:-u('punch')*5;
+    L.drv=clamp(L.drv+u('grit')*1.1,0,1);if(L.fla>0)L.fla=clamp(L.fla+u('grit')*.5,0,1);
+    if(L.ring>0)L.ring=clamp(L.ring*(1+u('metal')*2),0,1);else if(tr&&u('metal')>0){L.ring=u('metal')*1.2;L.rmodel='hull';L.rf=170*ps;L.rdec=.9*lt;L.rn=10;}
+    if(L.ft==='lowpass'||L.ft==='bandpass'){L.ff0*=tone;L.ff1*=tone;}else if(L.ft==='highpass'){L.ff0*=Math.sqrt(tone);L.ff1*=Math.sqrt(tone);}
+    L.ff0=clamp(L.ff0*Math.sqrt(ps),20,20000);L.ff1=clamp(L.ff1*Math.sqrt(ps),20,20000);
+    if(isLow(L))L.gain+=u('rumble')*14;else if(u('rumble')<0)L.gain+=u('rumble')*2;
+    if(L.rep>1){L.rjit=clamp(L.rjit*(1+u('chaos')*2)+Math.max(0,u('chaos'))*.15,0,1);L.rvar=clamp(L.rvar*(1+u('chaos')*2)+Math.max(0,u('chaos'))*.3,0,1);}}
+  const cf=1+u('chaos')*2;Q.vary.pitch*=cf;Q.vary.time*=cf;Q.vary.tone*=cf;
+  Q.motion.speed*=Math.pow(2,u('speed')*1.6);
+  return Q;}
+function macroSpace(S,P){const u=k=>mv(P,k),d=u('dist');S=Object.assign({},S);
+  if(d>0){S.lp=Math.max(150,S.lp*Math.pow(2,-d*7));S.dry=Math.max(.1,S.dry*(1-d*1.3));S.wet=Math.min(1.5,S.wet*(1+d*2.5)+d*.3);S.pre+=d*.05;S.width*=1-d*.8;}
+  else{S.wet*=1+d*1.6;S.dry*=1-d*.4;S.width*=1-d*.4;}
+  S.size*=Math.pow(2,u('size')*1.2);S.couple=clamp(S.couple*(1+u('metal')*2)+Math.max(0,u('metal'))*.2,0,1);S.metal=clamp(S.metal+u('metal')*.8,0,1);
+  S.lp=Math.min(20000,S.lp*Math.pow(2,u('bright')*1.6));S.tilt=(S.tilt||0)+u('bright')*18;S.low+=u('rumble')*10;S.comp=clamp(S.comp-u('punch')*.5,0,1);
+  return S;}
+function spaceOf(P,key){key=key||P.persp;return Object.assign({},PERSP[key].p,key===P.persp?P.po:{});}
+
+/* ------------------------------ render ------------------------------ */
+function variation(vr,seed){const R=mulberry(hash('var',seed)),s=()=>R()*2-1;
+  return {seed,pitch:Math.pow(2,s()*vr.pitch/12),time:1+s()*vr.time,tone:Math.pow(2,s()*vr.tone),level:-R()*vr.level};}
+async function render(P0,o={}){const t0=performance.now(),sr=o.sr||48000,seed=o.seed!=null?o.seed:P0.seed,key=o.persp||P0.persp;
+  const P=applyMacros(P0);const V=variation(P.vary,seed);let ch=await renderDry(P,V,sr);const dryLen=ch[0].length/sr;
+  if(P.motion.on)ch=applyMotion(ch,P.motion,sr);
+  const S=macroSpace(spaceOf(P0,key),P0);ch=await applySpace(ch,S,sr);
+  // width (mid/side)
+  const [L,R]=ch,n=L.length;if(Math.abs(S.width-1)>.01)for(let i=0;i<n;i++){const m=(L[i]+R[i])*.5,s=(L[i]-R[i])*.5*S.width;L[i]=m+s;R[i]=m-s;}
+  let out=[L,R];
+  if(P.out.loop)out=makeLoop(out,P.out,sr);else out=trim(out,sr);
+  let pk=0;for(const c of out)for(let i=0;i<c.length;i++)pk=Math.max(pk,Math.abs(c[i]));
+  const g=(P.out.norm&&pk>0?dB(P.out.peak)/pk:(pk>1?1/pk:1))*dB(V.level);for(const c of out)for(let i=0;i<c.length;i++)c[i]*=g;
+  return {ch:out,sr,ms:performance.now()-t0,seed,persp:key,V,dryLen};}
+function trim(ch,sr){const n=ch[0].length;let pk=0;for(const c of ch)for(let i=0;i<n;i++)pk=Math.max(pk,Math.abs(c[i]));const th=pk*dB(-66);let last=0;
+  for(let i=n-1;i>=0;i--)if(Math.abs(ch[0][i])>th||Math.abs(ch[1][i])>th){last=i;break;}
+  const N=Math.min(n,last+Math.floor(sr*.05)),fo=Math.floor(sr*.02),fi=24;
+  return ch.map(c=>{const o=c.slice(0,N);for(let i=0;i<fo&&i<N;i++)o[N-1-i]*=i/fo;for(let i=0;i<fi&&i<N;i++)o[i]*=i/fi;return o;});}
+function makeLoop(ch,O,sr){const n=ch[0].length,s0=Math.floor(O.loopStart*sr),len=Math.floor(O.loopLen*sr),xf=Math.min(Math.floor(O.loopXf*sr),len>>1);
+  if(s0+len+xf>n){toast('Loop needs '+((s0+len+xf)/sr).toFixed(2)+' s of sound; this one is '+(n/sr).toFixed(2)+' s. Lengthen the hold.');return trim(ch,sr);}
+  return ch.map(c=>{const o=c.slice(s0,s0+len);for(let i=0;i<xf;i++){const a=i/xf*Math.PI/2;o[i]=o[i]*Math.sin(a)+c[s0+len+i]*Math.cos(a);}return o;});}
+
+/* ------------------------------ encoders ------------------------------ */
+function wavBytes(ch,sr,bits,nch){const n=ch[0].length,bps=bits/8,ba=nch*bps,buf=new ArrayBuffer(44+n*ba),dv=new DataView(buf);const W=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
+  W(0,'RIFF');dv.setUint32(4,36+n*ba,true);W(8,'WAVE');W(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,nch,true);dv.setUint32(24,sr,true);
+  dv.setUint32(28,sr*ba,true);dv.setUint16(32,ba,true);dv.setUint16(34,bits,true);W(36,'data');dv.setUint32(40,n*ba,true);
+  let o=44;const src=nch===1?[ch[0].map((v,i)=>(v+ch[1][i])*.5)]:ch;
+  for(let i=0;i<n;i++)for(let k=0;k<nch;k++){const s=clamp(src[k][i],-1,1);if(bits===16){dv.setInt16(o,Math.round(s*32767),true);o+=2;}
+    else{const v=Math.round(s*8388607);dv.setUint8(o,v&255);dv.setUint8(o+1,(v>>8)&255);dv.setUint8(o+2,(v>>16)&255);o+=3;}}
+  return new Uint8Array(buf);}
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
+function zipBlob(files){const parts=[],cd=[],enc=new TextEncoder();let off=0;
+  for(const f of files){const nm=enc.encode(f.name),crc=crc32(f.data),sz=f.data.length,h=new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(12,0x21,true);h.setUint32(14,crc,true);h.setUint32(18,sz,true);h.setUint32(22,sz,true);h.setUint16(26,nm.length,true);
+    parts.push(h,nm,f.data);const c=new DataView(new ArrayBuffer(46));
+    c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(14,0x21,true);c.setUint32(16,crc,true);c.setUint32(20,sz,true);c.setUint32(24,sz,true);c.setUint16(28,nm.length,true);c.setUint32(42,off,true);
+    cd.push(c,nm);off+=30+nm.length+sz;}
+  let cs=0;for(const x of cd)cs+=x.byteLength;const e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  return new Blob([...parts,...cd,e],{type:'application/zip'});}
+function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);}
+const slug=s=>(s||'sfx').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,48)||'sfx';
+function presetJSON(P){const o={format:'rad-sfx/1',name:P.name,cat:P.cat||'',desc:P.desc||'',persp:P.persp,po:P.po,mac:P.mac,seed:P.seed,vary:P.vary,out:P.out,motion:P.motion,
+  layers:P.layers.map(l=>{const d={type:l.type,name:l.name};for(const k in l)if(k!=='type'&&k!=='name'&&l[k]!==LDEF[k])d[k]=l[k];return d;})};return JSON.stringify(o,null,1);}
+
+/* ------------------------------ analysis + display ------------------------------ */
+function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
+  for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),h=len>>1;for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const a=i+j,b=a+h,xr=re[b]*cr-im[b]*ci,xi=re[b]*ci+im[b]*cr;re[b]=re[a]-xr;im[b]=im[a]-xi;re[a]+=xr;im[a]+=xi;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}}
+function analyze(r){const [L,R]=r.ch,n=L.length;let pk=0,ss=0;for(let i=0;i<n;i++){const m=Math.max(Math.abs(L[i]),Math.abs(R[i]));if(m>pk)pk=m;ss+=(L[i]*L[i]+R[i]*R[i])*.5;}
+  let bad=0;for(let i=0;i<n;i+=97)if(!isFinite(L[i])||!isFinite(R[i]))bad++;
+  // spectral centroid + low-band share over the whole file
+  const N=4096,re=new Float32Array(N),im=new Float32Array(N),mag=new Float32Array(N/2);let frames=0;
+  for(let s=0;s+N<=n;s+=N*2){for(let i=0;i<N;i++){re[i]=(L[s+i]+R[s+i])*.5*(.5-.5*Math.cos(2*Math.PI*i/N));im[i]=0;}fft(re,im);for(let k=0;k<N/2;k++)mag[k]+=Math.hypot(re[k],im[k]);frames++;}
+  let num=0,den=0,lo=0;for(let k=1;k<N/2;k++){const f=k*r.sr/N,p=mag[k]*mag[k];num+=f*p;den+=p;if(f<150)lo+=p;}
+  return {dur:n/r.sr,peak:20*Math.log10(pk||1e-9),rms:10*Math.log10(ss/n||1e-12),centroid:den?num/den:0,low:den?lo/den:0,bad};}
+const COL=[[0,[7,6,5]],[.28,[52,14,22]],[.5,[150,40,24]],[.68,[236,112,40]],[.84,[255,196,110]],[1,[255,250,235]]];
+const CMAP=(()=>{const m=new Uint8Array(256*3);for(let i=0;i<256;i++){const v=i/255;let k=0;while(k<COL.length-2&&v>COL[k+1][0])k++;const [a,ca]=COL[k],[b,cb]=COL[k+1],f=(v-a)/(b-a);for(let j=0;j<3;j++)m[i*3+j]=ca[j]+(cb[j]-ca[j])*f;}return m;})();
+let specImg=null;
+function draw(){const cv=$('#cv'),box=$('#disp'),dpr=Math.min(2,devicePixelRatio||1),W=Math.floor(box.clientWidth*dpr),H=Math.floor(box.clientHeight*dpr);
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}const g=cv.getContext('2d');g.fillStyle='#070605';g.fillRect(0,0,W,H);if(!cur)return;
+  const [L,R]=cur.ch,n=L.length,wh=Math.floor(H*.3),sh=H-wh;
+  if(!specImg||specImg.key!==cur.key||specImg.W!==W){const N=2048,re=new Float32Array(N),im=new Float32Array(N),win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/N);
+    const cols=Math.min(W,1400),img=g.createImageData(cols,sh),mags=[];let mx=1e-9;
+    const rowBin=new Float32Array(sh);for(let y=0;y<sh;y++){const f=25*Math.pow(20000/25,1-y/(sh-1));rowBin[y]=f/cur.sr*N;}
+    for(let x=0;x<cols;x++){const c0=Math.floor(x/cols*n)-N/2;for(let i=0;i<N;i++){const j=c0+i;re[i]=j>=0&&j<n?(L[j]+R[j])*.5*win[i]:0;im[i]=0;}fft(re,im);
+      const col=new Float32Array(sh);for(let y=0;y<sh;y++){const b=rowBin[y],k=Math.floor(b),f=b-k,hi=y>0?Math.floor(rowBin[y-1]):k;let v;if(hi>k+1){v=0;for(let q=k;q<=hi&&q<N/2;q++)v=Math.max(v,Math.hypot(re[q],im[q]));}else{const m0=Math.hypot(re[k],im[k]),m1=Math.hypot(re[k+1]||0,im[k+1]||0);v=m0+(m1-m0)*f;}col[y]=v;if(v>mx)mx=v;}mags.push(col);}
+    for(let x=0;x<cols;x++)for(let y=0;y<sh;y++){const v=clamp((20*Math.log10(mags[x][y]/mx+1e-12)+84)/84,0,1),ci=Math.floor(v*255)*3,p=(y*cols+x)*4;img.data[p]=CMAP[ci];img.data[p+1]=CMAP[ci+1];img.data[p+2]=CMAP[ci+2];img.data[p+3]=255;}
+    const oc=document.createElement('canvas');oc.width=cols;oc.height=sh;oc.getContext('2d').putImageData(img,0,0);specImg={key:cur.key,W,cv:oc};}
+  g.imageSmoothingEnabled=true;g.drawImage(specImg.cv,0,wh,W,sh);
+  g.fillStyle='rgba(234,223,205,.35)';g.font=(10*dpr)+'px monospace';for(const f of [50,100,200,500,1000,2000,5000,10000]){const y=wh+(1-Math.log(f/25)/Math.log(20000/25))*(sh-1);g.fillRect(0,y,6*dpr,1);g.fillText(f>=1000?f/1000+'k':f,8*dpr,y+3*dpr);}
+  g.fillStyle='#0e0c0a';g.fillRect(0,0,W,wh);const mid=wh/2;g.fillStyle='#ff9a3c';
+  for(let x=0;x<W;x++){const a=Math.floor(x/W*n),b=Math.max(a+1,Math.floor((x+1)/W*n));let lo=0,hi=0;for(let i=a;i<b;i+=Math.max(1,(b-a)>>6)){const v=(L[i]+R[i])*.5;if(v<lo)lo=v;if(v>hi)hi=v;}g.fillRect(x,mid-hi*mid*.95,1,Math.max(1,(hi-lo)*mid*.95));}
+  g.fillStyle='rgba(234,223,205,.5)';const dur=n/cur.sr,step=dur>8?2:dur>3?.5:dur>1?.25:.1;for(let t=step;t<dur;t+=step){const x=t/dur*W;g.fillRect(x,wh-4*dpr,1,4*dpr);}
+  if(playing){const t=AC.currentTime-playing.t0;if(t>=0&&t<=dur){g.fillStyle='#5fd4e8';g.fillRect(t/dur*W,0,Math.max(1,dpr),H);}}}
+
+/* ------------------------------ playback ------------------------------ */
+let AC=null,playing=null,cur=null;
+function ac(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state!=='running')AC.resume();return AC;}
+function stop(){if(playing){try{playing.src.stop()}catch(e){}playing=null;}}
+function playR(r){const c=ac();stop();const b=c.createBuffer(2,r.ch[0].length,r.sr);b.copyToChannel(r.ch[0],0);b.copyToChannel(r.ch[1],1);const s=c.createBufferSource();s.buffer=b;
+  if(r===cur&&P.out.loop)s.loop=true;s.connect(c.destination);const t0=c.currentTime+.02;s.start(t0);const pl={src:s,t0,dur:b.duration};playing=pl;s.onended=()=>{if(playing===pl)playing=null;};anim();
+  return new Promise(res=>{s.addEventListener('ended',()=>res());});}
+let animOn=false;function anim(){if(animOn)return;animOn=true;const f=()=>{draw();if(playing)requestAnimationFrame(f);else{animOn=false;draw();}};requestAnimationFrame(f);}
+
+/* ------------------------------ UI ------------------------------ */
+let P=normPreset(PRESETS[0]),seedLock=false,hist=[],fut=[],lastSnap='';
+const CC=['#ff9a3c','#5fd4e8','#e86f5f','#a6e35f','#c78bff','#ffd25f','#5f9bff','#ff6fb6'];
+function toast(x){const t=$('#toast');t.textContent=x;t.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.opacity=0,2600);}
+function snap(){const s=JSON.stringify(P);if(s===lastSnap)return;if(lastSnap){hist.push(lastSnap);if(hist.length>80)hist.shift();fut=[];}lastSnap=s;}
+function undo(){if(!hist.length)return toast('Nothing to undo');fut.push(lastSnap);lastSnap=hist.pop();P=JSON.parse(lastSnap);buildAll();schedule(true);}
+function redo(){if(!fut.length)return;hist.push(lastSnap);lastSnap=fut.pop();P=JSON.parse(lastSnap);buildAll();schedule(true);}
+
+const fmt={
+  dbn:v=>'up to −'+v.toFixed(1)+' dB',db:v=>(v>0?'+':'')+v.toFixed(1)+' dB',s:v=>v<1?(v*1000).toFixed(v<.01?1:0)+' ms':v.toFixed(2)+' s',slog:v=>fmt.s(v),
+  hz:v=>v>=1000?(v/1000).toFixed(v>=10000?1:2)+' kHz':v.toFixed(v<100?1:0)+' Hz',pct:v=>Math.round(v*100)+'%',
+  pan:v=>Math.abs(v)<.01?'C':(v<0?'L':'R')+Math.round(Math.abs(v)*100),xlog:v=>'×'+v.toFixed(2),num:v=>v.toFixed(2),int:v=>String(Math.round(v)),
+  cents:v=>v.toFixed(0)+' ct',oct:v=>v.toFixed(2)+' oct',st:v=>'±'+v.toFixed(1)+' st',nlog:v=>v>=100?v.toFixed(0):v.toFixed(1),lin:v=>v.toFixed(0)};
+const LOGK=new Set(['slog','hz','xlog','nlog']);
+// spec: [key,label,min,max,kind,unit] or [key,label,[options]] or [key,label,'bool']
+function ctl(spec,obj,onIn,onCh){const [k,lab,a,b,kind,unit]=spec;const d=document.createElement('div');d.className='ctl';const l=document.createElement('label');l.textContent=lab;l.title=lab;d.appendChild(l);
+  if(Array.isArray(a)){const s=document.createElement('select');for(const o of a){const op=document.createElement('option');if(Array.isArray(o)){op.value=o[0];op.textContent=o[1];}else{op.value=o;op.textContent=o;}s.appendChild(op);}
+    s.value=String(obj[k]);s.onchange=()=>{const v=s.value;obj[k]=isNaN(+v)||v===''?v:+v;onCh&&onCh(k);};d.appendChild(s);d.appendChild(document.createElement('span'));return d;}
+  if(a==='bool'){const c=document.createElement('input');c.type='checkbox';c.checked=!!obj[k];c.onchange=()=>{obj[k]=c.checked;onCh&&onCh(k);};d.appendChild(c);d.appendChild(document.createElement('span'));return d;}
+  const lg=LOGK.has(kind)&&a>0,r=document.createElement('input');r.type='range';r.min=0;r.max=1000;const o=document.createElement('output');
+  const to=v=>lg?Math.log(v/a)/Math.log(b/a)*1000:(v-a)/(b-a)*1000,from=x=>lg?a*Math.pow(b/a,x/1000):a+(b-a)*x/1000;
+  const show=()=>{o.textContent=(fmt[kind]||fmt.num)(obj[k])+(unit?' '+unit:'');};
+  r.value=to(clamp(obj[k],a,b));show();
+  r.oninput=()=>{let v=from(+r.value);if(kind==='int')v=Math.round(v);else v=+v.toPrecision(4);obj[k]=v;show();onIn&&onIn(k);};
+  r.onchange=()=>onCh&&onCh(k);
+  r.ondblclick=()=>{const dv=spec.def!=null?spec.def:null;if(dv!=null){obj[k]=dv;r.value=to(dv);show();onCh&&onCh(k);}};
+  d.appendChild(r);d.appendChild(o);return d;}
+const LGROUPS=[
+  {g:'Mix',open:true,p:[['gain','Gain',-40,12,'db'],['t','Start',0,8,'s'],['pan','Pan',-1,1,'pan'],['width','Width',0,1,'pct']]},
+  {g:'Envelope',open:true,p:[['a','Attack',.0003,4,'slog'],['h','Hold',0,8,'s'],['d','Decay (T60)',.003,10,'slog']]},
+  {g:'Noise',types:['noise'],open:true,p:[['color','Colour',['white','pink','brown','blue','velvet']],['r0','Rate start',.05,8,'xlog'],['r1','Rate end',.05,8,'xlog'],['sw','Rate sweep',.001,8,'slog']]},
+  {g:'Oscillator',types:['osc'],open:true,p:[['wave','Wave',['sine','triangle','sawtooth','square']],['f0','Pitch start',10,12000,'hz'],['f1','Pitch end',10,12000,'hz'],['sw','Sweep time',.001,8,'slog'],['voices','Voices',1,7,'int'],['det','Detune',0,100,'cents']]},
+  {g:'FM',types:['osc'],lit:L=>L.fmi>0,p:[['fmi','Index',0,30,'num'],['fmr','Ratio',.1,12,'xlog'],['fmd','Index decay',.005,8,'slog']]},
+  {g:'Grains',types:['grain'],open:true,p:[['gsrc','Source',['click','chunk','noise','sine','metal']],['dens','Density',1,3000,'nlog','/s'],['gdur','Grain length',.001,.3,'slog'],['gf','Grain pitch',40,12000,'hz'],['gsp','Pitch spread',0,3,'oct']]},
+  {g:'Filter',lit:L=>L.ft!=='none',p:[['ft','Type',['none','lowpass','highpass','bandpass']],['ff0','Cutoff start',20,20000,'hz'],['ff1','Cutoff end',20,20000,'hz'],['fsw','Sweep time',.001,8,'slog'],['fq','Resonance Q',.3,30,'xlog']]},
+  {g:'Drive',lit:L=>L.drv>0,p:[['dmode','Shape',['tanh','asym','fold','crush']],['drv','Amount',0,1,'pct']]},
+  {g:'Flutter',lit:L=>L.fla>0,p:[['fla','Depth',0,1,'pct'],['flr','Rate',.5,200,'nlog','Hz']]},
+  {g:'Resonator',lit:L=>L.ring>0,p:[['ring','Mix',0,1,'pct'],['rmodel','Model',['hull','plate','bar','tube','bell']],['rf','Freq',30,8000,'hz'],['rdec','Decay',.02,8,'slog'],['rn','Modes',1,16,'int']]},
+  {g:'Repeat',lit:L=>L.rep>1,p:[['rep','Shots',1,200,'int'],['rrate','Rate',.5,120,'nlog','Hz'],['rjit','Timing jitter',0,1,'pct'],['rvar','Per-shot vary',0,1,'pct'],['racc','Accelerate',-.3,.3,'num']]}];
+for(const G of LGROUPS)for(const s of G.p)s.def=LDEF[s[0]];
+const PSCH=[['hp','High-pass',10,400,'hz'],['lp','Low-pass',150,20000,'hz'],['low','Low shelf',-12,15,'db'],['midg','Body boost',-12,12,'db'],['midf','Body freq',40,2000,'hz'],
+  ['couple','Structure ring',0,1,'pct'],['mf','Ring freq',30,2000,'hz'],['md','Ring decay',.05,6,'slog'],['rattle','Panel rattle',0,1,'pct'],
+  ['size','Room T60',.05,8,'slog'],['bright','Room bright',0,1,'pct'],['metal','Room metal',0,1,'pct'],['flutter','Flutter echo',0,30,'num','ms'],['comb','Helmet comb',0,3000,'lin','Hz'],['pre','Pre-delay',0,.2,'s'],['bloom','Bloom',0,1.5,'s'],
+  ['wet','Wet',0,1.5,'pct'],['dry','Dry',0,1.5,'pct'],['width','Width',0,1.6,'pct'],['comp','Squash',0,1,'pct']];
+const MSCH=[['on','Enabled','bool'],['speed','Speed',0,1500,'lin','m/s'],['dmin','Closest pass',1,3000,'nlog','m'],['tc','Closest at',-2,10,'s'],['dir','Direction',[[1,'L → R'],[-1,'R → L']]],
+  ['c','Fake sound speed',100,5000,'nlog','m/s'],['air','Air / dust',0,3,'num'],['pw','Pan sweep',0,1,'pct']];
+for(const s of MSCH)s.def=MDEF[s[0]];
+const VSCH=[['pitch','Pitch',0,6,'st'],['time','Time ±',0,.4,'pct'],['tone','Tone ±',0,1.5,'oct'],['level','Level drop',0,8,'dbn']];
+for(const s of VSCH)s.def=VDEF[s[0]];
+const OSCH=[['norm','Normalise','bool'],['peak','Peak',-24,0,'db'],['loop','Seamless loop','bool'],['loopStart','Loop start',0,10,'s'],['loopLen','Loop length',.2,20,'slog'],['loopXf','Crossfade',.01,2,'slog']];
+for(const s of OSCH)s.def=ODEF[s[0]];
+
+const changed=()=>schedule(false);
+const committed=()=>{snap();schedule(true);};
+function buildLib(){const box=$('#lib');box.innerHTML='';let cat='';
+  for(const p of PRESETS){if(p.cat!==cat){cat=p.cat;const h=document.createElement('h3');h.textContent=cat;box.appendChild(h);}
+    const b=document.createElement('button');b.textContent=p.name;b.title=p.desc||'';b.dataset.id=p.id;b.onclick=()=>loadPreset(p);box.appendChild(b);}
+  const ub=$('#ulib');ub.innerHTML='';const U=userLib();if(!U.length)ub.innerHTML='<p class="hint">Nothing yet.</p>';
+  U.forEach((p,i)=>{const w=document.createElement('div');w.className='u';const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>loadPreset(normPreset(p));
+    const x=document.createElement('button');x.textContent='✕';x.title='Delete';x.onclick=()=>{const u=userLib();u.splice(i,1);setUserLib(u);buildLib();};w.appendChild(b);w.appendChild(x);ub.appendChild(w);});
+  markLib();}
+function markLib(){document.querySelectorAll('#lib button').forEach(b=>b.classList.toggle('on',b.dataset.id===P.id));}
+function userLib(){try{return JSON.parse(localStorage.getItem('rad.user')||'[]');}catch(e){return [];}}
+function setUserLib(u){try{localStorage.setItem('rad.user',JSON.stringify(u));}catch(e){toast('Browser storage is blocked; use ⤓ JSON instead');}}
+function loadPreset(p){stop();P=normPreset(p);snap();buildAll();schedule(true);}
+function buildPersp(){const box=$('#persp');box.innerHTML='';
+  for(const k of PKEYS){const b=document.createElement('button');b.innerHTML='<b>'+PERSP[k].name+'</b><i>'+PERSP[k].sub+'</i>';b.dataset.k=k;b.classList.toggle('on',k===P.persp);
+    b.title=PERSP[k].desc;b.onclick=()=>{if(P.persp!==k){P.persp=k;P.po={};buildPersp();buildPctl();committed();}else schedule(true);};box.appendChild(b);}
+  $('#pdesc').textContent=PERSP[P.persp].desc;}
+function buildPctl(){const box=$('#pctl');box.innerHTML='';const S=spaceOf(P);
+  for(const s of PSCH){const spec=s.slice();spec.def=PERSP[P.persp].p[s[0]];box.appendChild(ctl(spec,S,k=>{P.po[k]=S[k];changed();},k=>{P.po[k]=S[k];committed();}));}}
+function buildLayers(){const box=$('#layers');box.innerHTML='';
+  P.layers.forEach((L,i)=>{const c=document.createElement('div');c.className='card'+(L.on?'':' off');c.style.setProperty('--c',CC[i%CC.length]);
+    const hd=document.createElement('div');hd.className='hd';
+    const nm=document.createElement('input');nm.type='text';nm.value=L.name;nm.onchange=()=>{L.name=nm.value;snap();};
+    const ty=document.createElement('select');for(const t of [['noise','noise'],['osc','osc / FM'],['grain','granular']]){const o=document.createElement('option');o.value=t[0];o.textContent=t[1];ty.appendChild(o);}ty.value=L.type;
+    ty.onchange=()=>{L.type=ty.value;buildLayers();committed();};
+    const B=(t,ti,f,cls)=>{const b=document.createElement('button');b.textContent=t;b.title=ti;if(cls)b.className=cls;b.onclick=f;return b;};
+    const on=B(L.on?'on':'off','Mute / unmute',()=>{L.on=!L.on;buildLayers();committed();});if(L.on)on.classList.add('on');
+    const so=B('S','Solo',()=>{L.solo=!L.solo;buildLayers();committed();},'s'+(L.solo?' on':''));
+    const pl=B('▶','Play this layer alone (raw)',()=>auditionLayer(i));
+    const du=B('⧉','Duplicate',()=>{P.layers.splice(i+1,0,deep(L));buildLayers();committed();});
+    const de=B('✕','Delete',()=>{P.layers.splice(i,1);buildLayers();committed();});
+    hd.append(nm,ty,on,so,pl,du,de);c.appendChild(hd);
+    for(const G of LGROUPS){if(G.types&&!G.types.includes(L.type))continue;const dt=document.createElement('details');const lit=G.lit&&G.lit(L);dt.open=!!G.open||lit;
+      const sm=document.createElement('summary');sm.innerHTML=G.g+(lit?' <span class="lit">●</span>':'');dt.appendChild(sm);
+      for(const s of G.p)dt.appendChild(ctl(s,L,changed,committed));c.appendChild(dt);}
+    box.appendChild(c);});}
+const TEMPL={
+  'Sub thump':Lr('osc','Sub thump',{f0:75,f1:30,sw:.3,a:.002,h:.02,d:.8,drv:.3}),
+  'Transient crack':Lr('noise','Crack',{a:.0003,d:.02,ft:'highpass',ff0:2000,ff1:2000,drv:.4,gain:-4}),
+  'Mech clunk':Lr('noise','Clunk',{color:'pink',a:.001,d:.15,ft:'lowpass',ff0:2500,ff1:400,fsw:.08,drv:.4,ring:.5,rmodel:'hull',rf:180,rdec:.9,rn:10}),
+  'Body roar':Lr('noise','Roar',{color:'brown',a:.08,h:1,d:1.2,ft:'lowpass',ff0:1200,ff1:900,fsw:1,drv:.5,dmode:'asym',fla:.45,flr:22,width:.7}),
+  'Crackle':Lr('grain','Crackle',{dens:400,gf:2200,gsp:1.2,a:.05,h:1,d:.8,ft:'highpass',ff0:900,ff1:900,gain:-8}),
+  'Whoosh':Lr('noise','Whoosh',{color:'pink',a:.25,h:.05,d:.6,ft:'bandpass',ff0:300,ff1:2500,fsw:.5,fq:1.3,width:.8}),
+  'Metal ring':Lr('noise','Ring',{a:.0005,d:.015,ring:1,rmodel:'plate',rf:320,rdec:1.5,rn:12,gain:-6}),
+  'Whine':Lr('osc','Whine',{wave:'sawtooth',f0:300,f1:900,sw:1,voices:3,det:10,a:.4,h:.6,d:.5,ft:'bandpass',ff0:1400,ff1:1400,fq:3,gain:-16}),
+  'Debris':Lr('grain','Debris',{gsrc:'chunk',dens:45,gf:850,gsp:.7,a:.03,h:.4,d:1.2,gain:-12,width:.9})};
+function buildAdd(){const box=$('#add');box.innerHTML='<span class="hint" style="align-self:center">+ layer:</span>';
+  for(const k in TEMPL){const b=document.createElement('button');b.textContent=k;b.onclick=()=>{P.layers.push(Object.assign({},LDEF,deep(TEMPL[k])));buildLayers();committed();};box.appendChild(b);}}
+const PATHS={Flyby:{on:true,speed:300,dmin:20,tc:1.5,c:1200,pw:1},Approach:{on:true,speed:250,dmin:15,tc:3,c:1200,pw:.6},Recede:{on:true,speed:280,dmin:12,tc:.3,c:1200,pw:.8},'Far static':{on:true,speed:0,dmin:600,tc:0,pw:0},Off:{on:false}};
+function buildRight(){const mp=$('#mpath');mp.innerHTML='';for(const k in PATHS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>{Object.assign(P.motion,PATHS[k]);buildRight();committed();};mp.appendChild(b);}
+  const mc=$('#mctl');mc.innerHTML='';for(const s of MSCH)mc.appendChild(ctl(s,P.motion,changed,committed));
+  const vc=$('#vctl');vc.innerHTML='';for(const s of VSCH)vc.appendChild(ctl(s,P.vary,changed,committed));
+  const oc=$('#octl');oc.innerHTML='';for(const s of OSCH)oc.appendChild(ctl(s,P.out,changed,committed));
+  $('#seed').value=P.seed;
+  const xp=$('#xp');if(!xp.children.length)for(const k of PKEYS){const l=document.createElement('label');l.innerHTML='<input type="checkbox" data-k="'+k+'"> '+PERSP[k].name;xp.appendChild(l);}
+  xp.querySelectorAll('input').forEach(i=>{if(!i.dataset.touched)i.checked=i.dataset.k===P.persp;});}
+const NUDGES=[['Heavier',{size:.12,rumble:.1}],['Lighter',{size:-.12,rumble:-.1}],['Meaner',{grit:.15,punch:.08}],['Cleaner',{grit:-.15}],
+  ['Harder hit',{punch:.14}],['Softer',{punch:-.14}],['More metal',{metal:.15}],['Less metal',{metal:-.15}],['Closer',{dist:-.15}],['Further away',{dist:.15}],
+  ['Crisper',{bright:.14}],['Muffled',{bright:-.14}],['Longer',{length:.14}],['Shorter',{length:-.14}],['Wilder',{chaos:.15}],['Tighter',{chaos:-.15}]];
+function buildMacros(){const box=$('#macros');box.innerHTML='';
+  for(const m of MACS){if(m.when&&!m.when(P))continue;const v=P.mac[m.k]!=null?P.mac[m.k]:.5;const d=document.createElement('div');d.className='mac'+(Math.abs(v-.5)>.005?' moved':'');
+    d.innerHTML='<b>'+m.l+'</b><span>'+m.lo+'</span><input type="range" min="0" max="1000"><span>'+m.hi+'</span>';const r=d.querySelector('input');r.value=v*1000;
+    r.oninput=()=>{P.mac[m.k]=+r.value/1000;d.classList.toggle('moved',Math.abs(P.mac[m.k]-.5)>.005);changed();};r.onchange=committed;
+    r.ondblclick=()=>{P.mac[m.k]=.5;buildMacros();committed();};box.appendChild(d);}
+  const n=MACS.filter(m=>Math.abs(mv(P,m.k))>.005).length;$('#macnote').textContent=n?n+' simple knob'+(n>1?'s':'')+' also bending these layers':'';}
+function buildNudges(){const box=$('#nudges');box.innerHTML='';for(const [l,d] of NUDGES){const b=document.createElement('button');b.textContent=l;
+  b.onclick=()=>{for(const k in d)P.mac[k]=clamp((P.mac[k]!=null?P.mac[k]:.5)+d[k],0,1);buildMacros();committed();toast(l+'.');};box.appendChild(b);}}
+let takes=[];
+async function sixTakes(){const btn=$('#bSix');btn.disabled=true;const box=$('#six');box.innerHTML='';takes=[];const base=P;
+  const keys=MACS.filter(m=>!m.when||m.when(base)).map(m=>m.k);
+  for(let i=0;i<6;i++){const mac=Object.assign({},base.mac);const R=Math.random;
+    for(const k of keys)if(i===0?false:R()<.55)mac[k]=clamp((mac[k]!=null?mac[k]:.5)+(R()*2-1)*(.1+.1*R()),0,1);
+    const t={mac,seed:(R()*1e6)|0,name:'Take '+'ABCDEF'[i]};takes.push(t);
+    const el=document.createElement('div');el.className='take';el.innerHTML='<canvas></canvas><div class="row"><span>'+t.name+(i===0?' <i>(only a new seed)</i>':'')+'</span><button class="pri" disabled>Keep</button></div>';
+    box.appendChild(el);t.el=el;}
+  for(const t of takes){btn.textContent='Rendering '+t.name+'…';const Q=Object.assign({},base,{mac:t.mac,seed:t.seed});t.r=await render(Q);mini(t.el.querySelector('canvas'),t.r);
+    const kb=t.el.querySelector('button');kb.disabled=false;kb.onclick=e=>{e.stopPropagation();P.mac=t.mac;P.seed=t.seed;snap();buildAll();t.r.key=Math.random();cur=t.r;showStats(t.r);draw();toast(t.name+' kept. Ask for six more to keep refining.');$('#six').innerHTML='';};
+    t.el.onclick=()=>{document.querySelectorAll('.take').forEach(x=>x.classList.remove('on'));t.el.classList.add('on');t.r.key=t.r.key||Math.random();cur=t.r;showStats(t.r);draw();playR(t.r);};}
+  btn.disabled=false;btn.textContent='🎲 Give me 6 takes';}
+function mini(cv,r){const dpr=Math.min(2,devicePixelRatio||1),W=cv.width=cv.clientWidth*dpr,H=cv.height=cv.clientHeight*dpr,g=cv.getContext('2d'),[L,R]=r.ch,n=L.length;g.fillStyle='#ff9a3c';
+  for(let x=0;x<W;x++){const a=Math.floor(x/W*n),b=Math.floor((x+1)/W*n);let m=0;for(let i=a;i<b;i+=4)m=Math.max(m,Math.abs(L[i]),Math.abs(R[i]));g.fillRect(x,H/2-m*H/2,1,Math.max(1,m*H));}}
+function setMode(simple){document.body.classList.toggle('simple',simple);$('#bMode').textContent=simple?'Pro mode':'Simple mode';$('#bMode').classList.toggle('on',!simple);try{localStorage.setItem('rad.mode',simple?'s':'p');}catch(e){}}
+function buildAll(){$('#pname').value=P.name;buildPersp();buildPctl();buildLayers();buildRight();buildMacros();markLib();$('#six').innerHTML='';}
+
+/* ------------------------------ render scheduling ------------------------------ */
+let rq=0,busy=false,again=null;
+function schedule(play){clearTimeout(rq);const pl=play&&$('#auto').checked||play==='force';rq=setTimeout(()=>doRender(pl),play?30:160);}
+async function doRender(play){if(busy){again={play:play||(again&&again.play)};return;}busy=true;
+  try{const r=await render(P);r.key=Math.random();cur=r;showStats(r);draw();if(play)playR(r);}catch(e){console.error(e);toast('Render failed: '+e.message);}
+  busy=false;if(again){const a=again;again=null;doRender(a.play);}}
+function showStats(r){const a=analyze(r);r.an=a;$('#stats').innerHTML=['<b>'+a.dur.toFixed(2)+' s</b>','peak <b>'+a.peak.toFixed(1)+' dBFS</b>','rms <b>'+a.rms.toFixed(1)+' dB</b>','centroid <b>'+fmt.hz(a.centroid)+'</b>',
+  'sub/low <b>'+Math.round(a.low*100)+'%</b>','seed <b>'+r.seed+'</b>','render <b>'+Math.round(r.ms)+' ms</b>',P.out.loop?'<b style="color:var(--acc2)">LOOP</b>':''].join(' · ');}
+async function auditionLayer(i){const Q=deep(P);Q.layers.forEach((l,j)=>{l.solo=j===i;l.on=l.on||j===i;});const r=await render(Q,{persp:'raw'});r.key=Math.random();cur=r;showStats(r);draw();playR(r);toast('Layer "'+P.layers[i].name+'" alone, raw');}
+async function auditionAll(){const btn=$('#bAll');btn.disabled=true;try{for(const k of PKEYS){btn.textContent='▶ '+PERSP[k].name+'…';const r=await render(P,{persp:k});r.key=Math.random();cur=r;showStats(r);
+  document.querySelectorAll('#persp button').forEach(b=>b.classList.toggle('play',b.dataset.k===k));toast(PERSP[k].name+' · '+PERSP[k].sub);draw();await playR(r);await new Promise(z=>setTimeout(z,350));}}
+  finally{btn.disabled=false;btn.textContent='▶ Audition all perspectives';document.querySelectorAll('#persp button').forEach(b=>b.classList.remove('play'));}}
+function vary(){P.seed=(Math.random()*1e6)|0;$('#seed').value=P.seed;schedule('force');}
+function mutate(){const J=(x,o)=>x*Math.pow(2,(Math.random()*2-1)*o);
+  for(const L of P.layers){L.gain=clamp(L.gain+(Math.random()*2-1)*2,-40,12);L.a=clamp(J(L.a,.4),.0003,4);L.h=clamp(J(L.h,.3),0,8);L.d=clamp(J(L.d,.35),.003,10);
+    L.f0=clamp(J(L.f0,.25),10,12000);L.f1=clamp(J(L.f1,.25),10,12000);L.ff0=clamp(J(L.ff0,.4),20,20000);L.ff1=clamp(J(L.ff1,.4),20,20000);
+    if(L.drv>0)L.drv=clamp(L.drv+(Math.random()*2-1)*.12,0,1);if(L.fla>0)L.fla=clamp(L.fla+(Math.random()*2-1)*.12,0,1);
+    L.rf=clamp(J(L.rf,.3),30,8000);L.rdec=clamp(J(L.rdec,.3),.02,8);L.dens=clamp(J(L.dens,.4),1,3000);L.fq=clamp(J(L.fq,.3),.3,30);L.fmi=L.fmi>0?clamp(J(L.fmi,.4),0,30):0;}
+  snap();buildLayers();schedule('force');toast('Mutated. Ctrl+Z if it got worse.');}
+
+async function exportWav(){const b=$('#bWav');b.disabled=true;try{const sr=+$('#xsr').value,bits=+$('#xbits').value,nch=+$('#xch').value;const r=await render(P,{sr});
+  download(new Blob([wavBytes(r.ch,sr,bits,nch)],{type:'audio/wav'}),slug(P.name)+'_'+P.persp+'_s'+P.seed+'.wav');toast('WAV out. '+r.ch[0].length/sr+' s');}finally{b.disabled=false;}}
+async function exportBatch(){const btn=$('#bBatch');btn.disabled=true;const sr=+$('#xsr').value,bits=+$('#xbits').value,nch=+$('#xch').value,N=clamp(+$('#xn').value||1,1,64);
+  let ps=[...document.querySelectorAll('#xp input')].filter(i=>i.checked).map(i=>i.dataset.k);if(!ps.length)ps=[P.persp];
+  const files=[],base=slug(P.name);let k=0;const tot=N*ps.length;
+  try{for(const pk of ps)for(let i=1;i<=N;i++){btn.textContent='Rendering '+(++k)+'/'+tot;const r=await render(P,{sr,seed:P.seed+i,persp:pk});
+      files.push({name:base+'/'+base+'_'+pk+'_'+String(i).padStart(2,'0')+'.wav',data:wavBytes(r.ch,sr,bits,nch)});}
+    files.push({name:base+'/'+base+'.rad.json',data:new TextEncoder().encode(presetJSON(P))});
+    download(zipBlob(files),base+'_x'+tot+'.zip');toast(tot+' WAVs zipped. Go make the game louder.');}
+  catch(e){console.error(e);toast('Batch failed: '+e.message);}finally{btn.disabled=false;btn.textContent='⤓ Batch ZIP';}}
+function importJSON(txt){try{const o=JSON.parse(txt);if(!o.layers)throw new Error('no layers in that JSON');loadPreset(o);toast('Loaded "'+(o.name||'preset')+'"');}catch(e){toast('Bad preset JSON: '+e.message);}}
+
+$('#bPlay').onclick=()=>{if(playing){stop();return;}if(cur)playR(cur);else schedule('force');};
+$('#disp').onclick=()=>{if(cur)playR(cur);};
+$('#bVary').onclick=vary;$('#bSix').onclick=sixTakes;$('#bMacRes').onclick=()=>{P.mac={};buildMacros();committed();};
+$('#bMode').onclick=()=>setMode(!document.body.classList.contains('simple'));
+$('#bMut').onclick=mutate;$('#bUndo').onclick=undo;$('#bRedo').onclick=redo;
+$('#bWav').onclick=exportWav;$('#bBatch').onclick=exportBatch;$('#bAll').onclick=auditionAll;
+$('#bJson').onclick=()=>download(new Blob([presetJSON(P)],{type:'application/json'}),slug(P.name)+'.rad.json');
+$('#bLoad').onclick=()=>$('#fJson').click();$('#fJson').onchange=async e=>{const f=e.target.files[0];if(f)importJSON(await f.text());e.target.value='';};
+$('#bSave').onclick=()=>{const u=userLib();const o=JSON.parse(presetJSON(P));o.id='u'+Date.now();const i=u.findIndex(x=>x.name===o.name);if(i>=0)u[i]=o;else u.push(o);setUserLib(u);buildLib();toast('Saved "'+o.name+'" in this browser');};
+$('#pname').onchange=()=>{P.name=$('#pname').value;snap();};
+$('#seed').onchange=()=>{P.seed=(+$('#seed').value)|0;committed();};
+$('#bPRes').onclick=()=>{P.po={};buildPctl();committed();};
+$('#xp').addEventListener('change',e=>{if(e.target.dataset)e.target.dataset.touched=1;});
+document.addEventListener('dragover',e=>e.preventDefault());document.addEventListener('drop',async e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f)importJSON(await f.text());});
+document.addEventListener('keydown',e=>{const tg=e.target;if(tg.tagName==='INPUT'&&(tg.type==='text'||tg.type==='number')||tg.tagName==='SELECT')return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.code==='Space'){e.preventDefault();$('#bPlay').click();}
+  else if(e.key==='r'||e.key==='R')vary();else if(e.key==='m'||e.key==='M')mutate();
+  else if(/^[1-6]$/.test(e.key)){const k=PKEYS[+e.key-1];document.querySelector('#persp button[data-k="'+k+'"]').click();}});
+addEventListener('resize',()=>{specImg=null;draw();});
+// first gesture unlocks audio; the first render is silent until then
+['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>ac(),{once:true}));
+
+buildLib();snap();buildAll();buildAdd();buildNudges();try{setMode(localStorage.getItem('rad.mode')!=='p');}catch(e){setMode(true);}schedule(false);
+window.__rad={PRESETS,applyMacros,macroSpace,MACS,sixTakes,setMode,PERSP,LDEF,render,analyze,normPreset,wavBytes,zipBlob,presetJSON,get P(){return P;},loadPreset,
+  variation,renderDry,activeLayers};
+</script>
+</body>
+</html>

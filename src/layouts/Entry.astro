@@ -3,12 +3,12 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-interface Props { title: string; summary: string; date: Date; eyebrow: string; }
-const { title, summary, date, eyebrow } = Astro.props;
+interface Props { title: string; summary: string; date: Date; eyebrow: string; play?: string; cover?: string; coverAlt?: string; }
+const { title, summary, date, eyebrow, play, cover, coverAlt } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
-  <head><BaseHead title={`${title} — ${eyebrow} — Nasser Al Busaidi`} description={summary} ogType="article" /></head>
+  <head><BaseHead title={`${title} — ${eyebrow} — Nasser Al Busaidi`} description={summary} ogType="article" image={cover ? { src: cover } : undefined} /></head>
   <body>
     <Header variant="compact" />
     <main id="main-content" tabindex="-1" class="entry-page">
@@ -18,7 +18,9 @@ const { title, summary, date, eyebrow } = Astro.props;
           <div class="entry-meta"><span>{eyebrow} /</span><FormattedDate date={date} /></div>
           <h1>{title}</h1>
           <p class="entry-summary">{summary}</p>
+          {play && <p class="entry-play"><a class="entry-play-button" href={play}>Play it <span aria-hidden="true">↗</span></a><span>One HTML file. Runs in your browser, nothing to install.</span></p>}
         </header>
+        {cover && <figure class="entry-cover">{play ? <a href={play} tabindex="-1" aria-hidden="true"><img src={cover} alt="" width="1200" height="750" loading="eager" decoding="async" /></a> : <img src={cover} alt={coverAlt ?? ''} width="1200" height="750" loading="eager" decoding="async" />}{coverAlt && <figcaption>{coverAlt}</figcaption>}</figure>}
         <div class="entry-prose"><slot /></div>
         <footer class="entry-foot"><span>Nasser Al Busaidi</span><a href="/stupidshit"><span aria-hidden="true">←</span> Back to {eyebrow.toLowerCase()}</a></footer>
       </article>
@@ -35,6 +37,14 @@ const { title, summary, date, eyebrow } = Astro.props;
   .entry-meta > span { color: var(--accent); }
   h1 { font-size: var(--text-display); font-weight: 350; line-height: 1.08; letter-spacing: -.045em; max-width: 18ch; overflow-wrap: anywhere; }
   .entry-summary { color: var(--muted); font-size: var(--text-lead); line-height: 1.6; max-width: 50ch; margin: 1.5rem 0 0; }
+  .entry-play { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin: 2rem 0 0; font-size: var(--text-label); color: var(--muted); }
+  .entry-play-button { display: inline-flex; align-items: center; gap: .75rem; min-height: 48px; padding: .75rem 1.4rem; background: var(--ink); color: var(--bg); border: 1px solid var(--ink); font-size: var(--text-body); text-decoration: none; }
+  .entry-play-button:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .entry-cover { margin: 0 0 2.5rem; }
+  .entry-cover img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--surface); }
+  .entry-cover a:hover { background: transparent; }
+  .entry-cover a:hover img { border-color: var(--accent); }
+  .entry-cover figcaption { margin-top: .75rem; font-size: var(--text-label); color: var(--muted); }
   .entry-prose { max-width: 680px; margin: 0 auto; font-family: var(--font-prose); font-size: var(--text-lead); line-height: 1.8; overflow-wrap: anywhere; }
   .entry-prose :global(p) { margin-bottom: 1.25em; }
   .entry-prose :global(h2) { font-size: var(--text-heading); line-height: 1.25; font-weight: 450; margin: 2em 0 .7em; }

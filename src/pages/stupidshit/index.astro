@@ -5,8 +5,10 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import EntryIndex from '../../components/EntryIndex.astro';
+import Toybox from '../../components/Toybox.astro';
 const entries = (await getCollection('stupidshit')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const journal = entries.map(entry => ({ ...entry.data, href: `/stupidshit/${entry.id}` }));
+const toys = journal.filter((entry): entry is typeof entry & { play: string } => !!entry.play);
 ---
 <!doctype html>
 <html lang="en">
@@ -15,6 +17,10 @@ const journal = entries.map(entry => ({ ...entry.data, href: `/stupidshit/${entr
     <Header />
     <main id="main-content" tabindex="-1" class="interior">
       <PageIntro title="Notes" eyebrow="Notes & observations" description="Small ideas, oddities, and things worth writing down." meta={`${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`} />
+      {toys.length > 0 && <section aria-labelledby="toybox-title">
+        <div class="interior-section-head"><h2 id="toybox-title">The toybox</h2><span>{toys.length} things you can play, each one HTML file</span></div>
+        <Toybox toys={toys} />
+      </section>}
       <section aria-labelledby="journal-title">
         <div class="interior-section-head"><h2 id="journal-title">The notebook</h2><a href="/rss.xml">Follow via RSS <span aria-hidden="true">→</span></a></div>
         {entries.length ? <EntryIndex entries={journal} /> : <p class="interior-empty">No notes here yet. The next odd idea will have a home.</p>}

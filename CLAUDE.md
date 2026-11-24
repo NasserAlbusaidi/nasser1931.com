@@ -76,6 +76,7 @@ src/
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
 │   ├── sky/                   ← /sky night-sky photos
 │   ├── reading/               ← /reading
+│   ├── fogofwar.astro         ← /fogofwar: the space game in development (FWO-090 renders, PDC sound clips, Hellas night lights, its tools)
 │   └── pluto.astro            ← /pluto, the hidden room (see Hidden room below)
 ├── content/
 │   ├── stupidshit/            ← /stupidshit entries (zod schema: title, summary, date, optional tags[], optional notion_id)
@@ -116,6 +117,10 @@ src/
 - **Ways in** (`WAYS` in `src/lib/pluto.mjs`, the pure rules, tested): the Konami code or typing "pluto" on any page (ignored while typing in a field or holding ctrl/cmd/alt), `pluto()` in the devtools console (a styled hint is logged on every page), nine clicks on the Sun in the orrery with no more than 2.5s between them (`stage.ts`), and the faint drifting dot on the 404 page (any `a[data-pluto-way]`). The triggers load on every page from a small script in `BaseHead.astro` (`src/scripts/pluto/`, about 3.5 kB).
 - **Entering:** `enterRoom` in `src/scripts/pluto/warp.ts` plays a 0.9s canvas jump to light speed (none under reduced motion) and records the way in `sessionStorage`, so the URL stays plain. The room reads it once to say how you came in, and keeps the ways found in `localStorage` (`np-pluto-found`) to tick them off. A direct visit counts as no way.
 - **Content:** a drawn Pluto (SVG: the pale heart, the dark equatorial band, blue haze), Charon, and the Sun as a bright star; the ways-in checklist with hints for the ones not found; a "Tell me you got in" link that opens an Instagram DM to `nasserdinosaur_` (`ig.me/m/…`). The space panel keeps its dark palette in the light theme. Facts on the page are real (2006 reclassification; sunlight takes about five hours, 4.8 h at Pluto's 2026 distance). To add a way in, add it to `WAYS` and wire its trigger to `enterRoom(id)`.
+
+## The toybox and /play
+
+`public/play/<name>.html` holds the single-file toys from the owner's "stupid shit" project, served as-is (`/play/najm`). Each has a note in `src/content/stupidshit/` with `play`, `cover` (a 1200x750 JPG in `public/play/shots/`, JPG so firebase.json's year-long `.webp` cache never pins it), and optional `cover_alt` frontmatter; notes with `play` show in the toybox grid on `/stupidshit` (`Toybox.astro`) and get a Play button and the cover on their page (`Entry.astro`). The toys are copies; their originals live in the project's shared files, so re-copy after a toy changes. The Fog of War tools (Shipyard, Cockpit Lab, Ra'd) live in `/play` too but have no note; `/fogofwar` links them. Ghoul (the polyglot file that is also a bootable ISO and a shell script) is deliberately not hosted: a file like that on the domain risks a Safe Browsing flag.
 
 ## Retired sections
 

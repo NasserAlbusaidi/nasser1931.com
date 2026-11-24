@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wali II</title>
+<style>
+  :root{
+    --bg:#0b0907; --bar:#15110d; --bar2:#221b14; --line:#3a2e22; --ink:#f3e6cf; --dim:#a8977c; --hot:#ff8a3d;
+    --good:#8fd16a; --bad:#ff5a4e; --blue:#6fb3ff; --gold:#ffd23d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:12.5px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  b{font-weight:600}
+  #app{display:grid;grid-template-columns:184px minmax(0,1fr) 330px;grid-template-rows:auto minmax(0,1fr) 190px;height:100vh}
+  #top{grid-column:1/4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 10px;background:var(--bar2);border-bottom:1px solid var(--line)}
+  #top h1{margin:0;font-size:16px;letter-spacing:.3em;color:var(--gold)}
+  #top .k{color:var(--dim);font-size:11px}
+  #top .v{font-variant-numeric:tabular-nums}
+  #top .grp{display:flex;gap:4px;align-items:center}
+  #tools{grid-row:2/4;overflow:auto;background:var(--bar);border-right:1px solid var(--line);padding:6px}
+  #tools .cat{color:var(--dim);font-size:10.5px;letter-spacing:.15em;margin:8px 2px 3px}
+  .tb{display:flex;justify-content:space-between;gap:6px;width:100%;margin:2px 0;border:1px solid var(--line);background:#1c1610;color:var(--ink);border-radius:5px;padding:4px 6px;cursor:pointer;font:inherit;text-align:left}
+  .tb small{color:var(--gold)}
+  .tb:hover:not(:disabled){border-color:#6b5640}
+  .tb.on{border-color:var(--hot);box-shadow:0 0 0 1px var(--hot) inset;background:#2a1d12}
+  .tb:disabled{opacity:.4;cursor:not-allowed}
+  #mapwrap{position:relative;background:#000;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  #mapbox{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative}
+  #map{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair}
+  #tip{position:absolute;left:8px;bottom:8px;background:#000c;padding:5px 8px;border-radius:5px;max-width:70%;pointer-events:none;white-space:pre-line}
+  #tip:empty{display:none}
+  #banner{position:absolute;left:8px;top:8px;background:#000b;padding:5px 9px;border-radius:5px;pointer-events:none;max-width:60%}
+  #toast{position:absolute;right:10px;top:10px;max-width:42%;display:flex;flex-direction:column;gap:4px;align-items:flex-end;pointer-events:none}
+  .t{background:#000d;border-left:3px solid var(--hot);padding:4px 8px;border-radius:4px;animation:fade 5s forwards}
+  .t.good{border-left-color:var(--good)} .t.ev{border-left-color:var(--gold)}
+  @keyframes fade{0%{opacity:0;transform:translateY(-4px)}8%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+  #ovl{display:flex;gap:3px;flex-wrap:wrap;padding:4px 6px;background:var(--bar);border-bottom:1px solid var(--line)}
+  #ovl .btn{padding:2px 7px;font-size:11px}
+  .btn{border:1px solid var(--line);background:#1c1610;color:var(--ink);border-radius:5px;padding:4px 8px;cursor:pointer;font:inherit}
+  .btn.on{border-color:var(--hot);background:#2a1d12}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  #side{grid-row:2/4;grid-column:3;overflow:auto;background:linear-gradient(var(--bar2),var(--bar));border-left:1px solid var(--line);padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+  .lbl{color:var(--dim);font-size:10.5px;letter-spacing:.15em;margin-top:8px}
+  .fac{margin:3px 0}
+  .fac .top{display:flex;justify-content:space-between}
+  .bar{height:7px;background:#2a2118;border-radius:4px;overflow:hidden;position:relative;margin:2px 0}
+  .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px}
+  .bar .mk{position:absolute;top:-2px;bottom:-2px;width:2px;background:#fffa}
+  .why{color:var(--dim);font-size:10.5px;min-height:12px}
+  .why .n{color:#ffb4a8} .why .p{color:#c8f0a8}
+  .grid2{display:grid;grid-template-columns:1fr auto;gap:1px 10px}
+  .grid2 span{color:var(--dim)} .grid2 b{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+  .bad{color:var(--bad)!important} .ok{color:var(--good)!important} .warn{color:var(--hot)!important}
+  #dir{border:1px solid #5a4a20;background:#1f1a0c;border-radius:6px;padding:6px 8px}
+  #dir:empty{display:none}
+  .ed{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid #2a2118}
+  .ed .nm{display:flex;flex-direction:column}
+  .ed small{color:var(--dim);font-size:10.5px}
+  .seg{display:flex;gap:2px}
+  .seg .btn{padding:2px 6px;font-size:11px}
+  #sel{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:#140f0b}
+  #sel:empty{display:none}
+  #logwrap{grid-column:2;grid-row:3;display:flex;flex-direction:column;border-top:1px solid var(--line);min-height:0}
+  .hd{padding:4px 10px;color:var(--dim);border-bottom:1px solid var(--line);font-size:10.5px;letter-spacing:.15em}
+  #log{flex:1;overflow:auto;padding:4px 10px}
+  #log div{padding:2px 0;border-bottom:1px dashed #241c14}
+  #log .d{color:var(--dim);margin-right:6px}
+  #log .b{color:#ffb4a8} #log .g{color:#c8f0a8} #log .m{color:var(--ink)} #log .e{color:var(--gold)}
+  .modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .modal.show{display:flex}
+  .card{background:linear-gradient(var(--bar2),var(--bar));border:1px solid var(--line);border-radius:10px;padding:18px 20px;max-width:560px;width:100%;box-shadow:0 20px 60px #000;max-height:92vh;overflow:auto}
+  .card h2{margin:0 0 4px;letter-spacing:.12em;font-size:18px;color:var(--gold)}
+  .card .sub{color:var(--dim);font-size:11px;letter-spacing:.15em;margin-bottom:10px}
+  .card p{margin:0 0 12px;line-height:1.45}
+  .card .opts{display:flex;flex-direction:column;gap:6px}
+  .card .opts .btn{display:flex;flex-direction:column;gap:2px;padding:8px 10px;text-align:left}
+  .card .opts small{color:var(--dim)}
+  .card.lose h2{color:var(--bad)} .card.win h2{color:var(--good)}
+  .stats{display:grid;grid-template-columns:1fr auto;gap:2px 12px;margin:0 0 14px;color:var(--dim)}
+  .stats b{color:var(--ink);text-align:right}
+  canvas.spark{width:100%;height:40px;display:block}
+  @media (max-width:900px){
+    #app{grid-template-columns:1fr;grid-template-rows:auto auto auto auto auto;height:auto}
+    #top{grid-column:1}
+    #tools{grid-row:auto;display:flex;gap:4px;overflow-x:auto;white-space:nowrap}
+    #tools .cat{display:none}
+    .tb{width:auto;flex:0 0 auto}
+    #mapbox{min-height:0;display:block}
+    #toast{display:none}
+    #side,#logwrap{grid-column:1;grid-row:auto}
+    #logwrap{height:220px}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <h1>WALI II</h1>
+    <div class="grp"><span class="k">WILAYAT</span><b id="town"></b></div>
+    <div class="grp"><b id="date"></b></div>
+    <div class="grp" id="speed"></div>
+    <div class="grp"><span class="k">TREASURY</span><b class="v" id="tTr"></b></div>
+    <div class="grp"><span class="k">WASTA</span><b class="v" id="tPc"></b></div>
+    <div class="grp"><span class="k">MUSCAT</span><b class="v" id="tFav"></b></div>
+    <div class="grp"><span class="k">HEAT</span><b class="v" id="tHeat"></b></div>
+    <div class="grp"><span class="k">RAIN</span><b class="v" id="tRain"></b></div>
+  </header>
+  <aside id="tools"></aside>
+  <main id="mapwrap">
+    <div id="ovl"></div>
+    <div id="mapbox"><canvas id="map" width="768" height="512"></canvas>
+    <div id="banner"></div>
+    <div id="toast"></div>
+    <div id="tip"></div></div>
+  </main>
+  <aside id="side">
+    <div class="lbl">APPROVAL · ELECTION NEEDS 50%</div>
+    <div class="fac"><div class="top"><b>Overall</b><b id="apN"></b></div><div class="bar"><i id="apBar"></i><span class="mk" style="left:50%"></span></div><div class="why" id="apWhy"></div></div>
+    <div id="facs"></div>
+    <canvas class="spark" id="spark"></canvas>
+    <div class="lbl">MUSCAT WANTS</div>
+    <div id="dir"></div>
+    <div class="lbl">THE TOWN</div>
+    <div class="grid2" id="city"></div>
+    <div class="lbl">EDICTS · COST WASTA</div>
+    <div id="edicts"></div>
+    <div class="lbl">SELECTED</div>
+    <div id="sel"></div>
+    <div class="lbl">LAST MONTH'S BOOKS</div>
+    <div class="grid2" id="books"></div>
+  </aside>
+  <section id="logwrap"><div class="hd">WHAT THE FUCK JUST HAPPENED</div><div id="log"></div></section>
+</div>
+<div class="modal" id="modal"><div class="card" id="card"></div></div>
+
+<script>
+(() => {
+"use strict";
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let R=Math.random;
+const rnd=(a=1,b)=>b===undefined?R()*a:a+R()*(b-a);
+const pick=a=>a[Math.floor(R()*a.length)];
+const f0=v=>Math.round(v).toLocaleString();
+const sg=v=>(v>=0?'+':'')+Math.round(v);
+const MW=48,MH=32,TS=16,TERM=1460,TERMS=3;
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const TOWNS=['Hara','Wadi Bani Nothing','Al Hamra Al Sughra','Sinaw Junior','Bilad Al Goats','Al Mudhaibi-ish'];
+
+// ================= building catalogue =================
+// c cost(k OMR) up upkeep(k/month) bd build days, cap residents, jobs, pow MW out, pw MW in, water +out / -in, r radius, cov kind, capR residents served, poll pollution
+const T={
+  road:    {n:'Road',cat:'ROADS',c:2,up:.02,w:1,h:1,bd:3,road:true,d:'Connects buildings to the highway. On the wadi bed it becomes a ford, which floods.'},
+  bridge:  {n:'Wadi bridge',cat:'ROADS',c:22,up:.1,w:1,h:1,bd:25,road:true,onlyWadi:true,d:'A road across the wadi that survives the wadi. Wadi tiles only.'},
+  house:   {n:'Houses',cat:'HOUSING',c:6,up:.05,w:1,h:1,bd:20,cap:10,pw:0,d:'10 people. Flat roof, water tank, satellite dish.'},
+  villa:   {n:'Villas',cat:'HOUSING',c:28,up:.2,w:2,h:2,bd:35,cap:24,pw:1,rich:1,d:'24 people who pay triple fees. Merchants approve.'},
+  flats:   {n:'Apartment block',cat:'HOUSING',c:42,up:.5,w:2,h:2,bd:50,cap:90,pw:3,d:'90 people stacked up. Elders call it "Muscat creep".'},
+  falaj:   {n:'Falaj channel',cat:'WATER & POWER',c:8,up:.2,w:1,h:1,bd:15,water:6,noRoad:true,d:'+6 water at a full aquifer, less as it drops. Must touch the wadi or the mountain.'},
+  well:    {n:'Borewell',cat:'WATER & POWER',c:12,up:.3,w:1,h:1,bd:8,water:10,noRoad:true,d:'+10 water, flat, until the aquifer is gone. Drains it fast. Elders hate it.'},
+  tanker:  {n:'Tanker depot',cat:'WATER & POWER',c:20,up:7,w:2,h:2,bd:10,water:22,jobs:6,d:'+22 water trucked in from the coast. Brutal running cost.'},
+  dam:     {n:'Recharge dam',cat:'WATER & POWER',c:110,up:1,w:2,h:2,bd:90,noRoad:true,needWadi:2,d:'Catches floods: refills the aquifer and shields everything downstream. Must sit on the wadi.'},
+  genset:  {n:'Diesel generators',cat:'WATER & POWER',c:30,up:2.5,w:2,h:2,bd:20,pow:60,jobs:5,poll:3,d:'+60 MW. Smells like a bus station.'},
+  solar:   {n:'Solar farm',cat:'WATER & POWER',c:75,up:.4,w:3,h:3,bd:45,pow:55,noRoad:true,d:'+55 MW, nearly free to run. Useless in a dust storm.'},
+  grid:    {n:'National grid link',cat:'WATER & POWER',c:160,up:3,w:2,h:2,bd:120,pow:200,one:true,needFav:65,d:'+200 MW from Muscat. Needs Muscat favour 65+ to even ask.'},
+  depot:   {n:'Garbage depot',cat:'WATER & POWER',c:30,up:2,w:2,h:2,bd:25,jobs:8,poll:2,d:'Trucks for the trash. The cats file a complaint.'},
+  school:  {n:'School',cat:'SERVICES',c:35,up:2.5,w:2,h:2,bd:50,jobs:14,pw:2,r:9,cov:'edu',capR:450,d:'Covers 450 residents in range.'},
+  clinic:  {n:'Health centre',cat:'SERVICES',c:45,up:3,w:2,h:2,bd:55,jobs:12,pw:2,r:10,cov:'health',capR:600,d:'Covers 600 residents. Fewer people living on the toilet.'},
+  police:  {n:'Police post',cat:'SERVICES',c:18,up:1.5,w:1,h:1,bd:20,jobs:8,r:10,cov:'police',capR:700,d:'Fewer drifters, less crime. Covers 700.'},
+  mosque:  {n:'Mosque',cat:'SERVICES',c:25,up:.5,w:2,h:2,bd:40,jobs:2,pw:1,r:8,cov:'faith',capR:500,d:'Elders\' favourite building. Covers 500.'},
+  park:    {n:'Majlis garden',cat:'SERVICES',c:6,up:.3,w:1,h:1,bd:10,r:5,cov:'fun',capR:120,water:-.6,noRoad:true,d:'Shade, benches, an old man asleep. Covers 120. Drinks water.'},
+  pitch:   {n:'Football pitch',cat:'SERVICES',c:22,up:.8,w:2,h:2,bd:25,jobs:2,pw:1.5,r:9,cov:'fun',capR:500,water:-1,d:'Covers 500 with fun. Youth love it. Floodlights eat power.'},
+  souq:    {n:'Souq',cat:'ECONOMY',c:30,up:1,w:2,h:2,bd:30,jobs:22,pw:2,d:'22 jobs and rent, if there are enough shoppers. Merchants\' happy place.'},
+  shawarma:{n:'Shawarma stand',cat:'ECONOMY',c:5,up:.1,w:1,h:1,bd:5,jobs:3,pw:.6,d:'Youth +, trash +. Food poisoning during blackouts.'},
+  farm:    {n:'Date farm',cat:'ECONOMY',c:20,up:.6,w:2,h:2,bd:30,jobs:10,water:-5,noRoad:true,d:'Exports dates. Drinks 5 water. Double output on oasis soil.'},
+  goats:   {n:'Goat pens',cat:'ECONOMY',c:10,up:.2,w:2,h:2,bd:10,jobs:4,water:-1,noRoad:true,d:'Herders love it. +50 goats. Goats do not respect fences.'},
+  quarry:  {n:'Quarry',cat:'ECONOMY',c:50,up:1.5,w:3,h:3,bd:40,jobs:30,pw:4,poll:7,onRock:3,d:'Big money, big jobs, big dust. Must bite into the mountain.'},
+  petrol:  {n:'Petrol station',cat:'ECONOMY',c:25,up:.5,w:1,h:1,bd:20,jobs:4,pw:.5,d:'Money from every Land Cruiser in town.'},
+  hotel:   {n:'Heritage hotel',cat:'ECONOMY',c:70,up:2,w:2,h:2,bd:60,jobs:16,pw:3,water:-2,d:'Tourist money, scales with attractions (fort, dallah, ski slope).'},
+  dallah:  {n:'Giant dallah',cat:'VANITY',c:35,up:.2,w:1,h:1,bd:20,attr:10,max:3,d:'A 9-metre coffee pot. Everyone pretends to hate it. Tourists love it.'},
+  ski:     {n:'Indoor ski slope',cat:'VANITY',c:450,up:6,w:3,h:3,bd:150,jobs:40,pw:45,water:-4,attr:90,one:true,d:'In the interior. At 47°. You absolute madman.'},
+  // non-buildable
+  hwy:     {n:'Highway to Muscat',w:1,h:1,road:true,fixed:true,up:0},
+  ruin:    {n:'Ruined fort',w:3,h:3,fixed:true,noRoad:true,up:0,d:'300 years old. Currently a goat hotel.'},
+  fort:    {n:'Restored fort',w:3,h:3,fixed:true,bd:70,jobs:6,attr:35,up:1,d:'Tourists, pride, Instagram.'},
+};
+const CATS=['ROADS','HOUSING','WATER & POWER','SERVICES','ECONOMY','VANITY'];
+const COVS=[['edu','School'],['health','Health'],['police','Police'],['faith','Mosque'],['fun','Leisure']];
+const FACS=[
+  {k:'elders',n:'Elders',sh:.2,c:'#e8d6a8'},
+  {k:'youth',n:'Youth',sh:.3,c:'#6fb3ff'},
+  {k:'merchants',n:'Merchants',sh:.2,c:'#ffd23d'},
+  {k:'farmers',n:'Farmers & herders',sh:.3,c:'#8fd16a'},
+];
+const EDICTS=[
+  {k:'fees',n:'Municipal fees',opts:['Low','Normal','High'],pc:10,d:'Low: everyone happier, less money. High: merchants riot.'},
+  {k:'goatp',n:'Goat permits',opts:['Few','Normal','Unlimited'],pc:10,d:'Herders want unlimited. Grass does not.'},
+  {k:'subsidy',n:'Electricity subsidy',opts:['Off','On'],pc:15,d:'Cheap power: happier people, colder majlis, bigger grid load, costs money.'},
+  {k:'curfew',n:'Youth curfew',opts:['Off','On'],pc:15,d:'No drifting after 11pm. Less crime. Youth furious, elders delighted.'},
+  {k:'friday',n:'Friday market',opts:['Off','On'],pc:10,d:'2k/month. Merchants and farmers like it.'},
+  {k:'hamad',n:'Cousin Hamad builds',opts:['Off','On'],pc:0,pcOff:25,d:'Builds twice as fast, +30% cost, +wasta. Scandal brewing. Firing family costs 25.'},
+];
+
+// ================= state =================
+let S,terr,tv,occ,wadiX,conn,poll,dirty=true;
+const isWadi=(x,y)=>inb(x,y)&&terr[y*MW+x]===2;
+const inb=(x,y)=>x>=0&&y>=0&&x<MW&&y<MH;
+const T_=b=>T[b.t];
+function newGame(seed){
+  S={seed:seed??(Math.random()*1e9|0)};
+  R=mulberry(S.seed);
+  Object.assign(S,{day:0,term:1,treasury:220,pc:30,favour:50,aquifer:68,grass:55,trash:12,cats:8,feral:0,crime:18,pop:0,
+    ed:{fees:1,goatp:1,subsidy:0,curfew:0,friday:0,hamad:0},mods:[],sat:{elders:56,youth:56,merchants:56,farmers:56},approval:56,
+    b:[],nid:1,nextEvent:45,events:0,bo:[],flow:0,floodHit:false,swallowed:0,scandal:0,dir:null,nextDir:100,
+    lowFav:0,lowApp:0,acExtra:0,warned:false,ended:null,pending:null,hist:{ap:[],tr:[]},books:null,town:pick(TOWNS),
+    stat:{blackouts:0,floods:0,destroyed:0,dirsWon:0,dirsLost:0,built:0,peakPop:0,scandals:0},HB:50,Hwhy:[],fwhy:{}});
+  S.W={heat:22,rain:8,storm:0,stormRain:0,wave:0,waveAdd:0,dust:0};
+  for(let tries=0;tries<20;tries++){S.b=[];S.nid=1;genMap();seedTown();if(S.b.filter(b=>b.t==='house').length>=26&&S.b.filter(b=>b.t==='falaj').length>=3)break;}
+  recompute();
+  S.pop=Math.round(capacity()*0.95);
+  dirty=true; recompute(); S.C=calc();
+  for(const f of FACS)S.sat[f.k]=facTarget(f.k);
+  S.approval=FACS.reduce((a,f)=>a+f.sh*S.sat[f.k],0);
+  return S;
+}
+function genMap(){
+  terr=new Uint8Array(MW*MH); tv=new Float32Array(MW*MH); occ=new Int32Array(MW*MH); wadiX=[];
+  for(let i=0;i<MW*MH;i++)tv[i]=R();
+  let m=4;
+  for(let x=0;x<MW;x++){ if(R()<.6)m=clamp(m+(R()<.5?-1:1),2,7); for(let y=0;y<m;y++)terr[y*MW+x]=1; }
+  // eastern ridge
+  let e=3;
+  for(let y=0;y<MH-3;y++){ if(R()<.5)e=clamp(e+(R()<.5?-1:1),1,6); for(let x=MW-e;x<MW;x++)terr[y*MW+x]=1; }
+  // an outcrop
+  const ox=Math.floor(rnd(26,36)),oy=Math.floor(rnd(9,20));
+  for(let y=oy-3;y<=oy+3;y++)for(let x=ox-4;x<=ox+4;x++)if(inb(x,y)&&Math.hypot((x-ox)/1.4,y-oy)<2.6+R()*.8)terr[y*MW+x]=1;
+  // wadi
+  let cx=Math.floor(rnd(10,15));
+  for(let y=0;y<MH;y++){ if(R()<.4)cx=clamp(cx+(R()<.5?-1:1),5,19); wadiX[y]=cx;
+    terr[y*MW+cx]=2; terr[y*MW+cx+1]=2; if(R()<.35)terr[y*MW+cx+2]=2; if(R()<.2)terr[y*MW+cx-1]=2; }
+  // oasis
+  for(let y=5;y<MH-2;y++)for(let x=0;x<MW;x++){ const i=y*MW+x; if(terr[i])continue;
+    const d=Math.abs(x-wadiX[y]-.5); if(d<4.5 && R()<.75-d*.1)terr[i]=3; }
+}
+function add(t,x,y,done=true){
+  const o=T[t]; const b={id:S.nid++,t,x,y,w:o.w,h:o.h,prog:done?1:0,conn:false,cov:{},hap:50};
+  for(let j=0;j<o.h;j++)for(let i=0;i<o.w;i++)occ[(y+j)*MW+x+i]=b.id;
+  S.b.push(b); dirty=true; return b;
+}
+function free(x,y,w,h){for(let j=0;j<h;j++)for(let i=0;i<w;i++){if(!inb(x+i,y+j)||occ[(y+j)*MW+x+i]||terr[(y+j)*MW+x+i]===1)return false;}return true;}
+function seedTown(){
+  for(let x=0;x<MW;x++)add('hwy',x,MH-1);
+  const tx=wadiX[22]+4, ms=tx+5;
+  for(let y=12;y<MH-1;y++)if(free(ms,y,1,1))add('road',ms,y);
+  for(let x=tx;x<=tx+13;x++)if(free(x,19,1,1)&&!isWadi(x,19))add('road',x,19);
+  if(free(tx+1,12,3,3))add('ruin',tx+1,12);
+  if(free(ms+1,14,2,2))add('mosque',ms+1,14);
+  if(free(ms+1,20,2,2))add('souq',ms+1,20);
+  if(free(ms+3,MH-3,2,2))add('genset',ms+3,MH-3);
+  if(free(ms+1,23,2,2))add('school',ms+1,23);
+  if(free(ms+1,17,1,1))add('police',ms+1,17);
+  for(const [x,y] of [[ms+3,20],[ms+4,20]])if(free(x,y,1,1))add('shawarma',x,y);
+  let n=0;
+  for(let y=13;y<MH-2&&n<30;y++)for(const x of [ms-1,ms+1])if(free(x,y,1,1)&&R()<.85){add('house',x,y);n++;}
+  for(let x=tx;x<=tx+13&&n<30;x++)for(const y of [18,20])if(free(x,y,1,1)&&R()<.8){add('house',x,y);n++;}
+  // falaj along the bank
+  let f=0; for(let y=12;y<28&&f<3;y++){const x=wadiX[y]+2; if(!isWadi(x,y)&&free(x,y,1,1)&&(isWadi(x-1,y))){add('falaj',x,y);f++;}}
+  // one farm on the west bank oasis
+  for(let y=16;y<26;y++){const x=wadiX[y]-3; if(free(x,y,2,2)){add('farm',x,y);break;}}
+}
+
+// ================= placement =================
+function cost(t){return Math.round(T[t].c*(S.ed.hamad?1.3:1));}
+function count(t,act){return S.b.reduce((a,b)=>a+(b.t===t&&(!act||active(b))?1:0),0);}
+function canPlace(t,x,y){
+  const o=T[t]; if(!o||o.fixed)return {ok:false,why:'Not buildable.'};
+  if(S.ended)return {ok:false,why:'Game over.'};
+  if(x<0||y<0||x+o.w>MW||y+o.h>MH)return {ok:false,why:'Off the map.'};
+  let rock=0,wadi=0;
+  for(let j=0;j<o.h;j++)for(let i=0;i<o.w;i++){const k=(y+j)*MW+x+i; if(occ[k])return {ok:false,why:'Something is already there.'}; if(terr[k]===1)rock++; if(terr[k]===2)wadi++;}
+  if(o.onRock){ if(rock<o.onRock)return {ok:false,why:'A quarry has to bite into the mountain (3+ rock tiles).'}; }
+  else if(rock)return {ok:false,why:'That\'s a mountain.'};
+  if(o.onlyWadi&&!wadi)return {ok:false,why:'Bridges go on the wadi bed.'};
+  if(o.needWadi&&wadi<o.needWadi)return {ok:false,why:'A dam has to sit across the wadi (2+ wadi tiles).'};
+  if(t==='falaj'){let okk=wadi>0;for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(inb(xx,yy)&&(terr[yy*MW+xx]===1||terr[yy*MW+xx]===2))okk=true;}
+    if(!okk)return {ok:false,why:'A falaj needs a source: touch the wadi or the mountain.'};}
+  if(o.one&&count(t))return {ok:false,why:'You only get one of those.'};
+  if(o.max&&count(t)>=o.max)return {ok:false,why:`Max ${o.max}. Even you have limits.`};
+  if(o.needFav&&S.favour<o.needFav)return {ok:false,why:`Muscat favour must be ${o.needFav}+. It's ${Math.round(S.favour)}.`};
+  if(S.treasury<cost(t))return {ok:false,why:`Costs ${cost(t)}k. You have ${f0(S.treasury)}k.`};
+  return {ok:true,wadi};
+}
+function place(t,x,y,quiet){
+  const c=canPlace(t,x,y); if(!c.ok){if(!quiet)log(c.why,'b');return false;}
+  S.treasury-=cost(t); const b=add(t,x,y,false); S.stat.built++;
+  if(c.wadi&&!T[t].road&&t!=='dam'&&t!=='falaj'&&!quiet)log(`You built a ${T[t].n.toLowerCase()} <b>in the wadi bed</b>. Bold. The wadi has noted it.`,'b',true);
+  return b;
+}
+function bulldoze(x,y){
+  const id=occ[y*MW+x]; if(!id)return false; const b=S.b.find(q=>q.id===id); if(!b)return false;
+  if(T_(b).fixed){log(`You can't bulldoze the ${T_(b).n.toLowerCase()}.`,'b');return false;}
+  const c=T_(b).road?0:1; if(S.treasury<c){log('Can\'t even afford the bulldozer.','b');return false;}
+  S.treasury-=c; remove(b); return true;
+}
+function remove(b){for(let j=0;j<b.h;j++)for(let i=0;i<b.w;i++)occ[(b.y+j)*MW+b.x+i]=0; S.b=S.b.filter(q=>q!==b); dirty=true; if(sel===b)sel=null;}
+function restoreFort(){
+  const f=S.b.find(b=>b.t==='ruin'); if(!f)return; const cc=Math.round(90*(S.ed.hamad?1.3:1));
+  if(S.treasury<cc){log(`Restoring the fort costs ${cc}k.`,'b');return;}
+  S.treasury-=cc; f.t='fort'; f.prog=0; dirty=true; log('Fort restoration started. The goats living in it have been served notice.','g',true);
+}
+
+// ================= derived =================
+function active(b){return b.prog>=1&&(T_(b).noRoad||T_(b).road||b.conn);}
+function capacity(){return S.b.reduce((a,b)=>a+(T_(b).cap&&active(b)?T_(b).cap:0),0);}
+function recompute(){
+  dirty=false;
+  // road connectivity from the highway
+  conn=new Uint8Array(MW*MH); const q=[];
+  for(const b of S.b)if(b.t==='hwy'){conn[b.y*MW+b.x]=1;q.push(b.y*MW+b.x);}
+  const isRoad=k=>{const id=occ[k];if(!id)return false;const b=byId(id);return b&&T_(b).road&&b.prog>=1;};
+  while(q.length){const k=q.pop(),x=k%MW,y=(k/MW)|0;
+    for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(!inb(xx,yy))continue;const kk=yy*MW+xx;if(!conn[kk]&&isRoad(kk)){conn[kk]=1;q.push(kk);}}}
+  for(const b of S.b){
+    if(T_(b).road){b.conn=!!conn[b.y*MW+b.x];continue;}
+    let c=false;
+    for(let i=-1;i<=b.w&&!c;i++)for(let j=-1;j<=b.h&&!c;j++){ if((i===-1||i===b.w)===(j===-1||j===b.h))continue; const xx=b.x+i,yy=b.y+j; if(inb(xx,yy)&&conn[yy*MW+xx])c=true; }
+    b.conn=c;
+  }
+  // pollution
+  poll=new Float32Array(MW*MH);
+  for(const b of S.b){const p=T_(b).poll;if(!p||!active(b))continue;const cx=b.x+b.w/2,cy=b.y+b.h/2,r=p;
+    for(let y=Math.floor(cy-r);y<=cy+r;y++)for(let x=Math.floor(cx-r);x<=cx+r;x++){if(!inb(x,y))continue;const d=Math.hypot(x+.5-cx,y+.5-cy);if(d<r)poll[y*MW+x]+=(1-d/r)*p/4;}}
+  // coverage
+  const C=S.C||{staff:1}; const homes=S.b.filter(b=>T_(b).cap&&active(b)); const cap=homes.reduce((a,b)=>a+T_(b).cap,0)||1; const fill=S.pop/cap;
+  for(const h of homes)h.cov={edu:0,health:0,police:0,faith:0,fun:0};
+  for(const b of S.b){const o=T_(b);if(!o.cov||!active(b))continue;const cx=b.x+b.w/2,cy=b.y+b.h/2;
+    const inR=homes.filter(h=>Math.hypot(h.x+h.w/2-cx,h.y+h.h/2-cy)<=o.r);
+    const load=inR.reduce((a,h)=>a+T_(h).cap*fill,0)||1; const st=o.jobs?C.staff:1; const ratio=Math.min(1,o.capR*st/load);
+    for(const h of inR)h.cov[o.cov]+=ratio;}
+  // per-home spatial happiness
+  let tot=0,w=0; const cv={edu:0,health:0,police:0,faith:0,fun:0};
+  for(const h of homes){for(const k in h.cov)h.cov[k]=Math.min(1,h.cov[k]);
+    let v=50+h.cov.edu*12-4+h.cov.health*12-5+h.cov.police*5-2+h.cov.faith*7-2+h.cov.fun*9-3;
+    let pl=0,palm=0;for(let j=0;j<h.h;j++)for(let i=0;i<h.w;i++){pl+=poll[(h.y+j)*MW+h.x+i];}
+    for(let j=-1;j<=h.h;j++)for(let i=-1;i<=h.w;i++){const xx=h.x+i,yy=h.y+j;if(inb(xx,yy)&&terr[yy*MW+xx]===3&&!occ[yy*MW+xx])palm++;}
+    v-=pl/(h.w*h.h)*9; v+=Math.min(4,palm);
+    if(isWadi(h.x,h.y))v-=3;
+    h.sp=v; const n=T_(h).cap; tot+=v*n; w+=n; for(const k in cv)cv[k]+=h.cov[k]*n;}
+  S.HB=w?tot/w:40; for(const k in cv)cv[k]=w?cv[k]/w:0; S.cov=cv;
+}
+const _byId=new Map();
+function byId(id){for(const b of S.b)if(b.id===id)return b;return null;}
+
+function calc(){
+  const C={}, W=S.W, e=S.ed;
+  let cap=0,jobs=0,pow=0,pw=0,wat=0,wuse=0,attr=0; const n={};
+  for(const b of S.b){const o=T_(b);const a=active(b);n[b.t]=(n[b.t]||0)+(a?1:0); if(!a)continue;
+    cap+=o.cap||0; jobs+=o.jobs||0; pw+=o.pw||0; attr+=o.attr||0;
+    if(o.water<0)wuse-=o.water; }
+  jobs+=20+S.pop*0.04;
+  C.n=n; C.cap=cap||1; C.jobs=jobs; C.attr=attr;
+  C.work=S.pop*0.3; C.staff=jobs?Math.min(1,C.work/jobs):1; C.emp=C.work>0?Math.min(1,jobs/C.work):1;
+  const aqF=Math.sqrt(S.aquifer/100);
+  for(const b of S.b){if(!active(b))continue;const o=T_(b);
+    if(b.t==='genset')pow+=60*Math.max(.3,C.staff); else if(b.t==='solar')pow+=55*(W.dust?.25:1); else if(b.t==='grid')pow+=200;
+    if(b.t==='falaj')wat+=6*aqF*(1+Math.min(W.rain,40)/80); else if(b.t==='well')wat+=S.aquifer>3?10:1; else if(b.t==='tanker')wat+=22*C.staff;}
+  const acF=1+Math.max(0,W.heat-24)*0.085*(e.subsidy?1.3:1);
+  C.pDem=S.pop*0.075*acF*(1+S.acExtra)+pw+4; C.pSup=pow; C.pR=C.pSup/C.pDem;
+  C.wDem=S.pop*0.03+wuse; C.wSup=wat; C.wR=C.wDem?C.wSup/C.wDem:1;
+  C.over=Math.max(0,S.pop/C.cap-1);
+  C.goats=[40,120,300][e.goatp]+(n.goats||0)*50;
+  C.bo30=S.bo.length?S.bo.reduce((a,v)=>a+v,0)/30:0;
+  // city happiness
+  const why=[]; let H=S.HB; why.push(['services & neighbourhoods',S.HB-50]);
+  const add=(l,v)=>{H+=v;why.push([l,v]);};
+  add('blackouts',-C.bo30*38);
+  add('water shortage',-(1-Math.min(1,C.wR))*60);
+  add('overcrowding',-Math.min(40,C.over*90));
+  add('unemployment',-Math.max(0,(1-C.emp)-0.05)*110);
+  add('fees',[5,0,-9][e.fees]);
+  if(e.subsidy)add('cheap power',5);
+  add('crime',-(S.crime-15)*0.3);
+  add('trash',-Math.max(0,S.trash-30)*0.35);
+  add('feral goats',-Math.min(20,S.feral*0.08));
+  if(W.dust)add('dust storm',-6);
+  if(S.flow>60)add('flood',-10);
+  const yr=(S.day%TERM)/365;
+  add('rising expectations',-(S.term-1)*6-yr*3.5);
+  C.H=clamp(H,0,100); C.Hwhy=why;
+  return C;
+}
+function facTarget(k){
+  const C=S.C,e=S.ed,n=C.n,cv=S.cov||{}; const why=[]; let v=50;
+  const a=(l,x)=>{v+=x;if(Math.abs(x)>=.5)why.push([l,x]);};
+  if(k==='elders'){a('mosque coverage',(cv.faith||0)*22-10);a('the fort',n.fort?14:-2);a('aquifer',(S.aquifer-50)*0.3);
+    a('hotels',-(n.hotel||0)*5);a('apartment blocks',-(n.flats||0)*3);a('ski slope',n.ski?-25:0);a('curfew',e.curfew?10:0);
+    a('borewells',-(n.well||0)*3);a('crime',-(S.crime-15)*0.4);a('Hamad',e.hamad?-5:0);}
+  if(k==='youth'){a('jobs',(C.emp-0.92)*170);a('leisure coverage',(cv.fun||0)*22-10);a('shawarma',Math.min(n.shawarma||0,8)*2-4);
+    a('football',(n.pitch||0)?6:-3);a('ski slope',n.ski?22:0);a('hotels',(n.hotel||0)*2);a('curfew',e.curfew?-22:0);a('schools',(cv.edu||0)*12-6);}
+  if(k==='merchants'){a('souqs',Math.min((n.souq||0)*7,21)-8);a('fees',[12,0,-18][e.fees]);a('Hamad\'s contracts',e.hamad?-16:0);
+    a('tourism',Math.min(20,C.attr*0.12*Math.min(1,(n.hotel||0))));a('Friday market',e.friday?9:0);a('petrol stations',Math.min(2,n.petrol||0)*3);
+    const un=S.b.filter(b=>!T_(b).noRoad&&!T_(b).road&&b.prog>=1&&!b.conn).length;a('buildings with no road',-un*3);a('villas',Math.min(3,n.villa||0)*2);}
+  if(k==='farmers'){a('water',(Math.min(1,C.wR)-0.92)*140);a('date farms',Math.min((n.farm||0)*4,16)-5);a('goat permits',[-14,0,10][e.goatp]);
+    a('goat pens',Math.min(3,n.goats||0)*3);a('quarries',-(n.quarry||0)*9);a('aquifer',(S.aquifer-50)*0.35);a('dams',(n.dam||0)*6);
+    a('Friday market',e.friday?5:0);a('feral goats',-Math.min(10,S.feral*0.05));}
+  let mm=0; for(const m of S.mods)if(m.f===k||m.f==='all')mm+=m.a; if(mm)why.push(['recent events',mm]);
+  S.fwhy[k]=why;
+  return clamp(0.6*C.H+0.4*v+mm,0,100);
+}
+
+// ================= weather =================
+function doy(){return S.day%365;}
+function weather(){
+  const W=S.W,d=doy();
+  const base=33+12*Math.sin(2*Math.PI*(d-105)/365);
+  if(W.wave>0)W.wave--;
+  else if(base>40&&R()<0.006){W.wave=8+Math.floor(rnd(10));W.waveAdd=rnd(4,8);log(`<b>Heatwave.</b> ${Math.round(base+W.waveAdd)}° for ${W.wave} days. Every AC in town just went to max.`,'b',true);}
+  W.heat=Math.round(base+(W.wave?W.waveAdd:0)+rnd(-1.5,1.5));
+  const winter=d<80||d>335, cyc=(d>140&&d<180)||(d>285&&d<330);
+  let rain=(winter?14:4)+rnd(-3,4);
+  if(W.storm>0){W.storm--;rain=W.stormRain*rnd(.8,1.1);}
+  else if(R()<(cyc?0.01:winter?0.006:0.002)){W.storm=4+Math.floor(rnd(5));W.stormRain=cyc?rnd(80,100):rnd(55,80);
+    log(`${cyc?'<b>Cyclone</b>':'<b>Big storm</b>'} incoming. ${Math.round(W.stormRain)} mm/wk for ${W.storm} days. The wadi is waking up.`,'b',true);}
+  W.rain=Math.round(clamp(rain,0,100));
+  if(W.dust>0)W.dust--;
+  else if(S.grass<18&&W.heat>40&&W.rain<10&&R()<0.05){W.dust=3+Math.floor(rnd(4));once('dust',12,()=>log(`Grass is gone, ${W.heat}° → <b>dust storm</b>. Solar panels buried, drivers blind.`,'b',true));}
+}
+
+// ================= the day =================
+const cd={};
+function once(k,days,fn){if((cd[k]||-1)>S.day)return;cd[k]=S.day+days;fn();}
+function mod(f,a,d){S.mods.push({f,a,d});}
+function step(){
+  if(S.ended||S.pending)return false;
+  weather();
+  const W=S.W,e=S.ed;
+  for(const b of S.b)if(b.prog<1){b.prog=Math.min(1,b.prog+(e.hamad?2:1)/(T_(b).bd||20));if(b.prog>=1){dirty=true;onBuilt(b);}}
+  if(dirty||S.day%7===0)recompute();
+  const C=calc(); S.C=C;
+  // power
+  let bo=0;
+  if(C.pR<1&&R()<(1-C.pR)*2+0.05){bo=1;S.stat.blackouts++;
+    once('bo',20,()=>log(`${W.heat}° outside, ${f0(C.pDem)} MW wanted, ${f0(C.pSup)} MW available → <b>BLACKOUT</b>.`,'b',true));
+    if(W.heat>34&&(C.n.shawarma||0)&&R()<.25)once('rot',20,()=>{log(`No power + ${W.heat}° = the shawarma chicken went off. Half the youth are living on the toilet.`,'b',true);mod('youth',-6,25);});}
+  S.bo.push(bo); if(S.bo.length>30)S.bo.shift();
+  // water & aquifer
+  S.aquifer=clamp(S.aquifer+W.rain*0.0007-(C.n.falaj||0)*0.0018-(C.n.well||0)*0.012-0.002,0,100);
+  if(C.wR<.85)once('dry',30,()=>log(`Water: ${f0(C.wSup)} supply vs ${f0(C.wDem)} demand. Taps cough. The falaj is a rumour.`,'b',true));
+  if(S.aquifer<20)once('aq',90,()=>log(`The aquifer is at <b>${Math.round(S.aquifer)}%</b>. The falaj is drying up. Old Saif says he told you so.`,'b',true));
+  // grass & goats
+  S.grass+=(15+S.aquifer*0.35+W.rain*0.8-C.goats*0.035-S.grass)*0.02; S.grass=clamp(S.grass,0,100);
+  if(S.grass<20){const b4=S.feral;S.feral+=(C.goats-S.feral)*0.006;if(b4<20&&S.feral>=20){log(`Grass at ${Math.round(S.grass)}%, ${f0(C.goats)} hungry goats → the goats have <b>gone feral</b>.`,'b',true);mod('all',-3,30);}}
+  else S.feral*=0.985;
+  // trash, cats, crime
+  S.trash=clamp(S.trash+S.pop*0.0001+(C.n.shawarma||0)*0.03+(C.n.hotel||0)*0.05-0.05-(C.n.depot||0)*0.5*C.staff,0,150);
+  S.cats+=(S.trash*0.6-S.cats)*0.02;
+  if(S.cats>55)once('cats',40,()=>log(`<b>${Math.round(S.cats)} cats</b>. They're unionising around the trash. Build a garbage depot or meet their demands.`,'b',true));
+  const pc=S.cov?S.cov.police:0;
+  S.crime+=(12+(1-C.emp)*130+S.pop/180+(C.n.shawarma||0)*.3-pc*28-(e.curfew?9:0)-S.crime)*0.03; S.crime=Math.max(0,S.crime);
+  // floods
+  S.flow+=(Math.max(0,W.rain-45)*1.6-S.flow)*0.3;
+  if(S.flow>35&&!S.floodHit){S.floodHit=true;flood();}
+  if(S.flow<5)S.floodHit=false,S.warned=false;
+  // people
+  const A=C.H-50, births=S.pop*0.03/365;
+  let inflow=A>0?S.pop*0.00004*A+Math.max(0,C.jobs-C.work)*0.003:0; if(C.over>.2)inflow*=.25;
+  const outflow=(A<0?S.pop*0.00005*(-A):0)+S.pop*C.over*0.0006+(C.wR<.6?S.pop*.001:0);
+  S.pop=Math.max(0,S.pop+births+inflow-outflow); S.stat.peakPop=Math.max(S.stat.peakPop,S.pop);
+  // factions & approval
+  S.mods=S.mods.filter(m=>--m.d>0);
+  for(const f of FACS){S.sat[f.k]+=(facTarget(f.k)-S.sat[f.k])*0.04;}
+  S.approval=FACS.reduce((a,f)=>a+f.sh*S.sat[f.k],0);
+  // wasta & favour & scandal
+  S.pc=clamp(S.pc+0.005*(S.approval-45)+(e.hamad?0.08:0),0,100);
+  S.favour=clamp(S.favour+(50-S.favour)*0.004-bo*0.2-(S.treasury<0?0.15:0)+(C.H>55?0.02:0),0,100);
+  if(e.hamad)S.scandal+=0.004;
+  if(S.scandal>1&&R()<0.015){S.scandal=0;S.stat.scandals++;mod('all',-14,90);S.favour-=15;
+    log(`<b>SCANDAL.</b> A WhatsApp voice note reveals Hamad got ${pick(['the road contract','the school contract','the falaj repair money','a Prado from the municipality budget'])}. Approval tanks, Muscat is not amused.`,'b',true);}
+  S.day++;
+  if(S.day%30===0)month();
+  if(S.day%365===0)year();
+  if(S.day%3===0){S.hist.ap.push(S.approval);S.hist.tr.push(S.treasury);if(S.hist.ap.length>300){S.hist.ap.shift();S.hist.tr.shift();}}
+  directives();
+  checkEnd();
+  if(!S.ended&&!S.pending&&S.day>=S.nextEvent){S.nextEvent=S.day+Math.floor(rnd(45,85)*(S.term>1?.85:1));fireEvent();}
+  return true;
+}
+function onBuilt(b){
+  const L={genset:'Generators online. The grid breathes, the neighbours cough.',solar:'Solar farm online. Very shiny. Pray for no dust.',
+    school:'School opened. The kids are devastated.',clinic:'Health centre opened. Queue already out the door.',mosque:'New mosque. The elders are pleased, briefly.',
+    souq:'Souq opened. Someone is already selling fake Rolexes.',quarry:'Quarry open. Jobs! Dust! Jobs!',hotel:'Heritage hotel opened. Three German tourists checked in.',
+    fort:'The fort is restored. Tourists, pride, and a lot of Instagram.',ski:'An indoor ski slope. In the interior. At 47°. You absolute madman.',
+    dam:'Recharge dam finished. The wadi has been put on notice.',grid:'Connected to the national grid. Muscat now owns your light switch.',
+    pitch:'Football pitch done. The floodlights are visible from space.',depot:'Garbage trucks rolling. The cat union is on strike.',
+    dallah:'A giant coffee pot now stands on the roundabout. People give directions by it.',petrol:'Petrol station open. Queue of Land Cruisers at once.',
+    tanker:'Tanker depot open. Water arrives by truck, at a price.',villa:'Villas done. A man with a Lexus moved in and complained about the goats.',
+    flats:'Apartment block finished. The elders said "Muscat" like it was a swear word.'};
+  if(L[b.t])log(L[b.t],'g',true);
+  if(b.t==='ski')mod('all',8,120); if(b.t==='fort')mod('elders',8,90);
+}
+function flood(){
+  const C=S.C, sev=clamp(S.flow/80,0.4,1.4); S.stat.floods++;
+  const dams=S.b.filter(b=>b.t==='dam'&&active(b));
+  if(dams.length){S.aquifer=clamp(S.aquifer+6*dams.length,0,100);}
+  let lost=[],fords=0;
+  for(const b of [...S.b]){
+    if(b.t==='hwy'||b.t==='dam'||b.t==='bridge'||T_(b).fixed)continue;
+    let wd=0,near=0;
+    for(let j=0;j<b.h;j++)for(let i=0;i<b.w;i++){const x=b.x+i,y=b.y+j; if(isWadi(x,y))wd++; else if(isWadi(x-1,y)||isWadi(x+1,y))near++;}
+    if(!wd&&!near)continue;
+    const shield=dams.some(d=>d.y<b.y)?0.3:1;
+    let p=(wd?0.55:0.12)*sev*shield; if(b.t==='falaj')p*=.4;
+    if(b.t==='road'&&wd)fords++;
+    if(R()<p){lost.push(b);remove(b);}
+  }
+  S.stat.destroyed+=lost.length;
+  const sw=Math.round(fords*S.pop/400*rnd(.5,1.5)*(S.warned?.4:1)*sev);
+  if(sw>0){S.swallowed+=sw;S.treasury-=sw*3;}
+  const names={};lost.forEach(b=>names[T_(b).n]=(names[T_(b).n]||0)+1);
+  const list=Object.entries(names).map(([k,v])=>`${v} ${k.toLowerCase()}`).join(', ');
+  log(`<b>THE WADI IS FLOWING.</b> ${lost.length?`It took ${list}.`:'Nothing important was in its way.'}${sw?` ${sw} geniuses drove their Prado into it anyway (−${sw*3}k for Civil Defence).`:''}${dams.length?' Your dam caught the worst of it and refilled the aquifer.':''}`,'b',true);
+  if(lost.length)mod('all',-Math.min(10,lost.length*1.5),40);
+}
+function month(){
+  const C=S.C,n=C.n,e=S.ed,st=C.staff,inc={},exp={};
+  const rich=S.b.filter(b=>b.t==='villa'&&active(b)).length*24, fillR=S.pop/C.cap;
+  inc['Fees']=(S.pop*0.03+rich*fillR*0.06)*[0.5,1,1.7][e.fees];
+  inc['Souq rent']=(n.souq||0)*2.2*st*Math.min(1,S.pop/((n.souq||1)*350));
+  inc['Shawarma licences']=(n.shawarma||0)*0.35;
+  let farm=0;for(const b of S.b)if(b.t==='farm'&&active(b)){let pal=0;for(let j=0;j<2;j++)for(let i=0;i<2;i++)if(terr[(b.y+j)*MW+b.x+i]===3)pal++;farm+=3*(pal>=2?1.6:1);}
+  inc['Dates']=farm*Math.min(1,C.wR)*st*(1-Math.min(.5,S.feral/600));
+  inc['Goats']=(n.goats||0)*0.6;
+  inc['Quarry']=(n.quarry||0)*7*st;
+  inc['Petrol']=(n.petrol||0)*Math.min(3,S.pop*0.003/Math.max(1,n.petrol||0)*(n.petrol||0))/Math.max(1,n.petrol||0)*(n.petrol||0);
+  inc['Tourism']=(n.hotel||0)*(1+C.attr*0.05)*st*(C.pR<1?.7:1);
+  exp['Upkeep']=S.b.reduce((a,b)=>a+(b.prog>=1?(T_(b).up||0):0),0);
+  if(e.subsidy)exp['Power subsidy']=S.pop*0.008;
+  if(e.friday)exp['Friday market']=2;
+  if(e.curfew)exp['Curfew overtime']=0.6;
+  if(e.hamad)exp['"Consulting" (Hamad)']=3;
+  let ti=0,te=0;for(const k in inc)ti+=inc[k];for(const k in exp)te+=exp[k];
+  S.treasury+=ti-te; S.books={inc,exp,ti,te};
+  if(S.treasury<0)once('broke',60,()=>log(`Treasury is at <b>${f0(S.treasury)}k</b>. The auditor in Muscat just opened a new folder with your name on it. Under −150k you're done.`,'b',true));
+}
+function year(){
+  const g=(55+S.pop*0.08)*(0.4+S.favour/80);
+  S.treasury+=g; log(`Annual grant from Muscat: <b>+${f0(g)}k</b> (bigger when Muscat likes you and the town grows).`,'g',true);
+}
+
+// ================= directives =================
+const DIRS=[
+  {id:'pop',ok:()=>true,mk:()=>{const t=Math.round(S.pop*1.2/10)*10;return {t:`Grow the population to ${f0(t)}`,chk:()=>S.pop>=t,dl:540};}},
+  {id:'edu',ok:()=>(S.cov.edu||0)<.7,mk:()=>({t:'Get school coverage to 70% of residents',chk:()=>(S.cov.edu||0)>=.7,dl:420})},
+  {id:'health',ok:()=>(S.cov.health||0)<.6,mk:()=>({t:'Get health coverage to 60% of residents',chk:()=>(S.cov.health||0)>=.6,dl:420})},
+  {id:'jobs',ok:()=>S.C.emp<.95,mk:()=>({t:'Get unemployment under 5%',chk:()=>S.C.emp>=.95,dl:360})},
+  {id:'cash',ok:()=>true,mk:()=>{const t=Math.max(150,Math.round(S.treasury/50)*50+150);return {t:`Have ${t}k in the treasury`,chk:()=>S.treasury>=t,dl:450};}},
+  {id:'fort',ok:()=>S.b.some(b=>b.t==='ruin'),mk:()=>({t:'Restore the fort (it\'s embarrassing)',chk:()=>S.b.some(b=>b.t==='fort'&&b.prog>=1),dl:540})},
+  {id:'power',ok:()=>true,mk:()=>({t:'Get power capacity 25% above demand',chk:()=>S.C.pR>=1.25,dl:300})},
+  {id:'trash',ok:()=>S.trash>25,mk:()=>({t:'Get the trash under control (below 15)',chk:()=>S.trash<15,dl:300})},
+  {id:'water',ok:()=>S.C.wR<1.3,mk:()=>({t:'Water supply 30% above demand',chk:()=>S.C.wR>=1.3,dl:360})},
+];
+function directives(){
+  if(!S.dir){ if(S.day>=S.nextDir){const pool=DIRS.filter(d=>d.ok()&&d.id!==S.lastDir);const d=pick(pool);const m=d.mk();
+      S.dir={id:d.id,t:m.t,chk:m.chk,dl:S.day+Math.round(m.dl*(S.term>1?.85:1))};S.lastDir=d.id;
+      log(`<b>Directive from Muscat:</b> ${m.t} within ${Math.round((S.dir.dl-S.day)/30)} months.`,'e',true);}
+    return; }
+  if(S.dir.chk()){const g=40+S.term*15;S.favour=clamp(S.favour+15,0,100);S.treasury+=g;S.pc=clamp(S.pc+5,0,100);S.stat.dirsWon++;
+    log(`<b>Directive done:</b> ${S.dir.t}. Muscat sends ${g}k and a WhatsApp thumbs-up.`,'g',true);S.dir=null;S.nextDir=S.day+Math.floor(rnd(90,160));}
+  else if(S.day>=S.dir.dl){S.favour=clamp(S.favour-12,0,100);S.stat.dirsLost++;
+    log(`<b>Directive failed:</b> ${S.dir.t}. Muscat is "disappointed". That word costs you 12 favour.`,'b',true);S.dir=null;S.nextDir=S.day+Math.floor(rnd(60,120));}
+}
+
+// ================= events =================
+function fx(o){ // apply effects
+  if(o.t)S.treasury+=o.t; if(o.pc)S.pc=clamp(S.pc+o.pc,0,100); if(o.fav)S.favour=clamp(S.favour+o.fav,0,100);
+  for(const k of ['all','elders','youth','merchants','farmers'])if(o[k])mod(k,o[k],o.d||60);
+  if(o.aq)S.aquifer=clamp(S.aquifer+o.aq,0,100); if(o.pop)S.pop+=o.pop; if(o.trash)S.trash+=o.trash; if(o.sc)S.scandal+=o.sc;
+}
+const EVENTS=[
+  {id:'subsidy',w:()=>1,t:'Muscat cut the petrol subsidy',b:()=>'Petrol goes up 60 baisa next week. Everyone has already seen the screenshot.',
+   o:[{t:'Pass it on, say nothing',h:'Everyone −5 for two months',f:()=>{fx({all:-5});return 'The petrol station queue is a war zone.';}},
+      {t:'Top it up from the treasury',h:'−45k',f:()=>{fx({t:-45});return 'You quietly paid the difference. The accountant cried.';}},
+      {t:'Blame Muscat on X',h:'Muscat −12, everyone −1',f:()=>{fx({fav:-12,all:-1});return 'People agreed with you. Muscat noticed.';}}]},
+  {id:'cousin',w:()=>1,t:'Cousin Hamad needs a favour',b:()=>`Hamad wants the contract for ${pick(['the new roundabout','repainting the fort','the municipality water coolers','"consulting"'])}. He has no company. He has a Prado and confidence.`,
+   o:[{t:'Give it to him',h:'+15 wasta, −35k, scandal risk',f:()=>{fx({pc:15,t:-35,sc:.4});return 'Hamad got the contract. Family dinner was great.';}},
+      {t:'Refuse',h:'−12 wasta, merchants +4',f:()=>{fx({pc:-12,merchants:4});return 'Your mum is not speaking to you. The town respects it.';}},
+      {t:'Give him the speed bump contract',h:'+8 wasta, −15k, youth −5',f:()=>{fx({pc:8,t:-15,youth:-5});return 'Hamad is the speed bump king. He installs them outside his enemies\' houses.';}}]},
+  {id:'goatflu',w:()=>S.C.goats>80?1:0,t:'Goat flu',b:()=>`A vet says ${f0(S.C.goats)} goats are coughing. The herders want help.`,
+   o:[{t:'Fund vaccines',h:'−25k, farmers +6',f:()=>{fx({t:-25,farmers:6});return 'Vaccinated. The goats are fine and ungrateful.';}},
+      {t:'Let nature handle it',h:'Farmers −12, feral goats halved',f:()=>{fx({farmers:-12});S.feral*=.5;return 'Nature handled it. The herders are writing poems about you. Mean ones.';}}]},
+  {id:'tiktok',w:()=>1,t:'The town went viral',b:()=>`A TikTok of ${pick(['the wadi','the shawarma guy flipping a whole chicken','a goat standing on a Land Cruiser','your speed bumps launching a Tahoe'])} has 4 million views.`,
+   o:[{t:'Lean in, invite them all',h:'+60 people, merchants +8, trash +15',f:()=>{fx({pop:60,merchants:8,trash:15});return 'Tourists everywhere. Shawarma guys are rich. Parking is gone.';}},
+      {t:'Ban filming in public',h:'Youth −10, −8 wasta',f:()=>{fx({youth:-10,pc:-8});return 'Someone filmed the ban. It went viral too.';}}]},
+  {id:'minister',w:()=>1,t:'The minister is visiting',b:()=>'The minister is coming next week to "see the progress".',
+   o:[{t:'Paint everything, including a goat',h:'−30k, Muscat +12',f:()=>{fx({t:-30,fav:12});return 'Fresh paint everywhere. The minister loved the goat.';}},
+      {t:'Show him the real town',h:'Muscat favour follows your approval',f:()=>{const g=Math.round((S.approval-50)*0.7);fx({fav:g});return g>=0?`He liked what he saw. Muscat ${sg(g)}.`:`He left early. Muscat ${sg(g)}.`;}}]},
+  {id:'falaj',w:()=>S.aquifer<55?1.5:.5,t:'Old Saif has concerns',b:()=>'Old Saif says the falaj channels are cracked. He has said this every week for 30 years. This time he\'s right.',
+   o:[{t:'Fund repairs',h:'−25k, aquifer +6, elders & farmers +6',f:()=>{fx({t:-25,aq:6,elders:6,farmers:6});return 'Falaj repaired. Saif found something else to complain about.';}},
+      {t:'Nod politely',h:'Elders −6, farmers −5, aquifer −3',f:()=>{fx({elders:-6,farmers:-5,aq:-3});return 'You nodded. The falaj kept leaking. Saif told everyone.';}}]},
+  {id:'final',w:()=>1,t:'The town team reached the cup final',b:()=>`${S.town} FC is in the final. Everyone wants a big screen in the square.`,
+   o:[{t:'Big screen, free karak',h:'−15k, everyone +6 for a while',f:()=>{fx({t:-15,all:6,d:45});return R()<.5?'WE WON. Someone drifted around the fort. Best night ever.':'Lost 4-0. But the karak was free.';}},
+      {t:'Watch it at home like an adult',h:'Youth −8',f:()=>{fx({youth:-8});return 'Nobody will forget this.';}}]},
+  {id:'drive',w:()=>1,t:'24-hour shawarma drive-thru',b:()=>'A guy wants a 24h shawarma drive-thru on the main road with a neon sign shaped like a goat.',
+   o:[{t:'Approve it',h:'Youth +7, merchants +3, elders −4, trash +10',f:()=>{fx({youth:7,merchants:3,elders:-4,trash:10});return 'The goat sign is now a landmark.';}},
+      {t:'Reject it',h:'Youth −5',f:()=>{fx({youth:-5});return 'He opened it in the next wilayat. Everyone drives there now.';}}]},
+  {id:'cyclone',w:()=>{const d=doy();return (d>130&&d<175)||(d>275&&d<325)?3:0;},t:'Cyclone warning',b:()=>'The met office says a cyclone may hit. The WhatsApp groups are sharing 2007 videos.',
+   o:[{t:'Close the wadi roads, send alerts',h:'−12k, far fewer Prados in the wadi',f:()=>{fx({t:-12});S.warned=true;if(R()<.7){S.W.storm=5;S.W.stormRain=rnd(80,100);}return 'Roads closed. Some guys drove around the cones anyway.';}},
+      {t:'It\'ll miss us inshallah',h:'Free. Probably fine.',f:()=>{if(R()<.65){S.W.storm=5;S.W.stormRain=rnd(85,100);return 'It did not miss you.';}return 'It missed. You look like a genius.';}}]},
+  {id:'acsale',w:()=>doy()>110&&doy()<250?1.5:0,t:'Mega AC sale at the souq',b:()=>'2.5-ton split units at half price. Everyone is buying a second one for the majlis.',
+   o:[{t:'Let them',h:'Permanent +10% power demand, everyone +3',f:()=>{S.acExtra+=.1;fx({all:3,d:30});return 'Every majlis is now 16°. The grid groans.';}},
+      {t:'Ban second ACs',h:'Everyone −5, −5 wasta',f:()=>{fx({all:-5,pc:-5});return 'People are now angry AND hot.';}}]},
+  {id:'goatcar',w:()=>S.C.goats>150?1.2:0,t:'A goat ate the minister\'s wiring',b:()=>'A goat climbed into the minister\'s car and ate the wiring harness. There is a video.',
+   o:[{t:'Fine the herder',h:'Farmers −8, Muscat +6',f:()=>{fx({farmers:-8,fav:6});return 'Herder fined. He paid in goats.';}},
+      {t:'Declare the goat a local hero',h:'Everyone +3, Muscat −8',f:()=>{fx({all:3,fav:-8});return 'The goat has a mural. The minister has not called back.';}}]},
+  {id:'wedding',w:()=>doy()>150&&doy()<260?1:.4,t:'The sheikh\'s son is getting married',b:()=>'Three nights, 2,000 guests, and they want to borrow the municipal generators for the lights.',
+   o:[{t:'Lend the generators',h:'Elders +10, blackouts likely for a bit',f:()=>{fx({elders:10});S.acExtra+=.25;setTimeout0(()=>S.acExtra-=.25,12);return 'Best wedding in years. Half the town sat in the dark for it.';}},
+      {t:'Politely refuse',h:'Elders −10',f:()=>{fx({elders:-10});return 'They hired a generator from the next wilayat and told everyone why.';}}]},
+  {id:'jobless',w:()=>S.C.emp<.88?3:0,t:'Unemployed youth outside the office',b:()=>`${f0(S.C.work*(1-S.C.emp))} young guys with nothing to do are parked outside your office, engines running.`,
+   o:[{t:'Promise government jobs',h:'−50k, youth +12',f:()=>{fx({t:-50,youth:12});return 'They got jobs guarding things that don\'t need guarding.';}},
+      {t:'Tell them to start businesses',h:'Youth −10, merchants +4',f:()=>{fx({youth:-10,merchants:4});return 'Four of them started car-detailing businesses. On the same street.';}},
+      {t:'Apprentice them to Hamad',h:'+5 wasta, youth −3, scandal risk',f:()=>{fx({pc:5,youth:-3,sc:.3});return 'Hamad now has a workforce. That should worry you.';}}]},
+  {id:'mall',w:()=>S.pop>500?1:0,t:'A developer wants to build a mall',b:()=>'"Al '+S.town+' Mall: cinema, food court, a Starbucks." Merchants are sharpening knives.',
+   o:[{t:'Take the signing bonus',h:'+60k, youth +10, merchants −14',f:()=>{fx({t:60,youth:10,merchants:-14,d:120});return 'The mall is "coming soon". It has been coming soon for a while. The money arrived though.';}},
+      {t:'Protect the souq',h:'Merchants +6, youth −4',f:()=>{fx({merchants:6,youth:-4});return 'The souq survives. So do the fake Rolexes.';}}]},
+  {id:'drought',w:()=>S.aquifer<35?2.5:0,t:'Drought',b:()=>`No real rain in months. The aquifer is at ${Math.round(S.aquifer)}%.`,
+   o:[{t:'Ration water',h:'Everyone −6, aquifer +5',f:()=>{fx({all:-6,aq:5});return 'Showers are now 3 minutes. Civilisation is collapsing.';}},
+      {t:'Truck water in',h:'−40k',f:()=>{fx({t:-40,aq:2});return 'The tankers came. The accountant didn\'t.';}},
+      {t:'Rain prayer at the mosque',h:'Elders +5, maybe rain',f:()=>{fx({elders:5});if(R()<.4){S.W.storm=3;S.W.stormRain=rnd(50,70);return 'It actually rained. The elders are insufferable now.';}return 'Clear skies. Nobody mentions it.';}}]},
+  {id:'audit',w:()=>(S.scandal>.4||S.ed.hamad)?2:0,t:'Muscat sent an auditor',b:()=>'A quiet man with a laptop is asking about "Hamad Trading & Contracting LLC".',
+   o:[{t:'Cooperate fully',h:'Scandal risk cleared, −15 wasta, Hamad furious',f:()=>{S.scandal=0;fx({pc:-15,fav:5});return 'You handed over everything. Hamad unfollowed you.';}},
+      {t:'The files were lost in a flood',h:'Coin flip',f:()=>{if(R()<.5){fx({pc:5});return 'He believed you. Or pretended to.';}fx({fav:-20,all:-4});return 'He did not believe you. It\'s in his report now.';}}]},
+  {id:'camel',w:()=>doy()<90||doy()>300?1.2:.2,t:'Camel race season',b:()=>'The tribes want to host the regional camel race. Robot jockeys and all.',
+   o:[{t:'Host it',h:'−20k, elders +8, farmers +6, Muscat +3',f:()=>{fx({t:-20,elders:8,farmers:6,fav:3});return 'Your camel came last. The race was a triumph.';}},
+      {t:'Skip it',h:'Elders −5',f:()=>{fx({elders:-5});return 'It went to the next wilayat. Their wali is now a legend.';}}]},
+  {id:'deputy',w:()=>S.term>1||S.day>500?1:0,t:'Hamad wants to be your deputy',b:()=>'He has printed business cards already.',
+   o:[{t:'Appoint him',h:'+20 wasta, merchants −10, big scandal risk',f:()=>{fx({pc:20,merchants:-10,sc:.6});return 'Deputy Hamad. God help us.';}},
+      {t:'No',h:'−8 wasta',f:()=>{fx({pc:-8});return 'He kept the business cards.';}}]},
+  {id:'consult',w:()=>1,t:'A Vision consultant from Muscat',b:()=>'A consultant offers a 140-slide strategy deck for the wilayat. Slide 3 is a stock photo of Dubai.',
+   o:[{t:'Buy the deck',h:'−30k, Muscat +10',f:()=>{fx({t:-30,fav:10});return 'The deck is beautiful. Nobody read it. Muscat loved it.';}},
+      {t:'Decline',h:'Muscat −5',f:()=>{fx({fav:-5});return 'The consultant told Muscat you are "not aligned".';}}]},
+  {id:'heat',w:()=>S.W.heat>44?2:0,t:'Record heat',b:()=>`${S.W.heat}° in the shade. The old folks can't sleep.`,
+   o:[{t:'Open the mosques as cooling centres',h:'Elders +6, power demand up a bit for a while',f:()=>{fx({elders:6});S.acExtra+=.08;setTimeout0(()=>S.acExtra-=.08,30);return 'The mosques are full and freezing. The grid is not thrilled.';}},
+      {t:'Tell people to stay indoors',h:'Everyone −3',f:()=>{fx({all:-3});return 'Great advice, said the man whose AC is broken.';}}]},
+  {id:'labour',w:()=>S.b.some(b=>b.t==='quarry')?1.5:0,t:'Quarry wants a labour camp',b:()=>'The quarry company wants to house 120 workers on the edge of town.',
+   o:[{t:'Approve',h:'+120 people, merchants +5, elders −6',f:()=>{fx({pop:120,merchants:5,elders:-6});return 'The camp went up in a week. The bakery tripled its sales.';}},
+      {t:'Refuse',h:'Quarry runs at less staff, merchants −4',f:()=>{fx({merchants:-4});return 'The quarry boss is now your enemy. He has a lot of trucks.';}}]},
+];
+const timers=[];
+function setTimeout0(fn,days){timers.push({at:S.day+days,fn});}
+function runTimers(){for(let i=timers.length-1;i>=0;i--)if(timers[i].at<=S.day){timers[i].fn();timers.splice(i,1);}}
+let lastEv=null;
+function fireEvent(){
+  const pool=EVENTS.filter(e=>e.id!==lastEv&&e.w()>0); if(!pool.length)return;
+  let tot=pool.reduce((a,e)=>a+e.w(),0),r=rnd(tot),ev=pool[0];
+  for(const e of pool){r-=e.w();if(r<=0){ev=e;break;}}
+  lastEv=ev.id; S.events++;
+  S.pending={kind:'event',h:ev.t,sub:dateStr().toUpperCase()+' · DECISION',p:ev.b(),
+    opts:ev.o.map(o=>({t:o.t,h:o.h,f:()=>{const m=o.f();log(`<b>${ev.t}.</b> ${m}`,'e',true);}}))};
+  showPending();
+}
+function answer(i){const p=S.pending;if(!p)return;S.pending=null;hideCard();const o=p.opts[i]||p.opts[0];o.f&&o.f();}
+
+// ================= endings =================
+function statsHtml(){const s=S;
+  return `<div class="stats"><span>Days in office</span><b>${s.day}</b><span>Terms won</span><b>${s.term-1}</b><span>Approval</span><b>${Math.round(s.approval)}%</b>
+  <span>People</span><b>${f0(s.pop)} (peak ${f0(s.stat.peakPop)})</b><span>Treasury</span><b>${f0(s.treasury)}k</b><span>Muscat favour</span><b>${Math.round(s.favour)}</b>
+  <span>Blackout days</span><b>${s.stat.blackouts}</b><span>Floods</span><b>${s.stat.floods}</b><span>Buildings lost to the wadi</span><b>${s.stat.destroyed}</b>
+  <span>Prados in the wadi</span><b>${s.swallowed}</b><span>Directives done / failed</span><b>${s.stat.dirsWon} / ${s.stat.dirsLost}</b><span>Scandals</span><b>${s.stat.scandals}</b></div>`;}
+function lose(t,why){
+  S.ended={win:false,t}; log(`<b>${t}.</b> ${why}`,'b');
+  S.pending={kind:'end',cls:'lose',h:t,sub:'YOU ARE NO LONGER WALI',p:why,stats:statsHtml(),opts:[{t:'New wilayat',f:()=>{start();}},{t:'Stare at the wreckage',f:()=>{}}]};
+  showPending();
+}
+function checkEnd(){
+  const s=S,C=s.C; if(s.ended)return;
+  s.lowFav=s.favour<8?s.lowFav+1:0; s.lowApp=s.approval<22?s.lowApp+1:0;
+  if(s.pop<60)return lose('GHOST TOWN','Everyone moved to Muscat. Even the cats. You are wali of some rocks.');
+  if(s.feral>Math.max(80,s.pop))return lose('GOAT REPUBLIC',`${f0(s.feral)} feral goats outnumber ${f0(s.pop)} humans. They hold the municipality now. Their first law bans fences.`);
+  if(s.treasury<-150)return lose('BANKRUPT','The ministry sent an auditor, then a second auditor to check on the first one. You\'re done.');
+  if(s.cats>90)return lose('CAT CARTEL',`${Math.round(s.cats)} cats control the trash, so the shawarma, so the economy. They removed you.`);
+  if(s.swallowed>100)return lose('WADI 1, PRADOS 100','A hundred cars in the wadi on your watch. Civil Defence asked for you to be replaced. Politely, then not politely.');
+  if(s.lowFav>90)return lose('ROYAL DECREE','Muscat has had enough. A decree came in at 11pm. You found out on WhatsApp.');
+  if(s.lowApp>60)return lose('RECALLED','Approval under 22% for two months. The shura council had you removed between lunch and asr.');
+  if(s.pop>9000)return lose('IT\'S DUBAI NOW','Too successful. A developer bought the town and replaced you with a brand manager.');
+  if(s.day>0&&s.day%TERM===0){
+    const v=Math.round(s.approval+rnd(-2,2));
+    if(v<50)return lose('VOTED OUT',`${v}% of the vote in the term ${s.term} election. The new wali is your cousin Hamad.`);
+    if(s.term>=TERMS){s.ended={win:true};log(`<b>WALI FOR LIFE.</b> ${v}% in the final election.`,'g');
+      s.pending={kind:'end',cls:'win',h:v>=70?'WALI FOR LIFE':'WALI FOR LIFE, APPARENTLY',sub:`${TERMS} TERMS · ${TERMS*4} YEARS`,p:v>=70?'They named a roundabout after you. And a goat. And the goat\'s kid.':'Twelve years and the town still exists, which puts you ahead of most.',stats:statsHtml(),opts:[{t:'New wilayat',f:()=>start()},{t:'Admire your work',f:()=>{}}]};
+      return showPending();}
+    s.term++; s.pc=clamp(s.pc+20,0,100); s.favour=clamp(s.favour+8,0,100);
+    log(`<b>RE-ELECTED</b> with ${v}%. Term ${s.term} begins. People expect more now.`,'g',true);
+    s.pending={kind:'term',cls:'win',h:v>=65?'RE-ELECTED, COMFORTABLY':'RE-ELECTED, BARELY',sub:`TERM ${s.term} OF ${TERMS} BEGINS`,
+      p:`${v}% of the vote. +20 wasta, +8 Muscat favour.<br><br>Now the bad news: expectations go up every term (−6 happiness each term), events come faster, and Muscat's deadlines get tighter. The aquifer doesn't care that you won.`,stats:statsHtml(),opts:[{t:'Get back to work',f:()=>{}}]};
+    showPending();
+  }
+}
+
+// ================= UI =================
+const cv=$('map'),g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
+let tool=null,sel=null,hover=null,drag=null,overlay='none',speed=1,uiOn=true;
+function dateStr(){const y=Math.floor(S.day/365)+1;return `Y${y} ${MONTHS[Math.min(11,Math.floor(doy()/30.42))]}`;}
+function log(msg,cls='b',toast=false){
+  if(!uiOn)return;
+  const el=document.createElement('div');el.className=cls;el.innerHTML=`<span class="d">${dateStr()}</span>${msg}`;
+  const L=$('log');L.prepend(el);while(L.children.length>150)L.lastChild.remove();
+  if(toast){const t=document.createElement('div');t.className='t'+(cls==='g'?' good':cls==='e'?' ev':'');t.textContent=msg.replace(/<[^>]+>/g,'');
+    $('toast').prepend(t);setTimeout(()=>t.remove(),5100);while($('toast').children.length>4)$('toast').lastChild.remove();}
+}
+function showPending(){
+  if(!uiOn||!S.pending)return; const p=S.pending;
+  const c=$('card');c.className='card '+(p.cls||'');
+  c.innerHTML=`<h2>${p.h}</h2><div class="sub">${p.sub||''}</div><p>${p.p}</p>${p.stats||''}<div class="opts"></div>`;
+  const box=c.querySelector('.opts');
+  p.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='btn';b.innerHTML=`<b>${o.t}</b>${o.h?`<small>${o.h}</small>`:''}`;b.onclick=()=>answer(i);box.appendChild(b);});
+  $('modal').classList.add('show');
+}
+function hideCard(){if(uiOn)$('modal').classList.remove('show');}
+
+// tools
+function buildTools(){
+  const box=$('tools');box.innerHTML='';
+  const mk=(k,label,price,title)=>{const b=document.createElement('button');b.className='tb';b.dataset.k=k;b.title=title||'';
+    b.innerHTML=`<span>${label}</span><small>${price}</small>`;b.onclick=()=>setTool(tool===k?null:k);box.appendChild(b);return b;};
+  const c0=document.createElement('div');c0.className='cat';c0.textContent='HANDS';box.appendChild(c0);
+  mk('inspect','Inspect','','Click anything to see what it does and why.');
+  mk('bulldoze','Bulldoze','1k','Knock it down. No refunds.');
+  for(const cat of CATS){const c=document.createElement('div');c.className='cat';c.textContent=cat;box.appendChild(c);
+    for(const k in T){const o=T[k];if(o.cat!==cat)continue;mk(k,o.n,o.c+'k',`${o.n} · ${o.w}×${o.h} · ${o.c}k · upkeep ${o.up}k/mo\n${o.d}`);}}
+}
+function setTool(k){tool=k==='inspect'?null:k;
+  [...$('tools').querySelectorAll('.tb')].forEach(b=>b.classList.toggle('on',b.dataset.k===(k||'inspect')));
+  if(k&&T[k]&&T[k].cov)overlay='cov:'+T[k].cov;else if(overlay.startsWith('cov:')&&!(k&&T[k]&&T[k].cov))overlay=ovlSel;
+  syncOvl();
+}
+let ovlSel='none';
+const OVLS=[['none','Map'],['hap','Happiness'],['cov:edu','School'],['cov:health','Health'],['cov:police','Police'],['cov:faith','Mosque'],['cov:fun','Leisure'],['poll','Pollution'],['flood','Flood risk']];
+function buildOvl(){const box=$('ovl');box.innerHTML='';OVLS.forEach(([k,n])=>{const b=document.createElement('button');b.className='btn';b.textContent=n;b.dataset.k=k;b.onclick=()=>{overlay=ovlSel=k;syncOvl();};box.appendChild(b);});syncOvl();}
+function syncOvl(){[...$('ovl').children].forEach(b=>b.classList.toggle('on',b.dataset.k===overlay));}
+
+function tileAt(ev){const r=cv.getBoundingClientRect();const x=Math.floor((ev.clientX-r.left)/r.width*MW),y=Math.floor((ev.clientY-r.top)/r.height*MH);return inb(x,y)?{x,y}:null;}
+function anchor(t,p){const o=T[t];return {x:p.x-Math.floor((o.w-1)/2),y:p.y-Math.floor((o.h-1)/2)};}
+function linePts(a,b){const pts=[];const sx=Math.sign(b.x-a.x),sy=Math.sign(b.y-a.y);let x=a.x,y=a.y;pts.push({x,y});
+  if(Math.abs(b.x-a.x)>=Math.abs(b.y-a.y)){while(x!==b.x){x+=sx;pts.push({x,y});}while(y!==b.y){y+=sy;pts.push({x,y});}}
+  else{while(y!==b.y){y+=sy;pts.push({x,y});}while(x!==b.x){x+=sx;pts.push({x,y});}}return pts;}
+const dragTool=t=>t==='road'||t==='bulldoze'||t==='house';
+cv.addEventListener('mousemove',ev=>{hover=tileAt(ev);tip();});
+cv.addEventListener('mouseleave',()=>{hover=null;$('tip').textContent='';});
+cv.addEventListener('contextmenu',ev=>{ev.preventDefault();setTool(null);drag=null;});
+cv.addEventListener('mousedown',ev=>{if(ev.button!==0)return;const p=tileAt(ev);if(!p)return;if(tool&&dragTool(tool)){drag={a:p};return;}click(p);});
+window.addEventListener('mouseup',ev=>{if(!drag)return;const p=hover||drag.a;const pts=linePts(drag.a,p);drag=null;
+  let n=0;for(const q of pts){if(tool==='bulldoze'){if(bulldoze(q.x,q.y))n++;}else if(!occ[q.y*MW+q.x]&&place(tool,q.x,q.y,true))n++;}
+  if(tool!=='bulldoze'&&n===0){const c=canPlace(tool,p.x,p.y);if(!c.ok)log(c.why,'b');}
+  uiTick(true);});
+cv.addEventListener('touchstart',ev=>{const t=ev.touches[0];const p=tileAt(t);if(p){ev.preventDefault();hover=p;click(p);}},{passive:false});
+function click(p){
+  if(!tool){const id=occ[p.y*MW+p.x];sel=id?byId(id):null;uiTick(true);return;}
+  if(tool==='bulldoze'){bulldoze(p.x,p.y);uiTick(true);return;}
+  const a=anchor(tool,p);place(tool,a.x,a.y);uiTick(true);
+}
+window.addEventListener('keydown',ev=>{if(ev.target.tagName==='INPUT')return;
+  if(ev.key==='Escape'){setTool(null);sel=null;}
+  if(ev.key===' '){ev.preventDefault();setSpeed(speed?0:1);}
+  if(ev.key==='r')setTool('road'); if(ev.key==='b')setTool('bulldoze'); if(ev.key==='h')setTool('house');
+  if(ev.key==='1')setSpeed(1);if(ev.key==='2')setSpeed(3);if(ev.key==='3')setSpeed(8);});
+function tip(){
+  if(!hover){$('tip').textContent='';return;}const {x,y}=hover,k=y*MW+x;
+  const tn=['Sand','Mountain','Wadi bed (floods)','Oasis soil'][terr[k]];let s=`${tn} (${x},${y})`;
+  const id=occ[k];if(id){const b=byId(id);s+=` · ${bName(b)}`;if(b.prog<1)s+=` · building ${Math.round(b.prog*100)}%`;else if(!active(b))s+=' · NO ROAD';
+    if(T_(b).cap&&b.cov)s+=`\nhappiness ${Math.round(b.sp)} · school ${pct(b.cov.edu)} health ${pct(b.cov.health)} police ${pct(b.cov.police)} mosque ${pct(b.cov.faith)} fun ${pct(b.cov.fun)}`;}
+  if(poll&&poll[k]>.2)s+=` · pollution ${poll[k].toFixed(1)}`;
+  if(tool&&T[tool]){const a=tool==='road'?hover:anchor(tool,hover);const c=canPlace(tool,a.x,a.y);s+=`\n${T[tool].n}: ${c.ok?`${cost(tool)}k`:c.why}`;}
+  $('tip').textContent=s;
+}
+const pct=v=>Math.round((v||0)*100)+'%';
+function bName(b){if(b.t==='road'&&isWadi(b.x,b.y))return 'Wadi ford';return T_(b).n;}
+
+function setSpeed(v){speed=v;[...$('speed').children].forEach(c=>c.classList.toggle('on',+c.dataset.v===v));}
+[['⏸',0],['1×',1],['3×',3],['8×',8]].forEach(([t,v])=>{const b=document.createElement('button');b.className='btn'+(v===1?' on':'');b.textContent=t;b.dataset.v=v;b.onclick=()=>setSpeed(v);$('speed').appendChild(b);});
+
+// side panel
+function buildSide(){
+  $('facs').innerHTML=FACS.map(f=>`<div class="fac"><div class="top"><span>${f.n} <span style="color:var(--dim)">${f.sh*100}%</span></span><b id="fN_${f.k}"></b></div><div class="bar"><i id="fB_${f.k}" style="background:${f.c}"></i></div><div class="why" id="fW_${f.k}"></div></div>`).join('');
+  $('edicts').innerHTML='';
+  EDICTS.forEach(e=>{const d=document.createElement('div');d.className='ed';
+    d.innerHTML=`<div class="nm"><b>${e.n}</b><small>${e.d}</small></div><div class="seg"></div>`;
+    const seg=d.querySelector('.seg');e.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='btn';b.textContent=o;b.dataset.i=i;b.onclick=()=>setEdict(e.k,i);seg.appendChild(b);});
+    $('edicts').appendChild(d);e.el=seg;});
+}
+function edictCost(k,i){const e=EDICTS.find(x=>x.k===k);if(k==='hamad'&&i===0)return e.pcOff;return e.pc;}
+function setEdict(k,i){if(S.ed[k]===i||S.ended)return;const c=edictCost(k,i);
+  if(S.pc<c){log(`Changing that needs ${c} wasta. You have ${Math.floor(S.pc)}. The shura council laughed at you.`,'b',true);return false;}
+  S.pc-=c;S.ed[k]=i;const e=EDICTS.find(x=>x.k===k);log(`Edict: ${e.n.toLowerCase()} → <b>${e.opts[i]}</b>${c?` (−${c} wasta)`:''}.`,'m');uiTick(true);return true;}
+function why(list,n=3){const s=[...list].filter(x=>Math.abs(x[1])>=1).sort((a,b)=>a[1]-b[1]);const neg=s.filter(x=>x[1]<0).slice(0,2),pos=s.filter(x=>x[1]>0).slice(-1);
+  return [...neg.map(x=>`<span class="n">${x[0]} ${sg(x[1])}</span>`),...pos.map(x=>`<span class="p">${x[0]} ${sg(x[1])}</span>`)].join(' · ');}
+function uiTick(force){
+  if(!uiOn)return; const s=S,C=s.C,W=s.W;
+  $('town').textContent=s.town;
+  $('date').textContent=`Term ${s.term}/${TERMS} · ${dateStr()} · ${Math.max(0,TERM-s.day%TERM)}d to election`;
+  $('tTr').textContent=f0(s.treasury)+'k';$('tTr').className='v '+(s.treasury<0?'bad':'');
+  $('tPc').textContent=Math.floor(s.pc);$('tFav').textContent=Math.round(s.favour);$('tFav').className='v '+(s.favour<25?'bad':s.favour>65?'ok':'');
+  $('tHeat').textContent=W.heat+'°'+(W.wave?' heatwave':'');$('tRain').textContent=W.rain+'mm'+(W.storm?' STORM':'');
+  const ap=Math.round(s.approval);$('apN').textContent=ap+'%';$('apBar').style.width=ap+'%';$('apBar').style.background=ap>=50?'var(--good)':ap>=35?'var(--hot)':'var(--bad)';
+  $('apWhy').innerHTML='town mood '+Math.round(C.H)+' · '+why(C.Hwhy);
+  for(const f of FACS){const v=Math.round(s.sat[f.k]);$('fN_'+f.k).textContent=v;$('fB_'+f.k).style.width=v+'%';$('fW_'+f.k).innerHTML=why(s.fwhy[f.k]||[]);}
+  const d=s.dir;$('dir').innerHTML=d?`<b>${d.t}</b><br><span style="color:var(--dim)">${Math.max(0,Math.round((d.dl-s.day)/30))} months left · win: cash + favour · fail: −12 favour</span>`:'<span style="color:var(--dim)">Nothing right now. Enjoy it.</span>';
+  const cl=(v,a,b)=>v<a?'bad':v<b?'warn':'ok';
+  $('city').innerHTML=[
+    ['People / homes',`${f0(s.pop)} / ${f0(C.cap)}`,C.over>.05?'bad':C.over>0?'warn':''],
+    ['Jobs / workers',`${f0(C.jobs)} / ${f0(C.work)}`,cl(C.emp,.88,.95)],
+    ['Unemployment',pct(1-C.emp),cl(C.emp,.88,.95)],
+    ['Power (MW)',`${f0(C.pSup)} / ${f0(C.pDem)}`,cl(C.pR,1,1.15)],
+    ['Blackout days (30d)',`${s.bo.reduce((a,v)=>a+v,0)}`,C.bo30>.1?'bad':C.bo30>0?'warn':''],
+    ['Water',`${f0(C.wSup)} / ${f0(C.wDem)}`,cl(C.wR,1,1.15)],
+    ['Aquifer',Math.round(s.aquifer)+'%',cl(s.aquifer,25,45)],
+    ['Crime',Math.round(s.crime),s.crime>35?'bad':s.crime>22?'warn':''],
+    ['Trash / cats',`${Math.round(s.trash)} / ${Math.round(s.cats)}`,s.cats>55?'bad':s.trash>30?'warn':''],
+    ['Goats / feral',`${f0(C.goats)} / ${f0(s.feral)}`,s.feral>20?'bad':''],
+    ['Grass',Math.round(s.grass)+'%',s.grass<20?'warn':''],
+    ['Attractions',C.attr,''],
+    ['Prados in the wadi',s.swallowed,s.swallowed>50?'bad':''],
+  ].map(([a,b,c])=>`<span>${a}</span><b class="${c}">${b}</b>`).join('');
+  EDICTS.forEach(e=>[...e.el.children].forEach(b=>{const i=+b.dataset.i;b.classList.toggle('on',s.ed[e.k]===i);b.disabled=s.ed[e.k]!==i&&s.pc<edictCost(e.k,i);}));
+  const bk=s.books;$('books').innerHTML=bk?[...Object.entries(bk.inc).filter(x=>x[1]>.05).map(([k,v])=>`<span>${k}</span><b class="ok">+${v.toFixed(1)}</b>`),
+    ...Object.entries(bk.exp).filter(x=>x[1]>.05).map(([k,v])=>`<span>${k}</span><b class="bad">−${v.toFixed(1)}</b>`),`<span><b>Net / month</b></span><b class="${bk.ti-bk.te<0?'bad':'ok'}">${sg(bk.ti-bk.te)}k</b>`].join(''):'<span>First month not closed yet.</span><b></b>';
+  // selected
+  if(sel&&!S.b.includes(sel))sel=null;
+  if(sel){const o=T_(sel);let h=`<b>${bName(sel)}</b><br><span style="color:var(--dim)">${o.d||''}</span><br>`;
+    if(sel.prog<1)h+=`Under construction: ${Math.round(sel.prog*100)}%<br>`;else if(!active(sel))h+=`<span class="bad">Not connected to a road. Doing nothing.</span><br>`;
+    if(o.cap)h+=`Happiness ${Math.round(sel.sp||0)}<br>${COVS.map(([k,n])=>`${n} ${pct(sel.cov&&sel.cov[k])}`).join(' · ')}<br>`;
+    if(o.jobs)h+=`${o.jobs} jobs · staffed ${pct(C.staff)}<br>`;if(o.up)h+=`Upkeep ${o.up}k/month<br>`;
+    if(sel.t==='ruin')h+=`<button class="btn" id="restore">Restore the fort (${Math.round(90*(S.ed.hamad?1.3:1))}k)</button>`;
+    else if(!o.fixed)h+=`<button class="btn" id="dz">Bulldoze</button>`;
+    $('sel').innerHTML=h;const r=$('restore');if(r)r.onclick=()=>{restoreFort();uiTick(true);};const z=$('dz');if(z)z.onclick=()=>{bulldoze(sel.x,sel.y);uiTick(true);};}
+  else $('sel').innerHTML='<span style="color:var(--dim)">Nothing. Click a building with Inspect.</span>';
+  [...$('tools').querySelectorAll('.tb')].forEach(b=>{const k=b.dataset.k;if(!T[k])return;b.querySelector('small').textContent=cost(k)+'k';b.disabled=S.treasury<cost(k)||(T[k].needFav&&S.favour<T[k].needFav);});
+  spark();
+}
+function spark(){const c=$('spark'),dpr=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;if(!W)return;if(c.width!==Math.round(W*dpr)){c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);}
+  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);const a=S.hist.ap;if(a.length<2)return;
+  const Y=v=>H-2-(v/100)*(H-4);x.strokeStyle='#ff5a4e88';x.setLineDash([3,3]);x.beginPath();x.moveTo(0,Y(50));x.lineTo(W,Y(50));x.stroke();x.setLineDash([]);
+  x.strokeStyle='#8fd16a';x.lineWidth=1.5;x.beginPath();a.forEach((v,i)=>{const X=i/(299)*W;i?x.lineTo(X,Y(v)):x.moveTo(X,Y(v));});x.stroke();
+  x.fillStyle='#a8977c';x.font='10px monospace';x.fillText('approval, last ~2.5 years',4,10);}
+
+// ================= drawing =================
+let frame=0;
+function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
+function mix(a,b,t){const A=hex(a),B=hex(b);t=clamp(t,0,1);return `rgb(${A.map((v,i)=>Math.round(lerp(v,B[i],t))).join(',')})`;}
+const R_=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h);};
+function drawTerrain(){
+  const gr=S.grass/100;
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const k=y*MW+x,t=terr[k],v=tv[k],px=x*TS,py=y*TS;
+    if(t===0){R_(px,py,TS,TS,v<.5?'#d9b77a':'#d4b175');if(v>.85)R_(px+((v*97)%12|0),py+((v*53)%12|0),2,1,'#c49e62');if(gr>.5&&v<.15)R_(px+5,py+7,1,2,'#8fa04a');}
+    else if(t===1){R_(px,py,TS,TS,v<.5?'#7a5a44':'#725240');R_(px+((v*71)%10|0),py+((v*31)%10|0),4,2,'#5f4434');R_(px+((v*13)%12|0),py+3,2,1,'#93725a');}
+    else if(t===2){R_(px,py,TS,TS,v<.5?'#a3967e':'#9c8f78');R_(px+((v*41)%12|0),py+((v*89)%12|0),3,2,'#a08454');R_(px+((v*17)%13|0),py+((v*7)%13|0),2,2,'#cdb282');}
+    else{R_(px,py,TS,TS,mix('#c9b071','#7e9a4a',gr*.8+.2));if(!occ[k]){if(v<.55){drawPalm(px+4+((v*20)%6|0),py+12);}}}
+  }
+  // water flowing
+  if(S.flow>3){for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){if(terr[y*MW+x]!==2)continue;const px=x*TS,py=y*TS;g.fillStyle=S.flow>40?'#8a6a3acc':'#4f88c9bb';g.fillRect(px,py,TS,TS);
+      g.fillStyle='#ffffff55';g.fillRect(px+((frame+x*7+y*3)%14),py+((y*5+frame)%14),3,1);}
+    if(S.flow>40)for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){if(terr[y*MW+x]===2)continue;if(isWadi(x-1,y)||isWadi(x+1,y)){g.fillStyle='#8a6a3a66';g.fillRect(x*TS,y*TS,TS,TS);}}}
+  // tiny spring water in falaj season
+}
+function drawPalm(x,y){R_(x,y-7,2,7,'#7a5638');g.fillStyle='#3f8a3a';g.fillRect(x-4,y-9,10,2);g.fillRect(x-2,y-11,6,2);g.fillRect(x-3,y-7,2,2);g.fillRect(x+3,y-7,2,2);}
+function isRoadAt(x,y){if(!inb(x,y))return x<0||x>=MW?(y===MH-1):false;const id=occ[y*MW+x];if(!id)return false;const b=byId(id);return b&&T_(b).road;}
+function drawRoad(b){const px=b.x*TS,py=b.y*TS,w=isWadi(b.x,b.y),hw=b.t==='hwy';
+  const col=b.t==='bridge'?'#9a9a9a':hw?'#2f2f33':w?'#8f7a58':'#45454a';
+  const u=isRoadAt(b.x,b.y-1),d=isRoadAt(b.x,b.y+1),l=isRoadAt(b.x-1,b.y),r=isRoadAt(b.x+1,b.y);
+  const m=hw?2:4;R_(px+m,py+m,TS-2*m,TS-2*m,col);
+  if(u)R_(px+m,py,TS-2*m,m,col);if(d)R_(px+m,py+TS-m,TS-2*m,m,col);if(l)R_(px,py+m,m,TS-2*m,col);if(r)R_(px+TS-m,py+m,m,TS-2*m,col);
+  if(hw){R_(px,py+2,TS,TS-4,col);if((b.x%2)===0)R_(px+3,py+7,6,1,'#e2c23a');}
+  else if(!w&&b.t!=='bridge'){if((l||r)&&!(u||d))R_(px+5,py+7,3,1,'#bbb');if((u||d)&&!(l||r))R_(px+7,py+5,1,3,'#bbb');}
+  if(b.t==='bridge'){R_(px+3,py+2,1,12,'#ddd');R_(px+12,py+2,1,12,'#ddd');}
+  if(b.prog<1){g.fillStyle='#ffd23d55';g.fillRect(px,py,TS,TS);}
+}
+function sprite(b){
+  const o=T_(b),px=b.x*TS,py=b.y*TS,W=b.w*TS,H=b.h*TS,bo=S.bo[S.bo.length-1];
+  if(o.road)return drawRoad(b);
+  if(b.prog<1){R_(px+1,py+1,W-2,H-2,'#6b5640');g.strokeStyle='#e2c23a';g.lineWidth=1;for(let i=-H;i<W;i+=5){g.beginPath();g.moveTo(px+i,py+H);g.lineTo(px+i+H,py);g.stroke();}
+    R_(px+1,py+H-4,W-2,3,'#000');R_(px+1,py+H-4,(W-2)*b.prog,3,'#8fd16a');return;}
+  R_(px+2,py+3,W-2,H-2,'#00000033');
+  const win=bo?'#222':'#3b5a7a';
+  switch(b.t){
+    case 'house':{const c=['#e8dcc0','#d8c9a8','#efe6d2','#c9b590'][b.id%4];R_(px+2,py+2,12,11,c);R_(px+2,py+2,12,2,'#fff6');R_(px+4,py+6,2,2,win);R_(px+9,py+6,2,2,win);R_(px+6,py+9,3,4,'#7a5638');R_(px+10,py+1,3,2,'#ddd');R_(px+3,py+1,2,1,'#999');break;}
+    case 'villa':R_(px+2,py+2,W-4,H-6,'#f2ead8');R_(px+2,py+2,W-4,3,'#c9a86e');for(let i=0;i<4;i++)R_(px+5+i*6,py+9,3,4,win);R_(px+4,py+H-6,W-8,4,'#5fa0d0');R_(px+W-8,py+H-12,4,6,'#3f8a3a');break;
+    case 'flats':R_(px+3,py+1,W-6,H-3,'#c8c0b0');for(let j=0;j<5;j++)for(let i=0;i<4;i++)R_(px+6+i*6,py+3+j*5,3,3,win);R_(px+3,py+1,W-6,2,'#a89c88');for(let i=0;i<4;i++)R_(px+5+i*6,py-1,3,2,'#ddd');break;
+    case 'falaj':R_(px,py,TS,TS,'#a8875a');R_(px+3,py,10,TS,'#7d5f3c');R_(px+5,py,6,TS,S.aquifer>10?'#4f88c9':'#6a5a40');if(S.aquifer>10)R_(px+6,py+((frame>>1)%TS),2,2,'#cfe6ff');break;
+    case 'well':R_(px+3,py+3,10,10,'#8a8580');R_(px+5,py+5,6,6,S.aquifer>3?'#2a4f7a':'#3a3028');R_(px+7,py,2,4,'#555');break;
+    case 'tanker':R_(px+2,py+2,W-4,H-4,'#9a9a9a');for(let i=0;i<3;i++){R_(px+4,py+5+i*8,20,6,'#e8e8e8');R_(px+4,py+6+i*8,14,4,'#6fb3ff');}break;
+    case 'dam':R_(px,py+4,W,H-8,'#b8b0a0');R_(px,py+4,W,2,'#ddd');R_(px+3,py+H-4,W-6,4,'#4f88c9');break;
+    case 'genset':R_(px+2,py+4,W-4,H-6,'#7d7a74');R_(px+4,py+7,10,8,'#5a5a5a');R_(px+17,py+7,10,8,'#5a5a5a');R_(px+22,py,3,6,'#555');
+      if(!bo)for(let i=0;i<3;i++)R_(px+22+Math.sin(frame*.05+i)*2,py-3-i*4-((frame/6)%4),3,3,'#bbb9');break;
+    case 'solar':for(let j=0;j<3;j++)for(let i=0;i<3;i++){R_(px+2+i*15,py+3+j*15,12,9,S.W.dust?'#a08060':'#2a3f6a');R_(px+2+i*15,py+3+j*15,12,1,'#8aa0d0');}break;
+    case 'grid':R_(px+2,py+2,W-4,H-4,'#5a5a5a');for(let i=0;i<3;i++)R_(px+5+i*8,py+5,4,18,'#c8c8c8');R_(px+3,py+12,W-6,1,'#ffd23d');break;
+    case 'depot':R_(px+2,py+3,W-4,H-5,'#5f6a4a');R_(px+4,py+18,10,6,'#2f6a2f');R_(px+17,py+18,10,6,'#2f6a2f');R_(px+5,py+5,20,10,'#7a8a5a');break;
+    case 'school':R_(px+2,py+5,W-4,H-7,'#e8d070');R_(px+2,py+5,W-4,2,'#c9a83a');for(let i=0;i<4;i++)R_(px+5+i*6,py+11,3,4,win);R_(px+14,py+19,4,8,'#7a5638');R_(px+26,py,1,8,'#555');R_(px+27,py,4,3,'#c33');break;
+    case 'clinic':R_(px+2,py+3,W-4,H-5,'#f4f4f4');R_(px+12,py+8,8,2,'#d22');R_(px+15,py+5,2,8,'#d22');for(let i=0;i<4;i++)R_(px+5+i*6,py+18,3,3,win);break;
+    case 'police':R_(px+2,py+3,12,10,'#e8e8f4');R_(px+2,py+3,12,3,'#2a4f9a');R_(px+6,py+1,3,2,frame%30<15?'#d22':'#22d');break;
+    case 'mosque':R_(px+3,py+10,W-6,H-12,'#f2efe6');g.fillStyle='#3f9a6a';g.beginPath();g.arc(px+16,py+11,7,Math.PI,0);g.fill();R_(px+25,py+1,4,H-3,'#f2efe6');R_(px+25,py,4,2,'#3f9a6a');R_(px+13,py+20,6,8,'#7a5638');break;
+    case 'park':R_(px+1,py+1,14,14,'#5f9a3a');drawPalm(px+8,py+12);R_(px+2,py+12,5,2,'#8a6a44');break;
+    case 'pitch':R_(px+1,py+1,W-2,H-2,'#3f8a3a');g.strokeStyle='#fff';g.lineWidth=1;g.strokeRect(px+3.5,py+3.5,W-7,H-7);R_(px+16,py+4,1,H-8,'#fff');R_(px+1,py+1,2,2,'#ffe95a');R_(px+W-3,py+1,2,2,'#ffe95a');break;
+    case 'souq':R_(px+2,py+4,W-4,H-6,'#d8b880');for(let i=0;i<3;i++){R_(px+3+i*9,py+4,8,5,['#c0392b','#e67e22','#2a7a9a'][i]);R_(px+5+i*9,py+12,4,6,'#5a3a20');}R_(px+3,py+21,W-6,2,'#a07840');break;
+    case 'shawarma':R_(px+2,py+5,12,8,'#a3261c');R_(px+2,py+3,12,2,'#f5d27a');R_(px+6,py+7,3,5,bo?'#3a3':(frame%10<5?'#ff9a2a':'#ffcc4a'));break;
+    case 'farm':for(let j=0;j<2;j++)for(let i=0;i<2;i++)drawPalm(px+5+i*14,py+13+j*14);R_(px,py+H-2,W,1,'#4f88c9');break;
+    case 'goats':g.strokeStyle='#8a6a44';g.strokeRect(px+2.5,py+2.5,W-5,H-5);for(let i=0;i<5;i++){const gx=px+5+((i*7+frame*.2*(i%2?1:-1))%20+20)%20,gy=py+6+i*4;R_(gx,gy,3,2,i%2?'#f4efe6':'#7a5638');}break;
+    case 'quarry':R_(px+2,py+2,W-4,H-4,'#8f8f8a');R_(px+8,py+8,W-16,H-16,'#6a6a66');R_(px+14,py+14,W-28,H-28,'#55554f');R_(px+4,py+H-8,8,5,'#e2c23a');
+      for(let i=0;i<3;i++)R_(px+20+Math.sin(frame*.04+i)*4,py+6-i*3-((frame/8)%3),4,3,'#c8b89a88');break;
+    case 'petrol':R_(px+1,py+3,14,3,'#d22');R_(px+3,py+6,1,8,'#999');R_(px+12,py+6,1,8,'#999');R_(px+6,py+9,4,5,'#ffd23d');break;
+    case 'hotel':R_(px+2,py+1,W-4,H-4,'#c9a86e');R_(px+2,py+1,W-4,2,'#a07840');for(let j=0;j<3;j++)for(let i=0;i<4;i++)R_(px+5+i*6,py+5+j*6,3,3,win);R_(px+4,py+H-6,W-8,3,'#5fa0d0');break;
+    case 'dallah':R_(px+5,py+5,7,9,'#e2b23a');R_(px+6,py+2,5,3,'#e2b23a');R_(px+8,py,1,2,'#e2b23a');R_(px+12,py+5,3,2,'#e2b23a');R_(px+2,py+12,3,3,'#5f9a3a');break;
+    case 'ski':g.fillStyle='#e8eef6';g.beginPath();g.moveTo(px+2,py+H-2);g.lineTo(px+W-2,py+H-2);g.lineTo(px+W-2,py+3);g.lineTo(px+W-14,py+3);g.closePath();g.fill();R_(px+W-12,py+1,10,3,'#9fc7ef');R_(px+W-6,py-3,2,4,'#ff3b6b');break;
+    case 'ruin':R_(px+2,py+4,W-4,H-6,'#9a7a5a');R_(px+4,py+2,8,6,'#8a6a4a');R_(px+W-10,py+10,8,8,'#7a5a3a');R_(px+18,py+20,8,4,'#6a4a2a');R_(px+10,py+16,3,2,'#f4efe6');break;
+    case 'fort':R_(px+3,py+6,W-6,H-8,'#c49a6a');for(let i=0;i<8;i++)R_(px+3+i*6,py+4,3,2,'#c49a6a');R_(px+2,py+2,10,12,'#b88a5a');R_(px+W-12,py+2,10,12,'#b88a5a');R_(px+20,py+H-10,8,8,'#5a3a20');R_(px+24,py-2,1,6,'#555');R_(px+25,py-2,5,3,'#c33');break;
+  }
+  if(!active(b)&&frame%40<24){R_(px+W-7,py,6,7,'#d22');R_(px+W-5,py+1,2,3,'#fff');R_(px+W-5,py+5,2,1,'#fff');}
+}
+let fer=[];
+function draw(){
+  frame++;
+  drawTerrain();
+  for(const b of S.b)if(T_(b).road)sprite(b);
+  for(const b of S.b)if(!T_(b).road)sprite(b);
+  // feral goats
+  const nF=Math.min(80,Math.round(S.feral/6));while(fer.length<nF)fer.push({x:rnd(MW*TS),y:rnd(MH*TS),vx:rnd(-.4,.4),vy:rnd(-.4,.4)});fer.length=nF;
+  fer.forEach(o=>{o.x+=o.vx;o.y+=o.vy;if(Math.random()<.02){o.vx=rnd(-.4,.4);o.vy=rnd(-.4,.4);}o.x=(o.x+MW*TS)%(MW*TS);o.y=(o.y+MH*TS)%(MH*TS);R_(o.x,o.y,3,2,'#f4efe6');R_(o.x+3,o.y-1,1,1,'#ff2020');});
+  // cats near trash
+  const nC=Math.min(60,Math.round(S.cats/2));for(let i=0;i<nC;i++){const h=S.b[(i*37)%S.b.length];if(!h)break;R_(h.x*TS+((i*5+frame*.1)%14),h.y*TS+14,2,1,i%3?'#2a2522':'#d08a3a');}
+  // overlays
+  if(overlay!=='none')drawOverlay();
+  if(S.W.heat>45&&S.W.rain<5){g.fillStyle=`rgba(255,170,80,${(S.W.heat-45)/50})`;g.fillRect(0,0,cv.width,cv.height);}
+  if(S.W.dust){g.fillStyle='rgba(180,130,70,.45)';g.fillRect(0,0,cv.width,cv.height);}
+  if(S.bo[S.bo.length-1]){g.fillStyle='rgba(0,0,30,.35)';g.fillRect(0,0,cv.width,cv.height);}
+  if(S.W.rain>20){g.fillStyle='#bcd8ff88';for(let i=0;i<S.W.rain*3;i++){const x=(i*97+frame*3)%cv.width,y=(i*53+frame*9)%cv.height;g.fillRect(x,y,1,4);}}
+  // hover preview
+  if(hover&&tool&&T[tool]){
+    const pts=drag&&dragTool(tool)?linePts(drag.a,hover):[tool==='road'||tool==='house'?hover:anchor(tool,hover)];
+    for(const p of pts){const c=canPlace(tool,p.x,p.y);const o=T[tool];g.fillStyle=c.ok?'#8fd16a66':'#ff5a4e66';g.fillRect(p.x*TS,p.y*TS,o.w*TS,o.h*TS);}
+    const o=T[tool];if(o.r){const a=anchor(tool,hover);g.strokeStyle='#ffd23d';g.setLineDash([4,3]);g.beginPath();g.arc((a.x+o.w/2)*TS,(a.y+o.h/2)*TS,o.r*TS,0,7);g.stroke();g.setLineDash([]);}
+  } else if(hover&&tool==='bulldoze'){const pts=drag?linePts(drag.a,hover):[hover];g.fillStyle='#ff5a4e55';pts.forEach(p=>g.fillRect(p.x*TS,p.y*TS,TS,TS));}
+  if(sel&&S.b.includes(sel)){g.strokeStyle='#fff';g.lineWidth=1;g.strokeRect(sel.x*TS+.5,sel.y*TS+.5,sel.w*TS-1,sel.h*TS-1);const o=T_(sel);if(o.r){g.strokeStyle='#ffd23d';g.setLineDash([4,3]);g.beginPath();g.arc((sel.x+sel.w/2)*TS,(sel.y+sel.h/2)*TS,o.r*TS,0,7);g.stroke();g.setLineDash([]);}}
+  const ban=[];if(S.bo[S.bo.length-1])ban.push('⚡ BLACKOUT');if(S.W.dust)ban.push('dust storm');if(S.flow>10)ban.push('WADI FLOWING');if(S.W.storm)ban.push('storm');if(S.W.wave)ban.push('heatwave');
+  if(overlay!=='none')ban.push('overlay: '+OVLS.find(o=>o[0]===overlay)?.[1]);
+  $('banner').textContent=ban.join(' · ');$('banner').style.display=ban.length?'':'none';
+}
+function drawOverlay(){
+  g.fillStyle='#00000066';g.fillRect(0,0,cv.width,cv.height);
+  if(overlay==='poll'){for(let k=0;k<MW*MH;k++){const p=poll[k];if(p>.05){g.fillStyle=`rgba(160,110,60,${Math.min(.85,p/3)})`;g.fillRect((k%MW)*TS,((k/MW)|0)*TS,TS,TS);}}return;}
+  if(overlay==='flood'){for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const w=isWadi(x,y),n=!w&&(isWadi(x-1,y)||isWadi(x+1,y));if(w||n){g.fillStyle=w?'#4f88c9aa':'#4f88c955';g.fillRect(x*TS,y*TS,TS,TS);}}return;}
+  for(const b of S.b){if(!T_(b).cap)continue;let v;
+    if(overlay==='hap')v=clamp(((b.sp||40)-30)/40,0,1);else{const k=overlay.slice(4);v=b.cov?b.cov[k]||0:0;}
+    g.fillStyle=`rgba(${Math.round(lerp(255,90,v))},${Math.round(lerp(70,220,v))},70,.85)`;g.fillRect(b.x*TS+2,b.y*TS+2,b.w*TS-4,b.h*TS-4);}
+  if(overlay.startsWith('cov:')){const k=overlay.slice(4);for(const b of S.b){const o=T_(b);if(o.cov!==k)continue;g.strokeStyle='#ffd23d';g.setLineDash([4,3]);g.beginPath();g.arc((b.x+b.w/2)*TS,(b.y+b.h/2)*TS,o.r*TS,0,7);g.stroke();g.setLineDash([]);}}
+}
+
+// ================= loop =================
+function start(seed){
+  hideCard(); newGame(seed); for(const k in cd)delete cd[k]; timers.length=0; lastEv=null; sel=null; fer=[];
+  if(uiOn){$('log').innerHTML='';
+    S.pending={kind:'intro',h:'YOU ARE THE WALI',sub:`${S.town.toUpperCase()} · A WILAYAT IN THE INTERIOR`,
+    p:`Muscat has handed you ${S.town}: ${f0(S.pop)} people, one generator, two falaj channels, a ruined fort full of goats and a wadi that floods. Three terms, four years each. Every election you need <b>50%</b>.<br><br>
+    <b>Build</b> from the left (drag roads and houses). Everything but farms, falaj, gardens, solar and dams needs a road to the highway. <b>Edicts</b> on the right cost wasta. Four factions vote; the reasons they hate you are listed under each bar.<br><br>
+    Summer heat doubles power demand. The aquifer only goes down unless it rains. Upkeep is forever. Muscat sends money once a year and orders whenever it likes. Your cousin Hamad is always nearby.<br><br>
+    <span style="color:var(--dim)">Keys: space pause · 1/2/3 speed · R road · H houses · B bulldoze · right-click/Esc cancel.</span>`,
+    opts:[{t:'Take the oath',h:'Game starts paused-ish at 1×. Jan, Year 1.',f:()=>log(`You took the oath. ${S.town} is cautiously optimistic. The goats are not.`,'m')}]};
+    showPending(); uiTick(true);}
+}
+let acc=0,last=performance.now(),uiT=0;
+function loop(now){
+  const dt=Math.min(100,now-last);last=now;
+  if(speed&&!S.pending&&!S.ended){acc+=dt*speed*2/1000;let n=0;while(acc>=1&&n<20&&!S.pending&&!S.ended){step();runTimers();acc-=1;n++;}}else acc=0;
+  draw();
+  if(now-uiT>200){uiT=now;uiTick();}
+  requestAnimationFrame(loop);
+}
+function fit(){const r=$('mapbox').getBoundingClientRect();const s=innerWidth<900?r.width/cv.width:Math.max(.5,Math.min(r.width/cv.width,(r.height||9999)/cv.height));cv.style.width=Math.floor(cv.width*s)+'px';cv.style.height=Math.floor(cv.height*s)+'px';}
+window.addEventListener('resize',fit);
+buildTools();buildOvl();buildSide();setTool(null);start();fit();requestAnimationFrame(fit);
+requestAnimationFrame(loop);
+
+// headless API for balance bots
+window.__w={get S(){return S},T,EDICTS,MW,MH,get terr(){return terr},get occ(){return occ},isWadi,canPlace,place,bulldoze,restoreFort,setEdict,answer,active,
+  newGame:(s)=>{uiOn=false;newGame(s);for(const k in cd)delete cd[k];timers.length=0;lastEv=null;},
+  run:(n)=>{let i=0;for(;i<n;i++){if(!step())break;runTimers();}return i;},
+  ui:(v)=>{uiOn=v;}, conn:()=>conn, recompute};
+})();
+</script>
+</body>
+</html>

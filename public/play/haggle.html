@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Haggle</title>
+<style>
+  :root{--bg:#120b07;--ink:#f6e7cc;--dim:#b49a78;--gold:#ffcf6b;--red:#ff5a3c;--green:#7ee08a;--panel:#1d130c;--line:#3d2a1b}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+  body{display:flex;flex-direction:column;max-width:760px;margin:0 auto}
+  #scene{position:relative;flex:0 0 auto;width:100%;aspect-ratio:400/260;max-height:46vh;background:#2a180e;overflow:hidden;border-bottom:1px solid var(--line)}
+  #scene svg{width:100%;height:100%;display:block}
+  #hud{position:absolute;left:8px;bottom:8px;background:#120b07cc;padding:6px 9px;border-radius:8px;font-size:12px;letter-spacing:.08em;pointer-events:none;text-shadow:0 1px 3px #000}
+  #hud b{display:block;font-size:15px;letter-spacing:.35em;color:var(--gold)}
+  #hud .row{margin-top:3px;color:var(--dim)}
+  #bp{display:inline-block;width:80px;height:7px;border-radius:4px;background:#0008;vertical-align:middle;margin-left:4px;overflow:hidden;box-shadow:0 0 0 1px #0009}
+  #bpf{height:100%;width:0%;background:linear-gradient(90deg,#7ee08a,#ffcf6b,#ff5a3c);transition:width .4s}
+  @media (max-width:520px){#hud b{display:none}#hud{font-size:11px;padding:4px 7px}#bp{width:60px}}
+  #timer{color:var(--red);font-weight:700;display:none}
+  #mute{position:absolute;right:8px;bottom:8px;background:#120b07cc;padding:4px 8px;border-radius:8px;font-size:12px;color:var(--dim);cursor:pointer;user-select:none;text-shadow:0 1px 3px #000}
+  #log{flex:1;min-height:0;overflow-y:auto;padding:12px 16px 6px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+  .m{max-width:85%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word;animation:pop .18s ease-out}
+  .m.him{align-self:flex-start;background:#2c1d12;border:1px solid #4a3220;border-bottom-left-radius:4px}
+  .m.him::before{content:"Abu Hamdan";display:block;font-size:11px;color:var(--gold);letter-spacing:.06em;margin-bottom:2px}
+  .m.you{align-self:flex-end;background:#2f3d2a;border:1px solid #455a3c;border-bottom-right-radius:4px}
+  .m.sys{align-self:center;background:none;color:var(--dim);font-style:italic;font-size:13px;text-align:center;max-width:95%}
+  .m b{color:var(--gold)}
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+  #ctl{flex:0 0 auto;padding:6px 12px 12px;border-top:1px solid var(--line);background:var(--panel)}
+  #chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  #chips button{background:#2a1c11;border:1px solid #4a3220;color:var(--ink);border-radius:999px;padding:6px 11px;font-size:13px;cursor:pointer;font-family:inherit}
+  #chips button:hover:not(:disabled){border-color:var(--gold);background:#3a2615}
+  #chips button.hot{border-color:var(--gold);color:var(--gold)}
+  #f{display:flex;gap:8px}
+  #inp{flex:1;min-width:0;background:#0d0805;border:1px solid #4a3220;border-radius:10px;color:#fff;font:inherit;font-size:16px;padding:10px 12px;outline:none}
+  #inp:focus{border-color:var(--gold)}
+  #f button{background:linear-gradient(#ffdc8a,#c98f22);color:#2a1700;border:0;border-radius:10px;font-weight:800;letter-spacing:.08em;padding:0 16px;cursor:pointer;font-family:inherit}
+  button:disabled,#inp:disabled{opacity:.45;cursor:default}
+  /* svg bits */
+  #sk{transition:transform 1.1s cubic-bezier(.5,-0.2,.4,1.2)}
+  #sk.gone{transform:translateX(260px)}
+  #sk.shake{animation:shake .35s linear 2}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  .brow{transition:transform .25s;transform-box:fill-box;transform-origin:center}
+  #mouth{transition:d .2s}
+  #tear{opacity:0;transition:opacity .3s}
+  .sad #tear{opacity:1;animation:drip 1.4s ease-in infinite}
+  @keyframes drip{0%{transform:translateY(0);opacity:1}100%{transform:translateY(16px);opacity:0}}
+  #steam{opacity:0;transition:opacity .3s}
+  .angry #steam{opacity:1}
+  #steam circle{animation:puff 1.2s ease-out infinite}
+  #steam circle:nth-child(2){animation-delay:.4s}#steam circle:nth-child(3){animation-delay:.8s}
+  @keyframes puff{0%{transform:translateY(0) scale(.5);opacity:.8}100%{transform:translateY(-26px) scale(1.4);opacity:0}}
+  #tag{transform-box:fill-box;transform-origin:50% 0;animation:sway 3s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  #tag.up #tagbg{fill:#ff8a6b}#tag.down #tagbg{fill:#a8f0a0}
+  #tag.up,#tag.down{animation:jolt .5s ease-out}
+  @keyframes jolt{0%{transform:rotate(-14deg) scale(1.15)}60%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+  #leg4{transition:transform 1s cubic-bezier(.5,0,.8,.4),opacity 1s}
+  #leg4.off{transform:translate(14px,60px) rotate(70deg);opacity:0}
+  #lantern{animation:glow 2.5s ease-in-out infinite}
+  @keyframes glow{50%{opacity:.6}}
+  #kid{transition:transform 1.2s linear}#kid.reset{transition:none}
+  /* end card */
+  #end{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}
+  #end.on{display:flex}
+  #rcpt{background:#f4ead2;color:#2a1a0e;width:min(380px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:18px 18px 14px;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;box-shadow:0 10px 40px #000;transform:rotate(-1.2deg);
+    -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,radial-gradient(circle 5px at 50% 100%,transparent 98%,#000) bottom/12px 8px repeat-x}
+  #rcpt h2{margin:0 0 2px;text-align:center;letter-spacing:.3em;font-size:16px}
+  #rcpt .c{text-align:center}
+  #rcpt hr{border:0;border-top:1px dashed #8a7458;margin:8px 0}
+  #rcpt .l{display:flex;justify-content:space-between;gap:10px}
+  #rcpt .big{font-size:15px;font-weight:700}
+  #rcpt .verdict{margin:10px 0;padding:8px;border:2px solid #2a1a0e;text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  #rcpt button{width:100%;margin-top:8px;padding:10px;border:0;background:#2a1a0e;color:#f4ead2;font:inherit;font-weight:700;letter-spacing:.15em;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="scene">
+<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-label="A souq stall">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2c18"/><stop offset="1" stop-color="#2a170c"/></linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a32"/><stop offset=".12" stop-color="#6b4224"/><stop offset="1" stop-color="#3d2413"/></linearGradient>
+    <radialGradient id="lglow"><stop offset="0" stop-color="#ffcf6b" stop-opacity=".55"/><stop offset="1" stop-color="#ffcf6b" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#wall)"/>
+  <g id="shelves"></g>
+  <g id="awning"></g>
+  <g id="lantern"><circle cx="58" cy="62" r="34" fill="url(#lglow)"/><line x1="58" y1="28" x2="58" y2="48" stroke="#2a1a0e" stroke-width="1.5"/><path d="M50,48 h16 l4,10 -4,14 h-16 l-4,-14z" fill="#d9952f" stroke="#5a3510"/><path d="M52,52 h12 l2,6 -2,10 h-12 l-2,-10z" fill="#ffe7a0"/></g>
+  <g id="lantern2" style="animation:glow 3.1s ease-in-out infinite"><circle cx="352" cy="58" r="26" fill="url(#lglow)"/><line x1="352" y1="28" x2="352" y2="46" stroke="#2a1a0e" stroke-width="1.5"/><path d="M345,46 h14 l3,8 -3,12 h-14 l-3,-12z" fill="#2f8a7a" stroke="#123"/><path d="M347,50 h10 l2,5 -2,8 h-10 l-2,-8z" fill="#bff5e8"/></g>
+
+  <!-- shopkeeper -->
+  <g id="sk">
+   <g id="face">
+    <path d="M148,262 L158,176 Q200,152 242,176 L252,262 Z" fill="#f2efe6"/>
+    <path d="M186,164 Q200,172 214,164" stroke="#cfc9b8" stroke-width="2" fill="none"/>
+    <line x1="200" y1="168" x2="200" y2="200" stroke="#b9a37a" stroke-width="1.5"/><circle cx="200" cy="203" r="3.2" fill="#b9a37a"/>
+    <circle cx="170" cy="118" r="6" id="ear1" class="skin"/><circle cx="230" cy="118" r="6" class="skin"/>
+    <circle cx="200" cy="116" r="31" class="skin" id="head"/>
+    <path d="M168,104 Q168,70 200,70 Q232,70 232,104 Z" fill="#f7f1df" stroke="#d8ccae"/>
+    <g fill="#c0392b"><circle cx="180" cy="90" r="2"/><circle cx="190" cy="83" r="2"/><circle cx="200" cy="80" r="2"/><circle cx="210" cy="83" r="2"/><circle cx="220" cy="90" r="2"/></g>
+    <g fill="#1f6b5c"><circle cx="185" cy="96" r="1.6"/><circle cx="200" cy="90" r="1.6"/><circle cx="215" cy="96" r="1.6"/></g>
+    <path d="M168,103 Q200,98 232,103" stroke="#c9a14a" stroke-width="2.5" fill="none"/>
+    <ellipse cx="189" cy="116" rx="5.5" ry="4.2" fill="#fff"/><ellipse cx="211" cy="116" rx="5.5" ry="4.2" fill="#fff"/>
+    <circle id="p1" cx="189" cy="116.5" r="2.4" fill="#2b1a0f"/><circle id="p2" cx="211" cy="116.5" r="2.4" fill="#2b1a0f"/>
+    <rect id="b1" class="brow" x="181" y="106" width="15" height="3.6" rx="1.6" fill="#1e140c"/>
+    <rect id="b2" class="brow" x="204" y="106" width="15" height="3.6" rx="1.6" fill="#1e140c"/>
+    <path d="M200,117 Q206,127 199,129" stroke="#8a5a36" stroke-width="2" fill="none"/>
+    <path d="M171,120 Q170,150 200,153 Q230,150 229,120 Q226,144 200,146 Q174,144 171,120 Z" fill="#241710"/>
+    <path id="mouth" d="M192,138 Q200,139 208,138" stroke="#1a0d06" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M186,133 Q200,127 214,133 Q200,136 186,133 Z" fill="#241710"/>
+    <path id="tear" d="M214,121 q3,5 0,7 q-3,-2 0,-7z" fill="#8fd3ff"/>
+    <g id="steam" fill="#fff"><circle cx="178" cy="70" r="5"/><circle cx="200" cy="64" r="6"/><circle cx="222" cy="70" r="5"/></g>
+   </g>
+   <ellipse cx="166" cy="194" rx="11" ry="7" class="skin"/>
+   <ellipse cx="234" cy="194" rx="11" ry="7" class="skin"/>
+  </g>
+  <g id="kid" style="transform:translateX(-60px)"><circle cx="20" cy="176" r="9" fill="#a8744a"/><rect x="12" y="185" width="16" height="12" rx="4" fill="#3f7fbf"/><text x="20" y="168" font-size="10" text-anchor="middle">💰</text></g>
+
+  <!-- counter -->
+  <rect x="0" y="188" width="400" height="72" fill="url(#wood)"/>
+  <g stroke="#2a170b" stroke-width="1" opacity=".5"><line x1="0" y1="200" x2="400" y2="200"/><line x1="70" y1="200" x2="70" y2="260"/><line x1="190" y1="200" x2="190" y2="260"/><line x1="310" y1="200" x2="310" y2="260"/></g>
+
+  <!-- camel -->
+  <g id="camel">
+    <ellipse cx="105" cy="190" rx="36" ry="3" fill="#0006"/>
+    <g stroke="#b88a4d" stroke-width="4.5" stroke-linecap="round"><line x1="84" y1="170" x2="83" y2="189"/><line x1="94" y1="171" x2="95" y2="189"/><line x1="116" y1="171" x2="115" y2="189"/></g>
+    <g id="leg4"><line x1="126" y1="170" x2="127" y2="189" stroke="#b88a4d" stroke-width="4.5" stroke-linecap="round"/><rect x="123" y="176" width="8" height="5" fill="#fff" stroke="#ccc" stroke-width=".5"/><line x1="124" y1="178.5" x2="130" y2="178.5" stroke="#d33" stroke-width=".8"/></g>
+    <path d="M90,160 Q102,128 116,158 Z" fill="#d4a964"/>
+    <ellipse cx="105" cy="164" rx="27" ry="11" fill="#d4a964"/>
+    <path d="M97,140 l3,4 -2,3 3,4 -2,4" stroke="#7a5228" stroke-width=".9" fill="none"/>
+    <path d="M128,160 Q133,148 139,136" stroke="#d4a964" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="146" cy="133" rx="10" ry="6" fill="#d4a964"/>
+    <circle cx="149" cy="131" r="1.4" fill="#2a170b"/><circle cx="143" cy="129" r="1.4" fill="#2a170b"/>
+    <path d="M153,136 q2,1 3,0" stroke="#2a170b" fill="none"/>
+    <path d="M78,162 q-6,4 -4,12" stroke="#b88a4d" stroke-width="2" fill="none"/>
+    <rect x="96" y="160" width="22" height="7" fill="#fff" stroke="#999" stroke-width=".4"/>
+    <text x="107" y="165.3" font-size="4.4" text-anchor="middle" fill="#c00" font-family="Arial" font-weight="700">MADE IN YIWU</text>
+    <path d="M100,146 h10" stroke="#fff" stroke-width="3" opacity=".25"/>
+  </g>
+
+  <!-- price tag -->
+  <g id="tagstring"><line x1="318" y1="26" x2="318" y2="96" stroke="#d9c9a0" stroke-width="1"/></g>
+  <g id="tag">
+    <rect id="tagbg" x="276" y="96" width="84" height="44" rx="5" fill="#f3e2b5" stroke="#8a6a3a" style="transition:fill .5s"/>
+    <circle cx="318" cy="102" r="2.5" fill="#2a170b"/>
+    <text x="318" y="114" font-size="7.5" text-anchor="middle" fill="#6b4a22" font-family="system-ui,sans-serif" letter-spacing="1.5">ASKING</text>
+    <text id="tagPrice" x="318" y="131" font-size="15" text-anchor="middle" fill="#2a170b" font-weight="800" font-family="system-ui,sans-serif">18.500</text>
+    <text x="355" y="136" font-size="5" text-anchor="end" fill="#6b4a22" font-family="system-ui,sans-serif">OMR</text>
+  </g>
+</svg>
+<div id="hud"><b>HAGGLE</b>
+  <div class="row">blood pressure <span id="bp"><span id="bpf" style="display:block"></span></span></div>
+  <div class="row" id="kidsRow">children claimed: <span id="kidsN">0</span></div>
+  <div class="row" id="timer"></div>
+</div>
+<div id="mute">[M] sound: on</div>
+</div>
+<div id="log" aria-live="polite"></div>
+<div id="ctl">
+  <div id="chips"></div>
+  <form id="f" autocomplete="off"><input id="inp" maxlength="80" placeholder="Offer (e.g. 4.5) or just talk shit…"><button>SAY</button></form>
+</div>
+<div id="end"><div id="rcpt"></div></div>
+
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const rand=(a=1,b)=>b===undefined?Math.random()*a:a+Math.random()*(b-a);
+const pick=a=>a[Math.random()*a.length|0];
+const chance=p=>Math.random()<p;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const r50=b=>Math.max(50,Math.round(b/50)*50);
+const omr=b=>(b/1000).toFixed(3);
+const TRUE_VALUE=350;
+
+/* ---------------- audio ---------------- */
+let AC=null,master=null,muted=false;
+try{muted=localStorage.getItem('haggle-mute')==='1'}catch(e){}
+function audio(){
+  if(AC)return AC;
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.35;master.connect(AC.destination)}catch(e){AC=null}
+  return AC;
+}
+function tone(f,dur=.08,type='square',vol=.12,slide=0,delay=0){
+  const a=audio();if(!a)return;
+  const t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f+slide),t+dur);
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0008,t+dur);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.02);
+}
+const sfx={
+  him:()=>tone(rand(95,170),.06,'square',.06),
+  you:()=>tone(rand(300,420),.04,'triangle',.05),
+  up:()=>{tone(300,.12,'sawtooth',.08,400);tone(500,.15,'sawtooth',.06,500,.1)},
+  down:()=>{tone(600,.14,'triangle',.1,-300)},
+  slam:()=>{tone(70,.35,'sine',.5,-30);tone(140,.12,'square',.12,-80)},
+  deal:()=>{[660,880,1320].forEach((f,i)=>tone(f,.18,'triangle',.12,0,i*.08));tone(2400,.5,'sine',.06,0,.28)},
+  pop:()=>tone(900,.05,'triangle',.08,-400),
+  phone:()=>{for(let i=0;i<6;i++)tone(i%2?1300:1600,.07,'square',.04,0,i*.08)}
+};
+function setMute(m){muted=m;$('mute').textContent='[M] sound: '+(m?'off':'on');if(master)master.gain.value=m?0:.35;try{localStorage.setItem('haggle-mute',m?'1':'0')}catch(e){}}
+setMute(muted);
+$('mute').onclick=()=>setMute(!muted);
+addEventListener('keydown',e=>{if((e.key==='m'||e.key==='M')&&document.activeElement!==$('inp'))setMute(!muted)});
+
+/* ---------------- scene setup ---------------- */
+(function scenery(){
+  const NS='http://www.w3.org/2000/svg',sh=$('shelves'),aw=$('awning');
+  const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+  const cols=['#c0392b','#2f8a7a','#d9952f','#6b4fa0','#3f7fbf','#a33d6b','#7aa33d','#e0c070'];
+  [[8,150,80],[8,150,140],[250,392,80],[250,392,140]].forEach(([x0,x1,y])=>{
+    el('rect',{x:x0,y:y,width:x1-x0,height:4,fill:'#5a3518'},sh);
+    let x=x0+3;
+    while(x<x1-10){
+      const w=rand(7,15),h=rand(10,24),c=pick(cols),k=Math.random();
+      if(k<.4)el('rect',{x,y:y-h,width:w,height:h,rx:2,fill:c,opacity:.85},sh);
+      else if(k<.75){el('ellipse',{cx:x+w/2,cy:y-h*.45,rx:w/2,ry:h*.45,fill:c,opacity:.85},sh);el('rect',{x:x+w*.3,y:y-h-2,width:w*.4,height:4,fill:c},sh)}
+      else el('path',{d:`M${x},${y} L${x+w/2},${y-h} L${x+w},${y}Z`,fill:c,opacity:.8},sh);
+      x+=w+rand(1,4);
+    }
+  });
+  for(let i=0;i<20;i++){
+    el('rect',{x:i*20,y:0,width:20,height:22,fill:i%2?'#f2e6c8':'#b8352a'},aw);
+    el('circle',{cx:i*20+10,cy:22,r:10,fill:i%2?'#f2e6c8':'#b8352a'},aw);
+  }
+  el('rect',{x:0,y:0,width:400,height:3,fill:'#5a3518'},aw);
+})();
+
+const MOUTH={
+  neutral:'M192,138 Q200,139 208,138',
+  smug:'M191,139 Q202,140 210,133',
+  happy:'M189,135 Q200,148 211,135',
+  angry:'M191,141 Q200,133 209,141',
+  sad:'M192,141 Q200,135 208,141',
+  shocked:'M195,138 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0'
+};
+const BROW={neutral:[0,0,0,0],smug:[-4,-3,0,8],happy:[-4,-6,-4,6],angry:[2,22,2,-22],sad:[-2,-18,-2,18],shocked:[-7,0,-7,0]};
+function mood(m){
+  const sk=$('sk');['neutral','smug','happy','angry','sad','shocked'].forEach(k=>sk.classList.remove(k));sk.classList.add(m);
+  $('mouth').setAttribute('d',MOUTH[m]);
+  $('mouth').setAttribute('fill',m==='shocked'?'#1a0d06':'none');
+  const b=BROW[m];
+  $('b1').style.transform=`translateY(${b[0]}px) rotate(${b[1]}deg)`;
+  $('b2').style.transform=`translateY(${b[2]}px) rotate(${b[3]}deg)`;
+  if(m==='angry'){sk.classList.remove('shake');void sk.getBBox();sk.classList.add('shake')}
+}
+function skin(){
+  const t=Math.max(0,Math.min(1,1-S.patience/100));
+  const r=Math.round(197+t*50),g=Math.round(140-t*75),b=Math.round(92-t*50);
+  document.querySelectorAll('.skin').forEach(e=>e.setAttribute('fill',`rgb(${r},${g},${b})`));
+  $('bpf').style.width=(t*100)+'%';
+}
+// eyes follow pointer a bit
+addEventListener('pointermove',e=>{
+  const dx=(e.clientX/innerWidth-.5)*3,dy=(e.clientY/innerHeight-.3)*2;
+  ['p1','p2'].forEach((id,i)=>{$(id).setAttribute('cx',(i?211:189)+dx);$(id).setAttribute('cy',116.5+Math.max(-1,Math.min(1.5,dy)))});
+});
+
+/* ---------------- state ---------------- */
+let S;
+function fresh(){
+  const start=r50(rand(16500,22500));
+  return {
+    ask:start,start,floor:r50(rand(3600,6200)),last:0,patience:100,respect:0,round:0,
+    kids:9,kidsSaid:0,insults:0,walks:0,comps:0,cousins:0,camelInsults:0,finals:0,teas:0,teaFee:0,teaOffered:false,
+    legOff:false,events:new Set(),fakeWalked:false,busy:false,over:false,deadline:0,timerFired:false,lowStreak:0,atFloor:0,mode:'normal'
+  };
+}
+
+/* ---------------- dialogue ---------------- */
+function kidsLine(){
+  S.kidsSaid++;
+  if(S.kidsSaid>1)S.kids+=1+(Math.random()*3|0);
+  $('kidsN').textContent=S.kids;
+  if(S.kidsSaid===1)return pick([
+    `I have ${S.kids} children. NINE. You know how much nine children eat? They eat like a wedding. Every day is a wedding.`,
+    `Habibi, I have ${S.kids} kids. Nine mouths. Eighteen shoes. One of them wants an iPhone. AN IPHONE.`,
+    `${S.kids} children I have. ${S.kids}! And you come here with this number like a tax collector.`]);
+  return pick([
+    `Did I mention my ${S.kids} children? ${S.kids}. Yes the number changed. Things happen fast in my house.`,
+    `My ${S.kids} children are watching you right now. In spirit. Judging you.`,
+    `${S.kids} kids, habibi. My wife is pregnant again, we don't even know with how many.`,
+    `I have ${S.kids} children and every one of them will grow up knowing your face.`,
+    `${S.kids} children! Don't count, don't count. Just feel the guilt.`]);
+}
+const L={
+  open:[
+    o=>`Ahlan, ahlan, ahlaaan! Come, come! You looked at the camel. I saw. Everybody who looks at the camel, the camel chooses them.`,
+    o=>`Handmade. By hand. My hands. Okay, my cousin's hands. Okay, a factory's hands, but a factory with a lot of heart.`,
+    o=>`For you, special price: <b>${omr(S.ask)}</b> rial. For anybody else, double. For Emiratis, triple.`
+  ],
+  insult:[
+    o=>`${o}? ${o}?? Habibi, for ${o} I cannot even buy the glue holding its hump together. Price is now <b>{ask}</b>. For the emotional damage.`,
+    o=>`You insult me. You insult my father. You insult this camel's father, who was ALSO a figurine. <b>{ask}</b>.`,
+    o=>`Are you on drugs? Is this a prank? Where is the camera? Hello TikTok. Price goes UP: <b>{ask}</b>.`,
+    o=>`My grandfather sold camels. Real camels. He would spit on ${o}. He is dead, so I spit for him. <b>{ask}</b>.`,
+    o=>`For ${o} I give you a photo of the camel. A blurry one. Taken with my thumb on the lens. Real price: <b>{ask}</b>.`,
+    o=>`Every time you say a number like ${o}, the price goes up. This is economics. Google it. <b>{ask}</b>.`,
+    o=>`Brother you walked into a souq with Temu money. <b>{ask}</b>. Go back to the airport.`,
+    o=>`That's not an offer, that's a tip. And a shit tip. <b>{ask}</b>.`,
+    o=>`The cat that sleeps under my stall once offered me a dead lizard. More respectful than ${o}. <b>{ask}</b>.`,
+    o=>`I'm going to pretend I didn't hear that, and to help me pretend, the price is <b>{ask}</b>.`,
+    o=>`${o}. Wow. You know this is a shop, not a mosque? I don't give charity, I RECEIVE it. <b>{ask}</b>.`
+  ],
+  low:[
+    o=>`${o}... habibi. Haha. You're funny. Funny people pay <b>{ask}</b>.`,
+    o=>`Look at the craftsmanship. LOOK at the hump. Hand-carved hump. <b>{ask}</b>, final price. Maybe.`,
+    o=>`${o}? You're breaking my heart into small pieces and paying ${o} for each piece. <b>{ask}</b>.`,
+    o=>`Even the flies in this shop pay more rent than ${o}. <b>{ask}</b>.`,
+    o=>`I paid more than ${o} for the bubble wrap. I don't use bubble wrap. That's how expensive it was. <b>{ask}</b>.`,
+    o=>`${o}. Okay. Okay okay okay. No. <b>{ask}</b>.`,
+    o=>`You see my face? This is the face of a man who will not take ${o}. <b>{ask}</b>.`
+  ],
+  counter:[
+    o=>`Okay okay. Because you have a kind face. A poor face, but kind. <b>{ask}</b>.`,
+    o=>`You're killing me. Wallah you are killing me slowly like a Ramadan afternoon. <b>{ask}</b>.`,
+    o=>`My wife will divorce me for this. <b>{ask}</b>. Don't tell her. She's scary.`,
+    o=>`Fine. <b>{ask}</b>. I'm losing money. I'm basically PAYING you to take it.`,
+    o=>`Ya akhi... <b>{ask}</b>. I'm only doing this for the camel. He likes you. I don't. He does.`,
+    o=>`<b>{ask}</b>, and I throw in my blessing. Blessings are usually 2 rial. Today free. Today only.`,
+    o=>`Ugh. <b>{ask}</b>. You negotiate like my mother-in-law and I hate my mother-in-law.`,
+    o=>`I go down to <b>{ask}</b>, but you tell your friends I robbed you. I have a reputation.`,
+    o=>`${o}? No. But I like that you try. <b>{ask}</b>.`,
+    o=>`Hmm. Hmmmmm. *looks at the sky* *looks at the camel* *looks at your shoes* ...<b>{ask}</b>.`,
+    o=>`Wallahi, I don't even make profit at <b>{ask}</b>. I make friendship. Friendship doesn't feed ${S.kids} kids, but okay.`
+  ],
+  floor:[
+    o=>`<b>{ask}</b>. That's it. Below this I sell my kidney. Which kidney? The good one.`,
+    o=>`Khalas. <b>{ask}</b>. I swear on my mother, on my car, on my WhatsApp status.`,
+    o=>`I can't go lower. Physically. My mouth will not make a smaller number. Watch: <b>{ask}</b>. See?`,
+    o=>`<b>{ask}</b>. You can stand there until the adhan, until the next adhan, until Eid. <b>{ask}</b>.`,
+    o=>`This is the bottom, habibi. Under this is just sand. <b>{ask}</b>.`
+  ],
+  deal:[
+    o=>`Mabrook! You just bought the finest camel in the souq. No refunds. No returns. No eye contact.`,
+    o=>`Deal! *spits in hand, shakes your hand* ...you didn't spit. Disrespectful. But deal.`,
+    o=>`Khalas, deal. Take it before I cry. Actually I'm already crying. Go. GO.`,
+    o=>`Deal. I hope you're happy. My children are not. All ${S.kids} of them.`,
+    o=>`Fine! Deal! Take it! Wrap it yourself, I'm emotionally unavailable.`
+  ],
+  overpay:[
+    o=>`...${o}? That's MORE than I asked. *pockets it at the speed of light* No take-backs. I'm calling my wife. We're going to Salalah.`,
+    o=>`Wallah you're the best customer of my life. Also the dumbest. *money is gone, you didn't see where it went*`
+  ],
+  backwards:[
+    o=>`You went DOWN? Habibi this is haggling, not limbo. You lose points. <b>{ask}</b>.`,
+    o=>`Earlier you said ${omr(S.last)}. Now ${o}? You're negotiating against yourself and you're LOSING. <b>{ask}</b>.`,
+    o=>`Backwards?! Okay, I also go backwards. <b>{ask}</b>. Fun game, right?`
+  ],
+  same:[
+    o=>`You said ${o} already. Saying it again doesn't make it bigger. Like your salary.`,
+    o=>`${o}, ${o}, ${o}. You're a parrot? I also sell parrots. Wooden ones. Expensive.`,
+    o=>`Broken record. My price is still <b>{ask}</b>.`
+  ],
+  zero:[
+    o=>`Zero? You want the camel for free? Habibi, you want me to PAY you? Price up: <b>{ask}</b>.`,
+    o=>`Negative money. Wow. Okay, a scientist. Get out of my shop, scientist. <b>{ask}</b>.`
+  ],
+  compliment:[
+    o=>`Ahh, you have good taste. Taste is expensive though. <b>{ask}</b>. Okay <b>{ask}</b> for the taste.`,
+    o=>`You think so? *touches beard* You know what, for a poet like you, <b>{ask}</b>.`,
+    o=>`Shukran habibi, shukran. My mother says the same. She's blind but she says it. <b>{ask}</b>.`,
+    o=>`Haha, sweet words. Sweet words are cheap. But okay, little discount. <b>{ask}</b>.`
+  ],
+  complimentSpam:[
+    o=>`Again with the sweet talk? You think I'm stupid? Flattery tax: 200 baisa. <b>{ask}</b>.`,
+    o=>`Habibi I am married. Stop flirting and pay. <b>{ask}</b>.`,
+    o=>`Every compliment now costs 200 baisa. I learned this from Apple. <b>{ask}</b>.`
+  ],
+  cousin1:[
+    o=>`My cousin? MY COUSIN? His camels are made of soap. In summer they melt. You'll have a puddle. Okay okay, <b>{ask}</b>.`,
+    o=>`Lulu? Go to Lulu. Buy a plastic camel. Next to the frozen chicken. Very romantic. ...fine. <b>{ask}</b>.`,
+    o=>`Amazon?? Amazon doesn't have a soul. Or ${S.kids} kids. ...<b>{ask}</b>, because you hurt me.`
+  ],
+  cousin2:[
+    o=>`My cousin just called me. He said you were there yesterday and you're cheap. Price is <b>{ask}</b>.`,
+    o=>`Habibi, every shop in this souq is my cousin. ALL of them. We have a WhatsApp group. <b>{ask}</b>.`
+  ],
+  cousin3:[
+    o=>`Again with the cousin. You know what, cousin tax. <b>{ask}</b>. Go tell him THAT.`,
+    o=>`I AM the cousin. Different hat. Same camel. <b>{ask}</b>.`
+  ],
+  camelInsult:[
+    o=>`Ugly? Yes it's ugly. Ugly is RARE. Beautiful camels are everywhere. Price up: <b>{ask}</b>.`,
+    o=>`This camel has more character than your whole family tree. <b>{ask}</b>.`,
+    o=>`Don't talk about him like that, he can hear you. Now he's sad, and sad camels cost more. <b>{ask}</b>.`,
+    o=>`Broken? It's not broken, it's VINTAGE. Vintage means I charge for the damage. <b>{ask}</b>.`,
+    o=>`Okay yes, it's a piece of shit. But it's MY piece of shit. <b>{ask}</b>.`
+  ],
+  camelInsultDown:[
+    o=>`...okay, okay, the hump is a little crooked. <b>{ask}</b>. Don't tell anyone I admitted this.`,
+    o=>`Hmph. Fine. You have eyes. Most tourists don't. <b>{ask}</b>.`
+  ],
+  finalOk:[
+    o=>`"Final offer." Wow. Big man. ...${o}. Okay. Take it. I respect a man with no shame.`,
+    o=>`*long silence* *longer silence* ...${o}. Khalas. Deal. I'm going home to lie on the floor.`
+  ],
+  finalBad:[
+    o=>`HAHAHAHA. "Final." HAHAHA. Okay, my final: <b>{ask}</b>.`,
+    o=>`Final offer, final offer. Everybody has a final offer. My final offer is <b>{ask}</b>, and mine is actually final. No it's not.`,
+    o=>`You said "final" like it's a magic word. It's not. <b>{ask}</b>.`
+  ],
+  finalLiar:[
+    o=>`You said "final" before. Final means FINAL. You're a liar. Liars pay <b>{ask}</b>.`
+  ],
+  chase:[
+    o=>`WAIT. Wait wait wait. Habibi. Come back. Why you running? We are FRIENDS. <b>{ask}</b>. Just for you.`,
+    o=>`Hey! HEY! Where you going?! Okay okay okay. <b>{ask}</b>. Don't make me run, I'm wearing sandals.`,
+    o=>`*grabs your sleeve* Brother brother brother. Sit. <b>{ask}</b>. Sit. Have dates.`
+  ],
+  chaseDeal:[
+    o=>`FINE! ${o}! Take it! Take the camel! Go! Never come back! ...Come back tomorrow, I have elephants.`
+  ],
+  letGo:[
+    o=>`Go! Go! Go to Lulu! Buy a plastic camel next to the frozen chicken! See if I care! *cares*`,
+    o=>`Bye bye! Tell your mother I said she raised a cheap man.`,
+    o=>`Yalla, go. I'm not chasing you. I have knees. Bad ones.`,
+    o=>`Go, walk, walk. Tomorrow the camel is 40 rial. For you, 50.`
+  ],
+  kicked:[
+    o=>`OUT. Out of my shop. Out of the souq. Out of Muscat. Go to Dubai, they love people like you there.`,
+    o=>`KHALAS! Enough! You raised my blood pressure more than my mother-in-law. GET OUT.`,
+    o=>`Yalla, OUT. The camel doesn't want to go with you anymore. He told me.`
+  ],
+  unknown:[
+    o=>`What? I don't speak broke. Give me a number.`,
+    o=>`Habibi, poetry doesn't pay rent. A number. In rial.`,
+    o=>`Mmm, yes yes. Very interesting. Anyway, <b>{ask}</b>.`,
+    o=>`I didn't understand a word, but I can tell it was cheap.`,
+    o=>`*nods like he understood* <b>{ask}</b>.`
+  ],
+  noOffer:[o=>`Final offer of WHAT? You didn't even say a number. Amateur.`],
+  hostage:[o=>`At this point it's not a sale, it's a hostage situation. The camel is the hostage. You are the family.`]
+};
+const say1=(arr,o)=>pick(arr)(o);
+
+/* ---------------- ui helpers ---------------- */
+const logEl=$('log'),inp=$('inp');
+let skipType=false;
+logEl.addEventListener('click',()=>skipType=true);
+function fill(t){return t.replace(/\{ask\}/g,omr(S.ask))}
+function addMsg(cls,html){const d=document.createElement('div');d.className='m '+cls;d.innerHTML=html;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;return d}
+async function him(text,m){
+  if(m)mood(m);
+  const html=fill(text);
+  const d=addMsg('him','');
+  const tmp=document.createElement('div');tmp.innerHTML=html;const plain=tmp.textContent;
+  skipType=false;
+  for(let i=1;i<=plain.length;i++){
+    if(skipType)break;
+    d.textContent=plain.slice(0,i);
+    if(i%3===0)sfx.him();
+    logEl.scrollTop=logEl.scrollHeight;
+    await wait(plain[i-1]==='.'||plain[i-1]==='?'||plain[i-1]==='!'?70:16);
+  }
+  d.innerHTML=html;logEl.scrollTop=logEl.scrollHeight;
+  await wait(220);
+}
+function you(t){addMsg('you',t.replace(/</g,'&lt;'));sfx.you()}
+function sys(t){addMsg('sys',t)}
+let lastShown=0;
+function setAsk(b,quiet){
+  b=r50(Math.min(b,60000));
+  const old=S.ask;S.ask=b;
+  $('tagPrice').textContent=omr(b);
+  if(quiet||b===old)return;
+  const tag=$('tag');tag.classList.remove('up','down');void tag.getBBox();
+  tag.classList.add(b>old?'up':'down');
+  (b>old?sfx.up:sfx.down)();
+  setTimeout(()=>tag.classList.remove('up','down'),900);
+}
+function setPat(d){S.patience=Math.max(0,Math.min(100,S.patience+d));skin()}
+
+const CHIPS=[
+  ['offer','💸 Offer','Make the offer typed in the box'],
+  ['final','☝️ Final offer','Say your offer is final'],
+  ['compliment','😍 Compliment','Butter him up'],
+  ['cousin','🏪 Cousin\'s cheaper','Mention a cheaper shop'],
+  ['camel','🐪 Insult camel','Point out the camel is garbage'],
+  ['walk','🚶 Walk away','Pretend to leave'],
+  ['accept','🤝 Accept','Pay his asking price']
+];
+function renderChips(set){
+  const c=$('chips');c.innerHTML='';
+  (set||CHIPS).forEach(([id,label,title])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=id==='accept'?`🤝 Pay ${omr(S.ask)}`:label;b.title=title||'';
+    if(id==='tea_yes'||id==='tea_no')b.classList.add('hot');
+    b.onclick=()=>act(id);c.appendChild(b);
+  });
+  lock(S.busy);
+}
+function lock(on){
+  S.busy=on;
+  document.querySelectorAll('#chips button,#f button').forEach(b=>b.disabled=on||S.over);
+  inp.disabled=on||S.over;
+  if(!on&&!S.over&&matchMedia('(pointer:fine)').matches)inp.focus();
+}
+
+/* ---------------- parsing ---------------- */
+function parseMoney(t){
+  const s=t.toLowerCase();
+  const m=s.match(/-?\d+(?:[.,]\d+)?/);
+  if(!m)return null;
+  let n=parseFloat(m[0].replace(',','.'));
+  if(/bais|bz/.test(s))return Math.round(n);
+  if(/rial|omr|\bro\b/.test(s))return Math.round(n*1000);
+  if(n>=100&&!/[.,]/.test(m[0]))return Math.round(n); // "500" = 500 baisa
+  return Math.round(n*1000);
+}
+function intent(t){
+  const s=t.toLowerCase();
+  const n=parseMoney(t);
+  if(/\b(final|last offer|take it or leave)/.test(s))return['final',n];
+  if(n!==null)return['offer',n];
+  if(/\b(bye|leave|leaving|walk|go away|goodbye|i'?m out|forget it|no thanks)\b/.test(s))return['walk'];
+  if(/\b(ok|okay|deal|fine|accept|yes|yalla|agreed|sold)\b/.test(s))return['accept'];
+  if(/cousin|lulu|amazon|carrefour|temu|ali ?express|noon|shein|other (shop|stall|store)|next door|cheaper/.test(s))return['cousin'];
+  if(/ugly|shit|trash|garbage|broken|crap|fake|cheap|plastic|junk|china|yiwu|crooked|wonky|fugly|disgusting|sucks/.test(s))return['camel'];
+  if(/beautiful|nice|lovely|handsome|love|habibi|brother|akhi|friend|great|amazing|beard|hat|kumma|respect|wise|king|legend/.test(s))return['compliment'];
+  if(/\b(tea|chai|karak|coffee|kahwa|qahwa|dates)\b/.test(s))return['tea_ask'];
+  if(/\b(kids?|children|wife|family)\b/.test(s))return['kids_ask'];
+  return['unknown'];
+}
+
+/* ---------------- engine ---------------- */
+async function act(id,arg,raw){
+  if(S.busy||S.over)return;
+  audio();
+  lock(true);
+  try{
+    if(id==='offer'||id==='final'){
+      if(arg===undefined){const v=inp.value.trim();arg=v?parseMoney(v):null;raw=v;inp.value=''}
+      if(id==='offer'&&arg===null){await him(pick(['A number, habibi. Type a number. With digits.','Offer means number. You know numbers? 1, 2, 18.500...']),'smug');return}
+      if(id==='final'&&arg===null)arg=S.last||null;
+    }
+    if(raw!==undefined&&raw!=='')you(raw);
+    else if(id!=='offer'&&!(id||'').startsWith('tea'))you(chipSay(id,arg));
+    else if(id==='offer')you(omr(arg)+' rial.');
+    else if(id==='tea_yes')you('Sure, I\'ll have tea.');
+    else if(id==='tea_no')you('No thanks, no tea.');
+    await handle(id,arg);
+    if(!S.over)await maybeEvent(id);
+    if(!S.over)await checkTimer();
+    if(!S.over&&S.patience<=0)await kick();
+  }finally{
+    if(!S.over){renderChips(S.mode==='tea'?TEA_CHIPS:null);lock(false)}
+  }
+}
+function chipSay(id,a){
+  return ({
+    final:a?`${omr(a)}. Final offer. Take it or leave it.`:'Final offer!',
+    compliment:pick(['Your shop is beautiful, ya akhi. And that kumma, wow.','You have the face of an honest man.','Masha\'Allah, what a beard.','I can tell you\'re the wisest man in this souq.']),
+    cousin:pick(['Your cousin two stalls down has the same camel for half.','I saw this on Temu for 800 baisa.','Lulu has these. Next to the frozen chicken.']),
+    camel:pick(['Bro this camel is garbage. The leg is taped.','It literally says Made in Yiwu on it.','The hump is crooked. It looks like it\'s been through a war.','This is the ugliest camel I\'ve ever seen.']),
+    walk:pick(['Nah, forget it. I\'m out.','Okay, thanks, bye.','Too expensive. I\'ll look around.']),
+    accept:`Fine. ${omr(S.ask)}. Deal.`
+  })[id]||'...';
+}
+
+async function handle(id,x){
+  if(['offer','final','compliment','cousin','camel'].includes(id))S.round++;
+  switch(id){
+    case 'offer': return offer(x);
+    case 'final': return finalOffer(x);
+    case 'accept': return deal(S.ask,pick(L.deal)(omr(S.ask)));
+    case 'walk': return walk();
+    case 'compliment': return compliment();
+    case 'cousin': return cousin();
+    case 'camel': return camel();
+    case 'tea_yes': return teaYes();
+    case 'tea_no': return teaNo();
+    case 'tea_ask':
+      if(!S.teaOffered){S.teaOffered=true;return offerTea('Tea? You want tea? Of course! I am Omani, I was born holding a teapot. Sit, sit.')}
+      setPat(-4);return him(pick([`More tea? This is a shop, not a café. Tea number ${S.teas+1} is extra.`,`You came here for tea or camel? Decide your life.`]),'smug');
+    case 'kids_ask':
+      return him(kidsLine()+' Price: <b>{ask}</b>.','sad');
+    default:
+      setPat(-3);return him(say1(L.unknown),'smug');
+  }
+}
+
+async function offer(x){
+  const o=omr(x);
+  S.atFloorPrev=S.ask<=S.floor;
+  if(x<=0){setPat(-18);setAsk(S.ask*1.1);S.last=0;return him(say1(L.zero,o),'angry')}
+  if(x>S.ask){return deal(x,say1(L.overpay,o),true)}
+  if(x===S.ask){return deal(x,say1(L.deal,o))}
+  if(S.last&&x===S.last){setPat(-8);return him(say1(L.same,o),'smug')}
+  if(S.last&&x<S.last){setPat(-16);setAsk(S.ask*rand(1.05,1.12));const t=say1(L.backwards,o);S.last=x;return him(t,'angry')}
+  const ratio=x/S.ask;
+  setPat(-3);
+  // insulting lowball: price goes UP
+  if(ratio<.12||x<S.floor*.38){
+    S.insults++;S.lowStreak++;
+    setPat(-rand(18,30));
+    setAsk(S.ask*rand(1.07,1.2));
+    S.last=x;
+    let t=say1(L.insult,o);
+    if(S.lowStreak>=2&&chance(.6))t=kidsLine()+` And for ${o}, the price goes UP: <b>{ask}</b>.`;
+    await him(t,'angry');
+    if(S.ask>S.start*1.45&&!S.events.has('hostage')){S.events.add('hostage');await him(say1(L.hostage),'smug')}
+    if(S.patience<45&&S.patience>0&&!S.fakeWalked&&chance(.55))await fakeWalk();
+    return;
+  }
+  // lowball: guilt trip, barely moves
+  if(x<S.floor*.72){
+    S.lowStreak++;
+    setPat(-10);
+    setAsk(S.ask*rand(.96,.995));
+    S.last=x;
+    const t=(chance(.45)||S.kidsSaid===0)?kidsLine()+' <b>{ask}</b>.':say1(L.low,o);
+    return him(t,chance(.5)?'sad':'smug');
+  }
+  S.lowStreak=0;
+  S.prevLast=S.last;
+  const tiny=S.last&&x-S.last<Math.max(150,S.last*.03);
+  S.last=x;
+  // real counter
+  let conc=Math.min(.5,.16+S.round*.02+S.respect*.035+(S.patience<35?-.08:0)+rand(-.04,.06));
+  if(tiny){conc*=.35;setPat(-7)}
+  let next=Math.max(S.floor,S.ask-(S.ask-x)*conc);
+  next=r50(Math.ceil(next/50)*50);
+  if(x>=S.floor&&(next-x<=Math.max(250,next*.04)||S.ask<=S.floor*1.02||(x>=S.ask*.85&&chance(.4)))){
+    return deal(x,say1(L.deal,o));
+  }
+  if(next<=S.floor){
+    S.atFloor++;
+    setAsk(S.floor);
+    if(S.atFloor>=3&&x>=S.floor*.9&&chance(.5))return deal(x,`*sighs from the bottom of his soul* ...${o}. Fine. You win. I hope the camel haunts you.`);
+    return him(say1(L.floor,o),S.atFloor>1?'angry':'sad');
+  }
+  setAsk(next);
+  if(tiny)return him(pick([`You went up ${omr(x-(S.prevLast||0))}? Wow. Big spender. Slow down, you'll hurt yourself. <b>{ask}</b>.`,`Baisa by baisa. You're haggling like a dripping tap. <b>{ask}</b>.`,`Habibi at this speed we finish next Ramadan. <b>{ask}</b>.`]),'smug');
+  return him(say1(L.counter,o),pick(['smug','neutral','sad','smug']));
+}
+
+async function finalOffer(x){
+  if(!x)return him(say1(L.noOffer),'smug');
+  const o=omr(x);
+  if(x>=S.ask)return deal(x,x>S.ask?say1(L.overpay,o):say1(L.deal,o),x>S.ask);
+  S.finals++;
+  if(S.finals===1&&(x>=S.floor||(x>=S.floor*.85&&(S.respect>=2||S.teas>0)&&chance(.7)))){
+    return deal(x,say1(L.finalOk,o)+(x<S.floor?' Only because you drank my tea.':''));
+  }
+  setPat(-14);
+  setAsk(S.ask*rand(1.03,1.09));
+  S.last=Math.max(S.last,x);
+  if(S.finals>1)return him(say1(L.finalLiar,o),'angry');
+  return him(say1(L.finalBad,o),'happy');
+}
+
+async function compliment(){
+  S.comps++;
+  if(S.comps<=2){S.respect++;setPat(+8);setAsk(Math.max(S.floor,S.ask*rand(.95,.98)));return him(say1(L.compliment),'happy')}
+  setPat(-7);setAsk(S.ask+200);return him(say1(L.complimentSpam),'smug');
+}
+async function cousin(){
+  S.cousins++;
+  if(S.cousins===1){setPat(-6);setAsk(Math.max(S.floor,S.ask*rand(.9,.95)));return him(say1(L.cousin1),'shocked')}
+  if(S.cousins===2){setPat(-8);return him(say1(L.cousin2),'smug')}
+  setPat(-12);setAsk(S.ask+r50(rand(500,1200)));return him(say1(L.cousin3),'angry');
+}
+async function camel(){
+  S.camelInsults++;
+  setPat(-14);
+  if(S.camelInsults===2&&!S.legOff){await legFalls(true);return}
+  if(chance(.3)&&S.camelInsults<3){setAsk(Math.max(S.floor,S.ask*.94));return him(say1(L.camelInsultDown),'sad')}
+  setAsk(S.ask*rand(1.04,1.1));return him(say1(L.camelInsult),'angry');
+}
+const TEA_CHIPS=[['tea_yes','🍵 Drink the tea'],['tea_no','🙅 Refuse tea']];
+async function offerTea(line){
+  S.mode='tea';
+  await him(line||pick(['Wait wait. Before we fight. You want tea? Karak? It\'s fresh. Fresh from this morning. Last week\'s morning.','Habibi, sit. Drink tea. We are not animals. We fight like gentlemen, with tea.']),'happy');
+}
+async function teaYes(){
+  S.mode='normal';S.teas++;S.respect+=2;setPat(+18);
+  sys('*he pours a tiny glass of karak with the confidence of a surgeon*');
+  await wait(500);
+  S.teaFee+=200;setAsk(S.ask+200);
+  return him(pick(['Good, good. Now we are brothers. Brothers pay for tea: 200 baisa, added to the camel. <b>{ask}</b>.','You like? Of course you like. My wife makes it. Tea is 200 baisa, I put it on the camel. <b>{ask}</b>.']),'happy');
+}
+async function teaNo(){
+  S.mode='normal';setPat(-22);S.respect--;
+  setAsk(S.ask*1.06);
+  return him(pick(['You refuse my TEA? In MY shop? My grandfather is turning in his grave. He\'s spinning. You could power Sohar with him. <b>{ask}</b>.','No tea. Okay. Okay. *pours it on the floor* <b>{ask}</b>.']),'angry');
+}
+
+async function deal(price,line,overpaid){
+  S.over=true;lock(true);
+  mood('happy');
+  await him(line,'happy');
+  sfx.deal();
+  setAsk(price,true);
+  await wait(700);
+  end('deal',price,overpaid);
+}
+async function kick(){
+  S.over=true;lock(true);
+  sfx.slam();
+  await him(say1(L.kicked),'angry');
+  sys('*you have been physically escorted out by a man in sandals*');
+  await wait(900);
+  end('kicked');
+}
+async function walk(){
+  S.walks++;
+  sys('*you turn and start walking away*');
+  await wait(900);
+  if(S.walks>=3){S.over=true;await him('Third time? THIRD? I\'m not chasing you again. My sandals are worn out because of you. Bye.','smug');await wait(800);return end('walked')}
+  const good=S.last&&S.last>=S.floor*.8;
+  if(good||(S.walks===1&&S.last>S.floor*.5&&chance(.6))){
+    if(S.last>=S.floor&&chance(.5))return deal(S.last,say1(L.chaseDeal,omr(S.last)));
+    const target=Math.max(S.floor,Math.min(S.ask*.92,Math.max(S.last*1.12,S.floor)));
+    setAsk(target);
+    setPat(+6);
+    return him(say1(L.chase),'shocked');
+  }
+  S.over=true;
+  await him(say1(L.letGo),pick(['smug','angry']));
+  await wait(800);
+  end('walked');
+}
+
+/* ---------------- events ---------------- */
+async function fakeWalk(){
+  S.fakeWalked=true;
+  await him(`KHALAS. I'm closing. Go. I'm going home to my ${S.kids} children and I'll tell them a stranger killed their dinner.`,'angry');
+  $('sk').classList.add('gone');
+  sys('*he pulls down half the shutter and walks off dramatically*');
+  await wait(2600);
+  sys('*…*');
+  await wait(1400);
+  $('sk').classList.remove('gone');
+  await wait(1100);
+  const r=Math.random();
+  if(r<.5){setPat(+30);await him(pick(['...I forgot my phone. Since I\'m here. <b>{ask}</b>.','...my wife said come back and sell the camel or don\'t come home. So. <b>{ask}</b>.']),'smug')}
+  else{setPat(+30);setAsk(Math.max(S.floor,S.ask*.93));await him(pick(['Okay. I walked to the corner. I thought about my life. <b>{ask}</b>. For peace.','I came back because the camel was crying. Not me. The camel. <b>{ask}</b>.']),'sad')}
+}
+async function legFalls(provoked){
+  S.legOff=true;S.events.add('leg');
+  if(provoked)await him('Broken? BROKEN? This camel is SOLID. Look, I knock on it: *knock*','angry');
+  $('leg4').classList.add('off');sfx.pop();
+  sys('*the camel\'s taped leg falls off and rolls under the counter*');
+  await wait(1000);
+  mood('shocked');await wait(700);
+  if(chance(.5)){setAsk(S.ask*1.08);await him('...That was already like that. Now it\'s a three-legged camel. Very rare. Collector\'s edition. Price up: <b>{ask}</b>.','smug')}
+  else{S.floor=r50(S.floor*.85);setAsk(Math.max(S.floor,S.ask-1500));await him('...okay. Okay. 1.5 rial off. You get the leg separately. It\'s a set now. <b>{ask}</b>.','sad')}
+}
+async function maybeEvent(id){
+  if(S.over||S.mode==='tea')return;
+  if(!S.teaOffered&&S.round>=2&&(S.round>=4||chance(.4))){S.teaOffered=true;return offerTea()}
+  if(S.round<2||!chance(.24))return;
+  const pool=[];
+  if(!S.events.has('phone'))pool.push('phone');
+  if(!S.events.has('kid'))pool.push('kid');
+  if(!S.events.has('tourist'))pool.push('tourist');
+  if(!S.events.has('prayer')&&S.round>=3)pool.push('prayer');
+  if(!S.legOff&&S.round>=4)pool.push('leg');
+  if(!S.events.has('cat'))pool.push('cat');
+  if(!pool.length)return;
+  const e=pick(pool);S.events.add(e);
+  if(e==='phone'){
+    sfx.phone();sys('*his phone rings. The ringtone is a full Arabic pop song*');await wait(600);
+    await him(`Alo? ... Ya Salim. ... Yes the tourist is here. ... Yes, cheap. VERY cheap. ... Yes I'm being nice. ... Okay, bye. *hangs up* ...That was my cousin. He says hi. <b>{ask}</b>.`,'smug');
+  }else if(e==='kid'){
+    const k=$('kid');sys('*a small child runs in, takes money from the till, and runs out*');
+    k.classList.remove('reset');k.style.transform='translateX(470px)';
+    await wait(1300);
+    setAsk(S.ask+500);
+    await him(`SEE? SEE what I live with? That was number ${Math.min(S.kids,7)}. Price +500 baisa, to replace what he stole. <b>{ask}</b>.`,'angry');
+    setTimeout(()=>{k.classList.add('reset');k.style.transform='translateX(-60px)'},400);
+  }else if(e==='tourist'){
+    sys('*a sunburnt tourist behind you points at the camel* "Oh my god, how much? Like, 30?"');
+    await wait(800);setAsk(S.ask+1000);
+    await him('You hear that? Market forces. Supply and demand. <b>{ask}</b>.','happy');
+    await wait(600);sys('*the tourist gets distracted by a magnet shaped like a dallah and wanders off*');
+    await him('...anyway. The price stays. Market forces have memory.','smug');
+  }else if(e==='prayer'){
+    S.deadline=Date.now()+30000;startTimer();
+    await him('Habibi, adhan in 30 seconds. After prayer, the price is different. Higher. Allah sees everything, and He sees you being cheap.','smug');
+  }else if(e==='leg'){
+    await legFalls(false);
+  }else if(e==='cat'){
+    sys('*a stray cat jumps onto the counter and sniffs the camel*');
+    await him(pick(['Even the cat likes it. Cats have taste. More taste than you. <b>{ask}</b>.','Yalla, ya bissa, out. ...She has a good eye. <b>{ask}</b>.']),'happy');
+  }
+}
+let tInt=0;
+function startTimer(){
+  clearInterval(tInt);$('timer').style.display='block';
+  tInt=setInterval(()=>{
+    const s=Math.ceil((S.deadline-Date.now())/1000);
+    if(S.over||!S.deadline){clearInterval(tInt);$('timer').style.display='none';return}
+    $('timer').textContent=s>0?`adhan in ${s}s`:'adhan: price going up';
+    if(s<=0&&!S.busy&&!S.timerFired){act('_timer')}
+  },250);
+}
+async function checkTimer(){
+  if(S.deadline&&Date.now()>=S.deadline&&!S.timerFired){
+    S.timerFired=true;S.deadline=0;$('timer').style.display='none';
+    sys('*the adhan echoes across the souq. He leaves. He comes back 12 minutes later, refreshed*');
+    await wait(900);
+    setAsk(S.ask*1.15);
+    await him('Alhamdulillah. I prayed. I prayed for you, actually. Then I prayed for a higher price, and Allah said yes. <b>{ask}</b>.','happy');
+  }
+}
+
+/* ---------------- end ---------------- */
+function end(kind,paid,overpaid){
+  S.over=true;clearInterval(tInt);lock(true);
+  let verdict='',title='';
+  if(kind==='deal'){
+    const f=S.floor,s=S.start;
+    if(overpaid)verdict='Village idiot. You paid MORE than he asked. He\'s naming his next kid after you.';
+    else if(paid>=s*.95)verdict='Tourist. Full price. The camel is embarrassed for you.';
+    else if(paid>=f*2)verdict='Robbed. Politely. With tea.';
+    else if(paid>=f*1.45)verdict='Mid. He\'s not happy, but he\'s not crying either.';
+    else if(paid>=f*1.12)verdict='Shark. He\'ll complain about you in the cousins\' WhatsApp group.';
+    else verdict='LEGEND. He\'ll tell this story at weddings. As a warning.';
+    title='SOLD';
+    try{const best=+localStorage.getItem('haggle-best')||0;if(!best||paid<best){localStorage.setItem('haggle-best',paid)}}catch(e){}
+  }else if(kind==='kicked'){title='EJECTED';verdict='Kicked out. You have been banned from the souq, the wilayat, and his cousin\'s stall.'}
+  else{title='NO SALE';verdict='You walked. You saved money. You also have no camel and no story. Coward.'}
+  let best=0;try{best=+localStorage.getItem('haggle-best')||0}catch(e){}
+  const row=(a,b,c='')=>`<div class="l ${c}"><span>${a}</span><span>${b}</span></div>`;
+  $('rcpt').innerHTML=`
+    <h2>ABU HAMDAN</h2><div class="c">Fine Camels &amp; Other Things<br>Muttrah Souq · Stall 7(ish)</div><hr>
+    <div class="c big">${title}</div><hr>
+    ${row('1x Camel, 3.5 legs'+(S.legOff?' (now 3)':''),kind==='deal'?omr(paid):'—')}
+    ${S.teas?row(`${S.teas}x Karak (mandatory fee)`,'incl.'):''}
+    ${row('Opening ask',omr(S.start))}
+    ${row('His secret bottom price',omr(S.floor))}
+    ${row('Actual value (Yiwu, box of 400)',omr(TRUE_VALUE))}
+    <hr>
+    ${kind==='deal'?row('Markup you ate',Math.round((paid/TRUE_VALUE-1)*100).toLocaleString()+'%','big'):''}
+    ${row('Children he claimed',S.kids)}
+    ${row('Rounds of haggling',S.round)}
+    ${row('Times you walked away',S.walks)}
+    ${row('His blood pressure',Math.round(100-S.patience)+'%')}
+    ${best?row('Your best deal ever',omr(best)+' OMR'):''}
+    <div class="verdict">${verdict}</div>
+    <div class="c">شكراً · No refunds · No returns<br>No crying at the counter</div>
+    <button id="again">HAGGLE AGAIN</button>`;
+  $('end').classList.add('on');
+  $('again').onclick=start;
+}
+
+/* ---------------- boot ---------------- */
+$('f').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=inp.value.trim();if(!v||S.busy||S.over)return;
+  inp.value='';
+  let [id,n]=intent(v);
+  if(S.mode==='tea'&&!['offer','final'].includes(id)){
+    const s=v.toLowerCase();
+    id=/\b(no|nah|nope|refuse|pass)\b/.test(s)?'tea_no':/\b(yes|yeah|sure|ok|okay|tea|please|yalla|why not)\b/.test(s)?'tea_yes':id;
+  }
+  act(id,n,v);
+});
+async function start(){
+  $('end').classList.remove('on');
+  S=fresh();
+  logEl.innerHTML='';
+  $('sk').classList.remove('gone');$('leg4').classList.remove('off');
+  $('kidsN').textContent='?';$('timer').style.display='none';clearInterval(tInt);
+  setAsk(S.ask,true);skin();mood('happy');
+  renderChips();lock(true);
+  for(const l of L.open)await him(l(),'happy');
+  mood('smug');
+  sys('Type an offer (like <b>5</b> or <b>4.250</b>) or just say stuff. Tap his lines to skip the typing.');
+  lock(false);
+}
+// hidden hook so the prayer timer can fire act without user input
+const _act=act;act=async(id,a,r)=>{if(id==='_timer'){if(S.busy||S.over)return;lock(true);try{await checkTimer()}finally{if(!S.over){renderChips(S.mode==='tea'?TEA_CHIPS:null);lock(false)}}return}return _act(id,a,r)};
+start();
+})();
+</script>
+</body>
+</html>
