@@ -76,7 +76,7 @@ src/
 │   ├── stupidshit/            ← /stupidshit index + dynamic [...slug] route
 │   ├── sky/                   ← /sky night-sky photos
 │   ├── reading/               ← /reading
-│   ├── fogofwar.astro         ← /fogofwar: the space game in development (FWO-090 renders, PDC sound clips, Hellas night lights, its tools)
+│   ├── fogofwar.astro         ← /fogofwar: the torch-ship game in development (in-game captures and facts from its README, FWO-090 renders, PDC clips, Hellas night lights, its tools; the game repo is private, so no source link)
 │   └── pluto.astro            ← /pluto, the hidden room (see Hidden room below)
 ├── content/
 │   ├── stupidshit/            ← /stupidshit entries (zod schema: title, summary, date, optional tags[], optional notion_id)

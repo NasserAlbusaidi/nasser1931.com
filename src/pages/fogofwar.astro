@@ -1,6 +1,7 @@
 ---
-// Fog of War: the space combat game in development. Renders are the real FWO-090 Blender renders; the colony shots are
-// previews of the in-game night-light shader; the PDC clips are from the game's sound kit (made in Ra'd, /play/rad).
+// Fog of War: the torch-ship career game in development. The game/ shots are in-game captures from the game repo's
+// docs/media; the FWO-090 images are its Blender renders; the colony shot previews the night-light shader; the PDC
+// clips are from the game's sound kit (made in Ra'd, /play/rad). Facts come from the game's README; keep them in step.
 import { Picture, getImage } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
@@ -12,12 +13,52 @@ import crown from '../assets/fogofwar/crown-full.png';
 import close from '../assets/fogofwar/close-full.png';
 import front from '../assets/fogofwar/front-full.png';
 import hellas from '../assets/fogofwar/hellas-night-40km.jpg';
+import shotEarth from '../assets/fogofwar/game/shot-earth.jpg';
+import shotHauler from '../assets/fogofwar/game/shot-hauler.jpg';
+import shotSaturn from '../assets/fogofwar/game/shot-saturn.jpg';
+import shotLiner from '../assets/fogofwar/game/shot-liner.jpg';
+import shotMap from '../assets/fogofwar/game/shot-map.jpg';
+import shotCockpit from '../assets/fogofwar/game/shot-cockpit.jpg';
+import shotEclipse from '../assets/fogofwar/game/shot-eclipse.jpg';
+import moonVesta from '../assets/fogofwar/game/moon-vesta.jpg';
+import moonSaturn from '../assets/fogofwar/game/moon-saturn.jpg';
+import moonTitan from '../assets/fogofwar/game/moon-titan.jpg';
+import moonEnceladus from '../assets/fogofwar/game/moon-enceladus.jpg';
 import gunner from '../assets/fogofwar/pdc_burst_gunner_01.mp3?url';
 import hull from '../assets/fogofwar/pdc_burst_hull_01.mp3?url';
 import exterior from '../assets/fogofwar/pdc_burst_exterior_01.mp3?url';
 import '../styles/interior.css';
 
 const ogImage = await getImage({ src: crown, format: 'jpg', width: 1200 });
+const strip = [
+  { src: shotEarth, alt: "The player's ship, a long grey hull with solar panels, over Earth's day side.", caption: 'Over Earth.' },
+  { src: shotHauler, alt: 'A cargo hauler under thrust, a long blue drive plume behind it, labelled as a runner two kilometres away.', caption: 'A hauler under thrust.' },
+  { src: shotSaturn, alt: 'The ship in orbit above the pale disc of Saturn, the rings cutting across the frame.', caption: 'In orbit at Saturn.' },
+];
+const stats: [string, string][] = [
+  ['9', 'ports, Earth orbit to Enceladus'],
+  ['3', 'factions holding them'],
+  ['454', 'moons, 8 planets, 21 named asteroids'],
+  ['~110', 'ships flying the lanes on their own schedules'],
+  ['1,000,000×', 'time compression'],
+];
+const features = [
+  { title: 'Haul anything, anywhere', src: shotLiner, alt: 'A passenger liner under thrust: a white cylinder of windows behind a blue drive plume.', caption: 'A liner. Passengers cap the drive at 1 g.',
+    body: ['Carry freight, ferry passengers (they are fragile, so the drive holds at 1 g while they are aboard), survey far moons, rescue crews from dead ships, and catch runners who won\'t stop: match a ship mid-burn and hold alongside while the cargo crosses.', 'A run on the autopilot isn\'t quiet. A distress call comes in, or the hold cooling fails and you vent fuel to keep the cargo cold. Out past the patrols, raiders come for your hold.'] },
+  { title: 'The whole solar system, for real', src: shotMap, alt: 'The system map: orbit rings around the Sun, the inner planets and named asteroids such as Ceres, Hygiea and Bennu, the belt as a dust of dots.', caption: 'The system map, inner system and belt.',
+    body: ['Orbits from NASA JPL data at today\'s date, so the planets are where they are right now. The belt has its real gaps, the Hildas and the Trojans.', 'And the planets don\'t wait: the run that is cheap today can cost several times as much a few months from now.'] },
+  { title: 'Fly it yourself', src: shotCockpit, alt: 'The cockpit: three screens on a red-lit panel reading Drive at 3 g, Nav, and Target Mars, 1.6 AU away. One line says stay in your couch.', caption: 'The cockpit on a 3 g burn to Mars.',
+    body: ['Chase cam, orbit cam, or strap into the cockpit and read it off the screens while the couch warns you about 3 g. Hand the burn to the autopilot and it flips and brakes for you, or take the approach by hand: cargo flown in yourself pays 15% more.', 'Land on a planet, a moon or an asteroid. Under 20 m/s, or you don\'t walk away.'] },
+  { title: 'Build your ship, build your name', src: shotEclipse, alt: 'The ship in black silhouette against the bright face of Saturn, the ring a dark line across it.', caption: 'Eclipse at Saturn.',
+    body: ['You start with 25,000 credits, a 1 g drive, and a ship that belongs to the yard. Earn the 3 g and 5 g drives, bigger tanks and better sensors, then buy the ship out for a million.', 'Deliver on time and each faction pays you more. Run dry and you are adrift: the tender comes, but it isn\'t cheap.'] },
+  { title: 'Find what\'s out there', src: moonVesta, alt: 'Vesta close up: a grey, heavily cratered asteroid lit from the side.', caption: 'Vesta, from Dawn imagery.',
+    body: ['Pass close and the codex logs the body. Scan it and real facts unlock. First scans of far moons sell for more, so the long trip out pays for itself.'] },
+];
+const moons = [
+  { src: moonSaturn, alt: 'Saturn with its rings, small moons labelled around it.', caption: 'Saturn' },
+  { src: moonTitan, alt: 'Titan, a smooth orange globe.', caption: 'Titan' },
+  { src: moonEnceladus, alt: 'Enceladus, a bright white moon covered in ridges and cracks.', caption: 'Enceladus' },
+];
 const specs: [string, string][] = [
   ['Length', '90 m'],
   ['Point defence', '8 PDC sockets'],
@@ -45,7 +86,7 @@ const tools = [
 ---
 <!doctype html>
 <html lang="en">
-  <head><BaseHead image={ogImage} title="Fog of War — Nasser Al Busaidi" description="Fog of War, a space combat game in development: torpedoes, missiles, point-defence cannons, and ships that fly by thrust alone." /></head>
+  <head><BaseHead image={ogImage} title="Fog of War — Nasser Al Busaidi" description="Fog of War, a game in development: an independent torch-ship pilot in a true-scale solar system. Take the job, plot the burn, watch the tank." /></head>
   <body>
     <Header />
     <main id="main-content" tabindex="-1" class="interior fow">
@@ -53,16 +94,39 @@ const tools = [
         <div class="fow-hero-copy">
           <p class="intro-eyebrow">In development · Unity</p>
           <h1>Fog of War<span>.</span></h1>
-          <p class="fow-deck">A space combat game where ships fly by thrust, fights happen hundreds of kilometres apart, and what decides them is torpedoes, missiles, and the point-defence cannons trying to stop them.</p>
-          <p class="fow-note">Not out yet. This page is the workshop window: the ship, the sound, and the tools I built to make them.</p>
+          <p class="fow-tag">Take the job. Plot the burn. Watch the tank.</p>
+          <p class="fow-deck">You're an independent torch-ship pilot in a true-scale solar system, on today's date. Haul cargo, ferry passengers, survey moons, and fight off the raiders who want your hold.</p>
+          <p class="fow-note">A hobby project inspired by The Expanse books, not for sale and not affiliated with them. This page is the workshop window.</p>
         </div>
         <figure class="fow-hero-ship">
           <Picture src={hero} alt="The FWO-090 gunship standing upright like a tower: grey upper decks, dark armour, and three orange drive pillars at the base." formats={['webp']} widths={[400, 700, 1100]} sizes="(max-width: 900px) 70vw, 32vw" loading="eager" fetchpriority="high" />
         </figure>
       </header>
 
+      <ul class="fow-strip">{strip.map(shot => <li><figure><Picture src={shot.src} alt={shot.alt} formats={['webp']} widths={[480, 800, 1100]} sizes="(max-width: 720px) 100vw, 33vw" /><figcaption>{shot.caption}</figcaption></figure></li>)}</ul>
+
+      <section class="fow-section" aria-labelledby="trip-title">
+        <div class="interior-section-head"><h2 id="trip-title">The trip is the game</h2><span>Time against reaction mass</span></div>
+        <div class="fow-trip">
+          <p class="fow-big">At 1 g, Mars is a few days away. Neptune is a few weeks. The question is never whether you can get there. It's what it will cost you.</p>
+          <p class="fow-lead">Burn hard the whole way, flip at the midpoint and brake, and you arrive early with a dry tank. Burn, coast and burn, and you save water but cut it close on the deadline. Cargo is heavy, and heavy costs fuel.</p>
+        </div>
+        <dl class="fow-stats">{stats.map(([n, what]) => <div><dt>{n}</dt><dd>{what}</dd></div>)}</dl>
+      </section>
+
+      <section class="fow-section" aria-labelledby="play-title">
+        <div class="interior-section-head"><h2 id="play-title">What you do out there</h2><span>In-game captures</span></div>
+        <div class="fow-features">{features.map((f, i) => <article class:list={['fow-feature', { 'fow-feature-flip': i % 2 === 1 }]}>
+          <figure><Picture src={f.src} alt={f.alt} formats={['webp']} widths={[600, 1000, 1440]} sizes="(max-width: 900px) 100vw, 55vw" /><figcaption>{f.caption}</figcaption></figure>
+          <div class="fow-feature-copy"><h3>{f.title}</h3>{f.body.map(par => <p>{par}</p>)}</div>
+        </article>)}</div>
+        <ul class="fow-moons">{moons.map(m => <li><figure><Picture src={m.src} alt={m.alt} formats={['webp']} widths={[400, 700]} sizes="(max-width: 720px) 100vw, 33vw" /><figcaption>{m.caption}</figcaption></figure></li>)}</ul>
+        <p class="fow-credit">Planet and moon maps from Viking, MESSENGER, Galileo, Cassini, Dawn and LRO imagery. Titan and Enceladus from Cassini mosaics.</p>
+      </section>
+
       <section class="fow-section" aria-labelledby="ship-title">
-        <div class="interior-section-head"><h2 id="ship-title">The ship: FWO-090</h2><span>Top buyable hull. The player names it.</span></div>
+        <div class="interior-section-head"><h2 id="ship-title">When it turns into a fight: FWO-090</h2><span>Top buyable hull. The player names it.</span></div>
+        <p class="fow-lead">Combat sits on top of the trip planner. Fights happen at real range, decided by torpedoes, missiles, railgun slugs and the point-defence cannons trying to stop them, and every hit is worked out from physics, not hit points. This is the hull built for it.</p>
         <div class="fow-ship">
           <div class="fow-ship-copy">
             <p>A skyscraper that flies. No bridge, no wings, nothing pretending to be an aircraft. It's sold bare, and you fit the weapons in the yard: escort, strike, or everything at once.</p>
@@ -94,6 +158,8 @@ const tools = [
         <div class="interior-section-head"><h2 id="tools-title">Tools I built for it</h2><span>Each one HTML file. Try them.</span></div>
         <ul class="fow-tools">{tools.map(t => <li><h3><a href={t.href}>{t.name} <span aria-hidden="true">↗</span></a></h3><p>{t.what}</p></li>)}</ul>
       </section>
+
+      <p class="fow-honest">Built with AI, not by hand: the code is written with Claude Code and OpenAI Codex, and the ships are modelled in Blender by Claude from my descriptions, because I can't draw. Every sound is synthesised. It's a hobby, to play with physics and scratch the itch The Expanse books gave me. No release date, no builds for sale.</p>
     </main>
     <Footer />
   </body>
@@ -142,4 +208,30 @@ const tools = [
     .fow-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 900px) { .fow-colony { grid-template-columns: minmax(0, 1fr); } }
+  .fow-tag { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em; font-size: var(--text-label); color: var(--accent); margin: 1.25rem 0 0; }
+  .fow-strip { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+  .fow-strip :global(img) { aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--rule); }
+  .fow-trip { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem 3rem; align-items: start; padding: 1rem 0 0; }
+  .fow-trip .fow-lead { padding: .4rem 0 0; }
+  .fow-big { font-size: var(--text-title); font-weight: 400; line-height: 1.35; letter-spacing: -.015em; margin: 0; max-width: 30ch; text-wrap: pretty; }
+  .fow-stats { margin: 2rem 0 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+  .fow-stats div { padding: 1rem 1rem 0 0; }
+  .fow-stats dt { font-family: var(--font-display); font-size: var(--text-title); font-weight: 450; letter-spacing: -.02em; color: var(--accent); }
+  .fow-stats dd { margin: .25rem 0 0; font-size: var(--text-label); color: var(--muted); line-height: 1.45; }
+  .fow-features { display: grid; gap: 3.5rem; padding: 1.5rem 0 2.5rem; }
+  .fow-feature { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 1.5rem 3rem; align-items: center; }
+  .fow-feature-flip figure { order: 2; }
+  .fow-feature :global(img) { border: 1px solid var(--rule); aspect-ratio: 16 / 10; object-fit: cover; }
+  .fow-feature h3 { font-size: var(--text-title); font-weight: 450; letter-spacing: -.02em; line-height: 1.2; margin: 0 0 .9rem; }
+  .fow-feature-copy p { margin: 0 0 .9rem; color: var(--muted); font-size: var(--text-body); line-height: 1.65; max-width: 52ch; }
+  .fow-moons { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+  .fow-moons :global(img) { aspect-ratio: 1; object-fit: cover; border: 1px solid var(--rule); }
+  .fow-credit { font-size: var(--text-label); color: var(--muted); margin: 1rem 0 0; }
+  .fow-honest { margin: 4rem 0 1rem; padding: 1.25rem 0 0; border-top: 1px solid var(--rule); font-size: var(--text-label); line-height: 1.6; color: var(--muted); max-width: 70ch; }
+  @media (max-width: 900px) {
+    .fow-trip, .fow-feature { grid-template-columns: minmax(0, 1fr); }
+    .fow-feature-flip figure { order: 0; }
+    .fow-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) { .fow-strip { grid-template-columns: minmax(0, 1fr); } .fow-moons { gap: .6rem; } }
 </style>
