@@ -109,7 +109,7 @@ const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}
           <div class="reading-card-head"><h2 id="year-chart-title" class="interior-eyebrow">Finishes by year</h2></div>
           {datedYears.length > 0 ? <>
             <p class="insight-note">Years with recorded finishes.{undatedCount > 0 && <>{' '}{bookCount(undatedCount)} undated.</>}</p>
-            <ol class="year-chart">{yearChart.map(entry => <li class:list={{ 'snapshot-year': entry.year === snapshotYear, 'year-chart-gap': entry.gap }}>{entry.gap ? <div aria-label={`${entry.label}: no dated finishes in this import`}><span class="chart-gap-mark" aria-hidden="true">···</span><span class="year-chart-label">{entry.label}</span></div> : <a href={`#year-${entry.year}`} aria-label={`${entry.year}: ${bookCount(entry.count!)} finished. Jump to books.`}><span class="year-chart-count">{entry.count}</span><span class="year-chart-bar" style={`--bar-height: ${140 * entry.count! / maxYearCount}px`} aria-hidden="true"></span><span class="year-chart-label">{entry.label}</span></a>}</li>)}</ol>
+            <ol class="year-chart">{yearChart.map(entry => <li class:list={{ 'snapshot-year': entry.year === snapshotYear, 'year-chart-gap': entry.gap }}>{entry.gap ? <div aria-label={`${entry.label}: no dated finishes in this import`}><span class="chart-gap-mark" aria-hidden="true">···</span><span class="year-chart-label">{entry.label}</span></div> : <a href={`#year-${entry.year}`}><span class="year-chart-count">{entry.count}<span class="reading-sr-only">{entry.count === 1 ? ' book' : ' books'} finished in</span></span><span class="year-chart-bar" style={`--bar-height: ${140 * entry.count! / maxYearCount}px`} aria-hidden="true"></span><span class="year-chart-label">{entry.label}</span></a>}</li>)}</ol>
           </> : <p class="insight-note">Finish dates aren't recorded for these books yet.</p>}
         </article>
         <article class="reading-insight format-insight" aria-labelledby="format-title">
@@ -122,7 +122,7 @@ const bookCount = (count: number) => `${count} ${count === 1 ? 'book' : 'books'}
 
       {finished.length > 0 && <section class="reading-section" aria-labelledby="finished-title">
         <div class="interior-section-head"><h2 id="finished-title">Finished · {bookCount(finished.length)}</h2><span>Grouped by finish year</span></div>
-        <nav class="reading-year-nav" aria-label="Jump to reading year">{years.map(([year, books]) => <a href={`#year-${year}`} aria-label={`${year === 'undated' ? 'Undated' : year}: ${bookCount(books.length)}. Jump to books.`}>{year === 'undated' ? 'Undated' : year}<span>{books.length}</span></a>)}</nav>
+        <nav class="reading-year-nav" aria-label="Jump to reading year">{years.map(([year, books]) => <a href={`#year-${year}`}>{year === 'undated' ? 'Undated' : year}<span><span class="reading-sr-only">: </span>{books.length}<span class="reading-sr-only">{books.length === 1 ? ' book' : ' books'}</span></span></a>)}</nav>
         <table class="finished-table">
           <caption class="reading-sr-only">Finished books, grouped by finish year</caption>
           <colgroup><col class="title-column" /><col class="author-column" /><col class="format-column" /><col class="rating-column" /><col class="date-column" /></colgroup>
