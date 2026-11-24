@@ -443,3 +443,21 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Horizontal scrollers (the reading timelines) fade at an edge only while there is more to scroll that way.
+   Browsers without scroll-driven animations keep the plain scroller. */
+@property --scroll-fade-start { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --scroll-fade-end { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes scroll-fade-edges {
+  from { --scroll-fade-start: 0px; --scroll-fade-end: 4rem; }
+  10% { --scroll-fade-start: 4rem; }
+  90% { --scroll-fade-end: 4rem; }
+  to { --scroll-fade-start: 4rem; --scroll-fade-end: 0px; }
+}
+@supports (animation-timeline: scroll()) {
+  .series-route-scroll, .series-track-scroll {
+    mask-image: linear-gradient(to right, transparent, #000 var(--scroll-fade-start), #000 calc(100% - var(--scroll-fade-end)), transparent);
+    animation: scroll-fade-edges linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
