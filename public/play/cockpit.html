@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cockpit Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07080a;--fg:#d8dde3;--mut:#7b8794;--line:#1c2229;--acc:#ffb347}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.45 "IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+header{display:flex;align-items:center;gap:14px;padding:0 14px;height:52px;border-bottom:1px solid var(--line);background:#0b0d10}
+.brand{white-space:nowrap}.brand b{letter-spacing:.22em;color:var(--acc)}.brand small{color:var(--mut);margin-left:8px}
+.tabs{display:flex;gap:4px;margin-left:8px;overflow-x:auto}
+.tabs button{background:#11151a;border:1px solid var(--line);padding:6px 10px;border-radius:6px;white-space:nowrap;color:var(--mut)}
+.tabs button.on{background:var(--acc);color:#1a1000;border-color:var(--acc);font-weight:600}
+.hctl{margin-left:auto;display:flex;gap:4px}
+.hctl button{background:none;border:1px solid var(--line);padding:5px 8px;border-radius:6px;color:var(--mut);white-space:nowrap}
+.hctl button.on{color:#000;background:#9fe8b0;border-color:#9fe8b0}
+main{display:flex;height:calc(100vh - 82px)}
+#stage{flex:1;position:relative;min-width:0;overflow:hidden}
+aside{width:360px;flex:none;border-left:1px solid var(--line);overflow:auto;padding:14px 16px 30px;background:#0a0c0f}
+aside h2{margin:0 0 2px;font-size:18px;letter-spacing:.08em}
+aside .tag{color:var(--acc);margin-bottom:10px}
+aside h3{font-size:11px;letter-spacing:.18em;color:var(--mut);margin:16px 0 6px;text-transform:uppercase}
+aside p{margin:6px 0}
+aside ul{margin:4px 0;padding-left:18px}aside li{margin:3px 0}
+aside .pro li::marker{content:"+ ";color:#6be38a}aside .con li::marker{content:"− ";color:#ff6b6b}aside .steal li::marker{content:"» ";color:var(--acc)}
+aside svg{width:100%;height:auto;background:#0f1318;border:1px solid var(--line);border-radius:8px}
+footer{height:30px;border-top:1px solid var(--line);display:flex;align-items:center;padding:0 14px;color:var(--mut);font-size:11px;white-space:nowrap;overflow:hidden;background:#0b0d10}
+footer kbd{color:var(--fg);background:#161b21;border:1px solid #232a33;border-radius:3px;padding:0 4px;margin:0 2px 0 8px;font:inherit}
+.cp{position:absolute;inset:0;display:none}.cp.act{display:block}
+.seatlegend{display:none;gap:8px;font-size:11px}body.seats .seatlegend{display:flex}
+.seatlegend span{padding:1px 6px;border-radius:3px;color:#000;font-weight:600}
+[data-seat=pilot]{--seatc:#4da3ff}[data-seat=gunner]{--seatc:#ff5d73}[data-seat=ops]{--seatc:#b48cff}[data-seat=xo]{--seatc:#5dff9a}[data-seat=any]{--seatc:#ffd166}
+body.seats [data-seat]{outline:2px dashed var(--seatc);outline-offset:2px}
+body.seats [data-seat]::after{content:attr(data-seat);position:absolute;top:-8px;right:8px;background:var(--seatc);color:#000;font:700 9px/1 "IBM Plex Mono",monospace;padding:2px 5px;border-radius:3px;text-transform:uppercase;z-index:30;letter-spacing:.1em}
+[data-seat]{position:relative}
+/* global overlays */
+#stage.locked::before{content:"";position:absolute;inset:0;border:3px solid #ff2a2a;z-index:40;pointer-events:none;animation:pulse .5s infinite alternate}
+#stage.painted::before{content:"";position:absolute;inset:0;border:2px solid rgba(255,170,40,.6);z-index:40;pointer-events:none}
+@keyframes pulse{from{opacity:.25}to{opacity:1}}
+#stage.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
+.ovl{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;pointer-events:none}
+#gloc{background:radial-gradient(circle,rgba(0,0,0,.55) 10%,#000 75%);color:#ff4040;font:700 40px/1.1 "Black Ops One",monospace;letter-spacing:.2em}
+#gloc small{font:14px "IBM Plex Mono";color:#aaa;letter-spacing:0;margin-top:10px}
+#dead{background:rgba(20,0,0,.86);color:#ff5040;font:700 46px/1.1 "Black Ops One",monospace;pointer-events:auto}
+#dead small{font:14px "IBM Plex Mono";color:#ddd;margin-top:12px}
+#paused{background:rgba(0,0,0,.5);color:#fff;font:700 30px "Black Ops One";letter-spacing:.3em}
+.log .l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log .crit{color:#ff5b4d}.log .warn{color:#ffc24d}.log .good{color:#6bff8f}.log .ai{color:#7fd8ff}
+
+/* ============ IRON TUB ============ */
+.iron{background:#16181a;padding:10px}
+.iron .console{height:100%;display:grid;grid-template-columns:244px minmax(0,1fr) 260px;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}
+.plate{background:linear-gradient(160deg,#4b5056,#383c41 40%,#2b2e32);border:1px solid #0c0c0c;border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.13),inset 0 -2px 8px rgba(0,0,0,.5),0 3px 8px rgba(0,0,0,.6);padding:12px 12px 10px;overflow:auto}
+.plate::before{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#aaa,#333);top:5px;left:5px;box-shadow:calc(100% + 0px) 0 0 transparent}
+.stc{font-family:"Black Ops One",monospace;color:#ece4c4;letter-spacing:.12em;font-size:11px;text-transform:uppercase}
+.stc.h{font-size:12px;color:#fff2c0;border-bottom:1px solid #ffffff22;padding-bottom:4px;margin-bottom:8px;text-align:center}
+.annun{grid-column:1/-1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;padding:10px 12px}
+.lamp{background:#2a1c0c;color:#6a5230;border:1px solid #000;border-radius:3px;text-align:center;font:10px/1.15 "Black Ops One",monospace;padding:7px 2px;letter-spacing:.04em;box-shadow:inset 0 0 8px #000;user-select:none}
+.lamp.lit{background:#ffb02e;color:#2a1600;box-shadow:0 0 14px #ffb02e,inset 0 0 6px #fff8}
+.lamp.r.lit{background:#ff3b2e;color:#2a0300;box-shadow:0 0 16px #ff3b2e,inset 0 0 6px #fff8}
+.lamp.g.lit{background:#62ff7e;color:#032a0c;box-shadow:0 0 14px #62ff7e,inset 0 0 6px #fff8}
+.lamp.b.lit{animation:blink .45s steps(1) infinite}
+@keyframes blink{50%{filter:brightness(.35)}}
+.iron .row{display:flex;gap:4px;align-items:center;justify-content:space-around;margin:6px 0;flex-wrap:wrap}
+.lever{writing-mode:vertical-lr;direction:rtl;width:46px;height:168px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#111,#2a2a2a 40%,#111);border-radius:6px;border:1px solid #000;box-shadow:inset 0 0 8px #000}
+.lever::-webkit-slider-thumb{-webkit-appearance:none;width:52px;height:30px;border-radius:5px;background:linear-gradient(180deg,#e6e6e6,#8a8a8a 50%,#5a5a5a);border:1px solid #000;box-shadow:0 3px 6px #000}
+.lever::-moz-range-thumb{width:52px;height:30px;border-radius:5px;background:#bbb}
+.thrwrap{display:flex;gap:8px;align-items:stretch}
+.thrsc{display:flex;flex-direction:column;justify-content:space-between;font:10px "Black Ops One";color:#d9d1b0;padding:6px 0}
+.thrsc .red{color:#ff6a4d}
+.gauge svg{width:120px;display:block}
+.gauge .arc{fill:none;stroke:#222;stroke-width:9}
+.gauge .redz{fill:none;stroke:#b3261e;stroke-width:9}
+.gauge .tk{stroke:#e8e2c8;stroke-width:1.5}
+.gauge text{fill:#e8e2c8;font:9px "Black Ops One"}
+.gauge .needle{stroke:#ff8a00;stroke-width:3;stroke-linecap:round;transition:transform .12s;transform-box:view-box;transform-origin:60px 64px}
+.gface{background:radial-gradient(circle at 50% 80%,#222,#0b0b0b);border-radius:10px 10px 4px 4px;padding:6px 6px 2px;border:2px solid #111;box-shadow:inset 0 0 10px #000}
+.knob{position:relative;width:100px;height:96px;flex:none}
+.knob .kcap{position:absolute;left:50%;top:52%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#666,#1b1b1b 70%);box-shadow:0 4px 8px #000,inset 0 1px 1px #999;transition:transform .15s}
+.knob .kcap i{position:absolute;left:50%;top:3px;width:4px;height:14px;margin-left:-2px;background:#fff;border-radius:2px}
+.knob .kl{position:absolute;transform:translate(-50%,-50%);background:none;border:0;font:9px "Black Ops One";color:#d9d1b0;padding:2px;white-space:nowrap}
+.knob .kl.on{color:#ffcc3a;text-shadow:0 0 6px #ff9d00}
+.knob .kt{position:absolute;bottom:-6px;font-size:10px;left:0;right:0;text-align:center}
+.tog{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;padding:0;width:62px}
+.tog .base{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#8a8a8a,#202020 70%);position:relative;box-shadow:0 2px 4px #000}
+.tog .lev{position:absolute;left:12px;width:10px;height:26px;border-radius:5px;background:linear-gradient(90deg,#f0f0f0,#7a7a7a);top:14px;transition:top .1s;box-shadow:0 2px 3px #000}
+.tog.on .lev{top:-8px}
+.tog .tl{font:9px/1.1 "Black Ops One";color:#d9d1b0;text-align:center}
+.tog .tl em{display:block;font-style:normal;color:#8d8670}
+.mush{width:60px;height:60px;border-radius:50%;border:3px solid #111;background:radial-gradient(circle at 40% 35%,#ff8f7a,#c4170a 60%,#6d0a03);box-shadow:0 5px 0 #400,0 6px 10px #000;font:10px/1.05 "Black Ops One";color:#fff;letter-spacing:.04em}
+.mush:active{transform:translateY(3px);box-shadow:0 2px 0 #400}
+.mush.y{background:radial-gradient(circle at 40% 35%,#fff4a0,#e0b400 60%,#7a5a00);color:#241a00;box-shadow:0 5px 0 #403000,0 6px 10px #000}
+.mush.gr{background:radial-gradient(circle at 40% 35%,#c8ffcf,#2fa84a 60%,#0d4a1b);box-shadow:0 5px 0 #043010,0 6px 10px #000}
+.mush.gy{background:radial-gradient(circle at 40% 35%,#ddd,#777 60%,#333);box-shadow:0 5px 0 #222,0 6px 10px #000}
+.guard{position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center}
+.guard .cover{position:absolute;inset:-3px;border-radius:7px;background:repeating-linear-gradient(45deg,#d1231a 0 8px,#ffd400 8px 16px);opacity:.92;transform-origin:50% 0;transition:transform .25s,opacity .25s;cursor:pointer;border:2px solid #000;z-index:2;display:flex;align-items:flex-end;justify-content:center;font:9px "Black Ops One";color:#000;padding-bottom:3px}
+.guard.open .cover{transform:perspective(220px) rotateX(78deg);opacity:.55;pointer-events:none}
+.nix{font-family:VT323,monospace;font-size:26px;line-height:1;color:#ffa04a;text-shadow:0 0 8px #ff6a00;background:#120800;padding:3px 8px;border-radius:4px;border:1px solid #000;box-shadow:inset 0 0 8px #000;min-width:58px;text-align:right}
+.nixl{display:flex;flex-direction:column;align-items:center;gap:2px}
+.tgtwin{background:#081008;border:2px solid #000;border-radius:4px;padding:6px 8px;font-family:VT323;font-size:18px;color:#7dff8f;text-shadow:0 0 6px #2f8;line-height:1.1;box-shadow:inset 0 0 12px #000}
+.tgtwin .s{float:right}
+.ibar{height:8px;background:#000;border-radius:2px;overflow:hidden;margin-top:4px}.ibar u{display:block;height:100%;background:#7dff8f;box-shadow:0 0 6px #2f8;width:0}
+.crt{position:relative;background:linear-gradient(160deg,#2b2e32,#151719);border-radius:22px;padding:18px;box-shadow:inset 0 2px 0 #ffffff18,0 6px 14px #000;min-height:0}
+.crt .glass{position:relative;width:100%;height:100%;border-radius:50%/46%;overflow:hidden;background:#010702;box-shadow:inset 0 0 40px #000,0 0 0 3px #000}
+.crt canvas{display:block;width:100%;height:100%}
+.crt .glass::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.08),transparent 45%);pointer-events:none}
+.crt .zl{position:absolute;bottom:4px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:center}
+.crt .zl button{background:#222;border:1px solid #000;color:#d9d1b0;font:10px "Black Ops One";border-radius:3px;padding:2px 6px}
+.iron .bot{grid-column:1/-1;display:flex;gap:10px;align-items:stretch;padding:10px 12px}
+.bsteps{display:flex;gap:4px;align-items:center}
+.bsteps .lamp{min-width:50px;font-size:9px}
+.tty{flex:1;min-width:240px;background:#e9e4cf;background-image:repeating-linear-gradient(0deg,transparent 0 17px,#d8d0b4 17px 18px);color:#202020;font:17px/18px VT323,monospace;padding:4px 10px;border-radius:2px;box-shadow:inset 0 0 12px #0004;overflow:hidden;height:96px}
+.tty .crit{color:#b5110a}.tty .warn{color:#8a5a00}.tty .good{color:#0b6a20}.tty .ai{color:#0a3d8a}
+
+/* ============ GLASS COFFIN ============ */
+.glass-cp{background:radial-gradient(ellipse at 50% 115%,#08304e,#020812 62%);font-family:Rajdhani,sans-serif;font-weight:600;font-size:14px;color:#bff4ff}
+.glass-cp canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.glass-cp .curve{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 90% at 50% 50%,transparent 60%,rgba(0,10,20,.85) 100%)}
+.gc{position:absolute;background:rgba(6,28,46,.62);border:1px solid rgba(94,230,255,.35);border-radius:14px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:10px 12px;transition:opacity .45s,transform .45s;box-shadow:0 0 24px rgba(94,230,255,.08)}
+.gc.hid{opacity:0;transform:scale(.94) translateY(8px);pointer-events:none}
+.gc h4{margin:0 0 6px;font-size:11px;letter-spacing:.25em;color:#5ee6ff;font-weight:700}
+.gc .big{font-size:30px;line-height:1;font-weight:700;color:#e8fcff}
+.gc .big small{font-size:13px;color:#7fbfd0;margin-left:3px}
+.gc .kv{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#8fd3e6}.gc .kv b{color:#e8fcff}
+.gb{border:1px solid rgba(94,230,255,.5);background:rgba(94,230,255,.08);color:#bff4ff;border-radius:999px;padding:5px 10px;font:700 12px Rajdhani;letter-spacing:.08em;margin:2px}
+.gb.on{background:#5ee6ff;color:#001a24;box-shadow:0 0 12px #5ee6ff}
+.gb.red{border-color:#ff4d6d;color:#ffb3c0;background:rgba(255,77,109,.12)}
+.gb.red:active,.gb.red.on{background:#ff4d6d;color:#200}
+.gbar{height:6px;background:rgba(94,230,255,.12);border-radius:3px;overflow:hidden;margin:4px 0}.gbar u{display:block;height:100%;width:0;background:#5ee6ff;box-shadow:0 0 8px #5ee6ff}
+.gbar.r u{background:#ff4d6d;box-shadow:0 0 8px #ff4d6d}
+.gmodes{top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:6px 8px;border-radius:999px;white-space:nowrap}
+.gnav{left:14px;top:66px;width:228px}
+.gwpn{right:14px;top:66px;width:250px}
+.gthreat{right:14px;bottom:14px;width:250px}
+.gboard{left:50%;bottom:14px;transform:translateX(-50%);width:440px}
+.gboard.hid{transform:translateX(-50%) scale(.94)}
+.groute{left:50%;bottom:14px;transform:translateX(-50%);width:360px}
+.groute.hid{transform:translateX(-50%) scale(.94)}
+.glog{left:14px;bottom:14px;width:300px;font-size:12px}
+.gsl{width:100%;accent-color:#5ee6ff}
+.trow{display:grid;grid-template-columns:24px minmax(0,1fr) 46px 44px 34px;gap:4px;align-items:center;font-size:12px}
+.trow i{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;display:block}.trow i u{display:block;height:100%;background:#ff4d6d}
+.trow.DEAD{opacity:.35;text-decoration:line-through}.trow.NEU b{color:#ffd166}.trow.HOS b{color:#ff4d6d}.trow.PRIZE b{color:#7dff9e}.trow.DIS b{color:#ff9db0}
+.steps{display:flex;gap:4px}.steps span{flex:1;text-align:center;font-size:11px;padding:4px 0;border-radius:6px;background:rgba(94,230,255,.06);color:#6aa}
+.steps span.done{background:rgba(94,230,255,.25);color:#e8fcff}.steps span.cur{background:#5ee6ff;color:#001a24;animation:pulse .6s infinite alternate}
+
+/* ============ THE PIT ============ */
+.pit{background:#0a0703;padding:10px;font-family:"IBM Plex Mono",monospace;color:#ffcf8a;font-size:12px}
+.pit .console{height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,1fr) 92px;gap:8px}
+.orders{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;background:#170f04;border:1px solid #4a3210;border-radius:6px;padding:7px 10px}
+.orders .grp{display:flex;gap:3px;align-items:center}
+.orders .lb{color:#9a7440;font-size:10px;letter-spacing:.15em;margin-right:4px}
+.pb{background:#1c1306;border:1px solid #5a3d14;color:#ffcf8a;padding:3px 8px;border-radius:3px;font:600 11px "IBM Plex Mono";letter-spacing:.05em}
+.pb.on{background:#ffb347;color:#1a0f00;border-color:#ffb347}
+.pb.red{border-color:#a3341c;color:#ff9a7a}.pb.red.on,.pb.red:active{background:#ff5a36;color:#200}
+.st{background:#120c04;border:1px solid #3d2a0e;border-radius:6px;padding:8px 10px;overflow:auto;transition:opacity .2s,border-color .2s}
+.st.ai{opacity:.62}.st.mine{border-color:#ffb347;box-shadow:0 0 0 1px #ffb34755,0 0 18px #ffb34722}
+.st .sh{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3d2a0e;padding-bottom:5px;margin-bottom:6px}
+.st .sh b{letter-spacing:.2em;color:#ffb347}
+.st .badge{font-size:10px;padding:1px 6px;border-radius:3px;background:#2a1c08;color:#9a7440}
+.st.mine .badge{background:#ffb347;color:#1a0f00}
+.st .kv{display:flex;justify-content:space-between}.st .kv b{color:#fff0d6}
+.st .r{display:flex;flex-wrap:wrap;gap:3px;margin:5px 0}
+.pbar{height:6px;background:#2a1c08;border-radius:2px;overflow:hidden;margin:3px 0}.pbar u{display:block;height:100%;width:0;background:#ffb347}
+.pbar.r u{background:#ff5a36}
+.helm{grid-column:1;grid-row:2}.ops{grid-column:1;grid-row:3}.tac{grid-column:3;grid-row:2}.xo{grid-column:3;grid-row:3}
+.plot{grid-column:2;grid-row:2/4;position:relative;background:#140d03;border:1px solid #4a3210;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 40px #000}
+.plot canvas{display:block;width:100%;height:100%}
+.plot .pl{position:absolute;top:6px;left:10px;font-size:10px;color:#9a7440;letter-spacing:.2em}
+.plot .zl{position:absolute;bottom:6px;right:8px}
+.plog{grid-column:1/-1;background:#0d0802;border:1px solid #3d2a0e;border-radius:6px;padding:5px 10px;overflow:hidden;font-size:11.5px}
+.pit input[type=range]{width:100%;accent-color:#ffb347}
+.pit .trow i u{background:#ff5a36}
+
+/* ============ ONE-MAN BAND ============ */
+.band{background:#0a0a0c;font-family:Inter,system-ui,sans-serif;color:#ececee}
+.band canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bc{position:absolute;font-weight:300}
+.bc .n{font-size:44px;font-weight:200;line-height:1;letter-spacing:-.02em}
+.bc .n small{font-size:14px;color:#77777f;margin-left:4px;font-weight:400}
+.bc .l{font-size:10px;letter-spacing:.3em;color:#77777f;text-transform:uppercase;margin-top:2px}
+.bc.tl{left:22px;top:18px}.bc.tr{right:64px;top:18px;text-align:right}
+.bc .row{display:flex;gap:26px}
+.bthreat.LOCKED{color:#ff3b30;animation:pulse .4s infinite alternate}.bthreat.PAINTED{color:#ff9f0a}.bthreat.CLEAR{color:#ececee}
+.wheel{position:absolute;left:50%;bottom:22px;width:300px;height:300px;margin-left:-150px;border-radius:50%;background:radial-gradient(circle,rgba(20,20,24,.92) 30%,rgba(20,20,24,.72) 70%,transparent 71%)}
+.wheel .vb{position:absolute;width:86px;height:56px;margin:-28px 0 0 -43px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#ececee;font:600 12px Inter;letter-spacing:.12em;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;overflow:hidden}
+.wheel .vb em{font-style:normal;font-weight:400;font-size:9px;color:#88888f;letter-spacing:.05em}
+.wheel .vb.on{background:#ececee;color:#0a0a0c}.wheel .vb.on em{color:#444}
+.wheel .vb.kill{border-color:#ff3b30;color:#ff6b61}
+.wheel .vb.kill::before{content:"";position:absolute;left:0;bottom:0;height:100%;width:calc(var(--p,0)*100%);background:#ff3b30;opacity:.85;z-index:0}
+.wheel .vb.kill>*{position:relative;z-index:1}
+.wheel .hub{position:absolute;left:50%;top:50%;width:120px;margin-left:-60px;transform:translateY(-50%);text-align:center}
+.wheel .hub b{display:block;font-size:20px;font-weight:800;letter-spacing:.1em}
+.wheel .hub span{font-size:11px;color:#88888f}
+.bauth{position:absolute;left:22px;bottom:22px;width:260px}
+.bauth .seg{display:flex;border:1px solid rgba(255,255,255,.18);border-radius:10px;overflow:hidden;margin:6px 0}
+.bauth .seg button{flex:1;background:none;border:0;padding:8px 0;font:600 11px Inter;letter-spacing:.08em;color:#aaa}
+.bauth .seg button.on{background:#ececee;color:#0a0a0c}
+.bauth p{font-size:11.5px;color:#9a9aa2;margin:4px 0 0;font-weight:400;line-height:1.4}
+.bprop{position:absolute;left:50%;top:112px;transform:translateX(-50%);min-width:380px;max-width:520px;background:#ececee;color:#0a0a0c;border-radius:14px;padding:12px 16px;display:none;box-shadow:0 10px 40px #000}
+.bprop.show{display:block;animation:pop .25s}
+@keyframes pop{from{transform:translateX(-50%) scale(.9);opacity:0}}
+.bprop .q{font-weight:600;font-size:15px}
+.bprop .who{font-size:10px;letter-spacing:.25em;color:#666;margin-bottom:3px}
+.bprop .a{display:flex;gap:6px;margin-top:8px}
+.bprop .a button{flex:1;border:0;border-radius:8px;padding:8px;font:700 12px Inter;background:#0a0a0c;color:#fff}
+.bprop .a button.n{background:#ccc;color:#000}
+.bprop .tbar{height:3px;background:#ccc;margin-top:8px;border-radius:2px;overflow:hidden}.bprop .tbar u{display:block;height:100%;background:#ff3b30}
+.blog{position:absolute;right:64px;bottom:22px;width:300px;font-size:12px;text-align:right;color:#aaa}
+.blog .l{opacity:.9}
+.bthr{position:absolute;right:16px;top:18px;bottom:22px;width:30px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bthr input{writing-mode:vertical-lr;direction:rtl;flex:1;width:24px;accent-color:#ececee}
+.bthr span{font-size:9px;letter-spacing:.2em;color:#77777f;writing-mode:vertical-lr;transform:rotate(180deg)}
+
+/* ============ VERDICT ============ */
+.verdict{overflow:auto;padding:24px 30px 60px;background:#0b0d10}
+.verdict h1{font:700 26px "Black Ops One";letter-spacing:.06em;margin:0 0 4px;color:var(--acc)}
+.verdict h2{font-size:14px;letter-spacing:.2em;color:#9fb0c0;margin:28px 0 10px;text-transform:uppercase}
+.verdict p{max-width:860px}
+.vt{border-collapse:collapse;width:100%;max-width:1060px;font-size:12.5px}
+.vt th,.vt td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.vt th{color:var(--mut);font-weight:400;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.dots{display:inline-flex;gap:2px}.dots i{width:12px;height:8px;background:#1d242c;border-radius:2px}.dots i.f{background:var(--acc)}
+.vt td.best{background:#ffb34712}
+.hy{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;max-width:1060px}
+.hy div{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#0f1318}
+.hy b{color:var(--acc);display:block;margin-bottom:4px;letter-spacing:.05em}
+.home{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;color:#000;font-weight:600}
+@media (max-width:1100px){aside{display:none}}
+@media (max-height:800px){.lever{height:118px}.iron .plate{padding-top:8px}.iron .annun .lamp{padding:4px 2px}.tty{height:78px}.iron .bot .nix{font-size:22px}.gauge svg{width:104px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>COCKPIT LAB</b><small>CVT‑7 "QALHAT" · corvette</small></div>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="seatlegend"><span style="background:#4da3ff">pilot</span><span style="background:#ff5d73">gunner</span><span style="background:#b48cff">ops</span><span style="background:#5dff9a">xo</span><span style="background:#ffd166">any</span></div>
+  <div class="hctl">
+    <button data-act="seats" data-on="seats=1" title="H">SEATS</button>
+    <button data-act="audio" data-on="audio=1">AUDIO</button>
+    <button data-act="voice" data-on="voice=1">VOICE</button>
+    <button data-act="time" data-b="tsL">×1</button>
+    <button data-act="pause" data-on="paused=1">PAUSE</button>
+    <button data-act="reset">RESET</button>
+  </div>
+</header>
+<main>
+<div id="stage">
+
+<!-- ===================== 01 IRON TUB ===================== -->
+<section class="cp iron" id="cp-iron" data-style="crt">
+ <div class="console">
+  <div class="plate annun" data-seat="any">
+   <div class="lamp" data-lamp="painted">LADAR PAINT</div>
+   <div class="lamp r b" data-lamp="locked">LOCKED ON</div>
+   <div class="lamp r b" data-lamp="inbound">VAMPIRE</div>
+   <div class="lamp r" data-lamp="gloc">G‑LOC WARN</div>
+   <div class="lamp r" data-lamp="hull">HULL BREACH</div>
+   <div class="lamp" data-lamp="fuel">Δv LOW</div>
+   <div class="lamp" data-lamp="pdclo">PDC AMMO</div>
+   <div class="lamp g" data-lamp="ecm">ECM ON</div>
+   <div class="lamp g" data-lamp="ap">AP ENGD</div>
+   <div class="lamp g" data-lamp="lock">HARD LOCK</div>
+   <div class="lamp r" data-lamp="arm">MASTER ARM</div>
+   <div class="lamp g" data-lamp="board">BOARDING</div>
+  </div>
+  <div class="plate" data-seat="pilot">
+   <div class="stc h">Pilot · flight</div>
+   <div class="row" style="align-items:flex-start">
+    <div class="thrwrap">
+     <input type="range" class="lever" min="0" max="1" step="0.01" data-in="thr" title="Throttle W/S">
+     <div class="thrsc"><span class="red">8G</span><span class="red">6</span><span>4 ▸SOAK</span><span>2</span><span>0</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+     <div class="gface gauge" data-gauge="g,10,G LOAD"></div>
+     <div class="nixl"><span class="stc">Δv km/s</span><span class="nix" data-b="dv"></span></div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="knob" data-knob="ap" data-opts="man,stop,intercept,match,evade" data-labels="MAN,STOP,INTCP,MATCH,EVADE" data-act="ap"><div class="stc kt">Autopilot</div></div>
+    <div class="knob" data-knob="glim" data-opts="1,3,5,8" data-labels="1G,3G,5G,8G" data-act="glim"><div class="stc kt">G‑limit</div></div>
+   </div>
+   <div class="row">
+    <button class="mush y" data-act="flip">FLIP<br>RETRO</button>
+    <button class="tog" data-act="soak" data-on="soak=ON"><span class="base"><span class="lev"></span></span><span class="tl">G‑SOAK<em data-b="soakLeft"></em></span></button>
+   </div>
+  </div>
+  <div class="crt">
+   <div class="glass"><canvas data-scope></canvas></div>
+   <div class="zl"><button data-act="zoom:out">RNG +</button><span class="stc" data-b="zoomL"></span><button data-act="zoom:in">RNG −</button></div>
+  </div>
+  <div class="plate" data-seat="gunner">
+   <div class="stc h">Gunner · weapons / EW</div>
+   <div class="row">
+    <button class="tog" data-act="arm" data-on="arm=ARMED"><span class="base"><span class="lev"></span></span><span class="tl">MASTER<br>ARM</span></button>
+    <button class="tog" data-act="ecm" data-on="ecm=ON"><span class="base"><span class="lev"></span></span><span class="tl">ECM<br>JAM</span></button>
+    <button class="tog" data-act="ai2" data-on="ai2=ON"><span class="base"><span class="lev"></span></span><span class="tl">AI<br>GUNNER</span></button>
+   </div>
+   <div class="tgtwin"><span data-b="tgt"></span><span class="s" data-b="tgtState"></span><br>RNG <span data-b="rng"></span> km  CLO <span data-b="clo"></span><br>LADAR <span data-b="lockS"></span> <span class="s" data-b="lockP"></span><div class="ibar"><u data-bar="lockP"></u></div></div>
+   <div class="row">
+    <button class="mush gy" data-act="tgt">TGT<br>CYCLE</button>
+    <button class="mush gr" data-act="lock">LADAR<br>LOCK</button>
+   </div>
+   <div class="row">
+    <div class="nixl"><div class="guard" data-guard><div class="cover">TORP</div><button class="mush" data-act="torp">FIRE<br>TORP</button></div><span class="nix" style="min-width:50px" data-b="torps"></span></div>
+    <div class="nixl"><div class="guard" data-guard><div class="cover">MSL</div><button class="mush" data-act="msl">FIRE<br>MSL</button></div><span class="nix" style="min-width:50px" data-b="msls"></span></div>
+   </div>
+   <div class="row">
+    <div class="knob" data-knob="pdcMode" data-opts="auto,manual,hold" data-labels="AUTO,MAN,SAFE" data-act="pdc"><div class="stc kt">PDC mode</div></div>
+    <button class="mush" data-hold="pdc" style="width:54px;height:54px">PDC<br>FIRE</button>
+   </div>
+  </div>
+  <div class="plate bot" data-seat="any">
+   <div class="nixl"><span class="stc">Hull %</span><span class="nix" data-b="hull"></span></div>
+   <div class="nixl"><span class="stc">PDC rnds</span><span class="nix" data-b="pdc"></span></div>
+   <div class="nixl"><span class="stc">km/s</span><span class="nix" data-b="spd"></span></div>
+   <div class="nixl"><span class="stc">HDG</span><span class="nix" style="min-width:56px" data-b="hdg"></span></div>
+   <div class="nixl"><span class="stc">Inbound / TTI</span><span class="nix" style="min-width:110px" data-b="inbL"></span></div>
+   <div style="display:flex;flex-direction:column;gap:6px;justify-content:center">
+    <span class="stc">Boarding sequence</span>
+    <div class="bsteps"><div class="lamp g" data-lamp="b1">MATCH</div><div class="lamp g" data-lamp="b2">CLOSE</div><div class="lamp g" data-lamp="b3">CLAMP</div><div class="lamp g" data-lamp="b4">BREACH</div><div class="lamp g" data-lamp="b5">ABOARD</div><button class="mush gy" style="width:48px;height:48px;margin-left:6px" data-act="board">BOARD</button></div>
+   </div>
+   <div class="tty log" data-log="5"></div>
+  </div>
+ </div>
+</section>
+
+<!-- ===================== 02 GLASS COFFIN ===================== -->
+<section class="cp glass-cp" id="cp-glass" data-style="holo">
+ <canvas data-scope></canvas><div class="curve"></div>
+ <div class="gc gmodes" data-seat="any">
+  <button class="gb" data-act="gm:cruise" data-on="gmode=cruise">CRUISE</button>
+  <button class="gb" data-act="gm:combat" data-on="gmode=combat">COMBAT</button>
+  <button class="gb" data-act="gm:dock" data-on="gmode=dock">DOCK</button>
+  <span style="width:10px"></span>
+  <button class="gb" data-act="actx" data-on="autoCtx=1">AUTO‑CONTEXT</button>
+  <button class="gb" data-act="zoom:out">−</button><span data-b="zoomL" style="min-width:56px;text-align:center"></span><button class="gb" data-act="zoom:in">+</button>
+ </div>
+ <div class="gc gnav" data-modes="cruise combat dock" data-seat="pilot">
+  <h4>FLIGHT · LEFT COUCH</h4>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="big" data-b="g"></div><small style="color:#7fbfd0">G / lim <b data-b="glim"></b></small></div>
+  <input type="range" class="gsl" min="0" max="1" step="0.01" data-in="thr">
+  <div class="gbar r"><u data-bar="bo"></u></div>
+  <div class="kv"><span>Δv</span><b data-b="dv"></b></div>
+  <div class="kv"><span>speed</span><b data-b="spd"></b></div>
+  <div class="kv"><span>heading</span><b data-b="hdg"></b></div>
+  <div style="margin-top:6px">
+   <button class="gb" data-act="ap:man" data-on="ap=man">MAN</button><button class="gb" data-act="ap:stop" data-on="ap=stop">STOP</button><button class="gb" data-act="ap:intercept" data-on="ap=intercept">INTCP</button><button class="gb" data-act="ap:match" data-on="ap=match">MATCH</button><button class="gb" data-act="ap:evade" data-on="ap=evade">EVADE</button>
+  </div>
+  <div><button class="gb" data-act="glim">G‑LIM</button><button class="gb" data-act="flip">FLIP</button><button class="gb" data-act="soak" data-on="soak=ON">SOAK <span data-b="soakLeft"></span></button></div>
+ </div>
+ <div class="gc gwpn" data-modes="combat" data-seat="gunner">
+  <h4>WEAPONS · RIGHT COUCH</h4>
+  <div class="kv"><span data-b="tgt"></span><b data-b="tgtState"></b></div>
+  <div class="kv"><span>range / closing</span><b><span data-b="rng"></span> km · <span data-b="clo"></span></b></div>
+  <div class="kv"><span>LADAR</span><b data-b="lockS"></b></div>
+  <div class="gbar"><u data-bar="lockP"></u></div>
+  <div><button class="gb" data-act="tgt">NEXT TGT</button><button class="gb" data-act="lock" data-on="locking=1">PAINT</button><button class="gb" data-act="ecm" data-on="ecm=ON">ECM</button><button class="gb" data-act="ai2" data-on="ai2=ON">AI GUNNER</button></div>
+  <div style="display:flex;gap:6px;margin-top:6px">
+   <button class="gb red" style="flex:1;padding:10px" data-act="torp">TORP <span data-b="torps"></span></button>
+   <button class="gb red" style="flex:1;padding:10px" data-act="msl">MSL <span data-b="msls"></span></button>
+  </div>
+  <div style="margin-top:4px">PDC <button class="gb" data-act="pdc:auto" data-on="pdcMode=auto">AUTO</button><button class="gb" data-act="pdc:manual" data-on="pdcMode=manual">MAN</button><button class="gb" data-act="pdc:hold" data-on="pdcMode=hold">HOLD</button><button class="gb red" data-hold="pdc">FIRE</button></div>
+  <div class="kv"><span>rounds</span><b data-b="pdc"></b></div>
+ </div>
+ <div class="gc gthreat" data-modes="combat" data-seat="gunner">
+  <h4>THREAT RING · <span data-b="thrS"></span></h4>
+  <div data-threats></div>
+  <div class="kv" style="margin-top:4px"><span>inbound</span><b data-b="inbL"></b></div>
+  <div class="kv"><span>hull</span><b><span data-b="hull"></span>%</b></div>
+ </div>
+ <div class="gc groute" data-modes="cruise" data-seat="pilot">
+  <h4>CRUISE · CONSUMABLES</h4>
+  <div class="kv"><span>target</span><b data-b="tgt"></b></div>
+  <div class="kv"><span>time to intercept</span><b data-b="ttiI"></b></div>
+  <div class="kv"><span>hull / PDC / torps</span><b><span data-b="hull"></span>% · <span data-b="pdc"></span> · <span data-b="torps"></span></b></div>
+  <div><button class="gb" data-act="tgt">NEXT TGT</button><button class="gb" data-act="board">BOARD</button></div>
+ </div>
+ <div class="gc gboard" data-modes="dock" data-seat="any">
+  <h4>DOCK / BOARD · <span data-b="tgt"></span></h4>
+  <div class="steps"><span data-step="1">MATCH</span><span data-step="2">CLOSE</span><span data-step="3">CLAMP</span><span data-step="4">BREACH</span><span data-step="5">ABOARD</span></div>
+  <div class="kv" style="margin-top:6px"><span>range · rel v</span><b><span data-b="rng"></span> km · <span data-b="relv"></span> m/s</b></div>
+  <button class="gb" data-act="board">BOARD SELECTED</button><button class="gb" data-act="ap:man">ABORT</button>
+ </div>
+ <div class="gc glog log" data-modes="cruise combat dock" data-log="5"></div>
+</section>
+
+<!-- ===================== 03 THE PIT ===================== -->
+<section class="cp pit" id="cp-pit" data-style="plot">
+ <div class="console">
+  <div class="orders" data-seat="any">
+   <div class="grp"><span class="lb">YOUR SEAT</span><button class="pb" data-act="seat:cap" data-on="pitSeat=cap">CAPTAIN</button><button class="pb" data-act="seat:helm" data-on="pitSeat=helm">HELM</button><button class="pb" data-act="seat:tac" data-on="pitSeat=tac">TAC</button><button class="pb" data-act="seat:ops" data-on="pitSeat=ops">OPS</button><button class="pb" data-act="seat:xo" data-on="pitSeat=xo">XO</button></div>
+   <div class="grp"><span class="lb">ROE</span><button class="pb red" data-act="roe:free" data-on="roe=free">WEAPONS FREE</button><button class="pb" data-act="roe:tight" data-on="roe=tight">TIGHT</button><button class="pb" data-act="roe:hold" data-on="roe=hold">HOLD</button></div>
+   <div class="grp"><span class="lb">ORDERS</span><button class="pb" data-act="tgt">NEXT TRACK</button><button class="pb" data-act="ord:intercept">"HELM, INTERCEPT"</button><button class="pb" data-act="ord:evade">"EVASIVE"</button><button class="pb" data-act="ord:board">"PREPARE TO BOARD"</button></div>
+  </div>
+  <div class="st helm" data-station="helm" data-seat="pilot">
+   <div class="sh"><b>HELM</b><span class="badge" data-b="aiHelm"></span></div>
+   <div class="kv"><span>thrust</span><b><span data-b="g"></span> g (lim <span data-b="glim"></span>)</b></div>
+   <input type="range" min="0" max="1" step="0.01" data-in="thr">
+   <div class="pbar r"><u data-bar="bo"></u></div>
+   <div class="kv"><span>Δv · speed</span><b><span data-b="dv"></span> · <span data-b="spd"></span></b></div>
+   <div class="kv"><span>hdg</span><b data-b="hdg"></b></div>
+   <div class="r"><button class="pb" data-act="ap:man" data-on="ap=man">MAN</button><button class="pb" data-act="ap:stop" data-on="ap=stop">STOP</button><button class="pb" data-act="ap:intercept" data-on="ap=intercept">INTCP</button><button class="pb" data-act="ap:match" data-on="ap=match">MATCH</button><button class="pb" data-act="ap:evade" data-on="ap=evade">EVADE</button></div>
+   <div class="r"><button class="pb" data-act="glim">G‑LIM</button><button class="pb" data-act="flip">FLIP</button><button class="pb" data-act="soak" data-on="soak=ON">SOAK <span data-b="soakLeft"></span></button></div>
+  </div>
+  <div class="plot"><canvas data-scope></canvas><div class="pl">PLOT · NORTH UP · <span data-b="zoomL"></span> · CLICK A TRACK TO SELECT</div><div class="zl"><button class="pb" data-act="zoom:out">−</button> <button class="pb" data-act="zoom:in">+</button></div></div>
+  <div class="st tac" data-station="tac" data-seat="gunner">
+   <div class="sh"><b>TACTICAL</b><span class="badge" data-b="aiTac"></span></div>
+   <div class="kv"><span>track</span><b data-b="tgt"></b></div>
+   <div class="kv"><span>status · hull</span><b><span data-b="tgtState"></span> · <span data-b="tgtHull"></span></b></div>
+   <div class="kv"><span>rng · clo</span><b><span data-b="rng"></span> km · <span data-b="clo"></span></b></div>
+   <div class="kv"><span>fire solution</span><b data-b="lockS"></b></div>
+   <div class="r"><button class="pb red" data-act="torp">TORP (<span data-b="torps"></span>)</button><button class="pb red" data-act="msl">MSL (<span data-b="msls"></span>)</button></div>
+   <div class="r">PDC <button class="pb" data-act="pdc:auto" data-on="pdcMode=auto">AUTO</button><button class="pb" data-act="pdc:manual" data-on="pdcMode=manual">MAN</button><button class="pb" data-act="pdc:hold" data-on="pdcMode=hold">HOLD</button><button class="pb red" data-hold="pdc">FIRE</button></div>
+   <div class="kv"><span>rounds</span><b data-b="pdc"></b></div>
+  </div>
+  <div class="st ops" data-station="ops" data-seat="ops">
+   <div class="sh"><b>OPS / EW</b><span class="badge" data-b="aiOps"></span></div>
+   <div class="kv"><span>LADAR</span><b><span data-b="lockS"></span> <span data-b="lockP"></span>%</b></div>
+   <div class="pbar"><u data-bar="lockP"></u></div>
+   <div class="r"><button class="pb" data-act="lock" data-on="locking=1">PAINT TRACK</button><button class="pb" data-act="ecm" data-on="ecm=ON">ECM</button></div>
+   <div class="kv"><span>threat</span><b data-b="thrS"></b></div>
+   <div data-threats></div>
+   <div class="kv"><span>inbound</span><b data-b="inbL"></b></div>
+  </div>
+  <div class="st xo" data-station="xo" data-seat="xo">
+   <div class="sh"><b>XO / BOARDING</b><span class="badge" data-b="aiXo"></span></div>
+   <div class="kv"><span>hull</span><b><span data-b="hull"></span>%</b></div>
+   <div class="pbar"><u data-bar="hull"></u></div>
+   <div class="r"><button class="pb" data-act="dc" data-on="dc=1">DC TEAMS</button><button class="pb" data-act="board">BOARD TRACK</button></div>
+   <div class="kv"><span>boarding</span><b data-b="board"></b></div>
+   <div class="steps" style="margin-top:4px"><span data-step="1">MAT</span><span data-step="2">CLS</span><span data-step="3">CLM</span><span data-step="4">BRC</span><span data-step="5">IN</span></div>
+   <div class="kv" style="margin-top:4px"><span>crew</span><b data-b="crew"></b></div>
+  </div>
+  <div class="plog log" data-log="6"></div>
+ </div>
+</section>
+
+<!-- ===================== 04 ONE-MAN BAND ===================== -->
+<section class="cp band" id="cp-band" data-style="band">
+ <canvas data-scope></canvas>
+ <div class="bc tl"><div class="row">
+  <div><div class="n" data-b="g"></div><div class="l">g · lim <span data-b="glim"></span></div></div>
+  <div><div class="n" data-b="dv"></div><div class="l">Δv km/s</div></div>
+  <div><div class="n" data-b="spd"></div><div class="l">km/s</div></div>
+ </div></div>
+ <div class="bc tr"><div class="row" style="justify-content:flex-end">
+  <div><div class="n bthreat" data-s="thrS" data-b="thrS"></div><div class="l">LADAR on us</div></div>
+  <div><div class="n" data-b="hull"></div><div class="l">hull</div></div>
+  <div><div class="n" data-b="torps"></div><div class="l">torps</div></div>
+ </div></div>
+ <div class="bprop" data-prop><div class="who">SHIP AI PROPOSES</div><div class="q" data-b="propT"></div><div class="a"><button data-act="y">Y · DO IT</button><button class="n" data-act="n">N · NO</button></div><div class="tbar"><u data-bar="propP"></u></div></div>
+ <div class="wheel" data-seat="pilot">
+  <button class="vb" data-act="ap:intercept" data-on="ap=intercept" data-ang="-90">INTERCEPT<em>run it down</em></button>
+  <button class="vb" data-act="ap:match" data-on="ap=match" data-ang="-30">MATCH<em>sit on it</em></button>
+  <button class="vb" data-act="board" data-on="boarding=1" data-ang="30">BOARD<em>take it</em></button>
+  <button class="vb kill" data-commit="kill" data-ang="90"><b>KILL</b><em>hold to commit</em></button>
+  <button class="vb" data-act="hide" data-on="hidden=1" data-ang="150">HIDE<em>go dark</em></button>
+  <button class="vb" data-act="ap:evade" data-on="ap=evade" data-ang="210">EVADE<em>jink</em></button>
+  <div class="hub"><b data-b="APL"></b><span data-b="tgt"></span><br><span data-b="lockS"></span></div>
+ </div>
+ <div class="bauth" data-seat="pilot">
+  <div class="l" style="font-size:10px;letter-spacing:.3em;color:#77777f">AI AUTHORITY</div>
+  <div class="seg"><button data-act="auth:0" data-on="auth=0">0 ADVISE</button><button data-act="auth:1" data-on="auth=1">1 PROPOSE</button><button data-act="auth:2" data-on="auth=2">2 COMMAND</button></div>
+  <p data-b="authD"></p>
+ </div>
+ <div class="blog log" data-log="6"></div>
+ <div class="bthr" data-seat="pilot"><input type="range" min="0" max="1" step="0.01" data-in="thr" title="Manual throttle override"><span>OVERRIDE</span></div>
+</section>
+
+<!-- ===================== VERDICT ===================== -->
+<section class="cp verdict" id="cp-verdict"></section>
+
+<div class="ovl" id="gloc">G‑LOC<small>pilot's out cold · inputs dead · whatever the autopilot is doing, it's still doing</small></div>
+<div class="ovl" id="dead">SHIP LOST<small>Hull 0%. Your corvette is now a debris field with a nice view. Press R.</small></div>
+<div class="ovl" id="paused">PAUSED</div>
+</div>
+<aside id="side"></aside>
+</main>
+<footer id="keys"></footer>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const G=0.0098, ZOOMS=[400,150,50,12,3], TAU=Math.PI*2;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, hyp=Math.hypot;
+const angDiff=(a,b)=>{let d=(a-b)%TAU;if(d>Math.PI)d-=TAU;if(d<-Math.PI)d+=TAU;return d};
+const APL={man:'MANUAL',stop:'ALL STOP',intercept:'INTERCEPT',match:'MATCH',evade:'EVADE'};
+const CPS=[['iron','01 IRON TUB'],['glass','02 GLASS COFFIN'],['pit','03 THE PIT'],['band','04 ONE‑MAN BAND'],['verdict','05 VERDICT']];
+let S=null, cur='iron', UI={seats:0,audio:1,voice:0};
+let hostSeq=3;
+
+function mkC(o){return Object.assign({hull:100,max:100,lockOnUs:0,ls:0,fireT:4,disabled:false,dead:false,captured:false,h:0},o)}
+function newScenario(){
+  const keep=S?{ts:S.ts}:{ts:1};
+  hostSeq=3;
+  S={t:0,ts:keep.ts,paused:false,
+    own:{x:0,y:0,vx:0,vy:0.4,h:Math.PI/2,hull:100,dv:45,torps:8,msls:16,pdc:6000,thr:0,g:0},
+    in:{thr:0,yaw:0},ap:'man',apPrev:null,glim:5,soak:false,soakLeft:100,bo:0,gloc:0,flipH:null,
+    tgt:null,locking:false,lockP:0,arm:false,ecm:false,pdcMode:'auto',pdcTrig:false,pdcEng:false,
+    reloadT:0,reloadM:0,pend:[],killOrder:false,hidden:false,
+    board:{id:null,stage:0,t:0},ord:[],fx:[],tracers:[],log:[],logN:0,zoom:1,
+    ai2:false,pitSeat:'cap',roe:'tight',dc:false,auth:1,prop:null,bandT:3,aiTacT:0,
+    gmode:'cruise',autoCtx:true,ctxT:0,noHostT:0,shakeT:0,
+    C:[mkC({id:'H1',name:'SABER',cls:'FRIGATE',hostile:true,x:40,y:240,vx:0,vy:-0.5,amax:0.05,standoff:120,paintR:260,wpn:'torp',every:14,ammo:6}),
+       mkC({id:'H2',name:'JACKAL',cls:'GUNBOAT',hostile:true,hull:60,max:60,x:-130,y:120,vx:0.35,vy:-0.3,amax:0.08,standoff:30,paintR:110,wpn:'msl',every:6,ammo:10}),
+       mkC({id:'N1',name:'DHOFAR GULL',cls:'FREIGHTER',hostile:false,hull:80,max:80,x:28,y:50,vx:-0.22,vy:0.12,amax:0,standoff:0,paintR:0})]};
+  log('CVT‑7 QALHAT on station. Two hostiles on the scope, one fat freighter. Try not to die.','info');
+}
+function log(msg,lvl='info'){S.log.push({t:S.t,msg,lvl});if(S.log.length>80)S.log.shift();S.logN++;
+  if(UI.voice&&(lvl==='crit'||lvl==='ai'))speak(msg)}
+function speak(t){if(!window.speechSynthesis||speechSynthesis.pending)return;const u=new SpeechSynthesisUtterance(t.replace(/[—→·]/g,', ').replace(/H(\d)/g,'Hotel $1'));u.rate=1.15;u.pitch=.75;speechSynthesis.speak(u)}
+const tgtObj=()=>S.C.find(c=>c.id===S.tgt)||null;
+const liveTgt=()=>{const T=tgtObj();return T&&!T.dead?T:null};
+const dist=c=>hyp(c.x-S.own.x,c.y-S.own.y);
+const activeHostile=c=>c.hostile&&!c.dead&&!c.disabled;
+function maxThreat(){let m=0,by=null;for(const c of S.C)if(c.lockOnUs>m){m=c.lockOnUs;by=c}return[m,by]}
+function inbound(){const o=S.own;const L=[];for(const m of S.ord)if(m.tg===o){const d=hyp(m.x-o.x,m.y-o.y);const rv=((m.vx-o.vx)*(o.x-m.x)+(m.vy-o.vy)*(o.y-m.y))/(d||1);L.push({m,d,tti:rv>0.01?d/rv:999})}return L.sort((a,b)=>a.tti-b.tti)}
+function nearestHostile(){let b=null,bd=1e9;for(const c of S.C)if(activeHostile(c)){const d=dist(c);if(d<bd){bd=d;b=c}}return b}
+
+/* ---------------- actions ---------------- */
+function selectTarget(id,who){if(S.tgt===id)return;S.tgt=id;S.lockP=0;S.locking=false;const T=tgtObj();if(T)log(`${who?who+': ':''}target → ${T.id} ${T.name} (${T.cls})`,who&&who!=='YOU'?'ai':'info')}
+function cycleTarget(){const L=S.C.filter(c=>!c.dead).sort((a,b)=>dist(a)-dist(b));if(!L.length)return;const i=L.findIndex(c=>c.id===S.tgt);selectTarget(L[(i+1)%L.length].id)}
+function setAP(m,who){
+  if((m==='intercept'||m==='match')&&!liveTgt()){log('Autopilot needs a target, genius. T to cycle.','warn');return false}
+  if(S.board.stage>0&&S.board.stage<5&&m!=='match'){S.board.stage=0;log('Boarding aborted.','warn')}
+  S.ap=m;S.flipH=null;if(m!=='man')S.hidden=false;
+  log(`${who?who+': ':''}AP → ${APL[m]}${(m==='intercept'||m==='match')?' '+S.tgt:''}`,who&&who!=='YOU'?'ai':'info');return true}
+function pilotOverride(){if(S.ap!=='man'){S.ap='man';log('AP disengaged — pilot override','warn');if(S.board.stage>0&&S.board.stage<5){S.board.stage=0;log('Boarding aborted.','warn')}}S.flipH=null}
+function fire(kind,who='YOU'){
+  const o=S.own,T=liveTgt();if(o.hull<=0)return false;
+  if(cur==='iron'&&!S.arm&&who==='YOU'){log('MASTER ARM is SAFE. Flip the fucking switch.','warn');return false}
+  if(!T){log('No target.','warn');return false}
+  if(S.lockP<1){log(`${kind==='torp'?'Torpedo':'Missile'} needs a hard LADAR lock. Paint it first (L).`,'warn');return false}
+  if(kind==='torp'){if(o.torps<=0){log('Torpedo tubes empty.','warn');return false}if(S.reloadT>0)return false;o.torps--;S.reloadT=.35}
+  else{if(o.msls<=0){log('VLS empty.','warn');return false}if(S.reloadM>0)return false;o.msls--;S.reloadM=.25}
+  launch(o,T,kind,true);
+  log(`${who!=='YOU'?who+': ':''}${kind==='torp'?'TORPEDO':'MISSILE'} AWAY → ${T.id}${!T.hostile&&!T.captured?' (that\'s a civilian, you psycho)':''}`,who!=='YOU'?'ai':'good');
+  if(!T.hostile&&!T.captured&&!T.disabled){T.hostile=true;T.standoff=60;T.paintR=90;T.wpn='msl';T.every=9;T.ammo=3;T.amax=0.02;T.cls='ANGRY FREIGHTER'}
+  return true}
+function launch(src,tg,kind,ours){
+  const dx=tg.x-src.x,dy=tg.y-src.y,d=hyp(dx,dy)||1,ux=dx/d,uy=dy/d;
+  S.ord.push({x:src.x+ux*.3,y:src.y+uy*.3,vx:src.vx+ux*.35,vy:src.vy+uy*.35,kind,ours,tg,
+    amax:kind==='torp'?.32:.55,life:kind==='torp'?150:70,dmg:kind==='torp'?(ours?40:28):(ours?15:10),trail:[],dead:false});
+  if(src===S.own)sfx('launch')}
+function flip(){if(S.ap!=='man')pilotOverride();const o=S.own;if(hyp(o.vx,o.vy)<.01)return;S.flipH=Math.atan2(-o.vy,-o.vx);log('FLIP — nose retrograde','info')}
+function boardCmd(who){
+  const T=liveTgt();if(!T){log('Board what? Pick a target.','warn');return}
+  if(activeHostile(T)){log(`Board a live ${T.cls.toLowerCase()}? Their PDCs will turn the pod into soup. Disable it first.`,'warn');return}
+  if(T.captured){log(`${T.id} is already ours.`,'info');return}
+  S.board={id:T.id,stage:1,t:0};S.ap='match';S.flipH=null;log(`${who?who+': ':''}BOARD: matching ${T.id} ${T.name}`,who?'ai':'info')}
+function hide(){S.in.thr=0;S.ap='man';S.flipH=null;S.ecm=false;S.pdcMode='hold';S.locking=false;S.hidden=true;log('Going dark: drive cold, ECM off, PDCs safe. Signature minimal. Pray.','warn')}
+function propose(text,fn){S.prop={text,fn,t:10,T:10};log('AI: '+text,'ai');sfx('prop')}
+
+function act(a){
+  audioInit();const i=a.indexOf(':'),k=i<0?a:a.slice(0,i),arg=i<0?null:a.slice(i+1);
+  switch(k){
+  case 'tab':switchCp(arg);break;
+  case 'ap':setAP(arg,'');break;
+  case 'glim':{const L=[1,3,5,8];S.glim=arg?+arg:L[(L.indexOf(S.glim)+1)%L.length];log(`G‑limit ${S.glim}g`);break}
+  case 'flip':flip();break;
+  case 'soak':S.soak=!S.soak;log(S.soak?'G‑SOAK flowing. Crew can take high g. Expect hangovers.':'G‑SOAK off.');break;
+  case 'tgt':arg?selectTarget(arg,'YOU'):cycleTarget();break;
+  case 'lock':S.locking=!S.locking;if(!S.locking){S.lockP=0;log('LADAR off target')}else log('LADAR painting '+(S.tgt||'—'));break;
+  case 'torp':fire('torp');break;
+  case 'msl':fire('msl');break;
+  case 'pdc':{const L=['auto','manual','hold'];S.pdcMode=arg||L[(L.indexOf(S.pdcMode)+1)%3];log('PDC → '+S.pdcMode.toUpperCase(),S.pdcMode==='hold'?'warn':'info');break}
+  case 'ecm':S.ecm=!S.ecm;S.hidden=false;log(S.ecm?'ECM up — jamming. We\'re loud now.':'ECM down');break;
+  case 'arm':S.arm=!S.arm;log(S.arm?'MASTER ARM — HOT':'Master arm safe');break;
+  case 'board':boardCmd();break;
+  case 'zoom':S.zoom=clamp(S.zoom+(arg==='in'?1:arg==='out'?-1:0),0,ZOOMS.length-1);if(!arg)S.zoom=(S.zoom+1)%ZOOMS.length;break;
+  case 'hide':hide();break;
+  case 'kill':{const T=liveTgt();if(!T){const n=nearestHostile();if(n)selectTarget(n.id,'YOU')}S.killOrder=true;S.locking=true;log('KILL committed — torpedo pair on hard lock','crit');break}
+  case 'auth':S.auth=+arg;log(`AI authority → ${['ADVISE','PROPOSE','COMMAND'][S.auth]}`);break;
+  case 'y':if(S.prop){const f=S.prop.fn;S.prop=null;log('YOU: approved');f()}break;
+  case 'n':if(S.prop){S.prop=null;S.bandT=12;log('YOU: denied. AI sulks.')}break;
+  case 'seat':S.pitSeat=arg;log(arg==='cap'?'You take the captain\'s chair. Crew runs the stations; you give orders.':`You take the ${arg.toUpperCase()} seat. AI crew covers the rest.`);break;
+  case 'roe':S.roe=arg;log(`CAPTAIN: ${arg==='free'?'WEAPONS FREE':arg==='tight'?'WEAPONS TIGHT — return fire only':'WEAPONS HOLD'}`,arg==='free'?'crit':'info');break;
+  case 'ord':{if(arg==='board'){boardCmd('XO');break}if(!liveTgt()&&arg!=='evade'){const n=nearestHostile();if(n)selectTarget(n.id,'OPS')}setAP(arg,'HELM');break}
+  case 'gm':S.gmode=arg;S.autoCtx=false;log(`GLASS: manual layout ${arg.toUpperCase()} (auto‑context off)`);break;
+  case 'actx':S.autoCtx=!S.autoCtx;log('Auto‑context '+(S.autoCtx?'ON — the glass decides what you see':'OFF'));break;
+  case 'ai2':S.ai2=!S.ai2;log(S.ai2?'AI gunner in the back seat. It\'s twitchy.':'Back seat is yours again.');break;
+  case 'dc':S.dc=!S.dc;log(S.dc?'DC teams out — patching hull':'DC teams stood down');break;
+  case 'seats':UI.seats^=1;document.body.classList.toggle('seats',!!UI.seats);break;
+  case 'audio':UI.audio^=1;if(master)master.gain.value=UI.audio?.14:0;break;
+  case 'voice':UI.voice^=1;if(!UI.voice&&window.speechSynthesis)speechSynthesis.cancel();break;
+  case 'time':S.ts=S.ts===1?3:1;break;
+  case 'pause':S.paused=!S.paused;break;
+  case 'reset':newScenario();break;
+  }
+  uiNow=true}
+
+/* ---------------- simulation ---------------- */
+function step(dt){
+  const o=S.own;S.t+=dt;
+  if(S.gloc>0)S.gloc-=dt;
+  if(S.reloadT>0)S.reloadT-=dt;if(S.reloadM>0)S.reloadM-=dt;
+  for(const p of S.pend){p.t-=dt;if(p.t<=0){fire(p.kind,p.who);p.done=1}}S.pend=S.pend.filter(p=>!p.done);
+  // crew / AI by cockpit
+  if(cur==='pit')aiPit(dt);else if(cur==='band')aiBand(dt);else if(S.ai2){aiOps(dt,'AI GUNNER');aiTac(dt,'AI GUNNER')}
+  if(cur==='glass')glassCtx(dt);
+  if(S.prop){S.prop.t-=dt;if(S.prop.t<=0){S.prop=null;log('AI: proposal expired. Your call, I guess.','ai')}}
+  // kill order
+  if(S.killOrder){const T=liveTgt();if(!T||T.disabled){S.killOrder=false}else if(S.lockP>=1){S.killOrder=false;fire('torp','KILL');S.pend.push({t:.45,kind:'torp',who:'KILL'})}}
+  // flight
+  let thr=S.in.thr,yaw=S.gloc>0?0:S.in.yaw,hd=null;
+  if(S.ap!=='man'){const r=autopilot();thr=r.thr;hd=r.h}
+  else if(S.flipH!=null){hd=S.flipH;if(Math.abs(angDiff(S.flipH,o.h))<.02)S.flipH=null}
+  const turn=1.1;
+  if(hd!=null){const d=angDiff(hd,o.h);o.h+=clamp(d,-turn*dt,turn*dt)}else o.h+=yaw*turn*dt;
+  let gc=Math.min(thr*8,S.glim);if(o.dv<=0)gc=0;
+  const a=gc*G;o.vx+=Math.cos(o.h)*a*dt;o.vy+=Math.sin(o.h)*a*dt;o.dv=Math.max(0,o.dv-a*dt);o.g=gc;o.thr=thr;
+  o.x+=o.vx*dt;o.y+=o.vy*dt;
+  const soaked=S.soak&&S.soakLeft>0;if(S.soak)S.soakLeft=Math.max(0,S.soakLeft-.5*dt);
+  if(gc>4.2&&!soaked)S.bo+=(gc-4.2)*.07*dt;else if(gc>7.2)S.bo+=(gc-7.2)*.05*dt;else S.bo=Math.max(0,S.bo-.12*dt);
+  if(S.bo>=1){S.gloc=4;S.bo=.45;if(S.ap==='man')S.in.thr=Math.min(S.in.thr,.3);log('CREW G‑LOC — pilot unconscious','crit')}
+  if(S.dc||(cur==='pit'&&S.pitSeat!=='xo')){if(o.hull>0&&o.hull<75)o.hull=Math.min(75,o.hull+.25*dt)}
+  // our lock
+  const T=liveTgt();
+  if(S.locking&&T){const d=dist(T);if(d>330){S.locking=false;S.lockP=0;log('Target beyond LADAR range','warn')}
+    else{const w=S.lockP;S.lockP=Math.min(1,S.lockP+dt*.4*100/(d+50));if(w<1&&S.lockP>=1){log(`HARD LOCK — ${T.id}`,'good');sfx('lock')}
+      if(activeHostile(T)&&S.lockP>=1&&Math.random()<dt*.035){S.lockP=.5;log(`${T.id} ECM — lock degraded`,'warn')}}}
+  else if(!S.locking)S.lockP=Math.max(0,S.lockP-dt*.5);
+  if(!T)S.locking=false;
+  // contacts
+  const sig=.45+o.thr*.9+(S.ecm?.25:0)-(S.pdcMode==='hold'?.1:0);
+  let anyHost=false;
+  for(const c of S.C){if(c.dead)continue;
+    if(activeHostile(c)){anyHost=true;
+      const rx=o.x-c.x,ry=o.y-c.y,d=hyp(rx,ry)||1,ux=rx/d,uy=ry/d,sp=clamp((d-c.standoff)*.03,-1.5,3);
+      const ex=o.vx+ux*sp-c.vx,ey=o.vy+uy*sp-c.vy,e=hyp(ex,ey);
+      if(e>1e-4){const ac=Math.min(c.amax,e*.5);c.vx+=ex/e*ac*dt;c.vy+=ey/e*ac*dt;c.h=Math.atan2(ey,ex)}
+      if(d<c.paintR){c.lockOnUs=Math.min(1,c.lockOnUs+dt*.16*sig*(S.ecm?.4:1)*(1.25-d/c.paintR));
+        if(S.ecm&&c.lockOnUs>=1&&Math.random()<dt*.04){c.lockOnUs=.55;log(`${c.id} lock broken — our ECM`,'good')}}
+      else c.lockOnUs=Math.max(0,c.lockOnUs-.25*dt);
+      const ls=c.lockOnUs>=1?2:c.lockOnUs>.02?1:0;
+      if(ls>c.ls){log(ls===2?`LOCKED — ${c.id} has a firing solution on us`:`LADAR PAINT — ${c.id} is lighting us up`,ls===2?'crit':'warn')}c.ls=ls;
+      if(ls===2&&c.ammo>0){c.fireT-=dt;if(c.fireT<=0){c.fireT=c.every*(.8+Math.random()*.4);c.ammo--;launch(c,o,c.wpn,false);log(`VAMPIRE — ${c.id} launched ${c.wpn==='torp'?'torpedo':'missile'}`,'crit')}}
+    }else{c.lockOnUs=Math.max(0,c.lockOnUs-dt);c.ls=0}
+    c.x+=c.vx*dt;c.y+=c.vy*dt}
+  if(!anyHost){S.noHostT+=dt;if(S.noHostT>18)spawnHostile()}else S.noHostT=0;
+  // ordnance
+  S.pdcEng=false;
+  for(const m of S.ord){if(m.dead)continue;m.life-=dt;const Tg=m.tg;
+    if(m.life<=0||(Tg.dead)){m.dead=true;continue}
+    const rx=Tg.x-m.x,ry=Tg.y-m.y,d=hyp(rx,ry)||1e-6,rvx=Tg.vx-m.vx,rvy=Tg.vy-m.vy;
+    const clo=-(rx*rvx+ry*rvy)/d,ux=rx/d,uy=ry/d,w=(rx*rvy-ry*rvx)/(d*d);
+    let aN=clamp(4*Math.max(clo,1)*w,-m.amax,m.amax);const aL=Math.sqrt(Math.max(0,m.amax*m.amax-aN*aN));
+    m.vx+=(-uy*aN+ux*aL)*dt;m.vy+=(ux*aN+uy*aL)*dt;
+    const px=m.x,py=m.y;m.x+=m.vx*dt;m.y+=m.vy*dt;
+    // closest approach this substep
+    const sx=m.x-px-(Tg.vx*dt),sy=m.y-py-(Tg.vy*dt);const qx=px-(Tg.x-Tg.vx*dt),qy=py-(Tg.y-Tg.vy*dt);
+    const ss=sx*sx+sy*sy;const tt=ss>0?clamp(-(qx*sx+qy*sy)/ss,0,1):0;const cd=hyp(qx+sx*tt,qy+sy*tt);
+    if(cd<.7){m.dead=true;hit(m,Tg);continue}
+    // point defense
+    if(Tg===o){if(o.pdc>0&&d<8&&(S.pdcMode==='auto'||(S.pdcMode==='manual'&&S.pdcTrig))){S.pdcEng=true;o.pdc=Math.max(0,o.pdc-70*dt);
+        if(Math.random()<.5)S.tracers.push({x:m.x+(Math.random()-.5)*.6,y:m.y+(Math.random()-.5)*.6,t:.07,us:1});
+        if(Math.random()<dt*(m.kind==='torp'?1.5:1.1)*(S.pdcMode==='manual'?1.3:1)){m.dead=true;S.fx.push({x:m.x,y:m.y,r:0,t:.6,c:'pdc'});log(`Splash one — PDC killed inbound ${m.kind}`,'good')}}}
+    else if(!Tg.dead&&d<7){const r=(m.kind==='torp'?.8:1.2)*(Tg.disabled?.3:1);if(Math.random()<.4)S.tracers.push({x:m.x,y:m.y,from:Tg,t:.07});
+      if(Math.random()<dt*r){m.dead=true;S.fx.push({x:m.x,y:m.y,r:0,t:.6,c:'pdc'});log(`${Tg.id} PDCs shredded our ${m.kind}`,'warn')}}
+    m.trail.push(m.x,m.y);if(m.trail.length>40)m.trail.splice(0,2)}
+  S.ord=S.ord.filter(m=>!m.dead);
+  boardStep(dt);
+  for(const tr of S.tracers)tr.t-=dt;S.tracers=S.tracers.filter(t=>t.t>0);
+}
+function hit(m,Tg){const o=S.own;S.fx.push({x:Tg.x,y:Tg.y,r:0,t:1.2,c:'boom'});
+  if(Tg===o){o.hull-=m.dmg;S.shakeT=.35;sfx('impact');log(`IMPACT — ${m.kind} hit. Hull ${Math.max(0,Math.round(o.hull))}%`,'crit');
+    if(o.hull<=0){o.hull=0;log('Reactor containment lost. That\'s all, folks.','crit')}return}
+  Tg.hull-=m.dmg;
+  if(Tg.hull<=0){Tg.dead=true;Tg.hull=0;log(`${Tg.id} ${Tg.name} DESTROYED — nice and crispy`,'good');if(S.tgt===Tg.id){S.locking=false;S.lockP=0}if(S.board.id===Tg.id)S.board.stage=0}
+  else if(!Tg.disabled&&Tg.hull<=Tg.max*.4){Tg.disabled=true;Tg.lockOnUs=0;log(`${Tg.id} drive dead — dead in the water. Boardable.`,'good')}
+  else log(`HIT on ${Tg.id} — hull ${Math.round(Tg.hull/Tg.max*100)}%`,'good')}
+function spawnHostile(){S.noHostT=0;const o=S.own,a=Math.random()*TAU,big=Math.random()<.5,id='H'+(hostSeq++);
+  const names=big?['MANTIS','HALBERD','VULTURE','KRAIT']:['WASP','HORNET','STOAT','FERRET'];
+  S.C.push(mkC({id,name:names[Math.random()*4|0],cls:big?'FRIGATE':'GUNBOAT',hostile:true,hull:big?100:60,max:big?100:60,x:o.x+Math.cos(a)*270,y:o.y+Math.sin(a)*270,vx:o.vx-Math.cos(a)*.6,vy:o.vy-Math.sin(a)*.6,
+    amax:big?.05:.08,standoff:big?120:30,paintR:big?260:110,wpn:big?'torp':'msl',every:big?14:6,ammo:big?6:10}));
+  log(`NEW CONTACT — ${id} ${big?'frigate':'gunboat'} burning in. They\'re not here to trade.`,'crit');
+  o.torps=Math.min(8,o.torps+3);o.msls=Math.min(16,o.msls+6);o.pdc=Math.min(6000,o.pdc+2000);log('Resupply drone dropped ordnance. Convenient, huh.','info')}
+function autopilot(){
+  const o=S.own,T=liveTgt();let dx=0,dy=0;
+  if((S.ap==='intercept'||S.ap==='match')&&!T){S.ap='man';log('AP: target lost — manual','warn');return{thr:0,h:null}}
+  const amax=S.glim*G;
+  if(S.ap==='intercept'||S.ap==='match'){const rx=T.x-o.x,ry=T.y-o.y,d=hyp(rx,ry)||1,ux=rx/d,uy=ry/d;
+    const sp=S.ap==='intercept'?Math.min(8,1+d*.05):Math.min(5,Math.sqrt(2*amax*.3*Math.max(0,d-.4)),Math.max(0,d-.4)*.12);
+    dx=T.vx+ux*sp;dy=T.vy+uy*sp}
+  else if(S.ap==='evade'){const ib=inbound()[0];let tx,ty;if(ib){tx=ib.m.x-o.x;ty=ib.m.y-o.y}else{const n=nearestHostile();if(n){tx=n.x-o.x;ty=n.y-o.y}else{tx=1;ty=0}}
+    const l=hyp(tx,ty)||1,s=Math.floor(S.t/4)%2?1:-1;dx=o.vx+(-ty/l)*s*3;dy=o.vy+(tx/l)*s*3}
+  const ex=dx-o.vx,ey=dy-o.vy,e=hyp(ex,ey);
+  if(e<.004)return{thr:0,h:null};
+  const hd=Math.atan2(ey,ex),off=Math.abs(angDiff(hd,o.h));
+  return{thr:off<.3?Math.min(S.glim/8,e*2.5):0,h:e>.015?hd:null}}
+function boardStep(dt){const B=S.board;if(!B.stage||B.stage>=5)return;const T=S.C.find(c=>c.id===B.id),o=S.own;
+  if(!T||T.dead){B.stage=0;log('Boarding aborted — target gone','warn');return}
+  if(S.ap!=='match'&&B.stage<5){B.stage=0;log('Boarding aborted — AP pulled off MATCH','warn');return}
+  const d=dist(T),rv=hyp(T.vx-o.vx,T.vy-o.vy);
+  if(B.stage===1&&d<6){B.stage=2;log('BOARD: closing — breaching pod prepped, marines suited')}
+  if(B.stage<=2&&d<1.5&&rv<.08){B.stage=3;B.t=3;log('BOARD: clamps out');sfx('clamp')}
+  if(B.stage===3||B.stage===4){if(d>2.2||rv>.14){B.stage=2;log('BOARD: clamps torn — relative drift. Hold the fucking ship steady.','warn')}
+    else{B.t-=dt;if(B.t<=0){if(B.stage===3){B.stage=4;B.t=5;log('BOARD: clamps hard. Cutting the hull.');sfx('clamp')}
+      else{B.stage=5;T.captured=true;T.hostile=false;T.disabled=true;T.lockOnUs=0;S.ap='stop';log(`BOARD: marines aboard ${T.name}. Prize is yours. Somebody grab the coffee.`,'good');sfx('lock')}}}}}
+/* --- AI crew --- */
+function aiOps(dt,who){const[th]=maxThreat();if(th>.05&&!S.ecm&&!S.hidden){S.ecm=true;log(who+': ECM up, they\'re painting us','ai')}
+  if(S.roe!=='hold'||cur!=='pit'){const T=liveTgt();if(!T||!activeHostile(T)){const n=nearestHostile();if(n&&dist(n)<320)selectTarget(n.id,who)}const T2=liveTgt();if(T2&&activeHostile(T2)&&!S.locking&&dist(T2)<320){S.locking=true;log(who+': painting '+T2.id,'ai')}}}
+function aiTac(dt,who){S.aiTacT-=dt;if(inbound().length&&S.pdcMode==='hold'&&!S.hidden){S.pdcMode='auto';log(who+': PDCs to auto','ai')}
+  const T=liveTgt();if(!T||!activeHostile(T)||S.lockP<1||S.own.torps<=0||S.aiTacT>0)return;
+  const roe=cur==='pit'?S.roe:'free';const ok=roe==='free'||(roe==='tight'&&T.lockOnUs>=.99);
+  if(ok){if(cur==='iron')S.arm=true;if(fire('torp',who))S.aiTacT=5}}
+function aiPit(dt){const s=S.pitSeat;
+  if(s!=='ops')aiOps(dt,'OPS');if(s!=='tac')aiTac(dt,'TAC');
+  if(s!=='helm'){const ib=inbound();if(ib.length&&ib[0].tti<20&&S.ap!=='evade'&&!(S.board.stage>=3&&S.board.stage<5)){S.apPrev=S.ap==='evade'?'man':S.ap;setAP('evade','HELM')}
+    else if(!ib.length&&S.ap==='evade'&&S.apPrev){const p=S.apPrev;S.apPrev=null;if((p==='intercept'||p==='match')&&!liveTgt())setAP('stop','HELM');else setAP(p,'HELM')}}}
+function aiBand(dt){const a=S.auth;S.bandT-=dt;const ib=inbound(),[th]=maxThreat();
+  if(a>=1&&!S.hidden){if(th>.05&&!S.ecm){S.ecm=true;log('AI: ECM up. They\'re painting us.','ai')}
+    if(ib.length&&S.pdcMode!=='auto'){S.pdcMode='auto';log('AI: PDCs to auto. You\'re welcome.','ai')}
+    let T=liveTgt();if(!T){const n=nearestHostile();if(n&&dist(n)<320)selectTarget(n.id,'AI')}
+    T=liveTgt();if(T&&activeHostile(T)&&!S.locking&&dist(T)<320)S.locking=true}
+  if(a===0&&ib.length&&ib[0].tti<12&&S.bandT<=0){log(`AI (advisory): ${ib.length} inbound, TTI ${ib[0].tti.toFixed(0)}s. Just saying.`,'ai');S.bandT=8}
+  if(ib.length&&ib[0].tti<15&&S.ap!=='evade'&&!(S.board.stage>=3)){
+    if(a===2){S.apPrev=S.ap;setAP('evade','AI')}else if(a===1&&!S.prop)propose(`${ib[0].m.kind==='torp'?'Torpedo':'Missile'} inbound, ${ib[0].tti.toFixed(0)}s. Go evasive?`,()=>{S.apPrev=S.ap;setAP('evade','AI')})}
+  if(a===2&&!ib.length&&S.ap==='evade'&&S.apPrev){const p=S.apPrev;S.apPrev=null;if(p!=='evade')setAP((p==='intercept'||p==='match')&&!liveTgt()?'stop':p,'AI')}
+  const T=liveTgt();if(T&&activeHostile(T)&&S.lockP>=1&&S.own.torps>0&&S.bandT<=0){
+    if(a===2){fire('torp','AI');S.bandT=5}else if(a===1&&!S.prop){propose(`Hard lock on ${T.id} ${T.name}. Fire a torpedo pair?`,()=>{fire('torp','YOU');S.pend.push({t:.45,kind:'torp',who:'YOU'})});S.bandT=12}}}
+function glassCtx(dt){if(!S.autoCtx)return;const[th]=maxThreat();
+  const want=(th>.05||inbound().length||S.locking)?'combat':(S.board.stage>0&&S.board.stage<5?'dock':'cruise');
+  if(want!==S.gmode){S.ctxT+=dt;if(S.ctxT>1.2){S.gmode=want;S.ctxT=0;log(`GLASS: context → ${want.toUpperCase()}${want==='combat'&&S.board.stage>0?' (mid‑docking. Good luck finding the clamp panel.)':''}`,'ai');sfx('ui')}}else S.ctxT=0}
+
+/* ---------------- scope rendering ---------------- */
+const PAL={crt:{fg:'#39ff6a',dim:'rgba(57,255,106,.22)',hos:'#39ff6a',neu:'#39ff6a',fr:'#39ff6a',ord:'#c8ffd2',eord:'#ffffff',font:'15px VT323, monospace'},
+ holo:{fg:'#5ee6ff',dim:'rgba(94,230,255,.13)',hos:'#ff4d6d',neu:'#ffd166',fr:'#7dff9e',ord:'#5ee6ff',eord:'#ff4d6d',font:'600 12px Rajdhani, sans-serif'},
+ plot:{fg:'#ffb347',dim:'rgba(255,179,71,.13)',hos:'#ff5a36',neu:'#ffe08a',fr:'#9cff8a',ord:'#ffd08a',eord:'#ff5a36',font:'11px "IBM Plex Mono", monospace'},
+ band:{fg:'#ececee',dim:'rgba(236,236,238,.07)',hos:'#ff3b30',neu:'#9a9aa2',fr:'#ececee',ord:'#ececee',eord:'#ff3b30',font:'11px Inter, sans-serif'}};
+let scopeGeom=null;
+function drawScope(cv,style){
+  const dpr=Math.min(2,devicePixelRatio||1),w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}
+  const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  const P=PAL[style],o=S.own,crt=style==='crt';
+  let cx=w/2,cy=h/2;if(style==='band')cy=h*.42;if(style==='holo')cy=h*.52;
+  const R=crt?Math.min(w,h)/2-6:style==='band'?Math.min(w*.42,h*.36):Math.min(w,h)/2-18;
+  const zk=ZOOMS[S.zoom],sc=R/zk;scopeGeom={cv,cx,cy,sc};
+  const W=(px,py)=>[cx+(px-o.x)*sc,cy-(py-o.y)*sc];
+  const sweep=(S.t*2.1)%TAU;
+  if(crt){x.fillStyle='rgba(1,7,2,.28)';x.fillRect(0,0,w,h)}
+  else if(style==='plot'){x.fillStyle='#140d03';x.fillRect(0,0,w,h)}
+  else if(style==='band'){x.fillStyle='#0a0a0c';x.fillRect(0,0,w,h)}
+  else x.clearRect(0,0,w,h);
+  x.save();
+  if(crt){x.beginPath();x.arc(cx,cy,R,0,TAU);x.clip()}
+  // grid
+  x.lineWidth=1;x.strokeStyle=P.dim;x.fillStyle=P.dim;x.font=P.font;
+  if(style==='plot'||style==='holo'){const step=zk/5,gx0=Math.floor((o.x-w/sc)/step)*step,gy0=Math.floor((o.y-h/sc)/step)*step;
+    x.beginPath();for(let gx=gx0;gx<o.x+w/sc;gx+=step){const[sx]=W(gx,0);x.moveTo(sx,0);x.lineTo(sx,h)}for(let gy=gy0;gy<o.y+h/sc;gy+=step){const[,sy]=W(0,gy);x.moveTo(0,sy);x.lineTo(w,sy)}x.stroke();
+    if(style==='plot'){x.fillStyle='rgba(255,179,71,.28)';for(let gx=gx0;gx<o.x+w/sc;gx+=step){const[sx]=W(gx,0);x.fillText(String.fromCharCode(65+(((Math.round(gx/step)%26)+26)%26)),sx+3,12)}}}
+  const rings=style==='band'?[.5,1]:[.25,.5,.75,1];
+  x.strokeStyle=style==='band'?'rgba(236,236,238,.1)':P.dim;
+  for(const r of rings){x.beginPath();x.arc(cx,cy,R*r,0,TAU);x.stroke();if(!crt||r<1){x.fillStyle=style==='band'?'#55555c':P.fg;x.globalAlpha=.55;x.fillText(Math.round(zk*r)+' km',cx+4,cy-R*r-3);x.globalAlpha=1}}
+  if(crt){x.beginPath();for(let a=0;a<36;a++){const an=a/36*TAU,r1=R*(a%3?0.97:0.93);x.moveTo(cx+Math.cos(an)*r1,cy+Math.sin(an)*r1);x.lineTo(cx+Math.cos(an)*R,cy+Math.sin(an)*R)}x.strokeStyle=P.fg;x.globalAlpha=.5;x.stroke();x.globalAlpha=1;
+    const g=x.createConicGradient?x.createConicGradient(sweep-.9,cx,cy):null;
+    if(g){g.addColorStop(0,'rgba(57,255,106,0)');g.addColorStop(.143,'rgba(57,255,106,.22)');g.addColorStop(.144,'rgba(57,255,106,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,R,0,TAU);x.fill()}
+    x.strokeStyle=P.fg;x.lineWidth=1.5;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(sweep)*R,cy+Math.sin(sweep)*R);x.stroke();x.lineWidth=1}
+  // our velocity / prediction
+  const ov=hyp(o.vx,o.vy);
+  x.strokeStyle=P.fg;x.globalAlpha=.6;x.setLineDash([3,4]);x.beginPath();x.moveTo(cx,cy);const[pvx,pvy]=W(o.x+o.vx*30,o.y+o.vy*30);x.lineTo(pvx,pvy);x.stroke();x.setLineDash([]);x.globalAlpha=1;
+  // band: intent line
+  const T=liveTgt();
+  if(style==='band'&&T&&(S.ap==='intercept'||S.ap==='match')){const[tx,ty]=W(T.x,T.y);x.strokeStyle='#ececee';x.globalAlpha=.35;x.lineWidth=2;x.beginPath();x.moveTo(cx,cy);x.quadraticCurveTo(pvx,pvy,tx,ty);x.stroke();x.lineWidth=1;x.globalAlpha=1}
+  // contacts
+  for(const c of S.C){let[sx,sy]=W(c.x,c.y);const d=dist(c);
+    let col=c.captured?P.fr:c.hostile?P.hos:P.neu;
+    let alpha=c.dead?.3:1;
+    if(crt){const an=Math.atan2(sy-cy,sx-cx);let dd=((sweep-an)%TAU+TAU)%TAU;alpha*=Math.max(.12,1-dd/TAU*1.25)}
+    const off=crt?hyp(sx-cx,sy-cy)>R-10:(sx<8||sy<8||sx>w-8||sy>h-8);
+    if(off){const an=Math.atan2(sy-cy,sx-cx);let r=crt?R-12:Math.min(Math.abs((w/2-14)/Math.cos(an)),Math.abs((h/2-14)/Math.sin(an)));if(!crt){sx=w/2+Math.cos(an)*r;sy=h/2+Math.sin(an)*r}else{sx=cx+Math.cos(an)*r;sy=cy+Math.sin(an)*r}
+      if(c.dead)continue;x.globalAlpha=alpha;x.fillStyle=col;x.save();x.translate(sx,sy);x.rotate(an);x.beginPath();x.moveTo(7,0);x.lineTo(-5,-5);x.lineTo(-5,5);x.closePath();x.fill();x.restore();
+      x.fillText(`${c.id} ${d.toFixed(0)}`,sx+(Math.cos(an)>0?-46:8),sy+(Math.sin(an)>0?-8:14));x.globalAlpha=1;continue}
+    x.globalAlpha=alpha;x.strokeStyle=col;x.fillStyle=col;x.lineWidth=1.5;
+    // velocity leader (relative)
+    if(!c.dead){x.globalAlpha=alpha*.5;x.beginPath();x.moveTo(sx,sy);const[lx,ly]=W(c.x+c.vx*30,c.y+c.vy*30);x.lineTo(lx,ly);x.stroke();x.globalAlpha=alpha}
+    x.beginPath();
+    if(c.dead){x.moveTo(sx-6,sy-6);x.lineTo(sx+6,sy+6);x.moveTo(sx+6,sy-6);x.lineTo(sx-6,sy+6)}
+    else if(c.hostile){x.moveTo(sx,sy-8);x.lineTo(sx+8,sy);x.lineTo(sx,sy+8);x.lineTo(sx-8,sy);x.closePath()}
+    else x.arc(sx,sy,7,0,TAU);
+    x.stroke();if(c.hostile&&!c.disabled&&!c.dead&&style!=='crt'){x.globalAlpha=alpha*.25;x.fill();x.globalAlpha=alpha}
+    if(c.disabled&&!c.dead){x.beginPath();x.moveTo(sx-10,sy+10);x.lineTo(sx+10,sy-10);x.stroke()}
+    const lab=style==='plot'?`TK-${c.id.slice(1).padStart(2,'0')} ${c.cls}`:`${c.id} ${c.name}`;
+    x.font=P.font;x.fillText(lab,sx+12,sy-4);x.globalAlpha=alpha*.7;x.fillText(`${d.toFixed(d<10?1:0)} km${c.disabled&&!c.dead?(c.captured?' PRIZE':' DIW'):''}`,sx+12,sy+9);x.globalAlpha=1;
+    // their lock on us
+    if(c.lockOnUs>.02&&!c.dead){x.strokeStyle=style==='crt'?P.fg:P.hos;x.globalAlpha=c.lockOnUs>=1?.9:.25+c.lockOnUs*.4;if(c.lockOnUs<1)x.setLineDash([2,6]);
+      if(style==='crt'){const an=Math.atan2(sy-cy,sx-cx);x.lineWidth=4;x.beginPath();x.arc(cx,cy,R-3,an-.08,an+.08);x.stroke()}
+      else{x.beginPath();x.moveTo(sx,sy);x.lineTo(cx,cy);x.stroke()}
+      x.setLineDash([]);x.globalAlpha=1;x.lineWidth=1}
+    // our selection
+    if(c.id===S.tgt&&!c.dead){x.strokeStyle=style==='band'?'#ececee':P.fg;x.lineWidth=1.5;const b=14;
+      for(const[ax,ay]of[[-1,-1],[1,-1],[1,1],[-1,1]]){x.beginPath();x.moveTo(sx+ax*b,sy+ay*(b-6));x.lineTo(sx+ax*b,sy+ay*b);x.lineTo(sx+ax*(b-6),sy+ay*b);x.stroke()}
+      if(S.lockP>0){x.strokeStyle=S.lockP>=1?(style==='band'?'#ff3b30':P.fg):P.fg;x.lineWidth=S.lockP>=1?3:2;x.beginPath();x.arc(sx,sy,19,-Math.PI/2,-Math.PI/2+TAU*S.lockP);x.stroke();
+        if(S.lockP>=1){x.fillStyle=x.strokeStyle;x.fillText('LOCK',sx-12,sy+32)}}
+      x.lineWidth=1}
+    x.globalAlpha=1}
+  // ordnance
+  for(const m of S.ord){const col=m.ours?P.ord:P.eord;x.strokeStyle=col;x.globalAlpha=.45;x.beginPath();for(let i=0;i<m.trail.length;i+=2){const[a,b]=W(m.trail[i],m.trail[i+1]);i?x.lineTo(a,b):x.moveTo(a,b)}x.stroke();x.globalAlpha=1;
+    const[mx,my]=W(m.x,m.y);x.fillStyle=col;x.beginPath();x.arc(mx,my,m.kind==='torp'?3:2,0,TAU);x.fill();
+    if(!m.ours&&style!=='crt'&&S.zoom<3){x.font=P.font;x.fillText(m.kind==='torp'?'T':'M',mx+5,my-4)}}
+  // tracers
+  x.strokeStyle=style==='band'?'#ff9f0a':style==='crt'?P.fg:'#ffe9a8';x.globalAlpha=.8;
+  for(const t of S.tracers){const s=t.from||o;const[a,b]=W(s.x,s.y),[c2,d2]=W(t.x,t.y);x.beginPath();x.moveTo(a,b);x.lineTo(c2,d2);x.stroke()}x.globalAlpha=1;
+  // fx
+  for(const f of S.fx){const[a,b]=W(f.x,f.y);x.strokeStyle=f.c==='boom'?(crt?P.fg:'#ffcf5a'):(crt?P.fg:'#fff');x.globalAlpha=Math.max(0,f.t);x.lineWidth=2;x.beginPath();x.arc(a,b,4+f.r,0,TAU);x.stroke();x.lineWidth=1;x.globalAlpha=1}
+  // own ship
+  x.save();x.translate(cx,cy);x.rotate(-o.h);x.fillStyle=style==='band'?'#ececee':P.fg;x.strokeStyle=x.fillStyle;
+  if(o.g>.05){x.fillStyle=style==='crt'?P.fg:'#ffb347';x.globalAlpha=.8;x.beginPath();x.moveTo(-7,-3);x.lineTo(-7-o.g*3-Math.random()*4,0);x.lineTo(-7,3);x.fill();x.globalAlpha=1;x.fillStyle=style==='band'?'#ececee':P.fg}
+  x.beginPath();x.moveTo(11,0);x.lineTo(-7,-6);x.lineTo(-4,0);x.lineTo(-7,6);x.closePath();x.fill();x.restore();
+  if(S.pdcEng&&style!=='crt'){x.strokeStyle='#ffe9a8';x.globalAlpha=.35+Math.random()*.4;x.beginPath();x.arc(cx,cy,8/ZOOMS[S.zoom]*R,0,TAU);x.stroke();x.globalAlpha=1}
+  x.restore();
+  if(style==='holo'){x.fillStyle='rgba(94,230,255,.5)';x.font=P.font;x.fillText(`HOLO TANK · ${zk} km · scroll to zoom · click a contact`,14,h-8)}
+}
+
+/* ---------------- DOM binding ---------------- */
+let cache=null,uiNow=true,lastLogN=-1;
+function computeV(){const o=S.own,T=liveTgt(),Tany=tgtObj(),[th,thBy]=maxThreat(),ib=inbound();
+  const V={};
+  V.thrIn=S.ap==='man'?S.in.thr:o.thr;V.g=o.g.toFixed(1);V.glim=S.glim;V.dv=o.dv.toFixed(1);V.hull=Math.round(o.hull);
+  V.torps=o.torps;V.msls=o.msls;V.pdc=Math.round(o.pdc);V.pdcMode=S.pdcMode;V.ap=S.ap;V.APL=APL[S.ap];
+  V.spd=hyp(o.vx,o.vy).toFixed(2);V.hdg=String(Math.round(((90-o.h*180/Math.PI)%360+360)%360)).padStart(3,'0');
+  V.tgt=Tany?`${Tany.id} ${Tany.name}`:'NO TARGET';
+  if(T){const d=dist(T),rvx=T.vx-o.vx,rvy=T.vy-o.vy,clo=-((T.x-o.x)*rvx+(T.y-o.y)*rvy)/(d||1);
+    V.rng=d.toFixed(d<10?2:1);V.clo=(clo>=0?'+':'')+clo.toFixed(2);V.relv=Math.round(hyp(rvx,rvy)*1000);V.ttiI=clo>.01?Math.round(d/clo)+' s':'never at this rate';V.tgtHull=Math.round(T.hull/T.max*100)+'%'}
+  else{V.rng='--';V.clo='--';V.relv='--';V.ttiI='--';V.tgtHull='--'}
+  V.tgtState=!Tany?'':Tany.dead?'DESTROYED':Tany.captured?'PRIZE':Tany.disabled?'DISABLED':Tany.hostile?'HOSTILE':'NEUTRAL';
+  V.lockP=Math.round(S.lockP*100);V.lockS=S.lockP>=1?'LOCKED':S.locking?'PAINTING':'NO LOCK';V.locking=S.locking?1:0;
+  V.thrS=th>=1?'LOCKED':th>.02?'PAINTED':'CLEAR';
+  V.inbL=ib.length?`${ib.length} · ${Math.min(99,ib[0].tti).toFixed(0)}s`:'0 · --';
+  V.ecm=S.ecm?'ON':'OFF';V.soak=S.soak?'ON':'OFF';V.soakLeft=Math.round(S.soakLeft)+'%';V.bo=Math.round(S.bo*100);
+  V.board=['IDLE','MATCHING','CLOSING','CLAMPING','BREACHING','ABOARD'][S.board.stage];V.boarding=S.board.stage>0&&S.board.stage<5?1:0;
+  V.arm=S.arm?'ARMED':'SAFE';V.ai2=S.ai2?'ON':'OFF';V.gmode=S.gmode;V.autoCtx=S.autoCtx?1:0;
+  V.pitSeat=S.pitSeat;V.roe=S.roe;V.dc=S.dc?1:0;V.auth=S.auth;V.hidden=S.hidden?1:0;
+  const ai=st=>S.pitSeat===st?'YOU':'AI CREW';V.aiHelm=ai('helm');V.aiTac=ai('tac');V.aiOps=ai('ops');V.aiXo=ai('xo');
+  V.crew=S.gloc>0?'G‑LOC':S.bo>.5?'GREYING OUT':S.soak?'SOAKED':'NOMINAL';
+  V.authD=['ADVISE: AI watches and talks. Every input is yours. Full manual, full blame.','PROPOSE: AI handles defence (ECM, PDC, lock) on its own and asks before anything offensive or any course change. Y/N to answer.','COMMAND: AI fights the ship within your verbs. It fires, evades and resumes. You set intent and pray it agrees.'][S.auth];
+  V.propT=S.prop?S.prop.text:'';V.propP=S.prop?S.prop.t/S.prop.T*100:0;
+  V.zoomL=ZOOMS[S.zoom]+' km';V.tsL='×'+S.ts;V.seats=UI.seats;V.audio=UI.audio;V.voice=UI.voice;V.paused=S.paused?1:0;
+  V.L={painted:th>.02&&th<1,locked:th>=1,inbound:ib.length>0,gloc:S.gloc>0||S.bo>.5,hull:o.hull<50,fuel:o.dv<8,pdclo:o.pdc<1200,ecm:S.ecm,ap:S.ap!=='man',lock:S.lockP>=1,arm:S.arm,board:V.boarding,
+    b1:S.board.stage>=1,b2:S.board.stage>=2,b3:S.board.stage>=3,b4:S.board.stage>=4,b5:S.board.stage>=5};
+  return V}
+function buildCache(root){const c={b:$$('[data-b]',root),bar:$$('[data-bar]',root),s:$$('[data-s]',root),lamp:$$('[data-lamp]',root),on:$$('[data-on]',root).map(e=>{const[k,v]=e.dataset.on.split('=');return{e,k,v}}),
+  inp:$$('[data-in]',root),knob:$$('[data-knob]',root),modes:$$('[data-modes]',root),log:$$('[data-log]',root),threats:$$('[data-threats]',root),step:$$('[data-step]',root),station:$$('[data-station]',root),prop:$$('[data-prop]',root)};return c}
+function updateDOM(){const V=computeV();const all=[cache,hdrCache];
+  for(const c of all){if(!c)continue;
+    for(const e of c.b){const v=V[e.dataset.b];const s=v==null?'':String(v);if(e.textContent!==s)e.textContent=s}
+    for(const e of c.bar){e.style.width=clamp(+V[e.dataset.bar]||0,0,100)+'%'}
+    for(const e of c.s)e.className=e.className.replace(/\b(LOCKED|PAINTED|CLEAR)\b/g,'').trim()+' '+V[e.dataset.s];
+    for(const e of c.lamp)e.classList.toggle('lit',!!V.L[e.dataset.lamp]);
+    for(const{e,k,v}of c.on)e.classList.toggle('on',String(V[k])===v);
+    for(const e of c.inp)if(document.activeElement!==e||!dragging)e.value=V.thrIn;
+    for(const k of c.knob){const i=k._opts.indexOf(String(V[k.dataset.knob]));if(i>=0){k._cap.style.transform=`rotate(${k._angs[i]}deg)`;k._labs.forEach((l,j)=>l.classList.toggle('on',j===i))}}
+    for(const e of c.modes)e.classList.toggle('hid',!e.dataset.modes.split(' ').includes(S.gmode));
+    for(const e of c.step){const n=+e.dataset.step,st=S.board.stage;e.className=st>n?'done':st===n?(n===5?'done':'cur'):''}
+    for(const e of c.station){const mine=S.pitSeat===e.dataset.station;e.classList.toggle('mine',mine);e.classList.toggle('ai',!mine)}
+    for(const e of c.prop)e.classList.toggle('show',!!S.prop);
+    if(c.threats.length){const h=S.C.filter(x=>!x.dead||dist(x)<400).map(x=>{const st=x.dead?'DEAD':x.captured?'PRIZE':x.disabled?'DIS':x.hostile?'HOS':'NEU';return`<div class="trow ${st}"><b>${x.id}</b><span>${x.cls}</span><span>${dist(x).toFixed(0)}km</span><i><u style="width:${x.lockOnUs*100}%"></u></i><em>${x.lockOnUs>=1?'LOCK':x.lockOnUs>.02?'PAINT':st}</em></div>`}).join('');for(const e of c.threats)if(e._h!==h){e.innerHTML=h;e._h=h}}
+    if(S.logN!==lastLogN||uiNow)for(const e of c.log){const n=+e.dataset.log;e.innerHTML=S.log.slice(-n).map(l=>`<div class="l ${l.lvl}">${fmtT(l.t)} ${esc(l.msg)}</div>`).join('')}}
+  lastLogN=S.logN;uiNow=false;
+  const st=$('#stage');st.classList.toggle('locked',V.L.locked&&cur!=='verdict');st.classList.toggle('painted',V.L.painted&&cur!=='verdict');
+  $('#gloc').style.display=S.gloc>0&&cur!=='verdict'?'flex':'none';$('#dead').style.display=S.own.hull<=0&&cur!=='verdict'?'flex':'none';$('#paused').style.display=S.paused&&cur!=='verdict'?'flex':'none';
+  if(S.gloc<=0&&S.bo>.3&&cur!=='verdict'){st.style.filter=`saturate(${1-S.bo*.8}) brightness(${1-S.bo*.45})`}else st.style.filter=''}
+const fmtT=t=>{t=Math.floor(t);return`T+${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`};
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function buildKnobs(){for(const k of $$('[data-knob]')){const opts=k.dataset.opts.split(','),labs=(k.dataset.labels||k.dataset.opts).split(','),n=opts.length,span=Math.min(240,62*(n-1));
+  const angs=opts.map((_,i)=>-span/2+span*i/(n-1));const cap=document.createElement('div');cap.className='kcap';cap.innerHTML='<i></i>';k.prepend(cap);
+  k._labs=opts.map((o,i)=>{const b=document.createElement('button');b.className='kl';b.dataset.act=k.dataset.act+':'+o;b.textContent=labs[i];const a=angs[i]*Math.PI/180;b.style.left=(50+Math.sin(a)*40)+'%';b.style.top=(54-Math.cos(a)*42)+'%';k.appendChild(b);return b});
+  k._opts=opts;k._angs=angs;k._cap=cap}}
+function buildGauges(){for(const g of $$('[data-gauge]')){const[key,max,label]=g.dataset.gauge.split(',');let t='';
+  for(let i=0;i<=+max;i++){const a=Math.PI*(1-i/max),r1=48,r2=i%2?42:38,x1=60+Math.cos(a)*r1,y1=64-Math.sin(a)*r1,x2=60+Math.cos(a)*r2,y2=64-Math.sin(a)*r2;t+=`<line class="tk" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;if(i%2===0)t+=`<text x="${60+Math.cos(a)*30-3}" y="${64-Math.sin(a)*30+3}">${i}</text>`}
+  const ra=a=>[60+Math.cos(Math.PI*(1-a/max))*50,64-Math.sin(Math.PI*(1-a/max))*50];const[r1x,r1y]=ra(4.2),[r2x,r2y]=ra(+max);
+  g.innerHTML=`<svg viewBox="0 0 120 74"><path class="arc" d="M10 64 A50 50 0 0 1 110 64"/><path class="redz" d="M${r1x} ${r1y} A50 50 0 0 1 ${r2x} ${r2y}"/>${t}<text x="44" y="72">${label}</text><line class="needle" x1="60" y1="64" x2="60" y2="20"/><circle cx="60" cy="64" r="4" fill="#ff8a00"/></svg>`;g._n=g.querySelector('.needle');g._max=+max}}
+function updGauges(){for(const g of $$('[data-gauge]',cache&&cache.root||document)){if(!g._n)continue;g._n.style.transform=`rotate(${-90+180*clamp(S.own.g/g._max,0,1)}deg)`}}
+
+/* ---------------- sidebar content ---------------- */
+function seatSVG(kind){const hull='<path d="M14 85 L58 38 L232 48 L292 85 L232 122 L58 132 Z" fill="#141a21" stroke="#3a4654"/>';
+  const seat=(x,y,c,l,dy=-14)=>`<circle cx="${x}" cy="${y}" r="9" fill="${c}"/><text x="${x}" y="${y+dy}" fill="${c}" font-size="10" text-anchor="middle" font-family="IBM Plex Mono">${l}</text>`;
+  const nose='<text x="286" y="74" fill="#55606c" font-size="9" text-anchor="end" font-family="IBM Plex Mono">FWD ▸</text>';
+  let b='';
+  if(kind==='iron')b=`<rect x="226" y="72" width="8" height="26" fill="#39ff6a" opacity=".5"/><text x="230" y="112" fill="#39ff6a" font-size="8" text-anchor="middle">slit</text><rect x="188" y="62" width="30" height="46" fill="none" stroke="#666"/>${seat(200,85,'#4da3ff','PILOT')}${seat(150,85,'#ff5d73','GUNNER')}<rect x="132" y="62" width="10" height="46" fill="#444"/><text x="150" y="122" fill="#8a96a3" font-size="8" text-anchor="middle">tandem · armored tub</text>`;
+  if(kind==='glass')b=`<path d="M226 50 Q262 85 226 120" fill="none" stroke="#5ee6ff" stroke-width="3"/><text x="236" y="140" fill="#5ee6ff" font-size="8">wrap display</text>${seat(200,66,'#4da3ff','PILOT')}${seat(200,104,'#ff5d73','GUNNER',22)}<rect x="186" y="56" width="10" height="20" fill="#3a4654"/><rect x="186" y="94" width="10" height="20" fill="#3a4654"/><text x="140" y="88" fill="#8a96a3" font-size="8" text-anchor="middle">side‑by‑side couches</text>`;
+  if(kind==='pit')b=`<rect x="110" y="56" width="100" height="58" rx="6" fill="none" stroke="#ffb347" stroke-dasharray="4 3"/><text x="160" y="146" fill="#ffb347" font-size="8" text-anchor="middle">armored core · no windows</text><rect x="146" y="76" width="28" height="18" fill="#ffb34755" stroke="#ffb347"/>${seat(130,68,'#4da3ff','HELM')}${seat(190,68,'#ff5d73','TAC')}${seat(130,102,'#b48cff','OPS',22)}${seat(190,102,'#5dff9a','XO',22)}${seat(118,85,'#ffd166','CO',4)}`;
+  if(kind==='band')b=`${seat(210,85,'#4da3ff','YOU')}<rect x="140" y="72" width="34" height="26" rx="4" fill="#ececee22" stroke="#ececee"/><text x="157" y="89" fill="#ececee" font-size="9" text-anchor="middle">AI</text><path d="M176 85 L198 85" stroke="#ececee" stroke-dasharray="2 3"/><text x="150" y="122" fill="#8a96a3" font-size="8" text-anchor="middle">single couch + ship mind</text>`;
+  return`<svg viewBox="0 0 300 170">${hull}${nose}${b}</svg>`}
+const INFO={
+iron:{t:'IRON TUB',tag:'Submarine meets A‑10. Switches, not screens.',
+ p:'Every critical function gets its own physical control you can find blind, in gloves, at 6g, with the lights out and the glass cracked. Screens show information; they never take input. Two seats in tandem: pilot up front on HOTAS, gunner/EWO behind with the weapons panel and guarded switches.',
+ why:'Hard sci‑fi combat is high‑g, vacuum‑suited and getting shot. A touchscreen plus a pressure glove plus 7g equals you pressing "vent atmosphere" instead of "fire torpedo". Physical controls also fail one at a time: a dead MFD doesn\'t take your throttle with it.',
+ pro:['Blind‑operable, muscle memory, works through vibration','Degrades gracefully under damage and power dips','Interlocks are physical: master arm + guard + button = no accidental launches','Feels fucking amazing in a game. Clunky reads as tactile'],
+ con:['Fixed layout: adding a feature means adding a switch, forever','Panel real estate caps your feature count','Switch hunting replaces mode confusion; steep to learn','One player can\'t reach the gunner panel in a real tandem tub'],
+ steal:['Guarded switch on torpedo commit (lift guard, then fire)','3‑position PDC switch AUTO / MAN / SAFE','Annunciator strip: one glance, every warning','Analog G‑meter with a red arc at the blackout line','Master arm interlock as a diegetic "are you sure"'],
+ tryit:'Lift the striped guard before FIRE TORP works. Leave MASTER ARM safe and watch it refuse. Flip AI GUNNER to see the back seat fight for you.'},
+glass:{t:'GLASS COFFIN',tag:'Fighter jet, year 2140. The glass rearranges itself.',
+ p:'Two crash couches side by side, every surface a display. The ship reconfigures the glass for the phase of flight: CRUISE shows consumables and route, COMBAT shows weapons and the threat ring, DOCK shows the boarding stepper. Hands stay on armrest sticks; everything else is context.',
+ why:'Maximum information density and infinite flexibility. Want a new system? It\'s just software. This is also the cheapest one to build in Unity: it\'s UI panels over a tactical view.',
+ pro:['Huge info density, nothing irrelevant on screen','Adapts per phase; scales to any feature count','Side‑by‑side couches: pilot and gunner can see each other\'s glass','Easiest to implement and iterate'],
+ con:['Automation decides what you see, and it will decide wrong at the worst moment (start a boarding, get painted, watch the dock panel vanish)','Mode confusion is the number one killer in real glass cockpits','Touch under g is garbage, so real input is still on the sticks','One power spike and you\'re blind'],
+ steal:['Phase‑adaptive layout, but SUGGEST the switch, never force it','Pilot override lock on layout','Floating threat ring listing who\'s painting you','Couch‑armrest HOTAS for the inputs that matter'],
+ tryit:'Leave AUTO‑CONTEXT on, then BOARD the freighter while a hostile is painting you. The glass flips to COMBAT mid‑dock and your boarding panel disappears. That\'s the whole critique in one move.'},
+pit:{t:'THE PIT',tag:'CIC, not cockpit. Windows are for yachts.',
+ p:'At 200 km engagement ranges you will never see the enemy with your eyes. So bury the crew in the armored core and run the ship like a submarine control room: a central plot table, four stations (Helm, Tactical, Ops/EW, XO/Boarding) and a captain who gives orders instead of pushing buttons.',
+ why:'Division of labour scales from corvette to frigate to capital ship. Clean responsibility: TAC can\'t fly, Helm can\'t shoot. The captain\'s main control is ROE, not a trigger.',
+ pro:['Crew sits in the safest part of the hull','Plot table is the real situational‑awareness tool','Scales with ship size; perfect for co‑op multiplayer','ROE (free / tight / hold) is a brilliant one‑knob control'],
+ con:['Needs four or more people, or AI crew that isn\'t stupid','Order latency: "Helm, evasive" costs a second you may not have','Less visceral: you\'re managing, not flying','Single‑player means writing four good AIs'],
+ steal:['ROE as the captain\'s primary control','Take‑a‑seat: jump into any station, AI covers the rest','Plot table with track numbers as the main view','Locked‑out panels that aren\'t your station'],
+ tryit:'Sit in CAPTAIN and set WEAPONS FREE: the crew paints, fires and evades on its own. Then take the HELM seat and try touching TAC\'s torpedo button. Clicking a station you aren\'t sitting at gets refused.'},
+band:{t:'ONE‑MAN BAND',tag:'Intent, not inputs. You declare verbs; the ship does the flying.',
+ p:'A corvette crewed by one person and a ship mind. You don\'t fly; you declare verbs (INTERCEPT, MATCH, BOARD, EVADE, KILL, HIDE) and set how much authority the AI gets. The AI proposes, you dispose. Anything lethal needs a hold‑to‑commit. Grab the throttle and you override everything.',
+ why:'The control count stays flat no matter how complex the ship gets. It\'s perfect for gamepad, and the authority dial doubles as a difficulty and immersion knob.',
+ pro:['Fewest controls; scales to anything','Authority dial = difficulty slider = trust mechanic','Propose/accept (Y/N) keeps you in the loop without micromanaging','Hold‑to‑commit makes killing feel deliberate'],
+ con:['You\'re a passenger with opinions','When the AI fucks up, you only have the blunt override','Lethal autonomy raises "who pulled the trigger" problems (great for story, mind you)','Least cockpit porn: nothing to touch'],
+ steal:['Verb wheel for autopilot modes','Authority dial 0/1/2','AI proposal toasts with Y/N and a timeout','Hold‑to‑commit on KILL','HIDE as a single verb for EMCON'],
+ tryit:'Leave authority on PROPOSE and wait: it locks a target and asks to fire, Y or N. Switch to COMMAND and it fights by itself. Hold KILL to commit a torpedo pair. HIDE makes you go dark.'},
+verdict:{t:'VERDICT',tag:'Iron Tub hands, Pit brain, Band verbs.',p:'Scroll the main panel.'}};
+function renderSide(){const I=INFO[cur];if(cur==='verdict'){$('#side').innerHTML=`<h2>VERDICT</h2><div class="tag">${I.tag}</div><p>No single cockpit wins. What wins is putting each control where its <b>urgency × frequency × consequence</b> says it belongs. The table on the left is the actual design work.</p><h3>Same ship, four cockpits</h3><p>The fight you just had used one simulation. Only the cockpit changed. That's the point: the cockpit is a <i>policy</i> about who decides what, not a skin.</p>`;return}
+  $('#side').innerHTML=`<h2>${I.t}</h2><div class="tag">${I.tag}</div>${seatSVG(cur)}<h3>Philosophy</h3><p>${I.p}</p><h3>Why it works</h3><p>${I.why}</p><h3>Pros</h3><ul class="pro">${I.pro.map(x=>`<li>${x}</li>`).join('')}</ul><h3>Cons</h3><ul class="con">${I.con.map(x=>`<li>${x}</li>`).join('')}</ul><h3>Steal for Fog of War</h3><ul class="steal">${I.steal.map(x=>`<li>${x}</li>`).join('')}</ul><h3>Try this</h3><p>${I.tryit}</p><h3>Seats</h3><p>Hit <b>SEATS</b> (or H) to colour every control by who owns it: pilot, gunner, ops, XO.</p>`}
+function renderVerdict(){const crit=[['Situational awareness',[2,4,5,3]],['Survives damage',[5,2,4,3]],['Usable at 8g',[5,2,3,4]],['Easy to learn',[2,4,3,5]],['Crew needed (5 = fewest)',[3,3,1,5]],['Fun to play',[5,3,4,4]],['Cheap to build in Unity',[2,5,3,3]]];
+  const dots=n=>`<span class="dots">${[1,2,3,4,5].map(i=>`<i class="${i<=n?'f':''}"></i>`).join('')}</span>`;
+  const rows=crit.map(([c,v])=>{const m=Math.max(...v);return`<tr><td>${c}</td>${v.map(x=>`<td class="${x===m?'best':''}">${dots(x)}</td>`).join('')}</tr>`}).join('');
+  const H=(c,t)=>`<span class="home" style="background:${c}">${t}</span>`;
+  const tax=[['Throttle / thrust','constant','medium',H('#4da3ff','HOTAS throttle axis'),'Detent at 4g that you can\'t push past without G‑SOAK. Physical gate, not a popup.'],
+   ['Attitude / yaw','constant','low',H('#4da3ff','Stick'),'Any stick input instantly drops the autopilot. Grab = override.'],
+   ['Flip to retrograde','frequent','high',H('#4da3ff','Stick pinky button'),'One press. It\'s the most Expanse‑y manoeuvre there is; never bury it.'],
+   ['Target cycle','frequent','low',H('#4da3ff','Thumb hat'),'Nearest‑first ordering. Hold for a hostiles‑only filter.'],
+   ['LADAR paint / lock','frequent','medium',H('#4da3ff','Trigger, 1st detent'),'Half‑pull paints, full pull fires: lock and fire become one gesture.'],
+   ['Fire torpedo','rare','catastrophic',H('#ff5d73','Guarded / hold‑to‑commit'),'Two deliberate actions. Torps are your scarcest resource and the easiest friendly‑fire.'],
+   ['Fire missile','occasional','high',H('#4da3ff','Trigger, 2nd detent'),'Cheap and plentiful, so less friction than torps.'],
+   ['PDC mode','rare change','high',H('#ff5d73','3‑position switch'),'AUTO / MAN / SAFE. SAFE has a guard. Manual fire on the throttle thumb.'],
+   ['ECM / EMCON','situational','medium',H('#b48cff','Panel toggle or ops seat'),'Make "go dark" one verb (HIDE) that sets drive, ECM and PDC together.'],
+   ['Autopilot modes','moderate','medium',H('#ffd166','Verb wheel / coolie hat'),'INTERCEPT, MATCH, STOP, EVADE. Verbs, not vectors.'],
+   ['Boarding','rare','multi‑step',H('#5dff9a','Checklist with interlocks'),'MATCH, CLOSE, CLAMP, BREACH. Each step lit; drift aborts.'],
+   ['Damage control','rare','medium',H('#5dff9a','XO / AI'),'Give it to a crew AI. Nobody wants to micro‑manage welders mid‑fight.'],
+   ['G‑limit','pre‑fight','high',H('#4da3ff','Throttle slider'),'Caps what the autopilot is allowed to do to your crew.'],
+   ['ROE','pre‑fight','catastrophic',H('#ffd166','Captain control'),'FREE / TIGHT / HOLD governs every AI that can shoot.']];
+  $('#cp-verdict').innerHTML=`<h1>VERDICT</h1><p style="color:#9fb0c0">Blunt version: <b style="color:#fff">ship a hybrid. Iron Tub hands, Pit brain, Band verbs.</b> Glass Coffin's auto‑context is a trap; keep the info density and lose the automation that moves panels.</p>
+  <h2>Scorecard</h2><table class="vt"><tr><th></th><th>01 Iron Tub</th><th>02 Glass Coffin</th><th>03 The Pit</th><th>04 One‑Man Band</th></tr>${rows}</table>
+  <h2>What I'd build for Fog of War</h2><div class="hy">
+   <div><b>Pilot seat = HOTAS, not glass</b>Throttle axis with a 4g soak gate, stick with flip‑retro on the pinky, target cycle on the thumb hat, trigger half‑pull = LADAR paint and full pull = fire missile. Grabbing the stick kills the autopilot.</div>
+   <div><b>Main view = plot table</b>Forget a forward window. Top‑down tactical with track numbers, velocity leaders, lock lines and torpedo trails is what the fight actually looks like at 200 km. A forward camera is a toggle for docking and screenshots.</div>
+   <div><b>Weapons commit = guarded</b>Torpedoes need lock + guard + press (or hold‑to‑commit on a gamepad). PDCs get a physical‑feeling 3‑position switch. Master arm exists, and the AI gunner flips it for you.</div>
+   <div><b>Autopilot = verbs</b>INTERCEPT, MATCH, STOP, EVADE, BOARD, HIDE on a radial. The G‑limit caps what the verbs may do. Boarding is a verb that launches a lit checklist, not 6 buttons.</div>
+   <div><b>Second seat = optional</b>Co‑op player or AI gunner with the authority dial (ADVISE / PROPOSE / COMMAND) and ROE. Same panel, two possible occupants. That's your difficulty setting for free.</div>
+   <div><b>Annunciator strip, always</b>PAINTED / LOCKED / VAMPIRE / G‑LOC / HULL / Δv / PDC AMMO. One row of lamps plus distinct audio per state (growl while painting, steady tone on lock, warble for inbound) beats any amount of HUD text.</div>
+  </div>
+  <h2>Control taxonomy: where every control should live</h2>
+  <table class="vt"><tr><th>Control</th><th>How often</th><th>If you fuck it up</th><th>Home</th><th>Note</th></tr>${tax.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>
+  <h2>Rules I'd hold the line on</h2><ul style="max-width:860px">
+   <li><b>Never move a control the player is reaching for.</b> Panels can light up, dim or pulse. They don't relocate mid‑fight.</li>
+   <li><b>Every automated action announces itself</b> in the log and in audio, with who did it (AP, AI GUNNER, OPS). Silent automation is how you get "why the fuck did we evade".</li>
+   <li><b>Override is always one gesture:</b> touch the stick or throttle. No menu, no confirm.</li>
+   <li><b>Lethal = two deliberate actions.</b> Everything else = one.</li>
+   <li><b>Being locked must be felt</b>, not read: border pulse, tone, lamp. The player should feel the hairs on their neck before checking a number.</li>
+  </ul>`}
+
+/* ---------------- tabs / input ---------------- */
+let hdrCache=null,dragging=false;
+function switchCp(id){cur=id;for(const[k]of CPS){$('#cp-'+k).classList.toggle('act',k===id);}
+  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.act==='tab:'+id));
+  cache=id==='verdict'?null:buildCache($('#cp-'+id));if(cache)cache.root=$('#cp-'+id);
+  if(id==='verdict')renderVerdict();renderSide();uiNow=true;
+  const c=cache&&$('#cp-'+id+' canvas[data-scope]');if(c&&id==='iron'){const x=c.getContext('2d');x.setTransform(1,0,0,1,0,0);x.fillStyle='#010702';x.fillRect(0,0,c.width,c.height)}}
+function init(){
+  $('#tabs').innerHTML=CPS.map(([k,l])=>`<button data-act="tab:${k}">${l}</button>`).join('');
+  $('#keys').innerHTML=[['W/S','throttle'],['A/D','yaw'],['X','cut'],['F','flip'],['1‑5','AP'],['G','g‑lim'],['K','soak'],['T','target'],['L','lock'],['SPACE','torp'],['M','missile'],['P','PDC mode'],['V','PDC fire'],['E','ECM'],['B','board'],['Z','zoom'],['Y/N','answer AI'],['H','seats'],['[ ]','cockpit'],['R','reset'],['ESC','pause']].map(([k,l])=>`<kbd>${k}</kbd>${l}`).join(' ');
+  buildKnobs();buildGauges();
+  for(const k of $$('.wheel .vb')){const a=(+k.dataset.ang)*Math.PI/180;k.style.left=(150+Math.cos(a)*104)+'px';k.style.top=(150+Math.sin(a)*104)+'px'}
+  hdrCache=buildCache($('header'));
+  document.addEventListener('click',e=>{
+    const cover=e.target.closest('.guard .cover');if(cover){const g=cover.parentElement;g.classList.add('open');clearTimeout(g._t);g._t=setTimeout(()=>g.classList.remove('open'),7000);sfx('ui');return}
+    const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+    const g=el.closest('[data-guard]');if(g&&!g.classList.contains('open')){log('Lift the guard first, cowboy.','warn');return}
+    const st=el.closest('[data-station]');if(cur==='pit'&&st&&st.dataset.station!==S.pitSeat&&!a.startsWith('seat')){log(`That's ${st.dataset.station.toUpperCase()}'s panel. You're ${S.pitSeat==='cap'?'the captain — give orders up top':'on '+S.pitSeat.toUpperCase()}.`,'warn');uiNow=true;return}
+    act(a);if(g){g.classList.remove('open')}sfx('ui')});
+  document.addEventListener('input',e=>{const el=e.target.closest('[data-in]');if(!el)return;
+    const st=el.closest('[data-station]');if(cur==='pit'&&st&&st.dataset.station!==S.pitSeat){el.value=S.in.thr;log('Not your station. Tell HELM.','warn');return}
+    if(S.ap!=='man')pilotOverride();S.in.thr=+el.value;S.hidden=false});
+  document.addEventListener('pointerdown',e=>{audioInit();if(e.target.closest('[data-in]'))dragging=true;
+    const h=e.target.closest('[data-hold]');if(h){S.pdcTrig=true}
+    const c=e.target.closest('[data-commit]');if(c){holdEl=c;holdT=0;e.preventDefault()}});
+  document.addEventListener('pointerup',()=>{dragging=false;S.pdcTrig=keysDown.v||false;if(holdEl){holdEl.style.setProperty('--p',0);if(holdT<.8)log('KILL needs a full hold. Commit or don\'t.','warn');holdEl=null}});
+  for(const k of CPS){const cv=$(`#cp-${k[0]} canvas[data-scope]`);if(!cv)continue;
+    cv.addEventListener('wheel',e=>{e.preventDefault();S.zoom=clamp(S.zoom+(e.deltaY>0?-1:1),0,ZOOMS.length-1);uiNow=true},{passive:false});
+    cv.addEventListener('click',e=>{if(!scopeGeom||scopeGeom.cv!==cv)return;const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;let best=null,bd=22;
+      for(const c of S.C){if(c.dead)continue;const sx=scopeGeom.cx+(c.x-S.own.x)*scopeGeom.sc,sy=scopeGeom.cy-(c.y-S.own.y)*scopeGeom.sc,d=hyp(sx-mx,sy-my);if(d<bd){bd=d;best=c}}
+      if(best){selectTarget(best.id,'YOU');uiNow=true}})}
+  document.addEventListener('keydown',onKey);document.addEventListener('keyup',e=>{const k=e.key.toLowerCase();keysDown[k]=false;if(k==='a'||k==='d')S.in.yaw=(keysDown.a?1:0)-(keysDown.d?1:0);if(k==='v')S.pdcTrig=false});
+  newScenario();switchCp('iron');requestAnimationFrame(frame)}
+const keysDown={};let holdEl=null,holdT=0;
+function onKey(e){if(e.target.tagName==='INPUT'&&e.target.type!=='range')return;const k=e.key.toLowerCase();audioInit();
+  if(e.repeat&&!'ws'.includes(k))return;keysDown[k]=true;
+  const map={x:()=>{pilotOverride();S.in.thr=0},f:()=>act('flip'),g:()=>act('glim'),k:()=>act('soak'),t:()=>act('tgt'),l:()=>act('lock'),' ':()=>{e.preventDefault();act('torp')},m:()=>act('msl'),p:()=>act('pdc'),e:()=>act('ecm'),b:()=>act('board'),z:()=>act('zoom'),y:()=>act('y'),n:()=>act('n'),h:()=>act('seats'),r:()=>act('reset'),escape:()=>act('pause'),
+    '1':()=>act('ap:man'),'2':()=>act('ap:stop'),'3':()=>act('ap:intercept'),'4':()=>act('ap:match'),'5':()=>act('ap:evade'),
+    '[':()=>{const i=CPS.findIndex(c=>c[0]===cur);switchCp(CPS[(i+CPS.length-1)%CPS.length][0])},']':()=>{const i=CPS.findIndex(c=>c[0]===cur);switchCp(CPS[(i+1)%CPS.length][0])},
+    w:()=>{pilotOverride();S.in.thr=clamp(S.in.thr+.05,0,1);S.hidden=false},s:()=>{pilotOverride();S.in.thr=clamp(S.in.thr-.05,0,1)},
+    a:()=>{pilotOverride();S.in.yaw=1},d:()=>{pilotOverride();S.in.yaw=-1},v:()=>{S.pdcTrig=true}};
+  if(e.key===' ')e.preventDefault();if(e.target.tagName==='INPUT'&&'wsad'.includes(k))e.preventDefault();
+  if(map[k]){map[k]();uiNow=true}}
+let last=performance.now(),uiT=0;
+function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(!S.paused&&cur!=='verdict'&&S.own.hull>0){let sim=dt*S.ts;while(sim>1e-6){const h=Math.min(.02,sim);step(h);sim-=h}
+    for(const f of S.fx){f.t-=dt;f.r+=dt*(f.c==='boom'?30:14)}S.fx=S.fx.filter(f=>f.t>0)}
+  if(holdEl){holdT+=dt;holdEl.style.setProperty('--p',Math.min(1,holdT/.8));if(holdT>=.8){act(holdEl.dataset.commit);holdEl.style.setProperty('--p',0);holdEl=null;sfx('lock')}}
+  if(S.shakeT>0){S.shakeT-=dt;const st=$('#stage');if(!st.classList.contains('shake')){st.classList.add('shake');setTimeout(()=>st.classList.remove('shake'),350)}}
+  if(cache){const cv=cache.root.querySelector('canvas[data-scope]');if(cv)drawScope(cv,cache.root.dataset.style)}
+  uiT-=dt;if(uiT<=0||uiNow){uiT=.066;updateDOM();if(cur==='iron')updGauges()}
+  audioTick(dt);requestAnimationFrame(frame)}
+
+/* ---------------- audio ---------------- */
+let AC=null,master=null,growl=null,growlG=null,tone=null,toneG=null,aT={p:0,l:0,i:0};
+function audioInit(){if(AC)return;try{AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=UI.audio?.14:0;master.connect(AC.destination);
+  growl=AC.createOscillator();growl.type='sawtooth';growl.frequency.value=170;const lfo=AC.createOscillator(),lg=AC.createGain();lfo.frequency.value=23;lg.gain.value=60;lfo.connect(lg).connect(growl.frequency);
+  growlG=AC.createGain();growlG.gain.value=0;const lp=AC.createBiquadFilter();lp.frequency.value=900;growl.connect(lp).connect(growlG).connect(master);growl.start();lfo.start();
+  tone=AC.createOscillator();tone.type='sine';tone.frequency.value=1020;toneG=AC.createGain();toneG.gain.value=0;tone.connect(toneG).connect(master);tone.start()}catch(e){AC=null}}
+function beep(f,d,type='square',vol=.5,t0=0){if(!AC)return;const t=AC.currentTime+t0,o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.005);g.gain.setValueAtTime(vol,t+Math.max(.01,d-.02));g.gain.linearRampToValueAtTime(0,t+d);o.connect(g).connect(master);o.start(t);o.stop(t+d+.05)}
+function noise(d,vol=.8,fq=600){if(!AC)return;const n=AC.sampleRate*d|0,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=AC.createBufferSource();s.buffer=b;const f=AC.createBiquadFilter();f.frequency.value=fq;const g=AC.createGain();g.gain.value=vol;s.connect(f).connect(g).connect(master);s.start()}
+function sfx(k){if(!AC||!UI.audio)return;if(k==='ui')beep(1800,.025,'square',.12);if(k==='launch'){noise(.9,1.2,500);beep(90,.5,'sawtooth',.3)}if(k==='impact'){noise(1.4,2,250);beep(55,.6,'sine',.8)}if(k==='lock'){beep(1400,.06,'sine',.4);beep(1900,.08,'sine',.4,.07)}if(k==='clamp'){noise(.25,1.2,1200);beep(140,.15,'square',.3)}if(k==='prop'){beep(660,.08,'sine',.3);beep(880,.1,'sine',.3,.09)}}
+function audioTick(dt){if(!AC||!S)return;const on=UI.audio&&cur!=='verdict'&&!S.paused&&S.own.hull>0,t=AC.currentTime;
+  growlG.gain.setTargetAtTime(on&&S.locking&&S.lockP<1?.12:0,t,.03);toneG.gain.setTargetAtTime(on&&S.lockP>=1&&liveTgt()?.06:0,t,.03);
+  if(!on)return;const[th]=maxThreat(),ib=inbound();
+  aT.p-=dt;aT.l-=dt;aT.i-=dt;
+  if(ib.length&&aT.i<=0){aT.i=.5;beep(520,.22,'sawtooth',.28);beep(780,.22,'sawtooth',.28,.24)}
+  else if(th>=1&&aT.l<=0){aT.l=.28;beep(1250,.09,'square',.22)}
+  else if(th>.02&&th<1&&aT.p<=0){aT.p=1.1;beep(880,.07,'square',.18)}}
+
+/* headless API */
+window.__cockpit={get S(){return S},act,step,switchCp,computeV,newScenario};
+init();
+</script>
+</body>
+</html>

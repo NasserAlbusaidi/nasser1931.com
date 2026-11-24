@@ -1,0 +1,200 @@
+---
+// Fog of War: the torch-ship career game in development. The old README captures were cut (2026-11-24: the owner
+// rated them poor); add in-game shots only from fresh captures he picks. The FWO-090 images are its Blender renders; the colony shot previews the night-light shader; the PDC
+// clips are from the game's sound kit (made in Ra'd, /play/rad). Facts come from the game's README; keep them in step.
+import { Picture, getImage } from 'astro:assets';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import hero from '../assets/fogofwar/hero-full.png';
+import landed from '../assets/fogofwar/landed-full.png';
+import strike from '../assets/fogofwar/side-strike.png';
+import crown from '../assets/fogofwar/crown-full.png';
+import close from '../assets/fogofwar/close-full.png';
+import front from '../assets/fogofwar/front-full.png';
+import hellas from '../assets/fogofwar/hellas-night-40km.jpg';
+import gunner from '../assets/fogofwar/pdc_burst_gunner_01.mp3?url';
+import hull from '../assets/fogofwar/pdc_burst_hull_01.mp3?url';
+import exterior from '../assets/fogofwar/pdc_burst_exterior_01.mp3?url';
+import '../styles/interior.css';
+
+const ogImage = await getImage({ src: crown, format: 'jpg', width: 1200 });
+const stats: [string, string][] = [
+  ['9', 'ports, Earth orbit to Enceladus'],
+  ['3', 'factions holding them'],
+  ['454', 'moons, 8 planets, 21 named asteroids'],
+  ['~110', 'ships flying the lanes on their own schedules'],
+  ['1,000,000×', 'time compression'],
+];
+const features = [
+  { title: 'Haul anything, anywhere',
+    body: ['Carry freight, ferry passengers (they are fragile, so the drive holds at 1 g while they are aboard), survey far moons, rescue crews from dead ships, and catch runners who won\'t stop: match a ship mid-burn and hold alongside while the cargo crosses.', 'A run on the autopilot isn\'t quiet. A distress call comes in, or the hold cooling fails and you vent fuel to keep the cargo cold. Out past the patrols, raiders come for your hold.'] },
+  { title: 'The whole solar system, for real',
+    body: ['Orbits from NASA JPL data at today\'s date, so the planets are where they are right now. The belt has its real gaps, the Hildas and the Trojans.', 'And the planets don\'t wait: the run that is cheap today can cost several times as much a few months from now.'] },
+  { title: 'Fly it yourself',
+    body: ['Chase cam, orbit cam, or strap into the cockpit and read it off the screens while the couch warns you about 3 g. Hand the burn to the autopilot and it flips and brakes for you, or take the approach by hand: cargo flown in yourself pays 15% more.', 'Land on a planet, a moon or an asteroid. Under 20 m/s, or you don\'t walk away.'] },
+  { title: 'Build your ship, build your name',
+    body: ['You start with 25,000 credits, a 1 g drive, and a ship that belongs to the yard. Earn the 3 g and 5 g drives, bigger tanks and better sensors, then buy the ship out for a million.', 'Deliver on time and each faction pays you more. Run dry and you are adrift: the tender comes, but it isn\'t cheap.'] },
+  { title: 'Find what\'s out there',
+    body: ['Pass close and the codex logs the body. Scan it and real facts unlock. First scans of far moons sell for more, so the long trip out pays for itself.'] },
+];
+const specs: [string, string][] = [
+  ['Length', '90 m'],
+  ['Point defence', '8 PDC sockets'],
+  ['Spine', 'Railgun sleeve, full length'],
+  ['Missiles', '4 blocks, 16 cells'],
+  ['Torpedoes', '2 bays'],
+  ['Drives', '3 pillars that double as landing legs'],
+];
+const gallery = [
+  { src: landed, alt: 'The gunship standing on its three drive pillars on a dusty orange surface, long shadow behind it.', caption: 'Landed. The drive pillars are the legs.' },
+  { src: crown, alt: 'Close view of the top of the tower: armoured crown, PDC turrets, and the railgun spine running out of it.', caption: 'The crown and the railgun spine.' },
+  { src: close, alt: 'Close view along the hull: PDC turret on a setback gallery, ribbed armour, radiator panels.', caption: 'A PDC gallery on the setback.' },
+  { src: front, alt: 'The ship seen nose-on: an octagonal tower with PDC mounts at each corner and white arc markers.', caption: 'Nose-on, with the PDC arcs marked.' },
+];
+const sounds = [
+  { src: gunner, label: 'Gunner seat', note: 'Sitting on the mount. Chest-thumping and tight.' },
+  { src: hull, label: 'Through the hull', note: 'Heard from somewhere aft. Deep, muffled, metal ringing.' },
+  { src: exterior, label: 'Outside', note: 'The cinematic view. Wide, with a big tail.' },
+];
+const tools = [
+  { name: 'Shipyard', href: '/play/shipyard', what: 'Sketch a ship from parts and export a Blender script, a brief, and a reference sheet. It exists because describing ships in words kept producing the wrong ship.' },
+  { name: 'Cockpit Lab', href: '/play/cockpit', what: 'One combat sim, four cockpits you can switch between mid-fight: physical switches, a holo tank, a full CIC crew, and a one-person verb wheel. Plus a verdict.' },
+  { name: "Ra'd", href: '/play/rad', what: 'A procedural sound designer with no samples. Torpedoes, missiles, railguns, thrusters, and the PDC kit above, each heard from the gunner seat, the hull, or outside.' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head><BaseHead image={ogImage} title="Fog of War — Nasser Al Busaidi" description="Fog of War, a game in development: an independent torch-ship pilot in a true-scale solar system. Take the job, plot the burn, watch the tank." /></head>
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1" class="interior fow">
+      <header class="fow-hero">
+        <div class="fow-hero-copy">
+          <p class="intro-eyebrow">In development · Unity</p>
+          <h1>Fog of War<span>.</span></h1>
+          <p class="fow-tag">Take the job. Plot the burn. Watch the tank.</p>
+          <p class="fow-deck">You're an independent torch-ship pilot in a true-scale solar system, on today's date. Haul cargo, ferry passengers, survey moons, and fight off the raiders who want your hold.</p>
+          <p class="fow-note">A hobby project inspired by The Expanse books, not for sale and not affiliated with them. This page is the workshop window.</p>
+        </div>
+        <figure class="fow-hero-ship">
+          <Picture src={hero} alt="The FWO-090 gunship standing upright like a tower: grey upper decks, dark armour, and three orange drive pillars at the base." formats={['webp']} widths={[400, 700, 1100]} sizes="(max-width: 900px) 70vw, 32vw" loading="eager" fetchpriority="high" />
+        </figure>
+      </header>
+
+      <section class="fow-section" aria-labelledby="trip-title">
+        <div class="interior-section-head"><h2 id="trip-title">The trip is the game</h2><span>Time against reaction mass</span></div>
+        <div class="fow-trip">
+          <p class="fow-big">At 1 g, Mars is a few days away. Neptune is a few weeks. The question is never whether you can get there. It's what it will cost you.</p>
+          <p class="fow-lead">Burn hard the whole way, flip at the midpoint and brake, and you arrive early with a dry tank. Burn, coast and burn, and you save water but cut it close on the deadline. Cargo is heavy, and heavy costs fuel.</p>
+        </div>
+        <dl class="fow-stats">{stats.map(([n, what]) => <div><dt>{n}</dt><dd>{what}</dd></div>)}</dl>
+      </section>
+
+      <section class="fow-section" aria-labelledby="play-title">
+        <div class="interior-section-head"><h2 id="play-title">What you do out there</h2><span>The job board and beyond</span></div>
+        <div class="fow-features">{features.map(f => <article class="fow-feature"><h3>{f.title}</h3>{f.body.map(par => <p>{par}</p>)}</article>)}</div>
+      </section>
+
+      <section class="fow-section" aria-labelledby="ship-title">
+        <div class="interior-section-head"><h2 id="ship-title">When it turns into a fight: FWO-090</h2><span>Top buyable hull. The player names it.</span></div>
+        <p class="fow-lead">Combat sits on top of the trip planner. Fights happen at real range, decided by torpedoes, missiles, railgun slugs and the point-defence cannons trying to stop them, and every hit is worked out from physics, not hit points. This is the hull built for it.</p>
+        <div class="fow-ship">
+          <div class="fow-ship-copy">
+            <p>A skyscraper that flies. No bridge, no wings, nothing pretending to be an aircraft. It's sold bare, and you fit the weapons in the yard: escort, strike, or everything at once.</p>
+            <dl class="fow-specs">{specs.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+          </div>
+          <figure class="fow-wide">
+            <Picture src={strike} alt="Side view of the ship lying horizontal in the strike fit: orange pillars at the stern, grey tower, railgun spine at the bow." formats={['webp']} widths={[800, 1400, 2000]} sizes="(max-width: 900px) 100vw, 60vw" />
+            <figcaption>Strike fit, side on. 149,624 triangles in the game version.</figcaption>
+          </figure>
+        </div>
+        <ul class="fow-gallery">{gallery.map(shot => <li><figure><Picture src={shot.src} alt={shot.alt} formats={['webp']} widths={[480, 800]} sizes="(max-width: 720px) 100vw, 33vw" /><figcaption>{shot.caption}</figcaption></figure></li>)}</ul>
+      </section>
+
+      <section class="fow-section" aria-labelledby="pdc-title">
+        <div class="interior-section-head"><h2 id="pdc-title">Hear the PDCs</h2><span>100 rounds a second, one-second burst</span></div>
+        <p class="fow-lead">A point-defence cannon fires a hundred rounds a second at whatever is incoming. The same burst sounds completely different depending on where you are on the ship, so the sound kit renders every piece three ways.</p>
+        <ul class="fow-sounds">{sounds.map(s => <li><p class="fow-sound-label">{s.label}</p><p class="fow-sound-note">{s.note}</p><audio controls preload="none" src={s.src}></audio></li>)}</ul>
+      </section>
+
+      <section class="fow-section" aria-labelledby="colony-title">
+        <div class="interior-section-head"><h2 id="colony-title">Colonies at night</h2><span>Shader preview, not in the game yet</span></div>
+        <div class="fow-colony">
+          <figure><Picture src={hellas} alt="Night side of Mars from about 40 kilometres up: amber city lights spread across the Hellas basin." formats={['webp']} widths={[800, 1400]} sizes="(max-width: 900px) 100vw, 60vw" /><figcaption>Hellas on Mars at night, from 40 km up.</figcaption></figure>
+          <p>Settlements on Mars, Ceres, Titan, and Ganymede light up on the night side: cities, farms, and industrial works, each with its own pattern, fading to a glow as you pull away. It's a shader, so no models yet. The day side is still a grey smudge and needs real buildings.</p>
+        </div>
+      </section>
+
+      <section class="fow-section" aria-labelledby="tools-title">
+        <div class="interior-section-head"><h2 id="tools-title">Tools I built for it</h2><span>Each one HTML file. Try them.</span></div>
+        <ul class="fow-tools">{tools.map(t => <li><h3><a href={t.href}>{t.name} <span aria-hidden="true">↗</span></a></h3><p>{t.what}</p></li>)}</ul>
+      </section>
+
+      <p class="fow-honest">Built with AI, not by hand: the code is written with Claude Code and OpenAI Codex, and the ships are modelled in Blender by Claude from my descriptions, because I can't draw. Every sound is synthesised. It's a hobby, to play with physics and scratch the itch The Expanse books gave me. No release date, no builds for sale.</p>
+    </main>
+    <Footer />
+  </body>
+</html>
+<style>
+  /* Full-bleed dark band: the shadow paints past the column, the clip keeps it to the band's height, and neither scrolls. */
+  .fow-hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 2rem 4rem; align-items: center; padding: 3rem 0 2rem; background: #020407; box-shadow: 0 0 0 100vmax #020407; clip-path: inset(0 -100vmax); }
+  .fow-hero h1 { font-size: var(--text-hero); font-weight: 350; line-height: 1; letter-spacing: -.055em; margin: 0; color: #EEF2F8; }
+  .fow-hero h1 span { color: var(--accent); }
+  .fow-hero .intro-eyebrow { color: #A6B3C6; }
+  .fow-deck { font-size: var(--text-lead); line-height: 1.6; color: #EEF2F8; max-width: 44ch; margin: 1.5rem 0 0; text-wrap: pretty; }
+  .fow-note { font-size: var(--text-label); color: #A6B3C6; max-width: 46ch; margin: 1.25rem 0 0; }
+  .fow-hero-ship { margin: 0; justify-self: center; max-width: 380px; }
+  .fow-hero-ship :global(img) { display: block; width: 100%; height: auto; }
+  .fow-section { margin-top: 4rem; }
+  .fow-ship { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 2.5rem; align-items: center; padding: 1.5rem 0 2rem; }
+  .fow-ship-copy p, .fow-lead { font-size: var(--text-lead); line-height: 1.65; color: var(--muted); max-width: 52ch; margin: 0; }
+  .fow-lead { padding: 1rem 0 1.5rem; }
+  .fow-specs { margin: 1.75rem 0 0; display: grid; gap: 0; }
+  .fow-specs div { display: flex; justify-content: space-between; gap: 1rem; padding: .65rem 0; border-top: 1px solid var(--rule); font-size: var(--text-label); }
+  .fow-specs dt { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .fow-specs dd { margin: 0; text-align: right; }
+  figure { margin: 0; }
+  figcaption { margin-top: .6rem; font-size: var(--text-label); color: var(--muted); }
+  .fow figure :global(img) { display: block; width: 100%; height: auto; background: #020407; }
+  .fow-wide :global(img) { border: 1px solid var(--rule); }
+  .fow-gallery { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+  .fow-gallery :global(img) { aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--rule); }
+  .fow-sounds { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .fow-sounds li { background: var(--surface); padding: 1.25rem; display: flex; flex-direction: column; gap: .4rem; }
+  .fow-sound-label { margin: 0; font-family: var(--font-mono); font-size: var(--text-label); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+  .fow-sound-note { margin: 0 0 .75rem; font-size: var(--text-label); color: var(--muted); }
+  .fow-sounds audio { width: 100%; margin-top: auto; }
+  .fow-colony { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; padding-top: 1rem; }
+  .fow-colony :global(img) { border: 1px solid var(--rule); }
+  .fow-colony p { margin: 0; color: var(--muted); font-size: var(--text-lead); line-height: 1.65; }
+  .fow-tools { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1.25rem; padding-top: 1rem; }
+  .fow-tools li { border-top: 2px solid var(--accent); padding-top: 1rem; }
+  .fow-tools h3 { font-size: var(--text-title); font-weight: 450; margin: 0 0 .5rem; }
+  .fow-tools h3 a { text-decoration: none; }
+  .fow-tools p { margin: 0; color: var(--muted); font-size: var(--text-body); line-height: 1.6; }
+  @media (max-width: 900px) {
+    .fow-hero { grid-template-columns: minmax(0, 1fr); padding-top: 2rem; }
+    .fow-hero-ship { max-width: 260px; }
+    .fow-ship { grid-template-columns: minmax(0, 1fr); }
+    .fow-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 900px) { .fow-colony { grid-template-columns: minmax(0, 1fr); } }
+  .fow-tag { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em; font-size: var(--text-label); color: var(--accent); margin: 1.25rem 0 0; }
+  .fow-trip { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem 3rem; align-items: start; padding: 1rem 0 0; }
+  .fow-trip .fow-lead { padding: .4rem 0 0; }
+  .fow-big { font-size: var(--text-title); font-weight: 400; line-height: 1.35; letter-spacing: -.015em; margin: 0; max-width: 30ch; text-wrap: pretty; }
+  .fow-stats { margin: 2rem 0 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+  .fow-stats div { padding: 1rem 1rem 0 0; }
+  .fow-stats dt { font-family: var(--font-display); font-size: var(--text-title); font-weight: 450; letter-spacing: -.02em; color: var(--accent); }
+  .fow-stats dd { margin: .25rem 0 0; font-size: var(--text-label); color: var(--muted); line-height: 1.45; }
+  .fow-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 2rem 2.5rem; padding: 1.5rem 0 1rem; }
+  .fow-feature { border-top: 2px solid var(--accent); padding-top: 1rem; }
+  .fow-feature h3 { font-size: var(--text-title); font-weight: 450; letter-spacing: -.02em; line-height: 1.2; margin: 0 0 .8rem; }
+  .fow-feature p { margin: 0 0 .8rem; color: var(--muted); font-size: var(--text-body); line-height: 1.65; }
+  .fow-honest { margin: 4rem 0 1rem; padding: 1.25rem 0 0; border-top: 1px solid var(--rule); font-size: var(--text-label); line-height: 1.6; color: var(--muted); max-width: 70ch; }
+  @media (max-width: 900px) {
+    .fow-trip { grid-template-columns: minmax(0, 1fr); }
+    .fow-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>

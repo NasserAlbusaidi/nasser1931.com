@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Wadi</title>
+<style>
+  :root{
+    --bar:#15110d; --bar2:#221b14; --ink:#f3e6cf; --dim:#a8977c; --hot:#ff8a3d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#0b0907;color:var(--ink);
+    font:13px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:hidden;
+    -webkit-user-select:none;user-select:none;touch-action:none}
+  body{display:flex;flex-direction:column}
+  #stage{flex:1;position:relative;min-height:0;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:crosshair}
+  #hud{position:absolute;left:10px;top:8px;pointer-events:none;text-shadow:0 1px 2px #000a}
+  #hud b{font-size:18px;letter-spacing:.25em;color:var(--ink)}
+  #hud span{display:block;color:var(--dim);margin-top:3px}
+  #toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#000a;padding:6px 12px;border-radius:6px;
+    opacity:0;transition:opacity .25s;pointer-events:none}
+  #bar{background:linear-gradient(var(--bar2),var(--bar));border-top:1px solid #3a2e22;padding:6px 8px;
+    display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center}
+  .el,.btn{border:1px solid #3a2e22;background:#1c1610;color:var(--ink);border-radius:6px;padding:5px 8px;cursor:pointer;
+    display:flex;align-items:center;gap:6px;font:inherit}
+  .el:hover,.btn:hover{border-color:#6b5640}
+  .el.on{border-color:var(--hot);box-shadow:0 0 0 1px var(--hot) inset;background:#2a1d12}
+  .sw{width:12px;height:12px;border-radius:3px;box-shadow:0 0 0 1px #0008 inset}
+  .k{color:var(--dim);font-size:11px}
+  .btn.on{border-color:#6fb3ff;color:#bfe0ff}
+  .sep{width:1px;height:22px;background:#3a2e22;margin:0 4px}
+  #size{width:80px;accent-color:var(--hot)}
+  label.sz{display:flex;align-items:center;gap:6px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="c"></canvas>
+  <div id="hud"><b>WADI</b><span id="stats"></span></div>
+  <div id="toast"></div>
+</div>
+<div id="bar"></div>
+<script>
+(() => {
+"use strict";
+// ---------- element ids ----------
+const E=0,SAND=1,WATER=2,STONE=3,WOOD=4,FIRE=5,SMOKE=6,STEAM=7,LAVA=8,OIL=9,SEED=10,LEAF=11,TNT=12,GROW=13,WET=14,GLASS=15,EMBER=16,SPRING=17,ERASE=99;
+const NT=18;
+const SOLID=0,POWDER=1,LIQ=2,GAS=3;
+const KIND=new Uint8Array(NT), DEN=new Uint8Array(NT);
+[[SAND,POWDER,6],[WET,POWDER,6],[SEED,POWDER,5],[WATER,LIQ,3],[OIL,LIQ,2],[LAVA,LIQ,4],
+ [FIRE,GAS,0],[SMOKE,GAS,0],[STEAM,GAS,0]].forEach(([t,k,d])=>{KIND[t]=k;DEN[t]=d;});
+
+// base colours [r,g,b,variance]
+const BASE=[];
+BASE[SAND]=[226,192,128,14]; BASE[WET]=[168,130,82,10]; BASE[WATER]=[38,112,206,10];
+BASE[STONE]=[112,106,100,18]; BASE[WOOD]=[112,72,40,14]; BASE[GROW]=[130,90,45,6];
+BASE[OIL]=[58,40,30,8]; BASE[SEED]=[160,118,52,10]; BASE[LEAF]=[66,142,52,22];
+BASE[TNT]=[204,44,40,10]; BASE[GLASS]=[188,226,232,10]; BASE[SPRING]=[64,160,176,12];
+BASE[LAVA]=[255,92,18,30]; BASE[EMBER]=[255,120,30,40];
+BASE[SMOKE]=[78,76,80,8]; BASE[STEAM]=[226,230,240,8]; BASE[FIRE]=[255,160,40,0];
+const EMISSIVE=new Uint8Array(NT); EMISSIVE[LAVA]=EMISSIVE[EMBER]=EMISSIVE[FIRE]=1;
+
+// ---------- tools / UI ----------
+const TOOLS=[
+  [SAND,"sand","1"],[WATER,"water","2"],[STONE,"stone","3"],[SEED,"palm seed","4"],
+  [FIRE,"fire","5"],[OIL,"oil","6"],[LAVA,"lava","7"],[TNT,"tnt","8"],[SPRING,"spring","9"],
+  [WOOD,"wood","0"],[ERASE,"erase","E"]
+];
+let tool=SAND, brush=4, paused=false, wind=false, autoDay=true, phase=0.42, flood=0, shake=0;
+
+const bar=document.getElementById('bar');
+const btnEls={};
+const css=(t)=>{ if(t===ERASE) return '#000'; const b=BASE[t]; return `rgb(${b[0]},${b[1]},${b[2]})`; };
+TOOLS.forEach(([t,name,key])=>{
+  const b=document.createElement('button'); b.className='el'; b.title=`${name} [${key}]`;
+  b.innerHTML=`<i class="sw" style="background:${css(t)}${t===ERASE?';outline:1px dashed #888':''}"></i>${name}<span class="k">${key}</span>`;
+  b.onclick=()=>pick(t); bar.appendChild(b); btnEls[t]=b;
+});
+bar.insertAdjacentHTML('beforeend',`<i class="sep"></i>
+ <label class="sz">brush <input id="size" type="range" min="1" max="16" value="4"></label>
+ <button class="btn" id="bWind" title="Shamal sandstorm [W]">shamal</button>
+ <button class="btn" id="bFlood" title="Flash flood down the wadi [F]">flash flood</button>
+ <button class="btn on" id="bDay" title="Day/night cycle [N to skip ahead]">day cycle</button>
+ <button class="btn" id="bPause" title="[Space]">pause</button>
+ <button class="btn" id="bDrain" title="Remove all water [D]">drain</button>
+ <button class="btn" id="bClear" title="[C]">clear</button>
+ <button class="btn" id="bShot" title="Save PNG [S]">save png</button>`);
+const $=id=>document.getElementById(id);
+function pick(t){ tool=t; for(const k in btnEls) btnEls[k].classList.toggle('on',+k===t); }
+pick(SAND);
+$('size').oninput=e=>brush=+e.target.value;
+$('bWind').onclick=()=>{wind=!wind;$('bWind').classList.toggle('on',wind);toast(wind?'shamal is blowing':'wind died down');};
+$('bFlood').onclick=()=>{flood=55;toast('FLASH FLOOD');};
+$('bDay').onclick=()=>{autoDay=!autoDay;$('bDay').classList.toggle('on',autoDay);};
+$('bPause').onclick=()=>{paused=!paused;$('bPause').classList.toggle('on',paused);};
+$('bDrain').onclick=()=>{for(let i=0;i<T.length;i++) if(T[i]===WATER) T[i]=E; toast('drained');};
+$('bClear').onclick=()=>{T.fill(0);L.fill(0);};
+$('bShot').onclick=()=>{const a=document.createElement('a');a.download='wadi.png';
+  const c2=document.createElement('canvas');c2.width=W*4;c2.height=H*4;const x2=c2.getContext('2d');
+  x2.imageSmoothingEnabled=false;x2.drawImage(cv,0,0,c2.width,c2.height);a.href=c2.toDataURL();a.click();};
+let toastT=0; function toast(s){const t=$('toast');t.textContent=s;t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,1400);}
+
+// ---------- grid ----------
+const cv=$('c'), ctx=cv.getContext('2d');
+let W=0,H=0,SCALE=4,T,L,C,S,img,px,stars;
+let tick=1, curLight=1;
+const rnd=Math.random;
+
+function alloc(w,h){
+  const nT=new Uint8Array(w*h), nL=new Uint8Array(w*h), nC=new Uint8Array(w*h), nS=new Uint8Array(w*h);
+  if(T){ // keep old content, bottom-aligned
+    for(let y=0;y<Math.min(h,H);y++){const sy=H-1-y, dy=h-1-y;
+      for(let x=0;x<Math.min(w,W);x++){nT[dy*w+x]=T[sy*W+x];nL[dy*w+x]=L[sy*W+x];nC[dy*w+x]=C[sy*W+x];}}
+  }
+  T=nT;L=nL;C=nC;S=nS;W=w;H=h;
+  cv.width=W;cv.height=H;cv.style.width=W*SCALE+'px';cv.style.height=H*SCALE+'px';
+  img=ctx.createImageData(W,H); px=new Uint32Array(img.data.buffer);
+  stars=new Uint8Array(W*H); for(let i=0;i<W*H;i++) if(rnd()<0.004) stars[i]=60+rnd()*195|0;
+}
+function fit(){
+  const st=$('stage'); SCALE=innerWidth<760?3:4;
+  const w=Math.min(520,Math.floor(st.clientWidth/SCALE)), h=Math.min(320,Math.floor(st.clientHeight/SCALE));
+  if(w!==W||h!==H) alloc(w,h);
+}
+
+function setc(i,t,life){T[i]=t;L[i]=life;C[i]=rnd()*16|0;S[i]=tick;}
+function swap(i,j){
+  let a=T[i];T[i]=T[j];T[j]=a; a=L[i];L[i]=L[j];L[j]=a; a=C[i];C[i]=C[j];C[j]=a; S[i]=S[j]=tick;
+}
+// can element a move into cell j?
+function can(a,j){
+  const b=T[j]; if(b===E) return true;
+  const kb=KIND[b];
+  if(kb===GAS) return KIND[a]!==GAS;
+  if(kb===LIQ) return KIND[a]!==GAS && DEN[a]>DEN[b];
+  return false;
+}
+
+// ---------- movement ----------
+function powder(x,y,i,t,slide){
+  if(y+1>=H) return false;
+  const d=i+W;
+  if(wind && rnd()<0.45 && T[d]===E){
+    if(x+1>=W){T[i]=E;return true;}
+    if(T[d+1]===E){swap(i,d+1);return true;}
+  }
+  if(can(t,d)){ if(KIND[T[d]]===LIQ && rnd()<0.5) return false; swap(i,d); return true; }
+  if(rnd()<slide){
+    const dir=rnd()<0.5?-1:1;
+    let nx=x+dir; if(nx>=0&&nx<W&&can(t,d+dir)&&KIND[T[i+dir]]!==SOLID){swap(i,d+dir);return true;}
+    nx=x-dir; if(nx>=0&&nx<W&&can(t,d-dir)&&KIND[T[i-dir]]!==SOLID){swap(i,d-dir);return true;}
+  }
+  return false;
+}
+function liquid(x,y,i,t,spread){
+  if(y+1<H){
+    const d=i+W;
+    if(can(t,d)){swap(i,d);return true;}
+    const dir=rnd()<0.5?-1:1;
+    let nx=x+dir; if(nx>=0&&nx<W&&can(t,d+dir)){swap(i,d+dir);return true;}
+    nx=x-dir; if(nx>=0&&nx<W&&can(t,d-dir)){swap(i,d-dir);return true;}
+  }
+  let side=rnd()<0.5?-1:1;
+  for(let pass=0;pass<2;pass++,side=-side){
+    let best=-1;
+    for(let s=1;s<=spread;s++){
+      const nx=x+side*s; if(nx<0||nx>=W) break;
+      const j=i+side*s, b=T[j];
+      if(b===E||KIND[b]===GAS){best=j; if(y+1<H&&T[j+W]===E) break;} else break;
+    }
+    if(best>=0){swap(i,best);return true;}
+  }
+  return false;
+}
+function gas(x,y,i){
+  let dx=(rnd()*3|0)-1; if(wind&&rnd()<0.6) dx=1;
+  if(y>0){
+    const nx=x+dx;
+    if(nx>=0&&nx<W){
+      const j=i-W+dx,b=T[j];
+      if(b===E){swap(i,j);return;}
+      if(KIND[b]===LIQ&&rnd()<0.25){swap(i,j);return;}
+    }
+    if(T[i-W]===E){swap(i,i-W);return;}
+  }
+  const nx=x+(rnd()<0.5?-1:1);
+  if(nx>=0&&nx<W&&T[i-x+nx]===E) swap(i,i-x+nx);
+}
+
+// ---------- reactions ----------
+function prime(j){ if(L[j]===0) L[j]=1+rnd()*5|0; }
+function burn(j,b,heat){ // try to ignite cell j containing b; heat 0..1
+  switch(b){
+    case WOOD: if(rnd()<0.03*heat) setc(j,EMBER,90+rnd()*160|0); break;
+    case LEAF: case SEED: case GROW: if(rnd()<0.18*heat) setc(j,FIRE,18+rnd()*22|0); break;
+    case OIL: if(rnd()<0.3*heat) setc(j,FIRE,30+rnd()*40|0); break;
+    case TNT: prime(j); break;
+  }
+}
+function explode(cx,cy,r){
+  shake=10;
+  for(let dy=-r;dy<=r;dy++){const y=cy+dy; if(y<0||y>=H) continue;
+    for(let dx=-r;dx<=r;dx++){const x=cx+dx; if(x<0||x>=W) continue;
+      const d2=dx*dx+dy*dy, rr=r*r*(0.75+rnd()*0.5); if(d2>rr) continue;
+      const j=y*W+x,b=T[j];
+      if(b===TNT){ if(dx||dy) prime(j); else setc(j,FIRE,30); continue; }
+      if((b===STONE||b===GLASS||b===SPRING) && (d2>r*r*0.25||rnd()<0.5)) continue;
+      if(d2<r*r*0.45) setc(j,FIRE,10+rnd()*35|0);
+      else if(b===E) { if(rnd()<0.5) setc(j,SMOKE,40+rnd()*60|0); }
+      else if(KIND[b]===POWDER||KIND[b]===LIQ){ if(rnd()<0.35) setc(j,b===WATER?STEAM:FIRE,30+rnd()*30|0); }
+      else burn(j,b,1);
+    }}
+}
+function crown(x,y){
+  const n=5+rnd()*3|0;
+  for(let f=0;f<n;f++){
+    const a=-Math.PI/2+((f/(n-1))-0.5)*Math.PI*1.5+(rnd()-0.5)*0.2, len=7+rnd()*6;
+    for(let t=0.5;t<len;t+=0.5){
+      const px_=Math.round(x+Math.cos(a)*t), py=Math.round(y+Math.sin(a)*t+t*t*0.055);
+      if(px_<0||px_>=W||py<0||py>=H) break;
+      const j=py*W+px_; if(T[j]===E||KIND[T[j]]===GAS) {setc(j,LEAF,0); C[j]=t>len*0.7?(rnd()*6|0):(6+rnd()*10|0);}
+    }
+  }
+  for(let k=0;k<9;k++){ // dates
+    const dx=(rnd()*5|0)-2, dy=1+(rnd()*3|0), xx=x+dx, yy=y+dy;
+    if(xx<0||xx>=W||yy>=H) continue; const j=yy*W+xx;
+    if(T[j]===E){setc(j,LEAF,0);C[j]=16+(rnd()*4|0);}
+  }
+}
+
+function update(x,y,i,t){
+  switch(t){
+  case SAND: powder(x,y,i,t,0.9); break;
+  case WET:
+    if(!powder(x,y,i,t,0.08) && rnd()<0.0004) T[i]=SAND; break;
+  case SEED:
+    if(!powder(x,y,i,t,0.3) && y+1<H){
+      const b=T[i+W];
+      if((b===WET&&rnd()<0.03)||(b===SAND&&rnd()<0.004)) setc(i,GROW,10+rnd()*24|0);
+    } break;
+  case GROW:
+    if(rnd()<0.35){
+      if(L[i]>0 && y>2 && (T[i-W]===E||KIND[T[i-W]]===GAS)){
+        const h=L[i]-1; T[i]=WOOD; C[i]=(y%3===0)?2:10+(rnd()*4|0); setc(i-W,GROW,h);
+      } else { T[i]=WOOD; C[i]=8; crown(x,y); }
+    } break;
+  case WATER: {
+    if(rnd()<0.02){ // soak neighbouring sand
+      const j=y+1<H?i+W:-1; if(j>=0&&T[j]===SAND) T[j]=WET;
+      else if(x>0&&T[i-1]===SAND) T[i-1]=WET; else if(x+1<W&&T[i+1]===SAND) T[i+1]=WET;
+    }
+    // the wadi drains off the right edge to the sea
+    if(x===W-1&&rnd()<0.6){T[i]=E;return;}
+    if(y+1<H){ const b=T[i+W]; // soak into the ground
+      if(b===SAND&&rnd()<0.01){T[i]=E;T[i+W]=WET;return;}
+      if((b===WET||b===STONE)&&rnd()<0.006){T[i]=E;return;}
+    }
+    if(y>0&&T[i-W]===E&&rnd()<0.0006*curLight){setc(i,STEAM,25);return;} // sun evaporates surface water
+    liquid(x,y,i,t,6); break; }
+  case OIL: if(x===W-1&&rnd()<0.6){T[i]=E;return;} liquid(x,y,i,t,3); break;
+  case LAVA: {
+    for(let k=0;k<4;k++){
+      const nx=x+(k===0?-1:k===1?1:0), ny=y+(k===2?-1:k===3?1:0);
+      if(nx<0||nx>=W||ny<0||ny>=H) continue;
+      const j=ny*W+nx,b=T[j];
+      if(b===WATER){ setc(i,STONE,0); C[i]=rnd()*6|0; setc(j,STEAM,60+rnd()*80|0); return; }
+      if(b===SAND&&rnd()<0.008) setc(j,GLASS,0);
+      else if(b===WET&&rnd()<0.05){ T[j]=SAND; if(ny>0&&T[j-W]===E) setc(j-W,STEAM,40); }
+      else if(b===STONE&&rnd()<0.0006) setc(j,LAVA,0);
+      else burn(j,b,1.5);
+    }
+    if(y>0&&T[i-W]===E&&rnd()<0.003) setc(i-W,rnd()<0.5?FIRE:SMOKE,20);
+    if(rnd()<0.45) liquid(x,y,i,t,2);
+    break; }
+  case FIRE: {
+    if(L[i]<=1){ if(rnd()<0.45) setc(i,SMOKE,40+rnd()*50|0); else T[i]=E; return; }
+    L[i]--;
+    for(let dy=-1;dy<=1;dy++){const ny=y+dy; if(ny<0||ny>=H) continue;
+      for(let dx=-1;dx<=1;dx++){const nx=x+dx; if((!dx&&!dy)||nx<0||nx>=W) continue;
+        const j=ny*W+nx,b=T[j];
+        if(b===WATER){ if(rnd()<0.4) setc(j,STEAM,50+rnd()*50|0); setc(i,SMOKE,30); return; }
+        burn(j,b,1);
+      }}
+    if(rnd()<0.6) gas(x,y,i);
+    break; }
+  case EMBER: {
+    if(L[i]<=1){ if(rnd()<0.5) setc(i,SMOKE,60); else T[i]=E; return; }
+    L[i]--;
+    if(y>0&&T[i-W]===E&&rnd()<0.18) setc(i-W,FIRE,8+rnd()*14|0);
+    const nx=x+(rnd()*3|0)-1, ny=y+(rnd()*3|0)-1;
+    if(nx>=0&&nx<W&&ny>=0&&ny<H){const j=ny*W+nx,b=T[j];
+      if(b===WATER){ setc(j,STEAM,60); T[i]=WOOD; C[i]=0; return; }
+      burn(j,b,0.7);}
+    break; }
+  case SMOKE: if(L[i]<=1){T[i]=E;return;} L[i]--; if(rnd()<0.8) gas(x,y,i); break;
+  case STEAM:
+    if(L[i]<=1||(y<2&&rnd()<0.02)){ if(rnd()<0.35) setc(i,WATER,0); else T[i]=E; return; }
+    L[i]--; gas(x,y,i); break;
+  case TNT:
+    if(L[i]>0){ if(--L[i]===0){ T[i]=E; explode(x,y,9+(rnd()*4|0)); } }
+    break;
+  case SPRING:
+    for(let k=0;k<3;k++){const nx=x+(k===0?-1:k===1?1:0), ny=y+(k===2?1:0);
+      if(nx<0||nx>=W||ny>=H) continue; const j=ny*W+nx;
+      if(T[j]===E&&rnd()<0.22) setc(j,WATER,0);}
+    break;
+  }
+}
+
+function step(){
+  tick=tick>=255?1:tick+1;
+  if(wind){ for(let k=0;k<Math.max(2,H/18);k++){ const y=rnd()*H*0.55|0, j=y*W; if(T[j]===E) setc(j,SAND,0);} }
+  if(flood>0){ flood--; for(let y=Math.floor(H*0.15);y<H;y++) for(let x=0;x<3;x++){const j=y*W+x; if(T[j]===E&&rnd()<0.45) setc(j,WATER,0);} }
+  for(let y=H-1;y>=0;y--){
+    const ltr=rnd()<0.5, row=y*W;
+    for(let k=0;k<W;k++){
+      const x=ltr?k:W-1-k, i=row+x, t=T[i];
+      if(t===E||t===STONE||t===GLASS||t===WOOD||t===LEAF||S[i]===tick) continue;
+      if(t===TNT&&L[i]===0) continue;
+      update(x,y,i,t);
+    }
+  }
+}
+
+// ---------- rendering ----------
+const SKY=[ // phase, top, bottom, light
+  [0.00,[6,8,26],[22,26,62],0.32],
+  [0.22,[30,36,90],[120,80,110],0.5],
+  [0.30,[90,120,190],[255,170,110],0.82],
+  [0.45,[96,160,228],[198,224,246],1.0],
+  [0.62,[100,158,222],[214,222,226],0.98],
+  [0.72,[60,60,130],[255,128,60],0.78],
+  [0.80,[22,22,64],[90,50,90],0.5],
+  [1.00,[6,8,26],[22,26,62],0.32]];
+function skyAt(p){
+  for(let k=0;k<SKY.length-1;k++){const a=SKY[k],b=SKY[k+1];
+    if(p>=a[0]&&p<=b[0]){const f=(p-a[0])/(b[0]-a[0]),m=(u,v)=>u+(v-u)*f;
+      return [a[1].map((v,n)=>m(v,b[1][n])),a[2].map((v,n)=>m(v,b[2][n])),m(a[3],b[3])];}}
+  return [SKY[0][1],SKY[0][2],SKY[0][3]];
+}
+const LUT=new Uint32Array(NT*32);
+const pack=(r,g,b)=>(255<<24)|((b<0?0:b>255?255:b|0)<<16)|((g<0?0:g>255?255:g|0)<<8)|(r<0?0:r>255?255:r|0);
+const VAR=new Float32Array(32); for(let s=0;s<32;s++) VAR[s]=((s%16)/15-0.5)*2;
+function buildLUT(light){
+  for(let t=1;t<NT;t++){const b=BASE[t]; if(!b) continue;
+    const lt=EMISSIVE[t]?1:light;
+    for(let s=0;s<32;s++){
+      let r=b[0],g=b[1],bl=b[2]; const v=VAR[s]*b[3];
+      if(t===LEAF&&s>=16){r=150+s*3;g=64;bl=20;} // dates
+      else if(t===WOOD&&s<4){r=82;g=52;bl=30;}
+      r+=v;g+=v*0.9;bl+=v*0.7;
+      LUT[t*32+s]=pack(r*lt,g*lt,bl*lt);
+    }}
+}
+const skyRow=new Uint32Array(1024);
+let sunX=0,sunY=0,sunR=0,sunCol=0,isMoon=false,starA=0;
+function render(){
+  const [top,bot,light]=skyAt(phase);
+  buildLUT(light); curLight=light;
+  for(let y=0;y<H;y++){const f=y/(H-1); skyRow[y]=pack(top[0]+(bot[0]-top[0])*f,top[1]+(bot[1]-top[1])*f,top[2]+(bot[2]-top[2])*f);}
+  // sun by day, moon by night, on an arc
+  const dayP=(phase-0.25)/0.5; isMoon=dayP<0||dayP>1;
+  const arcP=isMoon?((phase+0.25)%1)/0.5:dayP;
+  sunX=W*(0.1+0.8*arcP); sunY=H*(0.75-0.6*Math.sin(Math.PI*Math.min(1,Math.max(0,arcP))));
+  sunR=isMoon?5:7; sunCol=isMoon?pack(235,232,215):pack(255,236,170);
+  starA=Math.max(0,Math.min(1,(0.55-light)/0.2));
+  const sr2=sunR*sunR, gr2=(sunR*2.6)**2;
+  for(let y=0;y<H;y++){
+    const row=y*W, sky=skyRow[y], dy=y-sunY;
+    for(let x=0;x<W;x++){
+      const i=row+x,t=T[i];
+      if(t===E||KIND[t]===GAS){
+        let c=sky;
+        const dx=x-sunX, d2=dx*dx+dy*dy;
+        if(d2<gr2){
+          if(d2<sr2 && !(isMoon && (dx+2)*(dx+2)+(dy+1)*(dy+1)<sr2*0.7)) c=sunCol;
+          else { const a=(1-d2/gr2)*0.35; c=mix(c,sunCol,a); }
+        } else if(starA>0&&stars[i]){ c=mix(c,0xffffffff,(stars[i]/255)*starA*(0.7+0.3*Math.sin(perf*0.003+i))); }
+        if(t!==E){
+          const life=L[i];
+          if(t===FIRE){ const h=Math.min(1,life/30); c=pack(255,90+h*150+rnd()*30,20+h*h*120); }
+          else { const a=Math.min(1,life/(t===SMOKE?70:90))*(t===SMOKE?0.85:0.6); c=mix(c,LUT[t*32+C[i]],a); }
+        }
+        px[i]=c;
+      } else if(t===LAVA||t===EMBER){
+        const fl=rnd()*40; const b=BASE[t]; px[i]=pack(b[0],b[1]+VAR[C[i]]*b[3]+fl,b[2]+fl*0.4);
+      } else if(t===TNT){
+        px[i]=(x+y)%6<1&&L[i]===0?pack(240,220,200):(L[i]>0&&(perf/60|0)%2?pack(255,255,220):LUT[t*32+C[i]]);
+      } else if(t===WATER){
+        const c=LUT[t*32+C[i]], above=y>0?T[i-W]:E;
+        px[i]=(above===E||KIND[above]===GAS)?mix(c,0xffffffff,0.35):mix(c,0xffffffff,0.06+0.06*Math.sin(perf*0.004+x*0.35+y*0.6));
+      } else px[i]=LUT[t*32+C[i]];
+    }
+  }
+  ctx.putImageData(img,0,0);
+}
+function mix(a,b,f){
+  const ar=a&255,ag=(a>>8)&255,ab=(a>>16)&255, br=b&255,bg=(b>>8)&255,bb=(b>>16)&255;
+  return pack(ar+(br-ar)*f,ag+(bg-ag)*f,ab+(bb-ab)*f);
+}
+
+// ---------- input ----------
+let down=false,btn=0,mx=-1,my=-1,lx=-1,ly=-1;
+function cell(e){const r=cv.getBoundingClientRect(); return [Math.floor((e.clientX-r.left)/r.width*W),Math.floor((e.clientY-r.top)/r.height*H)];}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);down=true;btn=e.button;[mx,my]=cell(e);lx=mx;ly=my;paintLine();});
+cv.addEventListener('pointermove',e=>{[mx,my]=cell(e); if(down) paintLine();});
+addEventListener('pointerup',()=>{down=false;});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('wheel',e=>{e.preventDefault();brush=Math.max(1,Math.min(16,brush+(e.deltaY<0?1:-1)));$('size').value=brush;},{passive:false});
+addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase(); const t=TOOLS.find(x=>x[2].toLowerCase()===k);
+  if(t){pick(t[0]);return;}
+  if(k===' '){e.preventDefault();$('bPause').click();}
+  else if(k==='c') $('bClear').click(); else if(k==='d') $('bDrain').click(); else if(k==='w') $('bWind').click();
+  else if(k==='f') $('bFlood').click(); else if(k==='s') $('bShot').click();
+  else if(k==='n'){phase=(phase+0.25)%1;}
+  else if(k==='['||k==='-'){brush=Math.max(1,brush-1);$('size').value=brush;}
+  else if(k===']'||k==='='){brush=Math.min(16,brush+1);$('size').value=brush;}
+});
+const FLOWY=t=>KIND[t]===POWDER||KIND[t]===LIQ||t===FIRE;
+function paintAt(cx,cy){
+  const r=brush-1, erase=tool===ERASE||btn===2;
+  for(let dy=-r;dy<=r;dy++){const y=cy+dy; if(y<0||y>=H) continue;
+    for(let dx=-r;dx<=r;dx++){const x=cx+dx; if(x<0||x>=W||dx*dx+dy*dy>r*r+r) continue;
+      const j=y*W+x,b=T[j];
+      if(erase){T[j]=E;L[j]=0;continue;}
+      if(tool===FIRE){ if(b!==E) {burn(j,b,8); continue;} if(rnd()<0.3) setc(j,FIRE,20+rnd()*30|0); continue; }
+      const empty=b===E||KIND[b]===GAS;
+      if(FLOWY(tool)){ if(empty&&(r===0||rnd()<0.3)) setc(j,tool,0); }
+      else if(empty||KIND[b]===LIQ){ setc(j,tool,0); if(tool===STONE) C[j]=rnd()*16|0; }
+    }}
+}
+function paintLine(){
+  const steps=Math.max(1,Math.max(Math.abs(mx-lx),Math.abs(my-ly)));
+  for(let s=0;s<=steps;s++) paintAt(Math.round(lx+(mx-lx)*s/steps),Math.round(ly+(my-ly)*s/steps));
+  lx=mx;ly=my;
+}
+
+// ---------- starting scene ----------
+function scene(){
+  T.fill(0);L.fill(0);
+  const ph=rnd()*10;
+  for(let x=0;x<W;x++){
+    const bed=H-3-Math.round(2*Math.sin(x*0.09+ph)+1.5*Math.sin(x*0.23));
+    const dune=Math.round(H*0.74 + H*0.07*Math.sin(x*0.021+ph) + H*0.035*Math.sin(x*0.057+ph*2) + 2*Math.sin(x*0.3));
+    // carve a wadi channel in the middle third
+    const cx=W*0.55, wd=W*0.09, ch=Math.max(0,1-((x-cx)/wd)**2)*H*0.14;
+    const top=Math.min(bed-1,Math.round(dune+ch));
+    for(let y=0;y<H;y++){const i=y*W+x;
+      if(y>=bed){T[i]=STONE;C[i]=rnd()*16|0;}
+      else if(y>=top){T[i]=SAND;C[i]=rnd()*16|0;}
+    }
+  }
+  // rocky ledge with a spring on the left
+  const ly=Math.round(H*0.38), lx0=Math.round(W*0.04), lx1=Math.round(W*0.2);
+  for(let x=lx0;x<lx1;x++) for(let y=ly;y<ly+3+((x*7)%3);y++){const i=y*W+x;T[i]=STONE;C[i]=rnd()*16|0;}
+  T[(ly-1)*W+lx1-2]=SPRING;
+  // a few palm seeds dropped on the dunes
+  [0.3,0.42,0.72,0.86].forEach(f=>{const x=Math.round(W*f); T[Math.round(H*0.2)*W+x]=SEED;});
+  // a little tnt stash on a rock on the right, because why not
+  const tx=Math.round(W*0.93), tyb=Math.round(H*0.55);
+  for(let x=tx-7;x<tx+7;x++) for(let y=tyb;y<tyb+3;y++){const i=y*W+x;T[i]=STONE;C[i]=rnd()*16|0;}
+  for(let x=tx-5;x<tx+5;x++) for(let y=tyb-7;y<tyb;y++) T[y*W+x]=TNT;
+}
+
+// ---------- loop ----------
+let perf=0,last=performance.now(),acc=0,frames=0,fps=0,fpsT=0;
+function loop(now){
+  perf=now; const dt=Math.min(100,now-last); last=now;
+  if(autoDay) phase=(phase+dt/240000)%1; // 4 min per day
+  if(down) paintAt(mx,my);
+  if(!paused){ acc+=dt; let n=0; while(acc>=16&&n<3){step();acc-=16;n++;} if(n===3) acc=0; }
+  render();
+  if(shake>0){shake--; cv.style.transform=`translate(${(rnd()-0.5)*shake*1.5}px,${(rnd()-0.5)*shake*1.5}px)`;} else cv.style.transform='';
+  frames++; if(now-fpsT>500){fps=Math.round(frames*1000/(now-fpsT));frames=0;fpsT=now;
+    let n=0; for(let i=0;i<T.length;i++) if(T[i]) n++;
+    const hh=Math.floor(phase*24), mm=Math.floor((phase*24-hh)*60);
+    $('stats').textContent=`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')} · ${n} grains · ${fps} fps${paused?' · PAUSED':''}`;}
+  requestAnimationFrame(loop);
+}
+fit(); scene();
+let rt=0; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,150);});
+toast('drag to pour · right-click erases · scroll = brush size');
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

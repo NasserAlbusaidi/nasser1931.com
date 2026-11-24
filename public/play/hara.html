@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hara</title>
+<style>
+  :root{
+    --bg:#0b0907; --bar:#15110d; --bar2:#221b14; --line:#3a2e22; --ink:#f3e6cf; --dim:#a8977c; --hot:#ff8a3d;
+    --good:#8fd16a; --bad:#ff5a4e; --blue:#6fb3ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:13px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  body{min-height:100vh}
+  #wrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0;min-height:100vh}
+  #left{display:flex;flex-direction:column;min-width:0}
+  #stage{position:relative;background:#000;border-bottom:1px solid var(--line)}
+  #scene{display:block;width:100%;max-height:62vh;object-fit:contain;background:#000;image-rendering:pixelated;image-rendering:crisp-edges}
+  #hud{position:absolute;left:8px;top:8px;pointer-events:none;text-shadow:0 1px 2px #000c;background:#0008;padding:6px 9px;border-radius:6px}
+  #hud b{font-size:18px;letter-spacing:.25em}
+  #hud span{display:block;color:var(--ink);opacity:.85;margin-top:3px}
+  #banner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000d;border:1px solid var(--bad);
+    padding:14px 18px;border-radius:8px;text-align:center;max-width:min(90%,460px);display:none}
+  #banner h2{margin:0 0 6px;color:var(--bad);letter-spacing:.12em;font-size:18px}
+  #banner p{margin:0 0 10px;color:var(--ink)}
+  #toast{position:absolute;right:10px;bottom:10px;max-width:38%;display:flex;flex-direction:column-reverse;gap:4px;align-items:flex-end;pointer-events:none}
+  .t{background:#000c;border-left:3px solid var(--hot);padding:4px 8px;border-radius:4px;animation:fade 4.5s forwards}
+  @keyframes fade{0%{opacity:0;transform:translateY(-4px)}8%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+  #charts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+  .ch{background:var(--bar);padding:6px 8px 4px}
+  .ch .h{display:flex;justify-content:space-between;gap:6px;color:var(--dim);font-size:11px}
+  .ch .h b{color:var(--ink);font-weight:600}
+  .ch canvas{display:block;width:100%;height:38px;margin-top:3px}
+  #logwrap{flex:1;min-height:150px;display:flex;flex-direction:column;background:var(--bg)}
+  #logwrap .hd{padding:6px 10px;color:var(--dim);border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.15em}
+  #log{flex:1;overflow:auto;padding:6px 10px;max-height:260px}
+  #log div{padding:3px 0;border-bottom:1px dashed #241c14}
+  #log .d{color:var(--dim);margin-right:6px}
+  #log .bad{color:#ffb4a8} #log .good{color:#c8f0a8} #log .meh{color:var(--ink)}
+  #right{background:linear-gradient(var(--bar2),var(--bar));border-left:1px solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+  .row{display:flex;gap:4px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:#1c1610;color:var(--ink);border-radius:6px;padding:5px 8px;cursor:pointer;font:inherit}
+  .btn:hover{border-color:#6b5640}
+  .btn.on{border-color:var(--hot);box-shadow:0 0 0 1px var(--hot) inset;background:#2a1d12}
+  .lbl{color:var(--dim);font-size:11px;letter-spacing:.15em;margin-top:4px}
+  .sl{padding:6px 0 4px;border-bottom:1px solid #2a2118}
+  .sl .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .sl .top b{font-weight:600}
+  .sl .v{color:var(--hot);font-variant-numeric:tabular-nums}
+  .sl input{width:100%;accent-color:var(--hot);margin:4px 0 2px}
+  .sl .fx{color:var(--dim);font-size:11px;min-height:14px}
+  @media (max-width:820px){
+    #wrap{grid-template-columns:1fr}
+    #right{border-left:0;border-top:1px solid var(--line)}
+    #charts{grid-template-columns:repeat(2,minmax(0,1fr))}
+    #left{display:contents}
+    #stage{position:sticky;top:0;z-index:5;order:0}
+    #right{order:1} #charts{order:2} #logwrap{order:3}
+    #toast{display:none}
+    #banner{position:fixed}
+    #hud{font-size:11px;padding:4px 7px} #hud b{font-size:14px}
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="left">
+    <div id="stage">
+      <canvas id="scene" width="360" height="170"></canvas>
+      <div id="hud"><b>HARA</b><span id="stats"></span></div>
+      <div id="toast"></div>
+      <div id="banner"><h2 id="bt"></h2><p id="bp"></p>
+        <div class="row" style="justify-content:center"><button class="btn" id="bReset">Rebuild the town</button><button class="btn" id="bWatch">Keep watching it burn</button></div></div>
+    </div>
+    <div id="charts"></div>
+    <div id="logwrap"><div class="hd">WHAT THE FUCK JUST HAPPENED</div><div id="log"></div></div>
+  </div>
+  <div id="right">
+    <div class="row" id="speed"></div>
+    <div class="lbl">SCENARIOS</div>
+    <div class="row" id="presets"></div>
+    <div class="lbl">KNOBS</div>
+    <div id="sliders"></div>
+  </div>
+</div>
+<script>
+(() => {
+"use strict";
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const rnd=(a=1,b)=>b===undefined?Math.random()*a:a+Math.random()*(b-a);
+const lerp=(a,b,t)=>a+(b-a)*t;
+const fmt0=v=>Math.round(v).toLocaleString();
+
+// ---------- knobs ----------
+const KNOBS=[
+  {k:'heat',   n:'Heat',            min:20, max:55, step:1,  d:38,  u:v=>v+'°C'},
+  {k:'rain',   n:'Rain',            min:0,  max:100,step:1,  d:16,  u:v=>v+' mm/wk'},
+  {k:'goats',  n:'Goats',           min:0,  max:900,step:10, d:120, u:v=>fmt0(v)},
+  {k:'petrol', n:'Petrol price',    min:80, max:700,step:10, d:230, u:v=>v+' bz/L'},
+  {k:'ac',     n:'AC thermostat',   min:16, max:30, step:1,  d:23,  u:v=>v+'°C'},
+  {k:'shawarma',n:'Shawarma stands',min:0,  max:40, step:1,  d:8,   u:v=>v},
+  {k:'wasta',  n:'Wasta',           min:0,  max:100,step:1,  d:20,  u:v=>v+'%'},
+  {k:'bumps',  n:'Speed bumps',     min:0,  max:60, step:1,  d:10,  u:v=>v},
+];
+const P={}; KNOBS.forEach(o=>P[o.k]=o.d);
+
+const PRESETS={
+  'Normal Tuesday':{heat:38,rain:16,goats:120,petrol:230,ac:23,shawarma:8,wasta:20,bumps:10},
+  'July':{heat:51,rain:0,goats:120,petrol:230,ac:18,shawarma:14,wasta:20,bumps:10},
+  'Cyclone':{heat:31,rain:96,goats:120,petrol:230,ac:23,shawarma:8,wasta:20,bumps:10},
+  'Petrol is free':{heat:38,rain:40,goats:120,petrol:80,ac:23,shawarma:8,wasta:20,bumps:0},
+  'Goat maximalism':{heat:44,rain:4,goats:900,petrol:230,ac:23,shawarma:8,wasta:20,bumps:10},
+  'Shawarma economy':{heat:42,rain:8,goats:60,petrol:230,ac:20,shawarma:40,wasta:20,bumps:10},
+  'Cousin runs everything':{heat:38,rain:16,goats:120,petrol:230,ac:23,shawarma:8,wasta:100,bumps:10},
+};
+
+// ---------- state ----------
+let S, hist, over, overSeen, cooldown;
+function freshState(){
+  return {day:1,pop:2000,mood:62,water:60,grass:50,feral:0,trash:15,cats:10,cars:900,cap:100,treasury:120,
+    wadi:0,blackout:0,dust:0,sick:0,swallowed:0,accidents:0,load:0,traffic:0,speed:90,indoor:23,
+    spoiled:0,goatsHit:0,wrecked:0};
+}
+const SERIES=[
+  {k:'pop',n:'Humans',c:'#f3e6cf',f:v=>fmt0(v)},
+  {k:'mood',n:'Mood',c:'#8fd16a',f:v=>Math.round(v)+'/100',lo:0,hi:100},
+  {k:'load',n:'Grid load',c:'#ffd23d',f:v=>Math.round(v)+'%',lo:0,line:100},
+  {k:'water',n:'Falaj water',c:'#6fb3ff',f:v=>Math.round(v)+'%',lo:0,hi:100},
+  {k:'grass',n:'Grass',c:'#5fbf4a',f:v=>Math.round(v)+'%',lo:0,hi:100},
+  {k:'feral',n:'Feral goats',c:'#ff5a4e',f:v=>fmt0(v),lo:0},
+  {k:'cars',n:'Land Cruisers',c:'#e9e9e9',f:v=>fmt0(v),lo:0},
+  {k:'treasury',n:'Treasury',c:'#ff8a3d',f:v=>fmt0(v)+'k OMR',line:0},
+];
+function reset(){
+  S=freshState(); hist={}; SERIES.forEach(s=>hist[s.k]=[]); over=null; overSeen=false; cooldown={};
+  $('banner').style.display='none'; $('log').innerHTML='';
+  log('Day 1. A sleepy little town in the interior. Touch the sliders, see what breaks.','meh');
+}
+
+// ---------- logging ----------
+function log(msg,cls='bad',toast=false){
+  const el=document.createElement('div');
+  el.className=cls; el.innerHTML=`<span class="d">d${S.day}</span>${msg}`;
+  const L=$('log'); L.prepend(el); while(L.children.length>80)L.lastChild.remove();
+  if(toast){const t=document.createElement('div');t.className='t';t.textContent=msg.replace(/<[^>]+>/g,'');
+    $('toast').prepend(t);setTimeout(()=>t.remove(),4600);while($('toast').children.length>3)$('toast').lastChild.remove();}
+}
+function once(key,days,fn){ if((cooldown[key]||0)>S.day)return; cooldown[key]=S.day+days; fn(); }
+
+// ---------- the model ----------
+function step(){
+  const p=P, s=S;
+  const petrolF=Math.pow(250/p.petrol,1.1);
+
+  // --- power ---
+  const acLoad=s.pop/2000*Math.max(0,p.heat-p.ac)*2.2*(s.dust?1.35:1);
+  s.load=(18+acLoad+p.shawarma*0.9+s.pop/2000*8)/s.cap*100;
+  if(s.blackout>0){ s.blackout--; }
+  else if(s.load>100 && Math.random()<(s.load-100)/40+0.15){
+    s.blackout=3+Math.floor(rnd(4));
+    const dmg=(s.load-100)*0.06; s.cap=Math.max(30,s.cap-dmg);
+    if(s.load>135){ s.cap=Math.max(30,s.cap-8);
+      log(`Grid at ${Math.round(s.load)}%. A transformer <b>exploded</b>. Somebody filmed it. Capacity is down for good until someone pays to fix it.`,'bad',true);}
+    else log(`Heat ${p.heat}° and everyone set the AC to ${p.ac}° → grid at ${Math.round(s.load)}% → <b>BLACKOUT</b>.`,'bad',true);
+  }
+  s.indoor=s.blackout?p.heat:Math.min(p.heat,p.ac);
+
+  // shawarma rot during blackouts
+  if(s.blackout && p.heat>34 && p.shawarma>0 && Math.random()<0.5){
+    const n=Math.max(1,Math.round(p.shawarma*rnd(0.2,0.7)*(p.heat-30)/25));
+    const sick=Math.round(n*rnd(8,30));
+    s.sick+=sick; s.spoiled+=n;
+    once('rot',4,()=>log(`No power + ${p.heat}° = ${n} shawarma stands' chicken went off. <b>${sick} people</b> are now living on the toilet.`,'bad',true));
+  }
+  s.sick*=0.8;
+
+  // --- water / grass / goats ---
+  let excess=0;
+  s.water+=0.2+p.rain*0.08 - s.pop*0.00025 - p.goats*0.0015 - Math.max(0,p.heat-25)*0.03;
+  if(s.water>100){excess=s.water-100;s.water=100;}
+  if(s.water<0)s.water=0;
+  const growth=s.water>8?(0.4+p.rain*0.03)*(1-s.grass/100)*(p.heat>46?0.3:1):-0.9;
+  const eaten=p.goats*0.004*(s.grass/(s.grass+10));
+  s.grass=clamp(s.grass+growth-eaten,0,100);
+  if(s.water<8) once('dry',12,()=>log(`The falaj is dry. Rain ${p.rain}mm can't keep up with ${fmt0(s.pop)} people showering three times a day in ${p.heat}°.`,'bad',true));
+
+  if(s.grass<12 && p.goats>30){
+    const before=s.feral;
+    s.feral+=(p.goats-s.feral)*0.03;
+    if(before<20 && s.feral>=20) log(`Grass at ${Math.round(s.grass)}%. ${p.goats} hungry goats → the goats have <b>gone feral</b>. They're eating trash, car wiring and Abu Salim's sandals.`,'bad',true);
+  } else s.feral*=0.96;
+  s.feral=Math.min(s.feral,p.goats);
+
+  // --- trash & cats ---
+  const cleaning=s.treasury>0?3:0;
+  s.trash=clamp(s.trash*0.99+p.shawarma*0.25+s.pop*0.0004-cleaning-p.goats*0.002-s.feral*0.01,0,150);
+  s.cats+=(s.trash*0.6-s.cats)*0.05;
+  if(s.trash>70) once('trash',15,()=>log(`${p.shawarma} shawarma stands + no cleaning budget = trash mountain. <b>${Math.round(s.cats)} cats</b> have formed a union.`,'bad',true));
+
+  // --- cars, traffic, accidents ---
+  const target=s.pop*0.45*petrolF;
+  s.cars+=(target-s.cars)*0.05;
+  if(s.feral>5){ const w=Math.round(s.feral*0.01*rnd()); s.cars=Math.max(0,s.cars-w); s.wrecked+=w; }
+  s.traffic=s.cars/1200*(1+p.bumps*0.04);
+  s.speed=Math.max(8,140-p.bumps*2-s.traffic*30);
+  const expAcc=s.cars*0.0008*Math.pow(s.speed/100,2)*(1+s.feral*0.01)*(s.dust?2.5:1)*(1+p.goats*0.0006);
+  const acc=Math.floor(expAcc+rnd());
+  s.accidents+=acc;
+  if(acc>=3) once('acc',6,()=>log(`${acc} crashes in one day. Petrol at ${p.petrol} baisa, ${p.bumps} speed bumps, ${Math.round(s.speed)} km/h average${s.feral>10?', and goats in the road':''}${s.dust?', in a dust storm':''}.`,'bad',true));
+  if(acc>0 && p.goats>50 && Math.random()<0.3) s.goatsHit+=1;
+  if(s.traffic>1.6) once('traffic',10,()=>log(`${fmt0(s.cars)} Land Cruisers on roads built for 1,200. ${p.bumps>25?'And '+p.bumps+' speed bumps. ':''}It now takes 40 minutes to buy bread.`,'bad',true));
+
+  // --- wadi ---
+  const flow=Math.max(0,p.rain-45)*1.6+excess*2;
+  s.wadi+=(flow-s.wadi)*0.3;
+  if(s.wadi>10){
+    const n=Math.floor(s.cars*0.00012*s.wadi*petrolF*rnd());
+    if(n>0){ s.swallowed+=n; s.treasury-=n*4;
+      once('wadi',3,()=>log(`The wadi is flowing. <b>${n} ${n===1?'genius':'geniuses'}</b> drove their Prado into it anyway${p.petrol<150?' (petrol is cheap, so why not)':''}. Civil Defence is not amused. Instagram is.`,'bad',true)); }
+  }
+  if(s.wadi>60){ s.pop*=0.995; s.cap=Math.max(30,s.cap-0.4);
+    once('flood',8,()=>log(`Rain ${p.rain}mm/wk → the wadi left its lane and entered the souq. Houses flooded, substation wet.`,'bad',true)); }
+
+  // --- dust ---
+  if(s.dust>0)s.dust--;
+  else if(s.grass<15 && p.heat>40 && p.rain<10 && Math.random()<0.2){
+    s.dust=3+Math.floor(rnd(4));
+    once('dust',6,()=>log(`Goats ate all the grass (${Math.round(s.grass)}%) + ${p.heat}° → <b>dust storm</b>. AC filters clog, grid load +35%, drivers can't see shit.`,'bad',true));
+  }
+
+  // --- money ---
+  const income=s.pop*0.002*(p.petrol/250)+p.shawarma*0.05;
+  const spend=1+p.wasta*0.05+p.bumps*0.01;
+  s.treasury+=income-spend;
+  if(s.treasury>0 && s.cap<100){ const r=Math.min(1,100-s.cap); s.cap+=r; s.treasury-=r*3; }
+  else if(s.treasury<=0){ s.cap=Math.max(30,s.cap-0.15);
+    once('broke',20,()=>log(`Treasury hit zero. Wasta at ${p.wasta}% means the budget went to "consultants". No cleaning, no grid repairs.`,'bad',true)); }
+
+  // --- mood ---
+  const m=[];
+  const add=(v)=>m.push(v);
+  add(-Math.max(0,s.indoor-26)*2.2 - Math.max(0,19-s.indoor)*1.5);
+  add(Math.min(p.shawarma,12)*1.8 - Math.max(0,p.shawarma-22)*0.6);
+  add(-(p.petrol-200)*0.04);
+  add(-Math.max(0,s.traffic-0.8)*25);
+  add(-p.bumps*0.25);
+  add(-Math.max(0,s.trash-30)*0.3);
+  add(s.water<15?-(15-s.water)*2:0);
+  add(s.grass*0.08);
+  add(Math.min(p.goats,150)*0.03 - Math.max(0,p.goats-400)*0.01);
+  add(-s.feral*0.08);
+  add(-s.sick*0.06);
+  add(p.wasta*0.08);
+  add(s.dust?-10:0);
+  add(s.wadi>60?-15:0);
+  add(-Math.max(0,s.pop/6000-1)*25);   // crowding
+  const tgt=clamp(50+m.reduce((a,b)=>a+b,0),0,100);
+  s.mood+=(tgt-s.mood)*0.08;
+
+  // --- people ---
+  s.pop+=(s.mood-55)*0.00015*s.pop*(1+p.wasta*0.005);
+  s.pop=Math.max(0,s.pop);
+  if(s.mood<35) once('leave',12,()=>log(`Mood ${Math.round(s.mood)}/100. People are packing the Prado and moving to Muscat.`,'meh'));
+  if(p.ac<=17 && p.heat>=40) once('cold',25,()=>log(`It's ${p.heat}° outside and ${p.ac}° inside. Half the town has a cold. Peak Gulf.`,'meh'));
+  if(p.goats>=600 && s.grass>30) once('goatgood',25,()=>log(`${p.goats} goats and still grass left. Rain is carrying this whole operation.`,'good'));
+
+  // --- ending conditions ---
+  if(!over){
+    if(s.pop<25) over=['GHOST TOWN','Everyone moved to Muscat. Even the cats left. The last guy turned off a light that wasn\'t on.'];
+    else if(s.feral>Math.max(50,s.pop)) over=['GOAT REPUBLIC',`${fmt0(s.feral)} feral goats now outnumber ${fmt0(s.pop)} humans. They hold the municipality. Their first law bans fences.`];
+    else if(s.treasury<-150) over=['BANKRUPT','The wali sold the whole town to a fund in exchange for a mall that will never open.'];
+    else if(s.cars>s.pop*1.6 && s.pop>200) over=['PRADO LOT',`${fmt0(s.cars)} Land Cruisers for ${fmt0(s.pop)} people. The town is now technically a car park.`];
+    else if(s.cats>85) over=['CAT CARTEL',`${Math.round(s.cats)} cats control the trash, therefore the shawarma, therefore the economy.`];
+    else if(s.pop>16000) over=['IT\'S DUBAI NOW','The town got too popular. There is a indoor ski slope where the falaj used to be. You did this.'];
+    else if(s.swallowed>60) over=['WADI 1, PRADOS 60','Sixty cars in the wadi. Civil Defence has moved here permanently.'];
+  }
+  s.day++;
+
+  SERIES.forEach(se=>{const h=hist[se.k];h.push(s[se.k]);if(h.length>240)h.shift();});
+}
+
+// ---------- slider effect hints (live) ----------
+function hints(){
+  const s=S,p=P;
+  return {
+    heat:`AC wants ${Math.round(s.pop/2000*Math.max(0,p.heat-p.ac)*2.2)} MW · evaporation ${(Math.max(0,p.heat-25)*0.03).toFixed(2)}/day`,
+    rain:p.rain>45?`wadi flowing (${Math.round(s.wadi)}). Prados at risk.`:p.rain<5?'nothing grows, the falaj is on life support':`falaj +${(p.rain*0.08).toFixed(1)}/day, grass grows`,
+    goats:s.feral>10?`${fmt0(s.feral)} have gone feral`:`eating ${(p.goats*0.004).toFixed(1)}% grass/day`,
+    petrol:`→ ${fmt0(s.pop*0.45*Math.pow(250/p.petrol,1.1))} cars wanted · tax ${((p.petrol/250)*s.pop*0.002).toFixed(1)}k/day`,
+    ac:s.blackout?'irrelevant, there is no power':`indoor ${Math.round(s.indoor)}° · ${p.ac<20?'people in hoodies':p.ac>26?'sweaty and furious':'fine'}`,
+    shawarma:`+${(p.shawarma*0.25).toFixed(1)} trash/day · ${(p.shawarma*0.9).toFixed(0)} MW of grills`,
+    wasta:`${(p.wasta*0.05).toFixed(1)}k/day vanishes · permits faster`,
+    bumps:`avg speed ${Math.round(s.speed)} km/h · ${p.bumps>30?'everyone hates you':'meh'}`,
+  };
+}
+
+// ---------- UI ----------
+const sl=$('sliders'), inputs={}, vals={}, fxs={};
+KNOBS.forEach(o=>{
+  const d=document.createElement('div');d.className='sl';
+  d.innerHTML=`<div class="top"><b>${o.n}</b><span class="v"></span></div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.d}" aria-label="${o.n}"><div class="fx"></div>`;
+  sl.appendChild(d);
+  inputs[o.k]=d.querySelector('input'); vals[o.k]=d.querySelector('.v'); fxs[o.k]=d.querySelector('.fx');
+  inputs[o.k].addEventListener('input',e=>{P[o.k]=+e.target.value;vals[o.k].textContent=o.u(P[o.k]);});
+  vals[o.k].textContent=o.u(o.d);
+});
+function setAll(obj){ for(const k in obj){P[k]=obj[k];inputs[k].value=obj[k];const o=KNOBS.find(x=>x.k===k);vals[k].textContent=o.u(obj[k]);} }
+Object.keys(PRESETS).forEach(n=>{const b=document.createElement('button');b.className='btn';b.textContent=n;
+  b.onclick=()=>{setAll(PRESETS[n]);reset();log(`Scenario: <b>${n}</b>. Fresh town, same idiots.`,'meh');};$('presets').appendChild(b);});
+let speed=1;
+[['⏸',0],['1×',1],['4×',4],['16×',16]].forEach(([t,v])=>{const b=document.createElement('button');b.className='btn'+(v===1?' on':'');b.textContent=t;b.dataset.v=v;
+  b.onclick=()=>{speed=v;[...$('speed').children].forEach(c=>c.classList.toggle('on',+c.dataset.v===v));};$('speed').appendChild(b);});
+const rb=document.createElement('button');rb.className='btn';rb.textContent='Reset';rb.onclick=()=>{reset();};$('speed').appendChild(rb);
+$('bReset').onclick=()=>{setAll(PRESETS['Normal Tuesday']);reset();};
+$('bWatch').onclick=()=>{$('banner').style.display='none';};
+
+// charts
+const chartEls={};
+SERIES.forEach(se=>{
+  const d=document.createElement('div');d.className='ch';
+  d.innerHTML=`<div class="h"><span>${se.n}</span><b></b></div><canvas></canvas>`;
+  $('charts').appendChild(d); chartEls[se.k]={v:d.querySelector('b'),c:d.querySelector('canvas')};
+});
+function drawCharts(){
+  const dpr=window.devicePixelRatio||1;
+  SERIES.forEach(se=>{
+    const {v,c}=chartEls[se.k]; const h=hist[se.k];
+    v.textContent=se.f(S[se.k]);
+    const W=c.clientWidth,H=c.clientHeight; if(!W)return;
+    if(c.width!==Math.round(W*dpr)){c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);}
+    const g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+    if(h.length<2)return;
+    let lo=se.lo!==undefined?se.lo:Math.min(...h), hi=se.hi!==undefined?se.hi:Math.max(...h);
+    if(se.line!==undefined){lo=Math.min(lo,se.line);hi=Math.max(hi,se.line);}
+    hi=Math.max(...h,hi); lo=Math.min(...h,lo); if(hi-lo<1e-6)hi=lo+1;
+    const pad=3, N=Math.max(h.length,60)-1, y=v=>H-pad-(v-lo)/(hi-lo)*(H-pad*2), x=i=>i/N*W;
+    if(se.line!==undefined){g.strokeStyle='#ff5a4e66';g.setLineDash([3,3]);g.beginPath();g.moveTo(0,y(se.line));g.lineTo(W,y(se.line));g.stroke();g.setLineDash([]);}
+    const off=0;
+    g.beginPath(); h.forEach((val,i)=>{const X=x(i+off),Y=y(val);i?g.lineTo(X,Y):g.moveTo(X,Y);});
+    g.strokeStyle=se.c; g.lineWidth=1.5; g.stroke();
+    g.lineTo(x(off+h.length-1),H);g.lineTo(x(off),H);g.closePath();g.globalAlpha=.12;g.fillStyle=se.c;g.fill();g.globalAlpha=1;
+  });
+}
+
+// ---------- scene ----------
+const cv=$('scene'), g=cv.getContext('2d'); const W=cv.width, H=cv.height;
+g.imageSmoothingEnabled=false;
+const GROUND=118, ROAD=138;
+const mountains=[];{let y=70;for(let x=0;x<=W;x+=4){y=clamp(y+rnd(-5,5),45,88);mountains.push(y);}}
+const houses=[];for(let i=0;i<34;i++)houses.push({x:84+i*8+Math.floor(rnd(3)),h:10+Math.floor(rnd(14)),w:7+Math.floor(rnd(3)),c:['#d8c9a8','#e8dcc0','#c9b590','#efe6d2'][i%4]});
+houses.sort(()=>Math.random()-.5);
+let goats=[],cars=[],drops=[],cats=[];
+const stuck=[];
+function syncEntities(){
+  const nG=Math.min(90,Math.round(P.goats/8)), nF=Math.round(nG*(P.goats?S.feral/P.goats:0));
+  while(goats.length<nG)goats.push({x:rnd(80,W),y:rnd(ROAD+12,H-3),vx:rnd(-.2,.2),c:Math.random()<.5?'#f4efe6':'#7a5638'});
+  goats.length=nG; goats.forEach((o,i)=>o.feral=i<nF);
+  const nC=Math.min(46,Math.round(S.cars/35));
+  while(cars.length<nC)cars.push({x:rnd(W),lane:Math.random()<.5?0:1,c:Math.random()<.8?'#f2f2f2':['#222','#b8b8b8','#8a1c1c'][Math.floor(rnd(3))]});
+  cars.length=nC;
+  const nD=Math.round(P.rain*1.6);
+  while(drops.length<nD)drops.push({x:rnd(W),y:rnd(H)});drops.length=nD;
+  const nK=Math.min(40,Math.round(S.cats/2));
+  while(cats.length<nK)cats.push({x:rnd(84,W),y:rnd(GROUND+2,ROAD-3)});cats.length=nK;
+  const nS=Math.min(14,S.swallowed);
+  while(stuck.length<nS)stuck.push({x:rnd(10,60),r:rnd(-.6,.6)});stuck.length=nS;
+}
+function hex(c){if(c[0]==='r')return c.match(/\d+/g).map(Number);return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];}
+function mix(a,b,t){const A=hex(a),B=hex(b);return `rgb(${A.map((v,i)=>Math.round(lerp(v,B[i],t))).join(',')})`;}
+let frame=0;
+function draw(){
+  frame++;
+  const t=(P.heat-20)/35, rainT=P.rain/100;
+  // sky
+  const sky=g.createLinearGradient(0,0,0,GROUND);
+  const top=t<.5?mix('#2a6fd6','#7fb2e6',t*2):mix('#7fb2e6','#e8904a',(t-.5)*2);
+  sky.addColorStop(0,mix(top,'#4d535e',rainT*.85));
+  sky.addColorStop(1,mix(mix('#cfe6ff','#ffdca0',t),'#8a9099',rainT*.7));
+  g.fillStyle=sky;g.fillRect(0,0,W,GROUND);
+  // sun
+  if(P.rain<70){g.globalAlpha=1-rainT;g.fillStyle=mix('#fff6c8','#fff',t);g.beginPath();g.arc(300,28,6+t*16,0,7);g.fill();
+    g.globalAlpha=(1-rainT)*.25;g.beginPath();g.arc(300,28,10+t*30,0,7);g.fill();g.globalAlpha=1;}
+  // clouds
+  if(P.rain>5){g.fillStyle=mix('#e8e8e8','#4a4f58',rainT);for(let i=0;i<Math.ceil(P.rain/12);i++){const cx=(i*61+frame*.1)%(W+60)-30;g.fillRect(cx,10+(i%3)*8,34,6);g.fillRect(cx+6,6+(i%3)*8,20,5);}}
+  // mountains
+  g.fillStyle=mix('#7a5a44','#5a4a44',rainT);g.beginPath();g.moveTo(0,GROUND);mountains.forEach((y,i)=>g.lineTo(i*4,y));g.lineTo(W,GROUND);g.fill();
+  // ground
+  g.fillStyle=mix('#d9b77a','#5f9a3a',S.grass/100);g.fillRect(0,GROUND,W,H-GROUND);
+  // grass tufts
+  g.fillStyle=mix('#b89a5a','#3d7a26',S.grass/100);
+  for(let i=0;i<Math.round(S.grass*1.2);i++){const x=(i*37)%W,y=GROUND+((i*13)%(H-GROUND));if(x>78)g.fillRect(x,y,1,2);}
+  // wadi
+  const ww=6+Math.min(60,S.wadi*0.7);
+  g.fillStyle='#b08f5c';g.fillRect(8,GROUND,70,H-GROUND);
+  g.fillStyle=S.wadi>10?'#7a6a52':'#c9a86e';g.fillRect(43-ww/2,GROUND,ww,H-GROUND);
+  if(S.wadi>3){g.fillStyle=S.wadi>40?'#8a6a3a':'#4f88c9';g.fillRect(43-ww/2,GROUND,ww,H-GROUND);
+    g.fillStyle='#ffffff55';for(let i=0;i<8;i++)g.fillRect(43-ww/2+((i*11+frame)%ww),GROUND+((i*17+frame*2)%(H-GROUND)),3,1);}
+  stuck.forEach(o=>{g.save();g.translate(o.x+ (S.wadi>3?Math.sin(frame*.05+o.x)*.5:0),GROUND+30+o.r*20);g.rotate(o.r);g.fillStyle='#f2f2f2';g.fillRect(-4,-2,8,4);g.fillStyle='#222';g.fillRect(-2,-2,3,1);g.restore();});
+  // houses
+  const nH=Math.min(houses.length,Math.max(0,Math.round(S.pop/120)));
+  for(let i=0;i<nH;i++){const o=houses[i];const y=GROUND-o.h+4;
+    g.fillStyle=o.c;g.fillRect(o.x,y,o.w,o.h);
+    g.fillStyle='#00000022';g.fillRect(o.x+o.w-2,y,2,o.h);
+    // windows
+    const lit=!S.blackout;
+    for(let wy=y+3;wy<GROUND-1;wy+=5){g.fillStyle=lit?'#3b5a7a':'#111';g.fillRect(o.x+2,wy,2,2);}
+    // AC unit
+    g.fillStyle=S.blackout?'#555':'#ddd';g.fillRect(o.x+1,y-2,3,2);
+    if(!S.blackout && P.heat-P.ac>15 && (frame+i*7)%40<20){g.fillStyle='#ffffff88';g.fillRect(o.x+2,y-4-((frame/4+i)%3),1,1);}
+  }
+  // shawarma stands
+  const nSh=Math.min(16,Math.round(P.shawarma/2.5+(P.shawarma>0?.5:0)));
+  for(let i=0;i<nSh;i++){const x=90+i*16,y=GROUND+3;
+    g.fillStyle='#a3261c';g.fillRect(x,y,9,6);g.fillStyle='#f5d27a';g.fillRect(x,y-2,9,2);
+    g.fillStyle=(S.blackout?'#3a3':(frame+i*5)%10<5?'#ff9a2a':'#ffcc4a');g.fillRect(x+3,y+1,3,4);
+    if(S.sick>5 && (frame+i)%30<15){g.fillStyle='#7fdc4a88';g.fillRect(x+2,y-6-(frame%6),2,2);g.fillRect(x+5,y-8-(frame%5),2,2);}
+  }
+  // trash + cats
+  g.fillStyle='#6d6a64';
+  for(let i=0;i<Math.min(40,Math.round(S.trash/3));i++){g.fillRect(84+(i*29)%(W-90),GROUND+12+(i*7)%7,3,2);}
+  cats.forEach((o,i)=>{o.x+=Math.sin(frame*.03+i)*.2;g.fillStyle=i%3?'#2a2522':'#d08a3a';g.fillRect(o.x,o.y,2,1);g.fillRect(o.x+1,o.y-1,1,1);});
+  // road
+  g.fillStyle='#3a3a3e';g.fillRect(78,ROAD,W-78,10);g.fillStyle='#d9d9d9';for(let x=80;x<W;x+=12)g.fillRect(x,ROAD+5,6,1);
+  g.fillStyle='#f2c230';for(let i=0;i<Math.min(P.bumps,40);i++)g.fillRect(84+i*((W-90)/Math.max(1,Math.min(P.bumps,40))),ROAD,1,10);
+  // cars
+  const v=S.speed/60;
+  cars.forEach(o=>{o.x+=(o.lane?-v:v)*(.8+((o.x*7)%5)/10);if(o.x>W+10)o.x=74;if(o.x<70)o.x=W+8;
+    const y=ROAD+(o.lane?1:6);g.fillStyle=o.c;g.fillRect(o.x,y,8,3);g.fillStyle='#223';g.fillRect(o.x+(o.lane?1:5),y,2,1);});
+  // goats
+  goats.forEach(o=>{
+    const sp=o.feral?2.5:1;
+    o.x+=o.vx*sp; if(Math.random()<.02)o.vx=rnd(-.3,.3);
+    if(o.feral && Math.random()<.01)o.y=rnd(ROAD,H-3); else if(!o.feral && o.y<ROAD+12)o.y+=.3;
+    if(o.x<80){o.x=80;o.vx=Math.abs(o.vx);} if(o.x>W-3){o.x=W-3;o.vx=-Math.abs(o.vx);}
+    g.fillStyle=o.c;g.fillRect(o.x,o.y,3,2);g.fillRect(o.x+(o.vx>0?3:-1),o.y-1,1,1);
+    g.fillStyle='#222';g.fillRect(o.x,o.y+2,1,1);g.fillRect(o.x+2,o.y+2,1,1);
+    if(o.feral){g.fillStyle='#ff2020';g.fillRect(o.x+(o.vx>0?3:-1),o.y-1,1,1);}
+  });
+  // rain
+  if(drops.length){g.fillStyle='#bcd8ff99';drops.forEach(d=>{d.y+=4;d.x-=1;if(d.y>H){d.y=-4;d.x=rnd(W+40);}g.fillRect(d.x,d.y,1,3);});}
+  // heat shimmer
+  if(P.heat>45&&!P.rain){g.fillStyle=`rgba(255,180,90,${(P.heat-45)/60})`;g.fillRect(0,0,W,H);}
+  // dust
+  if(S.dust){g.fillStyle='rgba(180,130,70,.55)';g.fillRect(0,0,W,H);}
+  // blackout
+  if(S.blackout){g.fillStyle='rgba(0,0,20,.35)';g.fillRect(0,0,W,H);
+    if(frame%50<3){g.strokeStyle='#ffe95a';g.beginPath();g.moveTo(200,0);g.lineTo(190,30);g.lineTo(205,30);g.lineTo(192,70);g.stroke();}}
+}
+
+function hud(){
+  const s=S;
+  const face=s.mood>75?'thriving':s.mood>55?'fine':s.mood>40?'grumpy':s.mood>25?'furious':'leaving';
+  $('stats').innerHTML=`day ${s.day} · ${fmt0(s.pop)} humans · mood: ${face}${s.blackout?' · <b style="color:#ffe95a">BLACKOUT</b>':''}${s.dust?' · dust storm':''}${s.wadi>10?' · wadi flowing':''}<br>`+
+    `${fmt0(s.accidents)} crashes · ${fmt0(s.swallowed)} Prados in the wadi · ${fmt0(s.goatsHit)} goats run over · ${fmt0(s.spoiled)} stands of bad chicken`;
+  const h=hints(); for(const k in h)fxs[k].textContent=h[k];
+}
+
+// ---------- loop ----------
+reset();
+let acc=0,last=performance.now(),uiT=0;
+function loop(now){
+  const dt=Math.min(100,now-last);last=now;
+  if(speed && !(over && $('banner').style.display==='block')){
+    acc+=dt*speed/250;
+    let n=0; while(acc>=1 && n<20){step();acc-=1;n++;}
+    if(over && !overSeen){overSeen=true;$('bt').textContent=over[0];$('bp').textContent=over[1];$('banner').style.display='block';
+      log(`<b>${over[0]}</b>. ${over[1]}`,'bad');}
+  }
+  syncEntities(); draw();
+  if(now-uiT>150){uiT=now;hud();drawCharts();}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+window.__hara={get S(){return S},P,step,setAll,reset,PRESETS,get over(){return over}};
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import Earth from '../assets/earth-arabia.png';
+import FowShip from '../assets/fogofwar/side-strike.png';
 import ProjectPreview from '../components/ProjectPreview.astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
@@ -138,6 +139,15 @@ const structuredData = {
               <div class="project-bottom"><span>{einstein.stack.join(' · ')}</span><a href={einstein.url ?? einstein.repo ?? '/builds'}>Try the demo <span aria-hidden="true">↗</span></a></div>
             </div>
           </article>}
+          <article class="fow-card" aria-labelledby="home-fow">
+            <a class="fow-card-art" href="/fogofwar" tabindex="-1" aria-hidden="true"><Picture src={FowShip} alt="" formats={['webp']} widths={[700, 1200]} sizes="(max-width: 900px) 100vw, 55vw" /></a>
+            <div class="fow-card-copy">
+              <div class="project-topline"><span class="eyebrow">Game · in development</span><span class="project-badge">Unity</span></div>
+              <h3 id="home-fow">Fog of War</h3>
+              <p class="project-description">A torch-ship pilot in a true-scale solar system, on today's date. Take the job, plot the burn, watch the tank, and fight off the raiders who want your hold.</p>
+              <div class="project-bottom"><span>Unity · C# · Blender</span><a href="/fogofwar">See the workshop <span aria-hidden="true">→</span></a></div>
+            </div>
+          </article>
         </section>
 
         <section id="races" class="planet-section" aria-labelledby="races-title">

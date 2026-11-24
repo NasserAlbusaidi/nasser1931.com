@@ -1,0 +1,1828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>Ard</title>
+<style>
+:root{--ink:#efe2c6;--dim:#a99a7e;--faint:#6f6553;--gold:#e8b75c;--ember:#ff9a4a;--sea:#7fd8d0;--blood:#e0533f;--violet:#b48cff;--bg:#04050a;
+  --glass:rgba(12,10,8,.62);--line:rgba(232,183,92,.18);--line2:rgba(232,183,92,.45);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --ar:"Noto Naskh Arabic","Geeza Pro","Traditional Arabic","Arabic Typesetting","Amiri",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hidden;font:14px/1.4 var(--serif);
+  -webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab}
+#gl.drag{cursor:grabbing}#gl.aim{cursor:crosshair}
+.ui{position:fixed;z-index:5}
+button{font:inherit;color:var(--ink);background:var(--glass);border:1px solid var(--line);border-radius:9px;padding:6px 10px;cursor:pointer;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:border-color .15s,background .15s,opacity .15s}
+button:hover{border-color:var(--line2)}
+button.on{background:rgba(232,183,92,.2);border-color:var(--gold)}
+button:disabled{opacity:.35;cursor:default}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+/* top */
+#top{top:max(10px,env(safe-area-inset-top));left:12px;display:flex;gap:10px;align-items:center}
+#brand{display:flex;align-items:baseline;gap:8px;padding:6px 12px}
+#brand .ar{font:26px/1 var(--ar);color:var(--gold)}
+#brand .en{font-size:12px;letter-spacing:.42em;color:var(--dim)}
+#when{padding:6px 12px;min-width:170px}
+#when b{display:block;font-weight:normal;font-size:15px;letter-spacing:.04em}
+#when span{display:block;font-size:11.5px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase}
+#speed{display:flex;gap:3px;padding:4px}
+#speed button{width:36px;height:32px;padding:0;font:13px var(--mono);border-radius:7px;background:transparent;border-color:transparent}
+#speed button.on{background:rgba(232,183,92,.2);border-color:var(--gold)}
+#stats{top:max(10px,env(safe-area-inset-top));right:12px;display:flex;gap:6px;align-items:center}
+.chip{padding:5px 10px;font-size:12px;color:var(--dim);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:normal;font-size:14px;margin-right:4px}
+#snd,#menuBtn,#panelBtn{width:36px;height:32px;padding:0}
+/* powers */
+#powers{left:12px;top:50%;transform:translateY(-50%);width:186px;padding:10px;display:flex;flex-direction:column;gap:6px}
+#belief{padding:2px 2px 8px;border-bottom:1px solid var(--line);margin-bottom:2px}
+#belief .lbl{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+#belief .bar{height:7px;border-radius:4px;background:rgba(255,255,255,.06);margin-top:6px;overflow:hidden;position:relative}
+#belief .fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#9a6b25,var(--gold),#fff1c9);border-radius:4px;transition:width .3s}
+#belief .num{font:12px var(--mono);color:var(--ink);margin-top:5px;display:flex;justify-content:space-between}
+#belief .num i{font-style:normal;color:var(--dim)}
+.pw{display:flex;align-items:center;gap:9px;text-align:left;padding:6px 8px;position:relative}
+.pw svg{width:22px;height:22px;flex:none}
+.pw .nm{flex:1}
+.pw .ct{font:11px var(--mono);color:var(--dim)}
+.pw kbd{position:absolute;right:4px;top:2px;font:9px var(--mono);color:var(--faint)}
+.pw.on{box-shadow:0 0 0 1px var(--gold),0 0 18px rgba(232,183,92,.25)}
+#pwDesc{font-size:12px;color:var(--dim);font-style:italic;min-height:3.2em;padding:4px 2px 0;border-top:1px solid var(--line)}
+/* panel */
+#panel{right:12px;top:58px;bottom:12px;width:380px;display:flex;flex-direction:column;overflow:hidden;transition:transform .3s}
+#panel.hide{transform:translateX(calc(100% + 24px))}
+#tabs{display:flex;border-bottom:1px solid var(--line)}
+#tabs button{flex:1;border:0;border-radius:0;background:transparent;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:10px 0;backdrop-filter:none}
+#tabs button.on{color:var(--gold);box-shadow:inset 0 -2px 0 var(--gold)}
+.tab{flex:1;overflow:auto;display:none;padding:10px 12px 16px;scrollbar-width:thin;scrollbar-color:#5a4c33 transparent}
+.tab.on{display:block}
+.filt{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.filt button{font-size:11px;padding:3px 8px;border-radius:20px}
+.ev{display:flex;gap:8px;padding:6px 4px;border-bottom:1px solid rgba(232,183,92,.07);cursor:pointer;font-size:13px}
+.ev:hover{background:rgba(232,183,92,.05)}
+.ev .y{font:11px var(--mono);color:var(--faint);min-width:42px;padding-top:2px;text-align:right}
+.ev .d{width:7px;height:7px;border-radius:50%;margin-top:6px;flex:none}
+.ev.era{font-size:14px;color:var(--gold)}
+.ev.war .t{color:#f0a090}
+h3{font-weight:normal;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin:14px 0 6px}
+h2{font-weight:normal;font-size:22px;margin:4px 0 2px}
+.sub{font-size:12px;color:var(--dim);font-style:italic}
+.tribe{padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 8px}
+.tribe:hover{border-color:var(--line2)}
+.tribe.dead{opacity:.45}
+.tribe .n{font-size:15px}
+.tribe .g{font-size:12px;color:var(--dim);font-style:italic}
+.tribe .p{font:12px var(--mono);color:var(--dim);text-align:right}
+.tags{display:flex;gap:4px;justify-content:flex-end}
+.tag{font:10px var(--mono);padding:1px 5px;border-radius:4px;border:1px solid currentColor;letter-spacing:.05em}
+.tag.war{color:var(--blood)}.tag.ath{color:#8f8f8f}.tag.pray{color:var(--gold)}.tag.plg{color:#9fd36a}.tag.sect{color:var(--violet)}
+.fbar{grid-column:1/3;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.fbar i{display:block;height:100%;background:var(--gold)}
+.book{font-size:14.5px;line-height:1.55}
+.verse{margin:0 0 10px;text-indent:-14px;padding-left:14px}
+.verse sup{font:10px var(--mono);color:var(--faint);margin-right:6px}
+.verse.inh{color:var(--dim)}
+.verse.k-genesis{font-style:italic}
+.law{font-style:italic;margin:4px 0 4px 10px;color:#f3dca6}
+.asp{display:grid;grid-template-columns:70px 1fr 1fr;gap:3px 6px;align-items:center;font-size:12px}
+.asp .b{height:5px;border-radius:3px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
+.asp .b i{position:absolute;top:0;bottom:0}
+.asp .l i{left:0;background:#e8c06a}.asp .f i{left:0;background:#d0543e}
+.genes{display:grid;grid-template-columns:78px 1fr 36px;gap:4px 8px;align-items:center;font-size:12px}
+.genes .b{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.genes .b i{display:block;height:100%}
+.genes .v{font:11px var(--mono);color:var(--dim);text-align:right}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+#treeWrap{position:relative}
+#tree{display:block;width:100%}
+#treeLeg{font-size:11.5px;color:var(--dim);margin-bottom:6px;display:flex;gap:12px;flex-wrap:wrap}
+#treeLeg i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
+#spark{width:100%;height:56px;display:block;margin:4px 0 10px}
+/* prayers & voice */
+#prayers{left:212px;bottom:14px;display:flex;flex-direction:column-reverse;gap:6px;max-width:290px}
+.prayer{padding:7px 10px;font-size:12.5px;cursor:pointer;display:flex;gap:8px;align-items:center;animation:pin .5s ease}
+.prayer:hover{border-color:var(--gold)}
+.prayer svg{width:18px;height:18px;flex:none}
+.prayer .tl{font:10px var(--mono);color:var(--dim);margin-left:auto;white-space:nowrap}
+@keyframes pin{from{opacity:0;transform:translateY(8px)}}
+#voice{left:50%;transform:translateX(-50%);bottom:26px;width:min(640px,60vw);text-align:center;pointer-events:none;font-style:italic;font-size:17px;line-height:1.45;
+  text-shadow:0 1px 4px #000,0 0 20px #000;opacity:0;transition:opacity 1.2s}
+#voice.show{opacity:1}
+#tip{position:fixed;z-index:20;pointer-events:none;padding:6px 9px;font-size:12px;max-width:260px;display:none;background:rgba(10,8,6,.92);border:1px solid var(--line2);border-radius:8px}
+#tip b{font-weight:normal;color:var(--gold)}
+/* intro */
+#intro{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(4,5,10,.35),rgba(4,5,10,.92) 70%);transition:opacity 1.2s}
+#intro.gone{opacity:0;pointer-events:none}
+#intro .card{max-width:560px;text-align:center;padding:30px}
+#intro .ar{font:84px/1 var(--ar);color:var(--gold);text-shadow:0 0 40px rgba(232,183,92,.35)}
+#intro .en{letter-spacing:.8em;color:var(--dim);font-size:13px;margin:10px 0 22px;padding-left:.8em}
+#intro p{color:#d8ccb0;font-size:15.5px;line-height:1.6;margin:0 0 12px}
+#intro p.small{font-size:13px;color:var(--dim)}
+#intro button{font-size:16px;padding:10px 28px;margin-top:12px;letter-spacing:.2em;background:rgba(232,183,92,.15);border-color:var(--gold)}
+#menu{right:12px;top:58px;padding:12px;width:250px;display:none;z-index:30}
+#menu.on{display:block}
+#menu button{width:100%;margin:3px 0;text-align:left}
+#menu .k{font-size:12px;color:var(--dim);line-height:1.7;margin-top:8px}
+#menu kbd{font:11px var(--mono);border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--ink)}
+#nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;z-index:99}
+@media (max-width:820px){
+  #powers{top:auto;bottom:8px;transform:none;left:8px;right:8px;width:auto;flex-direction:row;flex-wrap:wrap;padding:6px;gap:4px}
+  #belief{width:100%;border:0;padding:0 2px 4px;margin:0}
+  .pw{flex:1 1 22%;padding:5px;gap:4px;justify-content:center}.pw .nm,.pw kbd,#pwDesc{display:none}.pw .ct{font-size:10px}
+  #panel{top:auto;height:52vh;left:8px;right:8px;width:auto;bottom:150px}
+  #prayers{left:8px;bottom:160px}#voice{bottom:160px;width:90vw;font-size:15px}
+  #stats .chip:not(.k){display:none}#when{min-width:0}#brand .en{display:none}
+  #top{left:8px;gap:6px}#speed button{width:30px}
+}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="nogl" class="glass">Ard needs WebGL2, and this browser won't give it. Try a recent Chrome, Edge, Firefox or Safari.</div>
+
+<div id="top" class="ui">
+  <div id="brand" class="glass"><span class="ar">أرض</span><span class="en">ARD</span></div>
+  <div id="when" class="glass"><b id="yr">Year 0</b><span id="era">Age of the Sea</span></div>
+  <div id="speed" class="glass">
+    <button data-s="0" title="Pause (Space)">❚❚</button><button data-s="1" title="Watch">▶</button><button data-s="2" title="Years">▶▶</button><button data-s="3" title="Ages">▶▶▶</button><button data-s="4" title="As fast as Ard can turn">⏵⏵</button>
+  </div>
+</div>
+<div id="stats" class="ui">
+  <div class="chip glass" title="Living creatures"><b id="stA">0</b>creatures</div>
+  <div class="chip glass" title="Living species"><b id="stS">0</b>species</div>
+  <div class="chip glass k" title="Peoples (population)"><b id="stT">0</b>peoples</div>
+  <button id="snd" title="Sound (M)">♪</button>
+  <button id="panelBtn" title="Panel (P)">☰</button>
+  <button id="menuBtn" title="World">✦</button>
+</div>
+<div id="menu" class="ui glass">
+  <button id="mNew">New world (random seed)</button>
+  <button id="mSeed">New world from seed…</button>
+  <button id="mHome">Look at the whole planet</button>
+  <div class="k">
+    <kbd>Drag</kbd> turn the world · <kbd>Wheel</kbd> zoom to the ground<br>
+    <kbd>1</kbd>–<kbd>8</kbd> pick a miracle · <kbd>Esc</kbd> put it down<br>
+    <kbd>Space</kbd> pause · <kbd>[</kbd> <kbd>]</kbd> slower / faster<br>
+    <kbd>P</kbd> panel · <kbd>M</kbd> sound · <kbd>F</kbd> follow selected<br>
+    Click a creature or a village to inspect it.
+  </div>
+  <div class="k" id="seedLbl"></div>
+</div>
+
+<nav id="powers" class="ui glass">
+  <div id="belief"><div class="lbl"><span>Belief</span><span id="bRegen">+2/yr</span></div><div class="bar"><div class="fill" id="bFill"></div></div><div class="num"><span id="bNum">60</span><i id="bMax">/ 120</i></div></div>
+  <div id="pwList" style="display:contents"></div>
+  <div id="pwDesc">Pick a miracle, then touch the world.</div>
+</nav>
+
+<aside id="panel" class="ui glass">
+  <div id="tabs"><button data-t="chron" class="on">Chronicle</button><button data-t="tree">Tree</button><button data-t="peoples">Peoples</button><button data-t="insp">Inspect</button></div>
+  <div class="tab on" id="t-chron">
+    <canvas id="spark"></canvas>
+    <div class="filt" id="cFilt"></div>
+    <div id="cList"></div>
+  </div>
+  <div class="tab" id="t-tree"><div id="treeLeg"></div><div id="treeWrap"><canvas id="tree"></canvas></div></div>
+  <div class="tab" id="t-peoples"><div id="pList"></div></div>
+  <div class="tab" id="t-insp"><div id="iBody"><p class="sub">Click a creature, a village, or a branch of the tree.</p></div></div>
+</aside>
+
+<div id="prayers" class="ui"></div>
+<div id="voice" class="ui"></div>
+<div id="tip"></div>
+
+<div id="intro">
+  <div class="card">
+    <div class="ar">أرض</div>
+    <div class="en">ARD</div>
+    <p>A young world, a few small lights in its shallow seas, and you.</p>
+    <p>They will multiply, split into kinds, crawl ashore, eat each other, and one day one of them will look up. After that, everything you do becomes scripture.</p>
+    <p class="small">Your power is their belief. Answer prayers, or don't. Rain, bounty, fire, plague, stars. They will remember all of it, and they will remember it wrong.</p>
+    <button id="begin">BEGIN</button>
+  </div>
+</div>
+<script>
+'use strict';
+/* =====================================================================
+   ARD — simulation core (no DOM). World, life, minds, gods, scripture.
+   ===================================================================== */
+const TAU=Math.PI*2, PI=Math.PI;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=Math.random;
+const rr=(a,b)=>a+(b-a)*R(), ri=n=>(R()*n)|0, pick=a=>a[(R()*a.length)|0];
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t;
+const sstep=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)};
+function gauss(){let u=1-R(),v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v)}
+function hash32(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+
+function makeNoise(seed){
+  const rnd=mulberry32(seed*7919+13);
+  const p=new Uint8Array(256);for(let i=0;i<256;i++)p[i]=i;
+  for(let i=255;i>0;i--){const j=(rnd()*(i+1))|0;const t=p[i];p[i]=p[j];p[j]=t}
+  const perm=new Uint8Array(512),pm=new Uint8Array(512);
+  for(let i=0;i<512;i++){perm[i]=p[i&255];pm[i]=(perm[i]%12)*3}
+  const g=[1,1,0,-1,1,0,1,-1,0,-1,-1,0,1,0,1,-1,0,1,1,0,-1,-1,0,-1,0,1,1,0,-1,1,0,1,-1,0,-1,-1];
+  const F3=1/3,G3=1/6;
+  return function(x,y,z){
+    let n0=0,n1=0,n2=0,n3=0;const s=(x+y+z)*F3;const i=Math.floor(x+s),j=Math.floor(y+s),k=Math.floor(z+s);
+    const t=(i+j+k)*G3;const x0=x-(i-t),y0=y-(j-t),z0=z-(k-t);
+    let i1,j1,k1,i2,j2,k2;
+    if(x0>=y0){if(y0>=z0){i1=1;j1=0;k1=0;i2=1;j2=1;k2=0}else if(x0>=z0){i1=1;j1=0;k1=0;i2=1;j2=0;k2=1}else{i1=0;j1=0;k1=1;i2=1;j2=0;k2=1}}
+    else{if(y0<z0){i1=0;j1=0;k1=1;i2=0;j2=1;k2=1}else if(x0<z0){i1=0;j1=1;k1=0;i2=0;j2=1;k2=1}else{i1=0;j1=1;k1=0;i2=1;j2=1;k2=0}}
+    const x1=x0-i1+G3,y1=y0-j1+G3,z1=z0-k1+G3,x2=x0-i2+2*G3,y2=y0-j2+2*G3,z2=z0-k2+2*G3,x3=x0-1+3*G3,y3=y0-1+3*G3,z3=z0-1+3*G3;
+    const ii=i&255,jj=j&255,kk=k&255;
+    let t0=0.6-x0*x0-y0*y0-z0*z0;if(t0>0){const q=pm[ii+perm[jj+perm[kk]]];t0*=t0;n0=t0*t0*(g[q]*x0+g[q+1]*y0+g[q+2]*z0)}
+    let t1=0.6-x1*x1-y1*y1-z1*z1;if(t1>0){const q=pm[ii+i1+perm[jj+j1+perm[kk+k1]]];t1*=t1;n1=t1*t1*(g[q]*x1+g[q+1]*y1+g[q+2]*z1)}
+    let t2=0.6-x2*x2-y2*y2-z2*z2;if(t2>0){const q=pm[ii+i2+perm[jj+j2+perm[kk+k2]]];t2*=t2;n2=t2*t2*(g[q]*x2+g[q+1]*y2+g[q+2]*z2)}
+    let t3=0.6-x3*x3-y3*y3-z3*z3;if(t3>0){const q=pm[ii+1+perm[jj+1+perm[kk+1]]];t3*=t3;n3=t3*t3*(g[q]*x3+g[q+1]*y3+g[q+2]*z3)}
+    return 32*(n0+n1+n2+n3);
+  };
+}
+function fbm(nz,x,y,z,oct){let a=1,f=1,s=0,n=0;for(let o=0;o<oct;o++){s+=a*nz(x*f,y*f,z*f);n+=a;a*=.5;f*=2.03}return s/n}
+
+/* ---------------- world grid ---------------- */
+const W=320,H=160,N=W*H,TPY=40,RELIEF=0.022;
+const cX=new Float32Array(N),cY=new Float32Array(N),cZ=new Float32Array(N),cLat=new Float32Array(N);
+for(let y=0;y<H;y++){const lat=(0.5-(y+.5)/H)*PI;for(let x=0;x<W;x++){const lon=(x+.5)/W*TAU-PI,i=y*W+x;
+  cX[i]=Math.cos(lat)*Math.cos(lon);cY[i]=Math.sin(lat);cZ[i]=Math.cos(lat)*Math.sin(lon);cLat[i]=lat}}
+const hgt=new Float32Array(N),moist0=new Float32Array(N),moist=new Float32Array(N),temp=new Float32Array(N),
+  plant=new Float32Array(N),cap=new Float32Array(N),rainF=new Float32Array(N),blessF=new Float32Array(N),
+  scorch=new Float32Array(N),dryF=new Float32Array(N),detailN=new Float32Array(N),seaD=new Float32Array(N),landD=new Float32Array(N);
+const biome=new Uint8Array(N);
+const B={DEEP:0,SEA:1,SHALLOW:2,SEAICE:3,BEACH:4,DESERT:5,STEPPE:6,SAVANNA:7,GRASS:8,FOREST:9,RAIN:10,TAIGA:11,TUNDRA:12,SNOW:13,ROCK:14};
+const BCAP=[0.22,0.3,0.5,0.03,0.08,0.05,0.32,0.48,0.68,0.88,1.0,0.6,0.22,0.0,0.1];
+const BNAME=['abyss','open sea','shallows','sea ice','shore','desert','steppe','savanna','grassland','forest','rainforest','taiga','tundra','ice','mountains'];
+const LANDFORM=['deeps','sea','shallows','ice','shore','sands','steppe','plains','meadows','woods','jungle','pines','white steppe','ice','heights'];
+
+function cellOf(x,y,z){
+  const lat=Math.asin(y<-1?-1:y>1?1:y),lon=Math.atan2(z,x);
+  let cx=((lon+PI)/TAU*W)|0;if(cx>=W)cx=W-1;else if(cx<0)cx=0;
+  let cy=((0.5-lat/PI)*H)|0;if(cy>=H)cy=H-1;else if(cy<0)cy=0;
+  return cy*W+cx;
+}
+function heightAt(x,y,z){ // bilinear, land only (water -> 0)
+  const lat=Math.asin(clamp(y,-1,1)),lon=Math.atan2(z,x);
+  let fx=(lon+PI)/TAU*W-.5,fy=(0.5-lat/PI)*H-.5;
+  let x0=Math.floor(fx),y0=Math.floor(fy);const tx=fx-x0,ty=fy-y0;
+  const y1=Math.min(H-1,Math.max(0,y0+1));y0=Math.min(H-1,Math.max(0,y0));
+  const xa=(x0+W)%W,xb=(x0+1)%W;
+  const a=Math.max(0,hgt[y0*W+xa]),b=Math.max(0,hgt[y0*W+xb]),c=Math.max(0,hgt[y1*W+xa]),d=Math.max(0,hgt[y1*W+xb]);
+  return (a*(1-tx)+b*tx)*(1-ty)+(c*(1-tx)+d*tx)*ty;
+}
+function forCells(px,py,pz,r,fn){
+  const lat=Math.asin(clamp(py,-1,1)),lon=Math.atan2(pz,px);
+  const cy=(0.5-lat/PI)*H,cx=(lon+PI)/TAU*W;const dy=Math.ceil(r/PI*H)+1;
+  const r2=r*r;
+  for(let y=Math.max(0,Math.floor(cy-dy));y<=Math.min(H-1,Math.ceil(cy+dy));y++){
+    const cl=Math.max(0.05,Math.cos((0.5-(y+.5)/H)*PI));const dx=Math.min(W/2,Math.ceil(r/TAU*W/cl)+1);
+    for(let xx=Math.floor(cx-dx);xx<=Math.ceil(cx+dx);xx++){const x=((xx%W)+W)%W,i=y*W+x;
+      const ex=cX[i]-px,ey=cY[i]-py,ez=cZ[i]-pz,d2=ex*ex+ey*ey+ez*ez;if(d2<r2)fn(i,Math.sqrt(d2)/r)}}
+}
+const dist3=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+function norm3(v){const l=Math.hypot(v[0],v[1],v[2])||1;return[v[0]/l,v[1]/l,v[2]/l]}
+
+/* ---------------- state ---------------- */
+const S={tick:0,year:0,yearFrac:0,sub:0,globalT:0,redSky:0,power:60,powerMax:120,belief:0,
+  species:[],tribes:[],log:[],says:[],fx:[],prayers:[],era:0,awakened:0,godActs:[],lastAct:-999,
+  stats:{life:[],tribes:[]},nextTribe:1,seed:1,
+  hooks:{}};
+const emit=(k,d)=>{S.fx.push(Object.assign({type:k},d||{}))};
+function log(kind,text,p,extra){S.log.push(Object.assign({y:S.year,kind,text,p:p?p.slice():null},extra||{}));if(S.log.length>600)S.log.splice(0,S.log.length-600)}
+function say(t,pri){S.says.push({t,pri:pri||0})}
+
+/* ---------------- world generation ---------------- */
+function genWorld(seed){
+  S.seed=seed;R=mulberry32(seed);
+  const n1=makeNoise(seed),n2=makeNoise(seed+101),n3=makeNoise(seed+202),n4=makeNoise(seed+303),n5=makeNoise(seed+404);
+  const o=[rr(-9,9),rr(-9,9),rr(-9,9)];
+  for(let i=0;i<N;i++){
+    const x=cX[i],y=cY[i],z=cZ[i];
+    const wx=x+.38*n3(x*1.3+o[0],y*1.3,z*1.3),wy=y+.38*n3(x*1.3,y*1.3+o[1],z*1.3),wz=z+.38*n3(x*1.3,y*1.3,z*1.3+o[2]);
+    let e=fbm(n1,wx*1.1+o[1],wy*1.1,wz*1.1,7);
+    const r=1-Math.abs(n2(wx*2.2,wy*2.2,wz*2.2));e+=.3*r*r*r*sstep(-.05,.25,e);
+    e+=.1*fbm(n4,x*4.5,y*4.5,z*4.5,3);
+    hgt[i]=e;detailN[i]=n5(x*3,y*3,z*3);
+  }
+  // area-weighted sea level (cos lat)
+  const idx=Array.from({length:N},(_,i)=>i).sort((a,b)=>hgt[a]-hgt[b]);
+  let tot=0;for(let i=0;i<N;i++)tot+=Math.cos(cLat[i]);
+  let acc=0,sea=0;for(const i of idx){acc+=Math.cos(cLat[i]);if(acc>tot*.64){sea=hgt[i];break}}
+  const mx=hgt[idx[N-1]],mn=hgt[idx[0]];
+  for(let i=0;i<N;i++){const e=hgt[i];hgt[i]=e>sea?Math.pow((e-sea)/(mx-sea),1.25)*1.05+0.004:-Math.pow((sea-e)/(sea-mn),.7)}
+  distances();
+  for(let i=0;i<N;i++){
+    const x=cX[i],y=cY[i],z=cZ[i],lat=cLat[i];
+    const nz=fbm(n2,x*2+5,y*2,z*2,4);
+    const lp=.5+.5*Math.cos(lat*6.2);
+    const inland=Math.min(seaD[i]/14,1);
+    moist0[i]=clamp(.42+.55*nz+.32*(lp-.5)-.32*inland+.1,0,1);
+  }
+  S.globalT=0;climate(true);
+  for(let i=0;i<N;i++)plant[i]=cap[i]*.6;
+}
+function distances(){
+  for(const [arr,isSrc] of [[seaD,i=>hgt[i]<=0],[landD,i=>hgt[i]>0]]){
+    arr.fill(1e9);const q=new Int32Array(N);let qh=0,qt=0;
+    for(let i=0;i<N;i++)if(isSrc(i)){arr[i]=0;q[qt++]=i}
+    while(qh<qt){const i=q[qh++],x=i%W,y=(i/W)|0,d=arr[i]+1;
+      const nb=[y*W+(x+1)%W,y*W+(x+W-1)%W,y>0?i-W:-1,y<H-1?i+W:-1];
+      for(const j of nb)if(j>=0&&arr[j]>d){arr[j]=d;q[qt++]=j}}
+  }
+}
+function biomeOf(i,t,m){
+  const h=hgt[i];
+  if(h<=0){if(t<-9)return B.SEAICE;if(landD[i]<=2&&h>-.25)return B.SHALLOW;if(h>-.5)return B.SEA;return B.DEEP}
+  if(t<-9)return B.SNOW;
+  if(h>.6)return t<3?B.SNOW:B.ROCK;
+  if(h<.03&&seaD[i]<=1&&m<.75)return B.BEACH;
+  if(t<1)return B.TUNDRA;
+  if(t<8)return m>.4?B.TAIGA:B.TUNDRA;
+  if(m<.2)return B.DESERT;
+  if(m<.34)return t>20?B.SAVANNA:B.STEPPE;
+  if(m<.55)return t>22?B.SAVANNA:B.GRASS;
+  if(t>20&&m>.66)return B.RAIN;
+  return B.FOREST;
+}
+function climate(){
+  const yf=(S.tick%TPY)/TPY;S.yearFrac=yf;const sub=.41*Math.sin(TAU*yf);S.sub=sub;const g=S.globalT;
+  for(let i=0;i<N;i++){
+    const h=hgt[i];let t=-19+50*Math.cos(cLat[i]-.8*sub)+detailN[i]*4+g;
+    if(h>0)t-=h*22;else t=t*.8+4;
+    temp[i]=t;const m=clamp(moist0[i]+rainF[i]-dryF[i],0,1);moist[i]=m;
+    const b=biomeOf(i,t,m);biome[i]=b;
+    let c=BCAP[b];if(h<=0)c*=clamp(.55+.03*(t+5),.3,1.15);
+    else c*=clamp((t+6)/14,0,1);
+    cap[i]=c;
+  }
+}
+function plantsStep(dt){
+  for(let i=0;i<N;i++){
+    const c=cap[i]*(1-scorch[i])+blessF[i]*.6;let p=plant[i];
+    if(p<c)p+=.045*dt*(p+.015)*(1-p/(c+1e-4));else p-=(p-c)*.04*dt;
+    plant[i]=p<0?0:p;
+  }
+  if(S.tick%8===0){const k=Math.pow(.997,8),k2=Math.pow(.9985,8);
+    for(let i=0;i<N;i++){if(rainF[i]>.001)rainF[i]*=k;if(blessF[i]>.001)blessF[i]*=k;if(scorch[i]>.001)scorch[i]*=k2;if(dryF[i]>.001)dryF[i]*=k2}}
+}
+
+/* ---------------- life ---------------- */
+const MAXA=4200,G=10;
+// genes: 0 size 1 speed 2 sense 3 diet 4 land 5 heatPref 6 hue 7 intellect 8 social 9 fecundity
+const GENE_NAMES=['size','speed','senses','diet','habitat','warmth','hue','intellect','sociality','fecundity'];
+const GW=[1,.8,.6,1.7,1.5,1.0,.55,1.1,.5,.5];
+const A={n:0,x:new Float32Array(MAXA),y:new Float32Array(MAXA),z:new Float32Array(MAXA),
+  hx:new Float32Array(MAXA),hy:new Float32Array(MAXA),hz:new Float32Array(MAXA),
+  e:new Float32Array(MAXA),age:new Float32Array(MAXA),life:new Float32Array(MAXA),mat:new Float32Array(MAXA),
+  sz:new Float32Array(MAXA),spd:new Float32Array(MAXA),sen:new Float32Array(MAXA),
+  sick:new Int16Array(MAXA),imm:new Uint8Array(MAXA),cd:new Int16Array(MAXA),dead:new Uint8Array(MAXA),
+  sp:new Int32Array(MAXA),id:new Int32Array(MAXA),gen:new Int32Array(MAXA),cell:new Int32Array(MAXA),
+  g:new Float32Array(MAXA*G)};
+let nextId=1;
+const KILLS={god:new Map()};
+function derive(i){const gi=i*G,g=A.g;
+  A.sz[i]=.35+2.7*Math.pow(g[gi],1.4);
+  A.spd[i]=.0008+.0034*g[gi+1];
+  A.sen[i]=.012+.042*g[gi+2];
+  A.life[i]=(130+260*g[gi])*(.8+.4*R());
+  A.mat[i]=22+70*g[gi];
+}
+function spawn(x,y,z,genes,e,sp,gen){
+  if(A.n>=MAXA)return -1;const i=A.n++;
+  const l=Math.hypot(x,y,z);x/=l;y/=l;z/=l;A.x[i]=x;A.y[i]=y;A.z[i]=z;
+  let rx=R()-.5,ry=R()-.5,rz=R()-.5;const d=rx*x+ry*y+rz*z;rx-=x*d;ry-=y*d;rz-=z*d;const rl=Math.hypot(rx,ry,rz)||1;
+  A.hx[i]=rx/rl;A.hy[i]=ry/rl;A.hz[i]=rz/rl;
+  for(let k=0;k<G;k++)A.g[i*G+k]=genes[k];
+  derive(i);A.e[i]=e;A.age[i]=0;A.sick[i]=0;A.imm[i]=0;A.cd[i]=0;A.dead[i]=0;A.sp[i]=sp;A.id[i]=nextId++;A.gen[i]=gen;A.cell[i]=cellOf(x,y,z);
+  return i;
+}
+function moveAgent(d,s){
+  A.x[d]=A.x[s];A.y[d]=A.y[s];A.z[d]=A.z[s];A.hx[d]=A.hx[s];A.hy[d]=A.hy[s];A.hz[d]=A.hz[s];
+  A.e[d]=A.e[s];A.age[d]=A.age[s];A.life[d]=A.life[s];A.mat[d]=A.mat[s];A.sz[d]=A.sz[s];A.spd[d]=A.spd[s];A.sen[d]=A.sen[s];
+  A.sick[d]=A.sick[s];A.imm[d]=A.imm[s];A.cd[d]=A.cd[s];A.dead[d]=A.dead[s];A.sp[d]=A.sp[s];A.id[d]=A.id[s];A.gen[d]=A.gen[s];A.cell[d]=A.cell[s];
+  A.g.copyWithin(d*G,s*G,s*G+G);
+}
+function kill(i,cause){if(A.dead[i])return;A.dead[i]=1;
+  if(cause==='god'){const s=A.sp[i];KILLS.god.set(s,(KILLS.god.get(s)||0)+1)}}
+function compact(){let j=0;for(let i=0;i<A.n;i++){if(!A.dead[i]){if(i!==j)moveAgent(j,i);j++}}A.n=j}
+
+// spatial grid
+const GC=.05,GD=44,gridHead=new Int32Array(GD*GD*GD),gridNext=new Int32Array(MAXA);
+const gkey=(x,y,z)=>(((x+1.1)/GC)|0)+GD*((((y+1.1)/GC)|0)+GD*(((z+1.1)/GC)|0));
+function buildGrid(){gridHead.fill(-1);for(let i=0;i<A.n;i++){const k=gkey(A.x[i],A.y[i],A.z[i]);gridNext[i]=gridHead[k];gridHead[k]=i}}
+function queryNear(x,y,z,r,fn){
+  const bx=((x+1.1)/GC)|0,by=((y+1.1)/GC)|0,bz=((z+1.1)/GC)|0;const r2=r*r;
+  for(let dz=-1;dz<=1;dz++)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+    let j=gridHead[(bx+dx)+GD*((by+dy)+GD*(bz+dz))];
+    while(j>=0){const ex=A.x[j]-x,ey=A.y[j]-y,ez=A.z[j]-z,d2=ex*ex+ey*ey+ez*ez;if(d2<r2&&fn(j,d2)===true)return;j=gridNext[j]}
+  }
+}
+
+const FOODK=.33,MUT=.03;
+function suitable(land,c){return hgt[c]>0?land>=.4:land<=.6}
+function agentsStep(){
+  buildGrid();
+  const n=A.n,crowd=n/MAXA,tk=S.tick,g=A.g;
+  for(let i=0;i<n;i++){
+    if(A.dead[i])continue;
+    const gi=i*G;let x=A.x[i],y=A.y[i],z=A.z[i],hx=A.hx[i],hy=A.hy[i],hz=A.hz[i];
+    const c=cellOf(x,y,z);A.cell[i]=c;const onLand=hgt[c]>0;
+    const land=g[gi+4],diet=g[gi+3],intel=g[gi+7],sz=A.sz[i],spd=A.spd[i],sen=A.sen[i];
+    let mult=1;
+    if(onLand){mult+=(1-land)*.35;if(land<.42)mult+=(.42-land)*14}else{mult+=land*.35;if(land>.58)mult+=(land-.58)*12}
+    const dT=Math.abs(temp[c]-(-12+47*g[gi+5]));if(dT>8)mult+=(dT-8)*.06;
+    if(A.sick[i]>0){mult+=.9;if(--A.sick[i]===0){if(R()<.6){kill(i,'god');continue}A.imm[i]=1}
+      else if((i+tk)%4===0){const sp=A.sp[i];queryNear(x,y,z,.02,(j)=>{if(A.sp[j]===sp&&!A.imm[j]&&A.sick[j]===0&&R()<.3)A.sick[j]=36})}}
+    const herb=1-diet;
+    if(herb>.05){const want=.03*sz*Math.pow(herb,1.25)*(1+(onLand?.5:.1)*intel);const av=plant[c];const take=Math.min(av*.35,want);plant[c]=av-take;A.e[i]+=take*FOODK}
+    const cost=.0021*Math.pow(sz,.75)*(1+1.2*g[gi+1]*g[gi+1]+.45*g[gi+2]+1.1*intel+.15*g[gi+8])*mult;
+    A.e[i]-=cost;A.age[i]++;
+    if(A.e[i]<=0||A.age[i]>A.life[i]){kill(i,A.e[i]<=0?'starve':'age');continue}
+    // ---- steering
+    let dx=0,dy=0,dz=0,steer=0,sprint=1;
+    if(A.cd[i]>0)A.cd[i]--;
+    if(diet>.12&&A.cd[i]<=0&&(i+tk)%2===0){
+      let best=-1,bd=1e9;const sp=A.sp[i];
+      queryNear(x,y,z,sen,(j,d2)=>{if(j===i||A.dead[j]||A.sp[j]===sp)return;if(A.sz[j]>sz*1.5)return;if(d2<bd){bd=d2;best=j}});
+      if(best>=0){
+        const catchR=.008+spd*2;
+        if(bd<catchR*catchR){
+          const gj=best*G;let p=.25+90*(spd-A.spd[best])+.22*intel-.25*g[gj+7]+.15*(sz/A.sz[best]-1);p=clamp(p,.05,.9);
+          A.cd[i]=5;
+          if(R()<p){A.e[i]+=(A.sz[best]*.6+Math.max(0,A.e[best])*.7)*(.3+.9*diet);kill(best,'eaten');S.kills=(S.kills||0)+1}S.tries=(S.tries||0)+1;
+        }else{dx=A.x[best]-x;dy=A.y[best]-y;dz=A.z[best]-z;steer=1.6;sprint=1.6+diet*.6;A.e[i]-=cost*.5}
+      }
+    }else if(diet<.55&&S.predators>0&&(i+tk)%3===0){
+      const sp=A.sp[i];let fx=0,fy=0,fz=0,cnt=0;
+      queryNear(x,y,z,sen*.8,(j)=>{if(A.sp[j]!==sp&&g[j*G+3]>.45&&A.sz[j]*1.5>sz){fx+=x-A.x[j];fy+=y-A.y[j];fz+=z-A.z[j];cnt++}});
+      if(cnt){dx=fx;dy=fy;dz=fz;steer=.7}
+    }
+    if(!steer&&herb>.2&&(i+tk)%4===0&&plant[c]<cap[c]*.8){
+      // sample 3 directions
+      const cxh=y*hz-z*hy,cyh=z*hx-x*hz,czh=x*hy-y*hx;const rd=sen*.6;let bv=-1,bx2=0,by2=0,bz2=0;
+      for(let k=-1;k<=1;k++){const a=k*.7,ca=Math.cos(a),sa=Math.sin(a);
+        const vx=hx*ca+cxh*sa,vy=hy*ca+cyh*sa,vz=hz*ca+czh*sa;
+        const qc=cellOf(x+vx*rd,y+vy*rd,z+vz*rd);if(!suitable(land,qc))continue;const v=plant[qc]+R()*.02;
+        if(v>bv){bv=v;bx2=vx;by2=vy;bz2=vz}}
+      if(bv>=0){dx=bx2;dy=by2;dz=bz2;steer=.5}
+    }
+    if(intel>.4&&g[gi+8]>.4&&!steer&&(i+tk)%5===0){ // herding
+      const sp=A.sp[i];let mx=0,my=0,mz=0,cnt=0;
+      queryNear(x,y,z,sen,(j)=>{if(A.sp[j]===sp&&j!==i){mx+=A.x[j];my+=A.y[j];mz+=A.z[j];cnt++}});
+      if(cnt){dx=mx/cnt-x;dy=my/cnt-y;dz=mz/cnt-z;steer=.25}
+    }
+    if(steer){const d=dx*x+dy*y+dz*z;dx-=x*d;dy-=y*d;dz-=z*d;const l=Math.hypot(dx,dy,dz);
+      if(l>1e-9){hx+=dx/l*steer;hy+=dy/l*steer;hz+=dz/l*steer}}
+    // jitter
+    {const a=(R()-.5)*.5,ca=Math.cos(a),sa=Math.sin(a);const cxh=y*hz-z*hy,cyh=z*hx-x*hz,czh=x*hy-y*hx;
+      hx=hx*ca+cxh*sa;hy=hy*ca+cyh*sa;hz=hz*ca+czh*sa}
+    // habitat look-ahead
+    const ahead=cellOf(x+hx*spd*5,y+hy*spd*5,z+hz*spd*5);
+    if(!suitable(land,ahead)&&suitable(land,c)&&R()>.04){hx=-hx+(R()-.5)*.6;hy=-hy+(R()-.5)*.6;hz=-hz+(R()-.5)*.6}
+    // move
+    const v=spd*sprint*(A.sick[i]>0?.5:1)*(onLand?1:.85);
+    x+=hx*v;y+=hy*v;z+=hz*v;const l=Math.hypot(x,y,z);x/=l;y/=l;z/=l;
+    const d=hx*x+hy*y+hz*z;hx-=x*d;hy-=y*d;hz-=z*d;const hl=Math.hypot(hx,hy,hz)||1;
+    A.x[i]=x;A.y[i]=y;A.z[i]=z;A.hx[i]=hx/hl;A.hy[i]=hy/hl;A.hz[i]=hz/hl;
+    // reproduce
+    const maxE=sz;if(A.e[i]>maxE)A.e[i]=maxE;
+    const fec=g[gi+9];
+    if(A.e[i]>maxE*(.8-.3*fec)&&A.age[i]>A.mat[i]&&R()<(1-crowd*crowd)*.6&&A.n<MAXA){
+      const genes=new Array(G);
+      for(let k=0;k<G;k++){let v2=g[gi+k];if(R()<.6)v2+=gauss()*MUT*(k===6?1.6:1);genes[k]=k===6?(v2+1)%1:clamp(v2,0,1)}
+      if(land>.5&&R()<.5)genes[7]=clamp(genes[7]+.004*S.mindDrift,0,1);
+      if(R()<.02){const mk=[3,4,0,1][ri(4)];genes[mk]=clamp(genes[mk]+(R()<.5?-1:1)*rr(.15,.3),0,1)}
+      const ce=A.e[i]*(.5-.2*fec);A.e[i]-=ce+.04*maxE;
+      const j=spawn(x+(R()-.5)*.004,y+(R()-.5)*.004,z+(R()-.5)*.004,genes,ce,A.sp[i],A.gen[i]+1);
+    }
+  }
+  compact();
+}
+
+/* ---------------- species ---------------- */
+const SYL=['ta','qa','sur','ib','na','za','mar','kesh','ur','dhu','ras','gha','ba','li','om','sa','ha','ju','wa','fa','ka','ri','da','shi','al','yam','nu','ar','tha','sal','mu','zir','qi','ne'];
+const END=['','','n','r','l','q','sh','m','d','th','a','i'];
+function cap1(s){return s[0].toUpperCase()+s.slice(1)}
+function word(rnd,n){let s='';const k=n||(1+((rnd()*2)|0));for(let i=0;i<k;i++)s+=SYL[(rnd()*SYL.length)|0];s+=END[(rnd()*END.length)|0];return cap1(s)}
+const LATG=['Proto','Thalasso','Litto','Chloro','Myco','Gyro','Placo','Ancylo','Dromo','Pachy','Lepto','Ornitho','Arctu','Psammo','Hylo','Tachy','Brachy','Megalo','Micro','Strepto'];
+const LATS=['cytus','zoon','pus','therium','saurus','raptor','phagus','bates','dromus','morpha','gnathus','lestes','nectes','onyx'];
+function latinName(m){
+  const gen=pick(LATG)+pick(LATS);
+  let ep=m[3]>.65?pick(['ferox','rapax','dentatus','lupinus']):m[0]>.6?pick(['magnus','gigas','robustus']):m[1]>.6?pick(['velox','celer','fugax']):
+    m[4]<.4?pick(['marinus','pelagicus','undosus']):m[5]<.3?pick(['borealis','glacialis','nivalis']):m[5]>.7?pick(['aridus','solaris','torridus']):m[7]>.45?pick(['sollers','callidus','prudens']):pick(['vulgaris','minor','communis','pallidus']);
+  return gen+' '+ep;
+}
+function hueWord(h){const w=['Red','Amber','Gold','Green','Jade','Teal','Blue','Indigo','Violet','Rose'];return w[Math.floor(((h+.03)%1)*10)%10]}
+function commonName(m,parent){
+  const aq=m[4]<.4,amph=!aq&&m[4]<.6,cold=m[5]<.38,hot=m[5]>.62,big=m[0]>.55,small=m[0]<.28,smart=m[7]>.4;
+  let hab;
+  if(aq)hab=cold?pick(['Ice','Frost','Grey-water']):hot?pick(['Coral','Lagoon','Warm-sea']):pick(['Kelp','Reef','Tide','Brine']);
+  else if(amph)hab=pick(['Marsh','Shore','Mud','Delta','Reed']);
+  else hab=cold?pick(['Tundra','Snow','Pine','Frost']):hot?pick(['Dune','Sand','Savanna','Thorn','Ember']):pick(['Meadow','Hill','Forest','Fern','Stone']);
+  let role;
+  if(m[3]<.3)role=aq?pick(small?['mote','drifter','filterer','bloom-eater']:['grazer','glider','bellows','drifter']):
+    pick(small?['skitter','nibbler','hopper','crawler']:big?['strider','tusker','plodder','browser']:['grazer','runner','browser','hopper']);
+  else if(m[3]<.65)role=pick(['scavenger','forager','rummager','prowler']);
+  else role=pick(small?['biter','snapper','needle','nipper']:big?['stalker','maw','render','reaver']:['hunter','lurker','fang','striker']);
+  let name=hab+' '+role;
+  if(m[7]>.5)name='Clever '+name.toLowerCase().replace(/^./,c=>c.toUpperCase());
+  const taken=S.species.some(s=>s.name===name);
+  if(taken)name=hueWord(m[6])+' '+name;
+  if(S.species.some(s=>s.name===name))name=name+' '+['II','III','IV','V','VI','VII'][ri(6)];
+  return name;
+}
+function roleOf(m){return m[3]<.3?'grazer':m[3]<.65?'omnivore':'predator'}
+function mediumOf(m){return m[4]<.4?'sea':m[4]<.6?'shore':'land'}
+function newSpecies(parentId,mean){
+  const s={id:S.species.length,parent:parentId,born:S.year,died:null,name:'',latin:latinName(mean),hue:mean[6],count:0,peak:0,
+    mean:Float32Array.from(mean),ascended:false,role:roleOf(mean),medium:mediumOf(mean),godKilled:0,children:[]};
+  s.name=commonName(mean);
+  S.species.push(s);if(parentId>=0)S.species[parentId].children.push(s.id);
+  return s;
+}
+function gdist(a,ai,b,bi){let s=0;for(let k=0;k<G;k++){let d=a[ai+k]-b[bi+k];if(k===6){d=Math.abs(d);d=Math.min(d,1-d)}s+=GW[k]*d*d}return Math.sqrt(s)}
+
+function census(){
+  const ns=S.species.length,cnt=new Int32Array(ns),sum=new Float32Array(ns*G),hs=new Float32Array(ns),hc=new Float32Array(ns);
+  for(let i=0;i<A.n;i++){const s=A.sp[i];cnt[s]++;for(let k=0;k<G;k++)if(k!==6)sum[s*G+k]+=A.g[i*G+k];
+    hs[s]+=Math.sin(A.g[i*G+6]*TAU);hc[s]+=Math.cos(A.g[i*G+6]*TAU)}
+  let alive=0,pred=0;
+  for(const s of S.species){if(s.ascended)continue;const c=cnt[s.id];s.count=c;if(c>s.peak)s.peak=c;
+    if(c>0){alive++;for(let k=0;k<G;k++)s.mean[k]=sum[s.id*G+k]/c;s.mean[6]=((Math.atan2(hs[s.id],hc[s.id])/TAU)+1)%1;s.hue=s.mean[6];
+      s.role=roleOf(s.mean);s.medium=mediumOf(s.mean);if(s.mean[3]>.45)pred+=c}
+    else if(s.died===null){s.died=S.year;const gk=KILLS.god.get(s.id)||0;s.godKilled=gk;
+      if(s.peak>=25){log('extinct',`The ${s.name} vanished from Ard${gk>s.peak*.3?', struck down by the hand of god':''}.`,null,{sp:s.id});S.extinctions=(S.extinctions||0)+1}}}
+  S.aliveSpecies=alive;S.predators=pred;KILLS.god.clear();
+  return cnt;
+}
+function speciation(cnt){
+  const T=.27+.006*S.aliveSpecies;let made=0;
+  // bucket members
+  const ns=S.species.length,start=new Int32Array(ns+1);for(let s=0;s<ns;s++)start[s+1]=start[s]+cnt[s];
+  const fill=start.slice(0,ns),ord=new Int32Array(A.n);for(let i=0;i<A.n;i++)ord[fill[A.sp[i]]++]=i;
+  const order=S.species.filter(s=>!s.ascended&&cnt[s.id]>=16).sort(()=>R()-.5);
+  for(const s of order){if(made>=2)break;
+    const m=s.mean,mem=ord.subarray(start[s.id],start[s.id+1]);
+    let far=-1,fd=0;for(const i of mem){const d=gdist(A.g,i*G,m,0);if(d>fd){fd=d;far=i}}
+    if(fd<T*.85)continue;
+    let ca=Float32Array.from(A.g.subarray(far*G,far*G+G)),cb=Float32Array.from(m);let inA;
+    for(let it=0;it<3;it++){
+      inA=[];const sa=new Float32Array(G),sb=new Float32Array(G);let na=0,nb=0;
+      for(const i of mem){if(gdist(A.g,i*G,ca,0)<gdist(A.g,i*G,cb,0)){inA.push(i);na++;for(let k=0;k<G;k++)sa[k]+=A.g[i*G+k]}else{nb++;for(let k=0;k<G;k++)sb[k]+=A.g[i*G+k]}}
+      if(!na||!nb)break;for(let k=0;k<G;k++){ca[k]=sa[k]/na;cb[k]=sb[k]/nb}
+    }
+    const na=inA.length,nb=mem.length-na;
+    if(na<6||nb<6||gdist(ca,0,cb,0)<T)continue;
+    // the smaller group becomes the new species
+    const group=na<=nb?inA:mem.filter(i=>!inA.includes(i));const gm=na<=nb?ca:cb;
+    for(let k=0;k<G;k++)if(k===6){let hs=0,hc=0;for(const i of group){hs+=Math.sin(A.g[i*G+6]*TAU);hc+=Math.cos(A.g[i*G+6]*TAU)}gm[6]=((Math.atan2(hs,hc)/TAU)+1)%1}
+    const ns2=newSpecies(s.id,gm);for(const i of group)A.sp[i]=ns2.id;ns2.count=group.length;ns2.peak=group.length;
+    const why=describeSplit(s.mean,gm);
+    const p=[A.x[group[0]],A.y[group[0]],A.z[group[0]]];
+    log('species',`The ${ns2.name} branched from the ${s.name}${why}.`,p,{sp:ns2.id});
+    made++;S.newSpeciesTotal=(S.newSpeciesTotal||0)+1;
+    if(ns2.medium!=='sea'&&!S.landFirst&&S.year>2){S.landFirst=1;say('Something has crawled out of the sea. Life walks on land now.',2);log('era','First life walks on land.',p)}
+    if(ns2.role==='predator'&&!S.predFirst){S.predFirst=1;say('The first hunters. Somebody on Ard has learned to eat somebody else.',2);log('era','The first predators appear.',p)}
+  }
+}
+function describeSplit(a,b){
+  const diffs=[['diet',3,' and learned to hunt',' and turned to grazing'],['habitat',4,', climbing onto land',', returning to the water'],
+    ['size',0,', growing larger',', growing smaller'],['warmth',5,', seeking warmer lands',', seeking the cold'],['speed',1,', faster than its kin',', slower and steadier'],['intellect',7,', with a sharper mind',', with a duller mind']];
+  let best=null,bv=.12;for(const d of diffs){const v=Math.abs(b[d[1]]-a[d[1]])*GW[d[1]];if(v>bv){bv=v;best=d}}
+  if(!best)return '';return b[best[1]]>a[best[1]]?best[2]:best[3];
+}
+
+/* ---------------- seeding ---------------- */
+function protoGenes(p,landish){
+  const c=cellOf(p[0],p[1],p[2]);const t=temp[c];
+  return [.12+R()*.08,.25+R()*.1,.2,landish?.08:.02,landish?.72:.05,clamp((t+12)/47,0,1),R(),landish?.05:.01,.1,.6];
+}
+function seedLife(p,count,landish){
+  let sid=-1;const genes=protoGenes(p,landish);
+  const s=newSpecies(S.rootSpecies!=null&&landish?S.rootSpecies:-1,genes);
+  if(S.rootSpecies==null)S.rootSpecies=s.id;
+  if(!landish&&S.species.length===1){s.name='Protocell';s.latin='Protocytus primus'}
+  for(let k=0;k<count;k++){const g2=genes.slice();g2[6]=(genes[6]+(R()-.5)*.05+1)%1;
+    spawn(p[0]+(R()-.5)*.05,p[1]+(R()-.5)*.05,p[2]+(R()-.5)*.05,g2,.25,s.id,0)}
+  s.count=count;s.peak=count;return s;
+}
+function randomCell(pred){for(let t=0;t<5000;t++){const i=ri(N);if(pred(i))return i}return 0}
+
+/* ---------------- tribes ---------------- */
+const ASPECTS=['rain','harvest','fire','plague','star','mind','life','sky'];
+const GODN={
+  rain:{love:['the Mother of Rains','the Cloud-Giver','She Who Weeps Kindly'],fear:['the Withholder','the Drowner','the Grey Lord']},
+  harvest:{love:['the Generous One','the Grain-Father','the Open Hand'],fear:['the Taker of Fields','the Hungry One']},
+  fire:{love:['the Lightbringer','the Bright Spear','the Kindler'],fear:['the Burning Eye','the White Wrath','the Striker']},
+  plague:{love:['the Pale Healer','the Gentle Rot'],fear:['the Pale Shepherd','the Lord of Rot','the Coughing God']},
+  star:{love:['the Sky One','the Star-Thrower'],fear:['the Sky One','the Hurler of Stars','the Red Wanderer']},
+  mind:{love:['the Whisperer','the Voice in Sleep','the Dreamer Above'],fear:['the Voice That Will Not Stop','the Night Mouth']},
+  life:{love:['the Sower','the First Breath'],fear:['the Maker of Crawling Things']},
+  sky:{love:['the Painter of Skies','the Watcher'],fear:['the Eye Above','the Watcher']}};
+const YEARN={rain:['the green rain','the great rain','the answered clouds'],flood:['the rising waters','the drowned fields'],
+  harvest:['the golden harvest','the heavy grain'],fire:['white fire','the split sky','the burning tree'],plague:['the coughing','the pale sickness','the many graves'],
+  star:['the red sky','the falling star','the black winter'],mind:['the whispering','the dreaming'],life:['the new creatures'],sky:['the burning sky','the second moon','the dancing lights'],
+  drought:['the long thirst','the cracked earth'],war:['the spears'],parting:['the parting'],walk:['the long walk'],temple:['the first stones'],famine:['the empty bowls'],founding:['the waking']};
+const WANTW={rain:'rain',harvest:'a harvest',fire:'fire upon their enemies',plague:'the death of their enemies',star:'a sign',mind:'wisdom',life:'new herds',sky:'a sign'};
+const KNOW=['how to make fire without lightning','the names of the stars','how to count past ten','why the moon changes','how to plant grain in rows','how to bend wood into a bow','how to store water in clay','how to read the coming of the rains','how to heal a broken bone','how to bind a story into knots'];
+const LAWS={
+  fire:{fear:['Light no fire upon the high places, lest {G} see it and answer.','Speak no oath beneath a dark cloud.','Who is struck by fire is not to be mourned.'],love:['Keep one flame burning always, for it is a spark of {G}.','A home without fire is a home without god.']},
+  rain:{love:['Pour the first water of every well upon the ground, for it belongs to {G}.','Do not curse the rain, even when it drowns.'],fear:['Waste no water; {G} counts every drop.','Do not sing in the dry season.']},
+  harvest:{love:['Leave the last row of every field unreaped, for {G}.','Turn no hungry stranger from the door.'],fear:['Eat in silence, so {G} does not hear the plenty.','Hide one bowl of grain in the earth each year.']},
+  plague:{fear:['Touch not the sick after sundown.','Burn the bedding of the dead.','Speak no name of the dead for a year.'],love:['Wash the sick with your own hands, for {G} is watching.']},
+  star:{fear:['Look not too long at the night sky.','Build no house where a star has fallen.'],love:['Name every child for a star.','Keep watch at night; {G} may throw another.']},
+  mind:{love:['The dreams of children are to be written down.','A question asked of {G} must be asked three times.'],fear:['Speak to no one of your visions before the elders.','Do not sleep alone beneath the open sky.']},
+  life:{love:['Harm no creature born in the shallows.','The first-born of every herd belongs to {G}.'],fear:['Do not eat what crawls.']},
+  sky:{love:['When the sky burns, all quarrels end.'],fear:['When the sky burns, cover the eyes of children.']}};
+const PROPH={rain:'the rain is a gift, not a reward',harvest:'{G} wants not grain but gratitude',fire:'{G} speaks only in fire, and all else is lies',
+  plague:'the sickness is a cleansing, not a curse',star:'{G} lives in the falling stars, not in the sky',mind:'{G} speaks to each of us, and needs no elders',
+  life:'every beast is a child of {G}',sky:'{G} is not one, but two, and they quarrel'};
+function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
+function regionName(p){
+  const c=cellOf(p[0],p[1],p[2]);const x=c%W,y=(c/W)|0;const key=((x/12)|0)+'_'+((y/12)|0)+'_'+S.seed;
+  return word(mulberry32(hash32(key)));
+}
+function placeOf(p){const c=cellOf(p[0],p[1],p[2]);return 'the '+LANDFORM[biome[c]]+' of '+regionName(p)}
+function bearing(from,to){
+  const p=from;
+  const ex=-p[2],ez=p[0];const el=Math.hypot(ex,ez)||1;const E=[ex/el,0,ez/el];
+  // north = cross(E,p)
+  const Nn=[E[1]*p[2]-E[2]*p[1],E[2]*p[0]-E[0]*p[2],E[0]*p[1]-E[1]*p[0]];
+  const d=[to[0]-p[0],to[1]-p[1],to[2]-p[2]];const de=d[0]*E[0]+d[1]*E[1]+d[2]*E[2],dn=d[0]*Nn[0]+d[1]*Nn[1]+d[2]*Nn[2];
+  const a=Math.atan2(de,dn);const dirs=['north','north-east','east','south-east','south','south-west','west','north-west'];
+  return dirs[((Math.round(a/(PI/4))%8)+8)%8];
+}
+function newTribe(p,pop,sp,parent,kind){
+  const c=cellOf(p[0],p[1],p[2]);
+  const rnd=mulberry32(hash32('t'+S.nextTribe+S.seed));
+  const name=parent&&kind==='sect'?sectName(parent,rnd):word(rnd,1+(rnd()<.5?1:0));
+  const T={id:S.nextTribe++,name,p:p.slice(),cell:c,pop,sp,parent:parent?parent.id:null,kind:kind||'origin',founded:S.year,
+    epoch:parent?parent.epoch:S.year,alive:true,faith:parent?parent.faith*.9:.15,
+    culture:parent?{fear:clamp(parent.culture.fear+(R()-.5)*.3,0,1),zeal:clamp(parent.culture.zeal+(R()-.5)*.3,0,1),aggr:clamp(parent.culture.aggr+(R()-.5)*.3,0,1),open:clamp(parent.culture.open+(R()-.5)*.3,0,1)}
+      :{fear:R(),zeal:R(),aggr:R()*.8,open:R()},
+    asp:{},god:null,godAsp:null,godMood:null,temples:0,atheist:false,silent:0,war:null,prayer:null,lowFood:0,food:1,boon:0,plague:0,
+    tech:parent?parent.tech:0,verses:parent?parent.verses.slice(-40).map(v=>Object.assign({},v,{inherited:true})):[],laws:parent?parent.laws.slice():[],yearNames:{},
+    elder:word(rnd,2),hue:rnd(),home:regionName(p),lastSeen:S.year,sacrificed:0,wins:0,losses:0,awe:0};
+  for(const a of ASPECTS)T.asp[a]=parent?{l:parent.asp[a].l*.8,f:parent.asp[a].f*.8}:{l:0,f:0};
+  if(parent){T.god=parent.god;T.godAsp=parent.godAsp;T.godMood=parent.godMood}
+  S.tribes.push(T);return T;
+}
+function sectName(parent,rnd){
+  const adj=['Ashen','Red','White','Hidden','Second','Old','True','Silent','Burning','Weeping','Pale','Risen'];
+  return pick(adj)+' '+parent.name;
+}
+function yearIntro(T){
+  const yn=T.yearNames[S.year];if(yn&&R()<.85)return 'In the year of '+yn;
+  const r=R();if(r<.5)return `In the ${ordinal(S.year-T.epoch+1)} year of the ${T.name}`;
+  if(r<.8)return `When ${T.elder} was eldest among the ${T.name}`;return `In the days of the elder ${T.elder}`;
+}
+function nameYear(T,kind,extra){if(T.yearNames[S.year])return;let n=pick(YEARN[kind]||['the omens']);if(extra)n=n.replace('{foe}',extra);T.yearNames[S.year]=n}
+function verse(T,text,kind){T.verses.push({y:S.year,ty:S.year-T.epoch+1,text,kind:kind||''});if(T.verses.length>140)T.verses.splice(0,T.verses.length-140)}
+function godOf(T){return T.god||'the One Above'}
+function dominant(T){let best=null,bv=.15;for(const a of ASPECTS){const v=T.asp[a].l+T.asp[a].f;if(v>bv){bv=v;best=a}}return best}
+function updateGodName(T,quiet){
+  const a=dominant(T);if(!a)return;const mood=T.asp[a].f>T.asp[a].l*1.1?'fear':'love';
+  if(a===T.godAsp&&mood===T.godMood)return;
+  const rnd=mulberry32(hash32(T.name+a+mood));const list=GODN[a][mood];const nm=list[(rnd()*list.length)|0];
+  const old=T.god;T.godAsp=a;T.godMood=mood;
+  if(nm===old)return;T.god=nm;
+  if(old&&!quiet){verse(T,`And the ${T.name} ceased to speak of ${old}, and spoke now only of ${nm}.`,'rename');log('faith',`The ${T.name} now worship ${nm}.`,T.p,{tribe:T.id})}
+  if(!T.laws.length||R()<.5){addLaw(T)}
+}
+function addLaw(T){const a=T.godAsp;if(!a||T.atheist)return;const L=LAWS[a][T.godMood]||LAWS[a].love||LAWS[a].fear;const l=pick(L).replace('{G}',T.god);
+  if(!T.laws.includes(l)){T.laws.push(l);if(T.laws.length>6)T.laws.shift()}}
+function tribeLand(T){return LANDFORM[biome[T.cell]]}
+
+// genesis myth from the real phylogeny
+function genesis(T,sp){
+  const chain=[];let s=S.species[sp];while(s){chain.unshift(s.name);s=s.parent>=0?S.species[s.parent]:null}
+  let mid=chain.slice(1,-1);if(mid.length>4)mid=[mid[0],mid[1],'…',mid[mid.length-1]];
+  let t=`In the beginning there was only the sea, and small lights within it, and they were the ${chain[0]}.`;
+  const parts=[];let prev=chain[0];for(const m of mid){if(m==='…'){parts.push('and after them came many kinds whose names are lost');prev=null;continue}parts.push(`${prev?'the '+prev+' begat':'then came'} the ${m}`);prev=m}
+  if(parts.length)t+=' '+cap1(parts.join('; '))+'.';
+  t+=` And the ${chain[chain.length-1]} woke, and looked up, and were the ${T.name}.`;
+  verse(T,t,'genesis');
+  const acts=S.godActs.filter(a=>a.y<S.year).slice(-3);
+  for(const a of acts){
+    if(a.type==='meteor')verse(T,`Before the ${T.name} were, the Sky threw a red star upon ${a.place}${a.extinct?`, and the ${a.extinct} perished from the world`:''}. So it is told.`,'genesis');
+    else if(a.type==='plague')verse(T,`Before the ${T.name} were, a sickness walked among the ${a.victim||'beasts'} of ${a.place}.`,'genesis');
+    else if(a.type==='whisper')verse(T,`It is said a voice came down upon ${a.place} and the beasts there began to dream.`,'genesis');
+  }
+}
+function awaken(s){
+  s.ascended=true;S.awakened++;s.name=s.name.replace(/^Clever /,'');
+  const mem=[];for(let i=0;i<A.n;i++)if(A.sp[i]===s.id)mem.push(i);
+  const used=new Set();const groups=[];
+  for(const i of mem){if(used.has(i))continue;const gr=[i];used.add(i);
+    for(const j of mem)if(!used.has(j)&&Math.hypot(A.x[i]-A.x[j],A.y[i]-A.y[j],A.z[i]-A.z[j])<.14){gr.push(j);used.add(j)}
+    groups.push(gr)}
+  groups.sort((a,b)=>b.length-a.length);
+  const made=[];
+  for(const gr of groups){
+    let px=0,py=0,pz=0;for(const i of gr){px+=A.x[i];py+=A.y[i];pz+=A.z[i]}
+    let p=norm3([px,py,pz]);let c=cellOf(...p);
+    if(hgt[c]<=0){const k=gr.find(i=>hgt[cellOf(A.x[i],A.y[i],A.z[i])]>0);if(k==null)continue;p=[A.x[k],A.y[k],A.z[k]]}
+    if(gr.length<3&&made.length){made[0].pop+=gr.length*5;continue}
+    if(!made.length&&S.tribes.filter(t=>t.alive).length>=30)break;
+    if(made.length>=Math.min(7,30-S.tribes.filter(t=>t.alive).length)){made[made.length-1].pop+=gr.length*5;continue}
+    const T=newTribe(p,Math.max(18,gr.length*7),s.id,null,'origin');made.push(T);
+    nameYear(T,'founding');genesis(T,s.id);
+    T.faith=.25+R()*.15;
+  }
+  for(const i of mem)A.dead[i]=1;compact();
+  s.count=0;s.died=null;s.awakenedAt=S.year;
+  const tn=made.map(t=>'the '+t.name).join(', ');
+  log('era',`THE AWAKENING. The ${s.name} became people: ${tn}.`,made[0]?made[0].p:null);
+  say(`The ${s.name} have woken. They look up at the sky now, and they are looking at you.`,3);
+  S.era=Math.max(S.era,2);
+  emit('awaken',{p:made[0]?made[0].p:null});
+  return made;
+}
+
+/* ---------- miracles ---------- */
+const COST={rain:14,harvest:22,fire:9,plague:32,star:70,mind:28,life:16,sky:12};
+const MIRACLES=[
+  {k:'rain',name:'Rain',desc:'Storms over the land. Greens deserts, breaks droughts. Overdo it and it floods.'},
+  {k:'harvest',name:'Bounty',desc:'A golden season. Plants surge, creatures fatten, sickness is cured.'},
+  {k:'fire',name:'Lightning',desc:'A bolt from the sky. Kills what it touches, burns a little land.'},
+  {k:'plague',name:'Plague',desc:'A sickness that spreads within one kind. Thins herds and peoples.'},
+  {k:'star',name:'Meteor',desc:'Tear a star from the sky. Craters, firestorms, a red sky, a cold winter. Everyone sees.'},
+  {k:'mind',name:'Whisper',desc:'Touch minds. Creatures grow cleverer; peoples get visions, knowledge and prophets.'},
+  {k:'life',name:'Seed',desc:'Plant new life: protocells in water, simple grazers on land.'},
+  {k:'sky',name:'Omen',desc:'Paint the sky with fire. Harmless, cheap, and everyone nearby sees it.'}];
+function tribesNear(p,r){return S.tribes.filter(T=>T.alive&&dist3(T.p,p)<r)}
+function agentsNear(p,r,fn){const r2=r*r;for(let i=0;i<A.n;i++){if(A.dead[i])continue;const dx=A.x[i]-p[0],dy=A.y[i]-p[1],dz=A.z[i]-p[2];if(dx*dx+dy*dy+dz*dz<r2)fn(i)}}
+function cast(k,p,free){
+  if(!free){if(S.power<COST[k])return false;S.power-=COST[k]}
+  p=norm3(p);S.lastAct=S.year;S.acts=(S.acts||0)+1;
+  const place=placeOf(p);const res={killed:0,tribeHit:new Map(),place};
+  const act={type:k,y:S.year,p,place};
+  if(k==='rain'){
+    let flood=0;forCells(p[0],p[1],p[2],.2,(i,d)=>{const f=1-d*d;rainF[i]+=.45*f;dryF[i]*=.3;scorch[i]*=.5;plant[i]=Math.min(cap[i]*1.2+.1,plant[i]+.15*cap[i]*f);if(rainF[i]>1)flood++});
+    emit('rain',{p,r:.2});
+    for(const T of tribesNear(p,.2)){const need=T.food<1||dryF[T.cell]>.05||T.lowFood>0;let harm=0;
+      if(rainF[T.cell]>1.05){harm=.06;T.pop*=.94}
+      res.tribeHit.set(T,{benefit:need?.85:.3,harm,flood:harm>0})}
+  }else if(k==='harvest'){
+    forCells(p[0],p[1],p[2],.13,(i,d)=>{blessF[i]+=.6*(1-d);plant[i]=Math.max(plant[i],cap[i]+.3*(1-d))});
+    agentsNear(p,.13,i=>{A.e[i]=A.sz[i];A.sick[i]=0});
+    emit('harvest',{p,r:.13});
+    for(const T of tribesNear(p,.13)){T.boon=4;const cured=T.plague>0;T.plague=0;res.tribeHit.set(T,{benefit:(T.food<1||cured)?.9:.45,cured})}
+  }else if(k==='fire'){
+    agentsNear(p,.022,i=>{kill(i,'god');res.killed++});
+    forCells(p[0],p[1],p[2],.03,(i,d)=>{scorch[i]=Math.max(scorch[i],.7*(1-d));plant[i]*=.3});
+    emit('fire',{p});
+    for(const T of tribesNear(p,.05)){const d=dist3(T.p,p);const f=d<.02?.14:.05;const k2=Math.max(1,Math.round(T.pop*f));T.pop-=k2;
+      res.tribeHit.set(T,{harm:f*2.2,killed:k2,herds:res.killed})}
+  }else if(k==='plague'){
+    const cnt=new Map();agentsNear(p,.11,i=>{if(!A.imm[i]){A.sick[i]=40;cnt.set(A.sp[i],(cnt.get(A.sp[i])||0)+1)}});
+    let vs=-1,vc=0;for(const [s,c] of cnt)if(c>vc){vc=c;vs=s}act.victim=vs>=0?S.species[vs].name:null;
+    emit('plague',{p,r:.11});
+    for(const T of tribesNear(p,.11)){T.plague=3+ri(2);const k2=Math.round(T.pop*.1);T.pop-=k2;res.tribeHit.set(T,{harm:.5,killed:k2})}
+  }else if(k==='star'){
+    const before=new Map(S.species.filter(s=>s.count>0&&!s.ascended).map(s=>[s.id,s.count]));
+    agentsNear(p,.17,i=>{kill(i,'god');res.killed++});
+    agentsNear(p,.3,i=>{if(!A.dead[i]&&R()<.4){kill(i,'god');res.killed++}});
+    forCells(p[0],p[1],p[2],.07,(i,d)=>{hgt[i]-=.42*(1-d*d)*(1-.3*R())});
+    forCells(p[0],p[1],p[2],.1,(i,d)=>{if(d>.7&&hgt[i]>0)hgt[i]+=.06*(1-Math.abs(d-.85)*6)});
+    forCells(p[0],p[1],p[2],.26,(i,d)=>{scorch[i]=Math.max(scorch[i],1-d*.6);plant[i]*=.05});
+    distances();S.globalT-=7;S.redSky=3;S.terrainDirty=true;
+    emit('star',{p});
+    for(const T of S.tribes){if(!T.alive)continue;const d=dist3(T.p,p);
+      if(d<.17){res.tribeHit.set(T,{harm:1,killed:T.pop,destroyed:true});T.pop=0}
+      else if(d<.32){const k2=Math.round(T.pop*.45);T.pop-=k2;res.tribeHit.set(T,{harm:.9,killed:k2})}}
+    // compute which species nearly vanished
+    compact();census();
+    let ext=null,worst=0;for(const [id,c] of before){const now=S.species[id].count;const loss=c-now;if(now===0&&c>worst){worst=c;ext=S.species[id].name}}
+    act.extinct=ext;
+  }else if(k==='mind'){
+    agentsNear(p,.1,i=>{const gi=i*G;A.g[gi+7]=clamp(A.g[gi+7]+.09,0,1);A.g[gi+8]=clamp(A.g[gi+8]+.05,0,1)});
+    emit('mind',{p,r:.1});
+    for(const T of tribesNear(p,.1))res.tribeHit.set(T,{benefit:.4,vision:true});
+  }else if(k==='life'){
+    const c=cellOf(...p);const landish=hgt[c]>0;const s=seedLife(p,16,landish);
+    log('species',`A god planted the ${s.name} in ${place}.`,p,{sp:s.id});emit('life',{p});
+    for(const T of tribesNear(p,.12))res.tribeHit.set(T,{benefit:.2});
+  }else if(k==='sky'){emit('sky',{p})}
+  if(['star','plague','mind'].includes(k))S.godActs.push(act);if(S.godActs.length>30)S.godActs.shift();
+  if(S.tribes.some(t=>t.alive))interpret(k,p,res);
+  else if(k!=='life'&&k!=='sky'){
+    const t={rain:'Rain fell on '+place+'.',harvest:'A golden season swept '+place+'.',fire:`Lightning struck ${place}${res.killed?`, killing ${res.killed}`:''}.`,
+      plague:`A plague fell on ${place}${act.victim?`, among the ${act.victim}`:''}.`,star:`A meteor struck ${place}. ${res.killed} creatures died${act.extinct?`; the ${act.extinct} are gone`:''}.`,
+      mind:`A whisper touched the minds of ${place}.`}[k];
+    log('god',t,p);
+  }
+  if(S.hooks.cast)S.hooks.cast(k,p,res);
+  return true;
+}
+function interpret(k,p,res){
+  const vis=k==='star'?3:k==='sky'?.75:.5;
+  for(const T of S.tribes){
+    if(!T.alive)continue;const d=dist3(T.p,p);const hit=res.tribeHit.get(T);
+    if(!hit&&d>vis)continue;
+    T.lastSeen=S.year;if(hit||k==='star'||k==='sky'||d<vis*.5)T.silent=0;
+    T.lastV=T.lastV||{};const quietWitness=!hit&&k!=='star'&&(S.year-(T.lastV[k]||-99)<8);
+    const C=T.culture,a=k==='harvest'?'harvest':k;const asp=T.asp[a];
+    const b=hit?hit.benefit||0:0,h=hit?hit.harm||0:0,s=hit?.4:.6*(1-d/vis)+.2;
+    const wasAtheist=T.atheist;
+    asp.l+=b*(1.2-C.fear*.5)+s*.15*(1-C.fear);
+    asp.f+=h*(1.4+C.fear)+s*.2*C.fear;
+    let df=.22*b+.3*h*(.4+C.fear)+.07*s;
+    if(T.atheist){df*=(b+h>.3||k==='star')?1.4:.25}
+    // prayers
+    let answered=false,spurned=false;
+    if(T.prayer){const P=T.prayer;
+      if(P.want.includes(a)&&b>.2){answered=true}
+      else if(P.want.includes('fire')&&P.target){const foe=S.tribes.find(x=>x.id===P.target);if(foe&&res.tribeHit.get(foe)&&(k==='fire'||k==='plague'||k==='star'))answered=true}
+      if(!answered&&h>.2)spurned=true}
+    if(answered){df+=.3;asp.l+=.7;T.prayer.done=true;T.prayer=null;S.answered=(S.answered||0)+1;emit('answer',{p:T.p});if(S.answered===1)say(`The ${T.name} prayed, and you answered. They will never forget it. Neither will their grandchildren.`,2)}
+    T.faith=clamp(T.faith+df,0,1);
+    if(wasAtheist&&T.faith>.25){T.atheist=false;T.laws=[];verse(T,`The ${T.name} had said the sky was empty. ${cap1(k==='star'?'a star fell':k==='fire'?'fire fell':'the sky answered')}, and they said it no more.`,'return');
+      log('faith',`The ${T.name} returned to faith.`,T.p,{tribe:T.id})}
+    // name the year, write scripture
+    const yk=hit&&hit.flood?'flood':(k==='harvest'?'harvest':k);
+    if(hit||k==='star')nameYear(T,yk);
+    updateGodName(T);
+    const G2=godOf(T);const intro=yearIntro(T);const place=res.place;const dir=bearing(T.p,p);
+    let t='';
+    if(answered){t=`${intro}, the ${T.name} cried out to ${G2} for ${WANTW[a]||'help'}, and ${G2} heard them.`}
+    else if(spurned){t=C.fear>.5?`${intro}, the ${T.name} prayed for ${WANTW[T.prayer.want[0]]} and ${G2} sent ${k==='fire'?'fire':k==='plague'?'sickness':'ruin'} instead. "We have sinned," said ${T.elder}, and they prayed harder.`
+      :`${intro}, the ${T.name} prayed for ${WANTW[T.prayer.want[0]]} and ${G2} sent ${k==='fire'?'fire':k==='plague'?'sickness':'ruin'} instead. Some began to say ${G2} was cruel, or blind.`;
+      if(C.fear<=.5)T.faith=clamp(T.faith-.15,0,1)}
+    if(!t){
+      if(k==='rain'){
+        if(hit&&hit.flood)t=`${intro}, ${G2} poured out too much, and the waters rose over ${place}. ${T.name} children learned to fear clouds.`;
+        else if(hit)t=hit.benefit>.6?`${intro}, when the wells of ${tribeLand(T)} were dust, ${G2} opened the sky over the ${T.name}, and the land turned green.`:`${intro}, ${G2} sent rain upon the ${T.name}, and they danced in it.`;
+        else t=`${intro}, the ${T.name} saw ${G2} walk in grey robes over the ${dir}.`;
+      }else if(k==='harvest'){
+        t=hit?(hit.cured?`${intro}, ${G2} laid a golden hand on the ${T.name}, and the sick rose from their mats.`:`${intro}, the fields of the ${T.name} bent under grain, and the herds grew fat. They called it the gift of ${G2}.`)
+          :`${intro}, the ${T.name} saw a golden light upon the land to the ${dir}, and envied it.`;
+      }else if(k==='fire'){
+        if(hit&&hit.killed)t=`${intro}, ${G2} cast fire upon the ${T.name}, and ${hit.killed} of them went into the dust.${C.fear>.5?' The rest lay on their faces until morning.':''}`;
+        else if(res.killed)t=`${intro}, ${G2} cast fire upon the herds of ${regionName(p)}, and the ${T.name} saw it from afar and were afraid.`;
+        else t=`${intro}, white fire split the sky to the ${dir}, and the ${T.name} ${C.fear>.5?'hid':'stood and stared'}.`;
+      }else if(k==='plague'){
+        t=hit?`${intro}, ${G2} breathed sickness upon the ${T.name}. ${hit.killed} were laid in the ground, and the living ${C.fear>.5?'did not speak the name of '+G2+' aloud':'asked what wrong they had done'}.`
+          :`${intro}, word came from the ${dir} of a sickness among ${act_victim(res)}, and the ${T.name} barred their paths.`;
+      }else if(k==='star'){
+        if(hit&&hit.destroyed){t=null}
+        else if(hit)t=`${intro}, ${G2} tore a star from the night and hurled it upon ${place}. The ground split, the sky turned red, and ${hit.killed} of the ${T.name} died in the burning.`;
+        else t=`${intro}, ${G2} tore a star from the night and hurled it upon ${place}, far to the ${dir}. The sky was red for three years, and the winter was long.`;
+      }else if(k==='mind'){
+        if(hit){const kn=pick(KNOW);t=`${intro}, ${G2} spoke to ${T.elder} in a dream, and ${T.elder} woke knowing ${kn}.`;T.tech+=1;
+          if(T.pop>40&&R()<.55+C.open*.3)setTimeout0(()=>prophet(T,'mind'))}
+        else t=`${intro}, the dreams of the ${T.name} were strange, and full of voices from the ${dir}.`;
+      }else if(k==='life'){t=hit?`${intro}, ${G2} sowed new creatures near the ${T.name}, small and hungry.`:null}
+      else if(k==='sky'){t=`${intro}, ${G2} painted the sky with ${pick(['green','violet','white','crimson'])} fire for three nights, and the ${T.name} ${C.fear>.5?'hid their faces':'danced until dawn'}.`}
+    }
+    if(t&&!(quietWitness&&!answered&&!spurned)){verse(T,t,k);T.lastV[k]=S.year}
+    if(T.faith>.5&&T.laws.length<2)addLaw(T);
+  }
+  const hits=[...res.tribeHit.keys()];
+  if(hits.length){const T=hits[0];const lt={rain:'Rain fell on',harvest:'Bounty came to',fire:'Lightning struck',plague:'Plague came to',star:'A meteor fell on',mind:'A whisper reached',life:'New life was sown near',sky:'Omens burned over'}[k];
+    log('god',`${lt} the ${hits.map(t=>t.name).join(', the ')}.`,p)}
+  else log('god',{rain:'You sent rain to ',harvest:'You blessed ',fire:'You struck ',plague:'You loosed a plague on ',star:'You hurled a star at ',mind:'You whispered to ',life:'You seeded ',sky:'You painted the sky over '}[k]+res.place+'.',p);
+}
+function act_victim(res){return 'the beasts'}
+const _later=[];function setTimeout0(f){_later.push(f)}
+
+function prophet(T,aspect){
+  if(!T.alive||T.pop<30||S.tribes.filter(t=>t.alive).length>=30)return;
+  const rnd=mulberry32(hash32(T.name+S.year+'p'));const pname=word(rnd,2);
+  const site=findSettle(T.p,.08,.22);if(!site)return;
+  const take=Math.round(T.pop*rr(.25,.4));T.pop-=take;
+  const sect=newTribe(site,take,T.sp,T,'sect');
+  const a=aspect||pick(ASPECTS.filter(x=>x!==T.godAsp));sect.asp[a].l+=1.2;sect.culture.zeal=clamp(sect.culture.zeal+.25,0,1);
+  sect.god=null;sect.godAsp=null;updateGodName(sect,true);sect.laws=[];addLaw(sect);addLaw(sect);
+  const pr=PROPH[a].replace('{G}',godOf(T));
+  nameYear(T,'parting');nameYear(sect,'parting');
+  verse(T,`${yearIntro(T)}, the prophet ${pname} stood up among the ${T.name} and said: "${cap1(pr)}." The elders cast ${pname} out, and ${take} went with them.`,'sect');
+  verse(sect,`${yearIntro(sect)}, the prophet ${pname} said: "${cap1(pr)}." Those who believed left the ${T.name} and went to ${placeOf(site)}, and called themselves the ${sect.name}, and the god they named ${sect.god}.`,'sect');
+  log('faith',`Schism: the prophet ${pname} led the ${sect.name} out of the ${T.name}. They worship ${sect.god}.`,site,{tribe:sect.id});
+  S.sects=(S.sects||0)+1;if(S.sects===1)say(`A schism. The prophet ${pname} walked out of the ${T.name} with ${take} followers and a new idea about you.`,2);
+}
+function findSettle(p,rmin,rmax){
+  let best=null,bv=-1;
+  for(let t=0;t<40;t++){const r=rr(rmin,rmax),a=R()*TAU;
+    const ex=-p[2],ez=p[0];const el=Math.hypot(ex,ez)||1;const E=[ex/el,0,ez/el];const Nn=[E[1]*p[2]-E[2]*p[1],E[2]*p[0]-E[0]*p[2],E[0]*p[1]-E[1]*p[0]];
+    const q=norm3([p[0]+(E[0]*Math.cos(a)+Nn[0]*Math.sin(a))*r,p[1]+(E[1]*Math.cos(a)+Nn[1]*Math.sin(a))*r,p[2]+(E[2]*Math.cos(a)+Nn[2]*Math.sin(a))*r]);
+    const c=cellOf(...q);if(hgt[c]<=0||hgt[c]>.6)continue;let v=cap[c]+R()*.1;
+    for(const T of S.tribes)if(T.alive&&dist3(T.p,q)<.07)v-=1;
+    if(v>bv){bv=v;best=q}}
+  return bv>-.5?best:null;
+}
+
+function tribesYear(){
+  const alive=S.tribes.filter(t=>t.alive);
+  let belief=0;
+  for(const T of alive){
+    const c=T.cell;const rad=Math.min(.085,.035+.02*Math.sqrt(T.pop/60));
+    let food=0,cells=0;
+    forCells(T.p[0],T.p[1],T.p[2],rad,(i,d)=>{if(hgt[i]>0){const take=plant[i]*.25;food+=take;plant[i]-=take*.6;cells++}else{food+=plant[i]*.08}});
+    let hunted=0;agentsNear(T.p,rad*1.2,i=>{if(R()<.15){kill(i,'hunted');hunted++}});
+    food=food*(1+.12*T.tech)+hunted*.35+(T.boon>0?T.pop*.004:0);
+    const need=T.pop*.012;T.food=food/need;
+    if(T.boon>0)T.boon--;if(T._immune>0)T._immune--;
+    if(R()<.04){const old=T.elder;T.elder=word(mulberry32(hash32(T.name+S.year)),2);if(T.verses.length&&R()<.5)verse(T,`${old} died, and ${T.elder} became eldest among the ${T.name}.`,'elder')}
+    let gr=T.food>1?.012+.025*Math.min(T.food-1,1):-.14*(1-T.food);
+    if(T.plague>0){gr-=.09;T.plague--;if(R()<.3)for(const U of alive)if(U!==T&&!U.plague&&!U._immune&&dist3(U.p,T.p)<.2&&R()<.2){U._immune=12;U.plague=2;verse(U,`${yearIntro(U)}, the sickness of the ${T.name} came over the hills to the ${U.name}.`,'plague');nameYear(U,'plague')}}
+    if(T.war)gr-=.02;
+    T.pop=Math.max(0,T.pop*(1+gr));
+    if(T.food<.8)T.lowFood++;else T.lowFood=0;
+    // natural plague
+    if(T.pop>220&&R()<.0025*(T.pop/220)&&!T.plague){T.plague=2;nameYear(T,'plague');T.asp.plague.f+=.4;
+      verse(T,`${yearIntro(T)}, a sickness came upon the ${T.name} out of nowhere, and they said ${godOf(T)} was angry.`,'plague');log('people',`A sickness broke out among the ${T.name}.`,T.p,{tribe:T.id})}
+    // drought interpretation
+    if(dryF[c]>.15&&!T._dry){T._dry=1;T.asp.rain.f+=.35*(.5+T.culture.fear);nameYear(T,'drought');
+      verse(T,`${yearIntro(T)}, ${godOf(T)} withheld the rain from ${tribeLand(T)} of the ${T.name}, and the wells cracked.`,'drought');updateGodName(T)}
+    if(dryF[c]<.05)T._dry=0;
+    // prayers
+    if(T.prayer&&S.year>T.prayer.until){
+      const P=T.prayer;T.prayer=null;S.ignored=(S.ignored||0)+1;
+      T.faith=clamp(T.faith-.08*(1-T.culture.zeal*.5),0,1);
+      verse(T,T.culture.fear>.55?`${yearIntro(T)}, the ${T.name} prayed for ${WANTW[P.want[0]]} and ${godOf(T)} gave nothing. "Surely we have sinned," said the elders.`
+        :`${yearIntro(T)}, the ${T.name} prayed for ${WANTW[P.want[0]]} and ${godOf(T)} gave nothing. Some began to doubt.`,'silence');
+      if(T.culture.fear>.55){T.asp[T.godAsp||'sky'].f+=.2}
+    }
+    if(!T.prayer&&!T.atheist&&T.faith>.08){
+      if(T.lowFood>=2&&R()<.6)makePrayer(T,dryF[c]>.08?['rain','harvest']:['harvest','rain']);
+      else if(T.plague>0&&R()<.5)makePrayer(T,['harvest']);
+      else if(T.war&&T.pop<T.war.foePopStart*.9&&R()<.5){const foe=S.tribes.find(x=>x.id===T.war.foe);if(foe&&foe.alive)makePrayer(T,['fire'],foe.id)}
+    }
+    // faith decay & silence
+    T.silent++;
+    const decay=(.0035+.0005*Math.max(0,T.silent-45))*(1-T.culture.zeal*.5)*(T.temples?.7:1);
+    T.faith=clamp(T.faith-decay,0,1);
+    for(const a of ASPECTS){T.asp[a].l*=.985;T.asp[a].f*=.985}
+    if(!T.atheist&&T.faith<.05&&T.silent>55&&S.year-T.founded>30){T.atheist=true;
+      verse(T,`For ${T.silent} years ${godOf(T)} said nothing. ${T.elder} climbed the ${pick(['high stone','red hill','old tower','dry mountain'])} and called, and no answer came. And the ${T.name} said: the sky is empty, and we are alone.${T.temples?' They tore down the stones.':''}`,'atheism');
+      log('faith',`The ${T.name} decided the sky is empty. They no longer believe.`,T.p,{tribe:T.id});if(!S.firstAth){S.firstAth=1;say(`The ${T.name} stopped believing in you. You were quiet too long. Their belief was your power.`,2)}T.temples=0;T.laws=['There is no one above. Plant, and do not pray.']}
+    // temples & sacrifice
+    if(!T.atheist&&T.faith>.55&&T.pop>50&&T.temples<5&&R()<.06*T.faith){T.temples++;nameYear(T,'temple');
+      const mat={5:'mud brick',4:'shell and stone',6:'packed earth',7:'red clay',8:'fieldstone',9:'cedar',10:'living trees',11:'pine logs',12:'whalebone',14:'black stone'}[biome[c]]||'stone';
+      verse(T,`${yearIntro(T)}, the ${T.name} raised a ${T.temples>1?'great ':''}house of ${mat} for ${godOf(T)}${T.temples>1?', greater than the last':''}.`,'temple');
+      log('faith',`The ${T.name} built a ${T.temples>1?'greater ':''}temple to ${godOf(T)}.`,T.p,{tribe:T.id});if(!S.firstTemple){S.firstTemple=1;say(`The ${T.name} built you a house. They call you ${godOf(T)}. You did not pick that name.`,2)}}
+    if(!T.atheist&&T.godMood==='fear'&&T.faith>.5&&T.pop>40&&R()<.05*T.culture.fear){const k2=1+ri(4);T.pop-=k2;T.sacrificed+=k2;S.power=Math.min(S.powerMax,S.power+6);
+      verse(T,`${yearIntro(T)}, the ${T.name} gave ${k2} of their own to ${godOf(T)} upon the high stone, that ${godOf(T)} might look elsewhere.`,'sacrifice');
+      log('faith',`The ${T.name} made a sacrifice to ${godOf(T)}.`,T.p,{tribe:T.id})}
+    // overcrowding -> colony or sect
+    if(T.pop>(T.food>1.2?320:200)&&S.tribes.filter(t=>t.alive).length<30&&R()<.25){
+      const doc=!T.atheist&&T.faith>.35&&R()<.25+T.culture.open*.35;
+      if(doc)prophet(T);else colony(T);
+    }else if(T.lowFood>=4&&T.pop>15){exodus(T)}
+    if(R()<.012*(1-T.culture.zeal)&&T.faith>.3&&T.pop>90&&!T.atheist)prophet(T);
+    if(T.pop<5){T.alive=false;T.died=S.year;log('people',`The ${T.name} are no more.`,T.p,{tribe:T.id});
+      for(const U of alive)if(U!==T&&U.alive&&dist3(U.p,T.p)<.5)verse(U,`${yearIntro(U)}, the last of the ${T.name} died, and their ${T.temples?'temples':'fires'} went cold.`,'death');}
+    if(T.alive&&!T.atheist)belief+=T.pop*T.faith*(1+.15*T.temples);
+  }
+  // wars
+  const al=S.tribes.filter(t=>t.alive);
+  for(const T of al){
+    if(T.war){const foe=S.tribes.find(x=>x.id===T.war.foe);
+      if(!foe||!foe.alive){endWar(T,foe,true);continue}
+      if(T.id<foe.id){const ta=T.pop*(1+.1*T.tech)*(.8+.4*R()),tb=foe.pop*(1+.1*foe.tech)*(.8+.4*R());
+        const lossT=Math.round(T.pop*.1*tb/(ta+tb)),lossF=Math.round(foe.pop*.1*ta/(ta+tb));T.pop-=lossT;foe.pop-=lossF;T.war.dead+=lossT;foe.war.dead+=lossF;
+        const yrs=S.year-T.war.start;
+        if(T.pop<T.war.foePopStart*.35||foe.pop<foe.war.foePopStart*.35||yrs>4+ri(6)){
+          const win=T.pop>=foe.pop?T:foe,lose=win===T?foe:T;endWar(win,lose,false)}}
+      continue}
+    for(const U of al){if(U===T||U.war||T.war||U.id<T.id)continue;const d=dist3(T.p,U.p);if(d>.3)continue;
+      let host=(T.culture.aggr+U.culture.aggr)*.4;
+      if(T.godAsp!==U.godAsp&&!(T.atheist&&U.atheist))host+=.35*Math.max(T.faith,U.faith);
+      if(T.atheist!==U.atheist)host+=.25;
+      if(T.food<1&&U.food<1)host+=.3;
+      if(T.parent===U.id||U.parent===T.id)host-=T.kind==='sect'||U.kind==='sect'?-.1:.3;
+      if(host>.75&&R()<.035*host){startWar(T,U)}}
+  }
+  // awaken prayers for unanswered: cleanup
+  S.prayers=S.tribes.filter(t=>t.alive&&t.prayer).map(t=>t.prayer);
+  S.belief=belief;S.powerMax=Math.min(400,120+Math.sqrt(belief)*1.6);
+  return belief;
+}
+function makePrayer(T,want,target){
+  T.prayer={tribe:T.id,want,target:target||null,since:S.year,until:S.year+6,p:T.p.slice()};
+  const foe=target?S.tribes.find(x=>x.id===target):null;
+  verse(T,`${yearIntro(T)}, the ${T.name} ${T.culture.fear>.5?'lay on their faces':'lifted their hands'} and prayed to ${godOf(T)} for ${foe?'fire upon the '+foe.name:WANTW[want[0]]}.`,'prayer');
+  emit('prayer',{p:T.p,tribe:T.id});if(!S.firstPrayer){S.firstPrayer=1;say(`Somebody is talking to you. The ${T.name} are praying. Look bottom left.`,3)}
+}
+function startWar(T,U){
+  for(const [a,b] of [[T,U],[U,T]])a.war={foe:b.id,start:S.year,foePopStart:a.pop,dead:0};
+  nameYear(T,'war');nameYear(U,'war');
+  const why=(a,b)=>b.atheist?'who worshipped nothing':a.atheist?'who bowed to a sky that is empty':a.godAsp!==b.godAsp?`who bowed to ${godOf(b)}, a false god`:'who took the good land';
+  verse(T,`${yearIntro(T)}, the ${T.name} rose against the ${U.name}, ${why(T,U)}, and named it holy war.`,'war');
+  verse(U,`${yearIntro(U)}, the ${T.name} came against the ${U.name} with spears${T.atheist?'':' in the name of '+godOf(T)}.`,'war');
+  log('war',`Holy war: the ${T.name} against the ${U.name}.`,T.p,{tribe:T.id});S.wars=(S.wars||0)+1;if(S.wars===1)say(`The first holy war. The ${T.name} march on the ${U.name}${T.atheist?', in the name of nobody at all':', in your name'}.`,2);emit('war',{p:T.p});
+}
+function endWar(win,lose,gone){
+  if(win)win.war=null;if(lose)lose.war=null;if(gone||!lose||!win)return;
+  win.wins++;lose.losses++;
+  const absorbed=lose.pop<40;
+  if(absorbed){win.pop+=lose.pop*.6;lose.pop=0;lose.alive=false;lose.died=S.year}
+  else{for(const a of ASPECTS){lose.asp[a].l=lerp(lose.asp[a].l,win.asp[a].l,.5);lose.asp[a].f=lerp(lose.asp[a].f,win.asp[a].f,.5)}
+    if(win.atheist&&!lose.atheist)lose.faith*=.6;updateGodName(lose)}
+  win.faith=clamp(win.faith+(win.atheist?0:.12),0,1);
+  verse(win,`${yearIntro(win)}, ${win.atheist?'with no god but their own arms':godOf(win)+' gave'} the ${win.name} victory over the ${lose.name}. The ${lose.name} ${absorbed?'were taken into the tents of the '+win.name:'bowed and paid tribute'}.`,'victory');
+  verse(lose,absorbed?`The ${win.name} came with their false god, and the ${lose.name} were scattered.`:`${yearIntro(lose)}, the ${lose.name} were broken by the ${win.name}, and ${win.atheist?'were told there is no god at all':'were made to bow to '+godOf(win)}.`,'defeat');
+  log('war',`The ${win.name} defeated the ${lose.name}${absorbed?' and absorbed them':''}.`,win.p,{tribe:win.id});
+}
+function colony(T){
+  const site=findSettle(T.p,.09,.25);if(!site)return;const take=Math.round(T.pop*rr(.3,.4));T.pop-=take;
+  const C=newTribe(site,take,T.sp,T,'colony');
+  verse(T,`${yearIntro(T)}, ${Math.round(take/6)} families went out from the ${T.name} to ${placeOf(site)}.`,'colony');
+  verse(C,`${yearIntro(C)}, ${Math.round(take/6)} families of the ${T.name} went out to ${placeOf(site)}, and became the ${C.name}.`,'colony');
+  log('people',`The ${C.name} split from the ${T.name} and settled ${placeOf(site)}.`,site,{tribe:C.id});
+}
+function exodus(T){
+  const site=findSettle(T.p,.12,.35);if(!site)return;
+  const days=Math.round(dist3(site,T.p)*6371/25);const from=placeOf(T.p),dir=bearing(T.p,site);
+  T.p=site;T.cell=cellOf(...site);T.lowFood=0;T.home=regionName(site);nameYear(T,'walk');
+  verse(T,`${yearIntro(T)}, ${from} would not feed them, so the ${T.name} walked ${days} days ${dir} to ${placeOf(site)}.`,'exodus');
+  log('people',`The ${T.name} migrated ${dir} to ${placeOf(site)}.`,site,{tribe:T.id});
+}
+
+/* ---------------- yearly / step ---------------- */
+function yearly(){
+  S.year++;
+  const cnt=census();speciation(cnt);
+  // awakening check
+  if(S.awakened<3&&S.year-(S.lastAwaken||-999)>120&&S.tribes.filter(t=>t.alive).length<24)for(const s of S.species){if(s.ascended||s.count<14)continue;
+    if(s.mean[7]>=.62&&s.mean[4]>=.6){awaken(s);S.lastAwaken=S.year;break}}
+  if(S.tribes.some(t=>t.alive)){tribesYear()}
+  while(_later.length)_later.shift()();
+  // natural events
+  if(R()<1/22){const i=randomCell(c=>hgt[c]>0&&cap[c]>.2);const p=[cX[i],cY[i],cZ[i]];
+    forCells(p[0],p[1],p[2],.22,(j,d)=>{dryF[j]+=.4*(1-d*d)});log('nature',`A great drought began in ${placeOf(p)}.`,p)}
+  S.globalT*=.8;if(S.redSky>0)S.redSky--;
+  // power
+  const regen=3+.25*Math.sqrt(S.belief);S.power=Math.min(S.powerMax,S.power+regen);S.regen=regen;
+  // mind drift: slow pressure toward cleverness after land life is established
+  S.mindDrift=S.landFirst?Math.min(1,(S.year-200)/600):0;if(S.mindDrift<0)S.mindDrift=0;
+  // stats
+  if(S.year%2===0){S.stats.life.push([S.year,A.n,S.aliveSpecies||0]);S.stats.tribes.push([S.year,S.tribes.filter(t=>t.alive).reduce((a,t)=>a+t.pop,0)]);
+    if(S.stats.life.length>600){S.stats.life.shift();S.stats.tribes.shift()}}
+  if(A.n===0&&!S.tribes.some(t=>t.alive)&&!S.deadWorld){S.deadWorld=1;say('Ard is silent. Nothing lives. Seed it again, if you still care.',3);log('era','All life on Ard has ended.')}
+  if(A.n>0)S.deadWorld=0;
+}
+function step(){
+  S.tick++;
+  if(S.tick%4===0)climate();
+  if(S.tick%2===0)plantsStep(2);
+  agentsStep();
+  if(S.tick%TPY===0)yearly();
+}
+function newGame(seed){
+  A.n=0;S.tick=0;S.year=0;S.species=[];S.tribes=[];S.log=[];S.says=[];S.fx=[];S.godActs=[];S.power=60;S.powerMax=120;S.belief=0;S.awakened=0;S.era=0;
+  S.rootSpecies=null;S.firstAth=0;S.firstTemple=0;S.firstPrayer=0;S.lastAwaken=-999;S.landFirst=0;S.predFirst=0;S.mindDrift=0;S.nextTribe=1;S.stats={life:[],tribes:[]};S.redSky=0;S.acts=0;S.answered=0;S.ignored=0;S.wars=0;S.sects=0;S.extinctions=0;S.deadWorld=0;
+  rainF.fill(0);blessF.fill(0);scorch.fill(0);dryF.fill(0);
+  genWorld(seed);
+  // primordial seas: three seeding spots near coasts
+  let first=null;
+  for(let k=0;k<3;k++){const i=randomCell(c=>hgt[c]<0&&landD[c]<=3&&Math.abs(cLat[c])<.9);const p=[cX[i],cY[i],cZ[i]];
+    if(!first){first=seedLife(p,60,false)}else{for(let j=0;j<40;j++){const g2=protoGenes(p,false);g2[6]=first.mean[6]+(R()-.5)*.05;spawn(p[0]+(R()-.5)*.06,p[1]+(R()-.5)*.06,p[2]+(R()-.5)*.06,g2,.25,first.id,0)}}
+    if(k===0)S.origin=p}
+  log('era','Ard cooled. In the shallow seas, the first Protocells stirred.',S.origin);
+  say('Year zero. Ard has seas, sky, and a few hundred small lights in the shallows. You are its god. Nobody knows yet.',3);
+}
+const ARD={S,A,G,W,H,N,TPY,RELIEF,MAXA,hgt,temp,plant,cap,moist,biome,scorch,rainF,dryF,blessF,cX,cY,cZ,cLat,B,BNAME,GENE_NAMES,COST,MIRACLES,
+  newGame,step,cast,cellOf,heightAt,placeOf,regionName,prophet,awaken,yearly,census,setRandom:f=>{R=f}};
+if(typeof module!=='undefined')module.exports=ARD;
+
+</script>
+<script>
+'use strict';
+(function(){
+const {S,A,G:GN,W,H,N,TPY,RELIEF,MAXA,hgt,temp,plant,cap,biome,scorch,rainF,dryF,blessF,cX,cY,cZ,B,BNAME,GENE_NAMES,COST,MIRACLES}=ARD;
+const $=id=>document.getElementById(id);
+const cv=$('gl');
+const gl=cv.getContext('webgl2',{antialias:true,alpha:false,powerPreference:'high-performance'});
+if(!gl){$('nogl').style.display='flex';return}
+let DPR=Math.min(2,window.devicePixelRatio||1);
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t,sst=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)};
+
+/* ---------------- math ---------------- */
+function persp(f,a,n,fa){const t=1/Math.tan(f/2),nf=1/(n-fa);return new Float32Array([t/a,0,0,0,0,t,0,0,0,0,(fa+n)*nf,-1,0,0,2*fa*n*nf,0])}
+function lookAt(e,c,u){let zx=e[0]-c[0],zy=e[1]-c[1],zz=e[2]-c[2];let l=Math.hypot(zx,zy,zz);zx/=l;zy/=l;zz/=l;
+  let xx=u[1]*zz-u[2]*zy,xy=u[2]*zx-u[0]*zz,xz=u[0]*zy-u[1]*zx;l=Math.hypot(xx,xy,xz)||1;xx/=l;xy/=l;xz/=l;
+  const yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;
+  return new Float32Array([xx,yx,zx,0,xy,yy,zy,0,xz,yz,zz,0,-(xx*e[0]+xy*e[1]+xz*e[2]),-(yx*e[0]+yy*e[1]+yz*e[2]),-(zx*e[0]+zy*e[1]+zz*e[2]),1])}
+function mul(a,b){const o=new Float32Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+j]*b[i*4+k];o[i*4+j]=s}return o}
+function inv(m){const o=new Float32Array(16);const [a00,a01,a02,a03,a10,a11,a12,a13,a20,a21,a22,a23,a30,a31,a32,a33]=m;
+  const b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32;
+  let d=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;if(!d)return o;d=1/d;
+  o[0]=(a11*b11-a12*b10+a13*b09)*d;o[1]=(a02*b10-a01*b11-a03*b09)*d;o[2]=(a31*b05-a32*b04+a33*b03)*d;o[3]=(a22*b04-a21*b05-a23*b03)*d;
+  o[4]=(a12*b08-a10*b11-a13*b07)*d;o[5]=(a00*b11-a02*b08+a03*b07)*d;o[6]=(a32*b02-a30*b05-a33*b01)*d;o[7]=(a20*b05-a22*b02+a23*b01)*d;
+  o[8]=(a10*b10-a11*b08+a13*b06)*d;o[9]=(a01*b08-a00*b10-a03*b06)*d;o[10]=(a30*b04-a31*b02+a33*b00)*d;o[11]=(a21*b02-a20*b04-a23*b00)*d;
+  o[12]=(a11*b07-a10*b09-a12*b06)*d;o[13]=(a00*b09-a01*b07+a02*b06)*d;o[14]=(a31*b01-a30*b03-a32*b00)*d;o[15]=(a20*b03-a21*b01+a22*b00)*d;return o}
+const dir=(lat,lon)=>[Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon)];
+const nrm=v=>{const l=Math.hypot(v[0],v[1],v[2])||1;return[v[0]/l,v[1]/l,v[2]/l]};
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+function latlon(p){return[Math.asin(clamp(p[1],-1,1)),Math.atan2(p[2],p[0])]}
+function tangentFrame(p){let e=[-p[2],0,p[0]];const l=Math.hypot(e[0],e[2]);e=l<1e-6?[1,0,0]:[e[0]/l,0,e[2]/l];return[e,cross(e,p)]}
+function hsl(h,s,l){h=((h%1)+1)%1;const a=s*Math.min(l,1-l);const f=n=>{const k=(n+h*12)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1))};return[f(0),f(8),f(4)]}
+
+/* ---------------- shaders ---------------- */
+const NOISE=`
+vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}
+vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 tis(vec4 r){return 1.79284291400159-.85373472095314*r;}
+float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);
+vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;
+i=mod289(i);vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);
+vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);vec4 nm=tis(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+p0*=nm.x;p1*=nm.y;p2*=nm.z;p3*=nm.w;vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;
+return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}`;
+const PLANET_VS=`#version 300 es
+in vec3 aP;in vec3 aN;in vec2 aU;uniform mat4 uVP;out vec3 vP;out vec3 vN;out vec2 vU;
+void main(){vP=aP;vN=aN;vU=aU;gl_Position=uVP*vec4(aP,1.);}`;
+const PLANET_FS=`#version 300 es
+precision highp float;in vec3 vP;in vec3 vN;in vec2 vU;out vec4 o;
+uniform sampler2D uT;uniform sampler2D uX;uniform vec3 uSun;uniform vec3 uCam;uniform float uTime;uniform vec4 uFlash;uniform float uRed;uniform float uSel;uniform vec4 uRing;uniform vec3 uRingC;
+${NOISE}
+void main(){
+  vec3 sp0=normalize(vP);vec2 wu=vU+vec2(snoise(sp0*55.),snoise(sp0*55.+7.))*vec2(.0016,.0028)+vec2(snoise(sp0*170.),snoise(sp0*170.+3.))*vec2(.0006,.001);
+  vec4 t=texture(uT,wu);vec3 col=t.rgb;vec4 x=texture(uX,wu);float water=smoothstep(.35,.65,x.r);float glow=x.g*(1.-water);
+  vec3 sp=normalize(vP);vec3 n=normalize(vN);float cd=length(uCam);
+  float near=1.-smoothstep(1.04,2.2,cd);
+  vec3 V=normalize(uCam-vP);
+  if(water<.5){
+    float d1=snoise(sp*160.),d2=snoise(sp*520.);
+    col*=1.+(.12*d1+.07*d2*near);
+    vec3 bn=vec3(snoise(sp*150.+3.),snoise(sp*150.+9.),snoise(sp*150.+17.))+.4*vec3(snoise(sp*480.+3.),snoise(sp*480.+9.),snoise(sp*480.+17.))*near;
+    n=normalize(n+bn*(.07+.1*near));
+  }else{
+    float tt=uTime*.06;vec3 wn=vec3(snoise(sp*220.+tt),snoise(sp*220.-tt+5.),snoise(sp*220.+tt+11.))+.5*vec3(snoise(sp*900.+tt*3.),snoise(sp*900.+7.-tt*3.),snoise(sp*900.+13.));
+    n=normalize(sp+wn*(.035+.03*near));
+  }
+  float ndl=dot(n,uSun);float sl=dot(sp,uSun);
+  float day=smoothstep(-.18,.22,sl);
+  vec3 lit=col*(.035+1.1*max(ndl,0.)*smoothstep(-.1,.1,sl));
+  vec3 Hh=normalize(uSun+V);
+  if(water>.5){float s=pow(max(dot(n,Hh),0.),110.)*1.4+pow(max(dot(n,Hh),0.),18.)*.12;lit+=s*vec3(1.,.93,.8)*day;
+    float fr=pow(1.-max(dot(sp,V),0.),5.);lit+=fr*vec3(.25,.45,.7)*day*.6;}
+  lit+=col*vec3(.55,.2,.03)*exp(-pow(sl*7.,2.))*.5;
+  lit+=col*vec3(.06,.08,.13)*(1.-day)+vec3(.004,.006,.012)*(1.-day);
+  lit+=vec3(1.,.42,.12)*glow*(1.-day*.8)*(.6+.4*snoise(sp*300.+uTime*.5));
+  float fd=distance(sp,normalize(uFlash.xyz));lit+=vec3(.9,.92,1.)*uFlash.w*exp(-fd*fd*900.);
+  float rim=pow(1.-max(dot(normalize(vN),V),0.),3.);
+  vec3 sky=mix(vec3(.35,.55,1.),vec3(1.,.35,.15),uRed);
+  lit=mix(lit,sky*day,rim*.3*(1.-near));
+  if(uRing.w>0.){float rd=distance(sp,uRing.xyz);float r=uRing.w;float e=abs(rd-r);lit+=uRingC*(smoothstep(.004*cd,0.,e)*.9+step(rd,r)*.08);}
+  lit=mix(lit,vec3(dot(lit,vec3(.3,.5,.2))),uSel*.0);
+  o=vec4(lit,1.);
+}`;
+const CLOUD_FS=`#version 300 es
+precision highp float;in vec3 vP;in vec3 vN;in vec2 vU;out vec4 o;
+uniform vec3 uSun;uniform vec3 uCam;uniform float uTime;uniform vec4 uStorm[8];uniform float uFade;uniform float uRed;
+${NOISE}
+void main(){vec3 sp=normalize(vP);float t=uTime*.004;
+  vec3 q=sp*3.2+vec3(t,0.,-t*.7);
+  float n=snoise(q+snoise(q*.7)*.5)*.55+snoise(q*2.6+t*2.)*.28+snoise(q*7.+t*3.)*.13;
+  float lat=abs(sp.y);float band=.55-.25*cos(lat*6.2);
+  float d=smoothstep(band*.9,band*.9+.45,n*.5+.5);
+  float storm=0.;for(int i=0;i<8;i++){vec4 s=uStorm[i];if(s.w>0.){float dd=distance(sp,s.xyz);storm+=s.w*smoothstep(.22,.02,dd)*(.7+.3*snoise(sp*30.+uTime*.2));}}
+  d=clamp(d*.85+storm,0.,1.);
+  float sl=dot(sp,uSun);float lit=smoothstep(-.15,.3,sl);
+  vec3 c=mix(vec3(.03,.035,.05),vec3(1.,.98,.95),lit);c=mix(c,vec3(.75,.42,.3),exp(-pow(sl*6.,2.))*.6*lit);
+  c*=1.-storm*.55;c=mix(c,c*vec3(1.2,.6,.45),uRed*.5);
+  o=vec4(c,d*.82*uFade);}`;
+const ATM_FS=`#version 300 es
+precision highp float;in vec3 vP;in vec3 vN;in vec2 vU;out vec4 o;
+uniform vec3 uSun;uniform vec3 uCam;uniform float uRed;uniform float uFade;
+void main(){vec3 n=normalize(vP);vec3 D=normalize(vP-uCam);float b=length(uCam-D*dot(uCam,D));
+  float i=pow(smoothstep(1.075,.995,b),2.2)*1.3;vec3 hp=normalize(uCam+D*(-dot(uCam,D)));float sl=dot(hp,uSun);float lit=smoothstep(-.35,.35,sl);
+  vec3 c=mix(vec3(.25,.5,1.),vec3(1.,.45,.18),exp(-pow(sl*3.,2.))*.8);c=mix(c,vec3(1.,.28,.12),uRed*.7);
+  o=vec4(c*i*lit*1.5*uFade,0.);}`;
+const PTS_VS=`#version 300 es
+in vec3 aP;in vec4 aC;in float aS;in float aK;in float aM;uniform mat4 uVP;uniform float uScale;uniform vec3 uSun;
+out vec4 vC;out float vK;out float vL;
+void main(){gl_Position=uVP*vec4(aP,1.);float px=aS*uScale/gl_Position.w;gl_PointSize=clamp(max(px,aM),0.,96.);
+  vC=aC;vK=aK;vL=smoothstep(-.18,.2,dot(normalize(aP),uSun));
+  if(aM>0.&&px<aM)vC.a*=clamp(px/aM*1.5+.35,0.,1.);}`;
+const PTS_FS=`#version 300 es
+precision highp float;in vec4 vC;in float vK;in float vL;out vec4 o;uniform float uTime;
+void main(){vec2 q=gl_PointCoord*2.-1.;float r=length(q);int k=int(vK+.5);vec4 c=vC;float a=0.;
+  float lit=.18+.82*vL;
+  if(k==0){a=smoothstep(1.,.8,r)*(.65+.35*smoothstep(.3,.9,r));c.rgb=mix(c.rgb*1.5,c.rgb*.8,r)*lit;}
+  else if(k==1){a=smoothstep(1.,.86,r);vec3 nn=vec3(q.x,-q.y,sqrt(max(0.,1.-r*r)));float df=max(dot(nn,normalize(vec3(-.4,.55,.75))),0.);c.rgb=c.rgb*(.35+.85*df)*lit+pow(df,24.)*.35*lit;}
+  else if(k==2){float d=abs(q.x)*1.25+abs(q.y);a=smoothstep(1.,.88,d);vec3 nn=normalize(vec3(q.x,-q.y,.8));float df=max(dot(nn,normalize(vec3(-.4,.55,.75))),0.);c.rgb=mix(c.rgb*(.4+.8*df),vec3(.35,.04,.03),smoothstep(.55,.85,d))*lit;}
+  else if(k==3){float core=exp(-r*r*6.);float ring=smoothstep(.12,0.,abs(r-.72));a=max(core,ring*.8);
+    vec3 night=vec3(1.,.62,.25)*1.6;c.rgb=mix(night,c.rgb*1.2,vL)*(core+ring*.7);}
+  else if(k==4){float d=min(abs(q.x),abs(q.y))*4.+r;a=smoothstep(1.1,.4,d)+exp(-r*r*8.);c.rgb=vec3(1.,.85,.45)*(1.2-vL*.3);}
+  else if(k==5){a=exp(-r*r*4.);}
+  else if(k==6){a=exp(-r*r*6.)+smoothstep(.15,0.,abs(q.x))*smoothstep(1.,0.,abs(q.y))*.25+smoothstep(.15,0.,abs(q.y))*smoothstep(1.,0.,abs(q.x))*.25;}
+  else if(k==7){a=smoothstep(.1,0.,abs(r-.82))*(.6+.4*sin(uTime*6.));c.rgb=vec3(1.,.9,.6);}
+  else if(k==8){a=smoothstep(1.,.6,r);c.rgb=mix(c.rgb*lit,vec3(1.,.7,.35),(1.-vL)*.7);}
+  else if(k==9){vec2 h=vec2(q.x,-q.y);float roof=step(abs(h.x)*1.1,h.y+.05)*step(h.y,.75)*step(-.05,h.y);float body=step(abs(h.x),.55)*step(-.75,h.y)*step(h.y,0.);float door=step(abs(h.x),.14)*step(-.75,h.y)*step(h.y,-.3);a=max(roof,body);c.rgb=mix(c.rgb*.9,vec3(.42,.27,.16),roof)*(.3+.7*vL);c.rgb=mix(c.rgb,vec3(1.,.65,.3)*(1.-vL)+vec3(.08)*vL,door);}
+  if(a<.01)discard;o=vec4(c.rgb,c.a*a);}`;
+const LINE_VS=`#version 300 es
+in vec3 aP;in vec4 aC;uniform mat4 uVP;out vec4 vC;void main(){vC=aC;gl_Position=uVP*vec4(aP,1.);}`;
+const LINE_FS=`#version 300 es
+precision highp float;in vec4 vC;out vec4 o;void main(){o=vC;}`;
+function prog(vs,fs){const p=gl.createProgram();for(const [t,s] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);
+  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(sh));throw new Error('shader')}gl.attachShader(p,sh)}
+  gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));
+  const u={};const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS);for(let i=0;i<n;i++){const inf=gl.getActiveUniform(p,i);u[inf.name.replace('[0]','')]=gl.getUniformLocation(p,inf.name)}
+  return{p,u,a:n2=>gl.getAttribLocation(p,n2)}}
+const Pp=prog(PLANET_VS,PLANET_FS),Pc=prog(PLANET_VS,CLOUD_FS),Pa=prog(PLANET_VS,ATM_FS),Pt=prog(PTS_VS,PTS_FS),Pl=prog(LINE_VS,LINE_FS);
+
+/* ---------------- geometry ---------------- */
+function sphereGeo(su,sv,radiusFn){
+  const nv=(su+1)*(sv+1);const pos=new Float32Array(nv*3),nor=new Float32Array(nv*3),uv=new Float32Array(nv*2);
+  for(let j=0;j<=sv;j++){const v=j/sv,lat=(.5-v)*Math.PI;for(let i=0;i<=su;i++){const u=i/su,lon=u*TAU-Math.PI,k=j*(su+1)+i;
+    const d=dir(lat,lon);const r=radiusFn?radiusFn(d):1;pos[k*3]=d[0]*r;pos[k*3+1]=d[1]*r;pos[k*3+2]=d[2]*r;uv[k*2]=u;uv[k*2+1]=v}}
+  // normals from grid
+  for(let j=0;j<=sv;j++)for(let i=0;i<=su;i++){const k=j*(su+1)+i;
+    const kl=j*(su+1)+(i===0?su-1:i-1),kr=j*(su+1)+(i===su?1:i+1),ku=Math.max(0,j-1)*(su+1)+i,kd=Math.min(sv,j+1)*(su+1)+i;
+    const ax=pos[kr*3]-pos[kl*3],ay=pos[kr*3+1]-pos[kl*3+1],az=pos[kr*3+2]-pos[kl*3+2];
+    const bx=pos[kd*3]-pos[ku*3],by=pos[kd*3+1]-pos[ku*3+1],bz=pos[kd*3+2]-pos[ku*3+2];
+    let nx=ay*bz-az*by,ny=az*bx-ax*bz,nz=ax*by-ay*bx;const l=Math.hypot(nx,ny,nz);
+    const px=pos[k*3],py=pos[k*3+1],pz=pos[k*3+2];
+    if(l<1e-9||j===0||j===sv){const pl=Math.hypot(px,py,pz);nx=px/pl;ny=py/pl;nz=pz/pl}else{nx/=l;ny/=l;nz/=l;if(nx*px+ny*py+nz*pz<0){nx=-nx;ny=-ny;nz=-nz}}
+    nor[k*3]=nx;nor[k*3+1]=ny;nor[k*3+2]=nz}
+  const idx=new Uint32Array(su*sv*6);let q=0;
+  for(let j=0;j<sv;j++)for(let i=0;i<su;i++){const a=j*(su+1)+i,b=a+1,c=a+su+1,d=c+1;idx[q++]=a;idx[q++]=b;idx[q++]=c;idx[q++]=b;idx[q++]=d;idx[q++]=c}
+  return{pos,nor,uv,idx};
+}
+function makeMesh(g,P){const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs={};
+  for(const [nm,arr,sz] of [['aP',g.pos,3],['aN',g.nor,3],['aU',g.uv,2]]){const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,arr,gl.STATIC_DRAW);
+    const l=P.a(nm);if(l>=0){gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,sz,gl.FLOAT,false,0,0)}bufs[nm]=b}
+  const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.idx,gl.STATIC_DRAW);gl.bindVertexArray(null);
+  return{vao,bufs,count:g.idx.length}}
+let planet=null;
+function buildPlanet(){
+  const g=sphereGeo(480,240,d=>1+RELIEF*ARD.heightAt(d[0],d[1],d[2]));
+  if(!planet)planet=makeMesh(g,Pp);else{gl.bindBuffer(gl.ARRAY_BUFFER,planet.bufs.aP);gl.bufferData(gl.ARRAY_BUFFER,g.pos,gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,planet.bufs.aN);gl.bufferData(gl.ARRAY_BUFFER,g.nor,gl.STATIC_DRAW)}
+}
+const shellGeo=sphereGeo(128,64,()=>1);
+const cloudMesh=makeMesh({pos:shellGeo.pos.map(v=>v*1.016),nor:shellGeo.nor,uv:shellGeo.uv,idx:shellGeo.idx},Pc);
+const atmMesh=makeMesh({pos:shellGeo.pos.map(v=>v*1.075),nor:shellGeo.nor,uv:shellGeo.uv,idx:shellGeo.idx},Pa);
+
+/* ---------------- planet texture ---------------- */
+const tex=gl.createTexture();const texData=new Uint8Array(W*H*4);const auxData=new Uint8Array(W*H*4);const aux=gl.createTexture();const colAcc=new Float32Array(W*H*3);let colInit=false;
+gl.bindTexture(gl.TEXTURE_2D,tex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,texData);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.bindTexture(gl.TEXTURE_2D,aux);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,auxData);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+const DRY=[[8,24,58],[12,46,96],[24,98,132],[206,222,232],[214,196,150],[214,172,112],[168,150,102],[182,152,92],[134,124,82],[92,92,62],[72,82,52],[92,98,82],[142,138,120],[236,240,246],[118,106,96]];
+const VEG=[[8,30,58],[14,56,96],[30,118,128],[206,222,232],[196,190,130],[188,168,100],[132,148,74],[124,146,58],[72,126,50],[36,90,40],[20,80,34],[38,72,56],[108,122,88],[236,240,246],[92,96,80]];
+const BMAX=[.22,.3,.5,.03,.08,.05,.32,.48,.68,.88,1,.6,.22,.01,.1];
+let tribeTint=new Float32Array(N);
+function updateTexture(smooth){
+  tribeTint.fill(0);
+  for(const T of S.tribes){if(!T.alive)continue;const r=Math.min(.07,.02+.012*Math.sqrt(T.pop/40));
+    ARD_forCells(T.p,r,(i,d)=>{tribeTint[i]=Math.max(tribeTint[i],(1-d)*.6)})}
+  const k=smooth?.35:1;
+  for(let i=0;i<N;i++){
+    const b=biome[i],h=hgt[i];let r,g,bl,a;
+    if(h<=0){const dd=DRY[b],vv=VEG[b];const pl=Math.min(1,plant[i]/(BMAX[b]+.01));
+      const sh=clamp(1+h*.55,.4,1);r=lerp(dd[0],vv[0],pl*.6)*sh;g=lerp(dd[1],vv[1],pl*.6)*sh;bl=lerp(dd[2],vv[2],pl*.6)*sh;
+      if(b===B.SEAICE){r=200;g=216;bl=228}
+      a=0;auxData[i*4]=255;auxData[i*4+1]=0;}
+    else{const dd=DRY[b],vv=VEG[b];const pl=Math.min(1,plant[i]/(BMAX[b]+.02));
+      r=lerp(dd[0],vv[0],pl);g=lerp(dd[1],vv[1],pl);bl=lerp(dd[2],vv[2],pl);
+      const sh=.88+h*.35;r*=sh;g*=sh;bl*=sh;
+      const t=temp[i];if(t<-1){const s=clamp((-1-t)/7,0,1)*.9;r=lerp(r,236,s);g=lerp(g,240,s);bl=lerp(bl,246,s)}
+      const sc=scorch[i];if(sc>.02){r=lerp(r,48,sc*.8);g=lerp(g,36,sc*.8);bl=lerp(bl,30,sc*.8)}
+      const tt=tribeTint[i];if(tt>0){r=lerp(r,186,tt*.45);g=lerp(g,150,tt*.45);bl=lerp(bl,92,tt*.45)}
+      if(rainF[i]>1){const f=clamp(rainF[i]-1,0,.6);r=lerp(r,40,f);g=lerp(g,70,f);bl=lerp(bl,90,f)}
+      a=0;auxData[i*4]=0;auxData[i*4+1]=Math.round(clamp(sc-.25,0,1)*250);}
+    if(!colInit||k===1){colAcc[i*3]=r;colAcc[i*3+1]=g;colAcc[i*3+2]=bl}
+    else{colAcc[i*3]+=(r-colAcc[i*3])*k;colAcc[i*3+1]+=(g-colAcc[i*3+1])*k;colAcc[i*3+2]+=(bl-colAcc[i*3+2])*k}
+    texData[i*4]=colAcc[i*3];texData[i*4+1]=colAcc[i*3+1];texData[i*4+2]=colAcc[i*3+2];texData[i*4+3]=255;
+  }
+  colInit=true;
+  gl.bindTexture(gl.TEXTURE_2D,tex);gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,texData);gl.bindTexture(gl.TEXTURE_2D,aux);gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,auxData);
+}
+function ARD_forCells(p,r,fn){const lat=Math.asin(clamp(p[1],-1,1)),lon=Math.atan2(p[2],p[0]);const cy=(.5-lat/Math.PI)*H,cx=(lon+Math.PI)/TAU*W;const dy=Math.ceil(r/Math.PI*H)+1;
+  for(let y=Math.max(0,Math.floor(cy-dy));y<=Math.min(H-1,Math.ceil(cy+dy));y++){const cl=Math.max(.05,Math.cos((.5-(y+.5)/H)*Math.PI));const dx=Math.min(W/2,Math.ceil(r/TAU*W/cl)+1);
+    for(let xx=Math.floor(cx-dx);xx<=Math.ceil(cx+dx);xx++){const x=((xx%W)+W)%W,i=y*W+x;const d=Math.hypot(cX[i]-p[0],cY[i]-p[1],cZ[i]-p[2]);if(d<r)fn(i,d/r)}}}
+
+/* ---------------- dynamic points & lines ---------------- */
+const PSTRIDE=10,PMAX=24000;const pData=new Float32Array(PMAX*PSTRIDE);let pN=0;
+const pVao=gl.createVertexArray(),pBuf=gl.createBuffer();
+gl.bindVertexArray(pVao);gl.bindBuffer(gl.ARRAY_BUFFER,pBuf);gl.bufferData(gl.ARRAY_BUFFER,pData.byteLength,gl.DYNAMIC_DRAW);
+for(const [nm,sz,off] of [['aP',3,0],['aC',4,3],['aS',1,7],['aK',1,8],['aM',1,9]]){const l=Pt.a(nm);gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,sz,gl.FLOAT,false,PSTRIDE*4,off*4)}
+gl.bindVertexArray(null);
+function pt(x,y,z,r,g,b,a,s,k,m){if(pN>=PMAX)return;const o=pN++*PSTRIDE;pData[o]=x;pData[o+1]=y;pData[o+2]=z;pData[o+3]=r;pData[o+4]=g;pData[o+5]=b;pData[o+6]=a;pData[o+7]=s;pData[o+8]=k;pData[o+9]=m}
+const LMAX=20000;const lData=new Float32Array(LMAX*7);let lN=0;const lVao=gl.createVertexArray(),lBuf=gl.createBuffer();
+gl.bindVertexArray(lVao);gl.bindBuffer(gl.ARRAY_BUFFER,lBuf);gl.bufferData(gl.ARRAY_BUFFER,lData.byteLength,gl.DYNAMIC_DRAW);
+{let l=Pl.a('aP');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,3,gl.FLOAT,false,28,0);l=Pl.a('aC');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,4,gl.FLOAT,false,28,12)}
+gl.bindVertexArray(null);
+function ln(a,b,c){if(lN+2>LMAX)return;let o=lN*7;lData.set([a[0],a[1],a[2],c[0],c[1],c[2],c[3]],o);o+=7;lData.set([b[0],b[1],b[2],c[0],c[1],c[2],c.length>4?c[4]:c[3]],o);lN+=2}
+// stars
+const STARS=[];{let s=12345;const r=()=>{s=(s*16807)%2147483647;return s/2147483647};
+  for(let i=0;i<2600;i++){let x=r()*2-1,y=r()*2-1,z=r()*2-1;const l=Math.hypot(x,y,z);if(l>1||l<.1){i--;continue}
+    let p=[x/l,y/l,z/l];const band=Math.abs(p[1]*.8+p[0]*.4);if(band>.35&&r()<.5){i--;continue}
+    const t=r();const c=t<.15?[.7,.8,1]:t<.3?[1,.85,.65]:[1,1,1];STARS.push([p,c,Math.pow(r(),3)*.9+.1])}}
+
+/* ---------------- particles / fx ---------------- */
+const FX=[];const BOLTS=[];const STORMS=[];let flash=[0,1,0,0];let shake=0;let meteors=[];
+function spawnP(p,v,life,c,s,k){if(FX.length>5000)return;FX.push({p:p.slice(),v:v.slice(),life,max:life,c,s,k:k==null?5:k,g:0})}
+function surf(p,h){const r=1+RELIEF*ARD.heightAt(p[0],p[1],p[2])+(h||0);return[p[0]*r,p[1]*r,p[2]*r]}
+function scatter(p,r){const [e,n]=tangentFrame(p);const a=Math.random()*TAU,d=Math.sqrt(Math.random())*r;return nrm([p[0]+(e[0]*Math.cos(a)+n[0]*Math.sin(a))*d,p[1]+(e[1]*Math.cos(a)+n[1]*Math.sin(a))*d,p[2]+(e[2]*Math.cos(a)+n[2]*Math.sin(a))*d])}
+function bolt(p){const top=[p[0]*1.13,p[1]*1.13,p[2]*1.13];const segs=[];const [e,n]=tangentFrame(p);
+  function branch(a,b,depth,w){const pts=[a];const K=10;for(let i=1;i<K;i++){const t=i/K;const off=(1-t)*.012*(depth?0.6:1);
+      const q=[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];const ox=(Math.random()-.5)*off,oy=(Math.random()-.5)*off;
+      pts.push([q[0]+e[0]*ox+n[0]*oy,q[1]+e[1]*ox+n[1]*oy,q[2]+e[2]*ox+n[2]*oy])}pts.push(b);
+    for(let i=0;i<pts.length-1;i++)segs.push([pts[i],pts[i+1],w]);
+    if(depth<2)for(let k=0;k<2;k++){const i=2+((Math.random()*5)|0);const s=pts[i];const end=[s[0]*.985+(e[0]*(Math.random()-.5)+n[0]*(Math.random()-.5))*.02,s[1]*.985+(e[1]*(Math.random()-.5)+n[1]*(Math.random()-.5))*.02,s[2]*.985+(e[2]*(Math.random()-.5)+n[2]*(Math.random()-.5))*.02];branch(s,end,depth+1,w*.5)}}
+  branch(top,surf(p,0),0,1);BOLTS.push({segs,life:.55,max:.55});flash=[p[0],p[1],p[2],1.4];
+  for(let i=0;i<50;i++){const q=scatter(p,.012);const s=surf(q,.001);spawnP(s,[q[0]*.002+(Math.random()-.5)*.003,q[1]*.002+(Math.random()-.5)*.003,q[2]*.002+(Math.random()-.5)*.003],.8+Math.random(),[1,.6,.2,1],.0025,5)}}
+function fxFor(e){const p=e.p;if(!p)return;
+  if(e.type==='rain'){STORMS.push({p:p.slice(),s:0,t:0,life:7});for(let i=0;i<500;i++){const q=scatter(p,.17);const r=1.01+Math.random()*.04;spawnP([q[0]*r,q[1]*r,q[2]*r],[-q[0]*.03,-q[1]*.03,-q[2]*.03],1.2+Math.random()*4,[.6,.75,1,.55],.0018,5)}}
+  else if(e.type==='harvest'){for(let i=0;i<420;i++){const q=scatter(p,.12);const s=surf(q,.001);spawnP(s,[q[0]*.004,q[1]*.004,q[2]*.004],1.5+Math.random()*2.5,[1,.82,.35,.9],.003,5)}flash=[p[0],p[1],p[2],.35]}
+  else if(e.type==='fire'){bolt(p)}
+  else if(e.type==='plague'){for(let i=0;i<380;i++){const q=scatter(p,.1);const s=surf(q,.002+Math.random()*.004);const [ee,nn]=tangentFrame(q);const a=Math.random()*TAU;
+    spawnP(s,[(ee[0]*Math.cos(a)+nn[0]*Math.sin(a))*.004,(ee[1]*Math.cos(a)+nn[1]*Math.sin(a))*.004,(ee[2]*Math.cos(a)+nn[2]*Math.sin(a))*.004],2+Math.random()*3,[.55,.9,.3,.6],.005,5)}}
+  else if(e.type==='star'){impact(p)}
+  else if(e.type==='mind'){for(let i=0;i<300;i++){const q=scatter(p,.1);const r=1.03+Math.random()*.05;spawnP([q[0]*r,q[1]*r,q[2]*r],[-q[0]*.012,-q[1]*.012,-q[2]*.012],2.5+Math.random()*1.5,[.72,.55,1,.9],.0028,5)}}
+  else if(e.type==='life'){for(let i=0;i<160;i++){const q=scatter(p,.05);const s=surf(q,0);spawnP(s,[q[0]*.006,q[1]*.006,q[2]*.006],1+Math.random()*2,[.5,1,.9,.9],.0026,5)}}
+  else if(e.type==='sky'){const [ee,nn]=tangentFrame(p);for(let c=0;c<5;c++){const off=(c-2)*.05;const hue=[.35,.4,.75,.82,.5][c];const col=hsl(hue,.9,.6);
+      for(let i=0;i<180;i++){const t=i/179-.5;const q=nrm([p[0]+ee[0]*t*.5+nn[0]*(off+Math.sin(t*9+c)*.02),p[1]+ee[1]*t*.5+nn[1]*(off+Math.sin(t*9+c)*.02),p[2]+ee[2]*t*.5+nn[2]*(off+Math.sin(t*9+c)*.02)]);
+        const r=1.04+Math.random()*.03;spawnP([q[0]*r,q[1]*r,q[2]*r],[q[0]*.0015,q[1]*.0015,q[2]*.0015],4+Math.random()*3,[col[0],col[1],col[2],.5],.006+Math.random()*.004,5)}}}
+  else if(e.type==='prayer'){}
+  else if(e.type==='awaken'){for(let i=0;i<400;i++){const q=scatter(p,.03);const s=surf(q,.002);const [ee,nn]=tangentFrame(p);const d=nrm([q[0]-p[0],q[1]-p[1],q[2]-p[2]]);
+    spawnP(s,[d[0]*.03+q[0]*.004,d[1]*.03+q[1]*.004,d[2]*.03+q[2]*.004],2+Math.random()*2,[1,.95,.8,.9],.003,5)}flash=[p[0],p[1],p[2],.8]}
+  else if(e.type==='war'){}
+}
+function launchMeteor(p,onHit){const [e,n]=tangentFrame(p);const a=Math.random()*TAU;const from=[p[0]*2.4+(e[0]*Math.cos(a)+n[0]*Math.sin(a))*1.1,p[1]*2.4+(e[1]*Math.cos(a)+n[1]*Math.sin(a))*1.1,p[2]*2.4+(e[2]*Math.cos(a)+n[2]*Math.sin(a))*1.1];
+  meteors.push({from,to:surf(p,0),p,t:0,dur:1.6,onHit});AU.sfx('meteorIn')}
+function impact(p){flash=[p[0],p[1],p[2],3.5];shake=1;const s0=surf(p,.002);
+  for(let i=0;i<900;i++){const q=scatter(p,.02);const d=nrm([q[0]-p[0]+(Math.random()-.5)*.01,q[1]-p[1]+(Math.random()-.5)*.01,q[2]-p[2]+(Math.random()-.5)*.01]);const up=.01+Math.random()*.05;const sp=.02+Math.random()*.12;
+    spawnP(s0,[d[0]*sp+p[0]*up,d[1]*sp+p[1]*up,d[2]*sp+p[2]*up],1+Math.random()*3,Math.random()<.5?[1,.55,.15,1]:[1,.9,.6,1],.003+Math.random()*.004,5);FX[FX.length-1].g=.06}
+  const [e,n]=tangentFrame(p);for(let i=0;i<260;i++){const a=i/260*TAU;const d=[e[0]*Math.cos(a)+n[0]*Math.sin(a),e[1]*Math.cos(a)+n[1]*Math.sin(a),e[2]*Math.cos(a)+n[2]*Math.sin(a)];
+    spawnP(s0,[d[0]*.09,d[1]*.09,d[2]*.09],1.8,[1,.85,.6,.7],.006,5)}
+  for(let i=0;i<200;i++){const q=scatter(p,.08);const s=surf(q,.004+Math.random()*.01);spawnP(s,[q[0]*.003,q[1]*.003,q[2]*.003],4+Math.random()*4,[.2,.12,.1,.5],.012,5)}
+  AU.sfx('impact')}
+function stepFx(dt){
+  for(let i=FX.length-1;i>=0;i--){const f=FX[i];f.life-=dt;if(f.life<=0){FX[i]=FX[FX.length-1];FX.pop();continue}
+    f.p[0]+=f.v[0]*dt;f.p[1]+=f.v[1]*dt;f.p[2]+=f.v[2]*dt;if(f.g){const l=Math.hypot(...f.p);f.v[0]-=f.p[0]/l*f.g*dt;f.v[1]-=f.p[1]/l*f.g*dt;f.v[2]-=f.p[2]/l*f.g*dt;if(l<1.0005){f.v=[0,0,0];f.g=0}}
+    const l=Math.hypot(f.p[0],f.p[1],f.p[2]);if(l<.999){f.life=Math.min(f.life,.1)}}
+  for(let i=BOLTS.length-1;i>=0;i--){BOLTS[i].life-=dt;if(BOLTS[i].life<=0)BOLTS.splice(i,1)}
+  for(let i=STORMS.length-1;i>=0;i--){const s=STORMS[i];s.t+=dt;s.s=Math.min(1,s.t/1.2)*Math.min(1,(s.life-s.t)/2);if(s.t>s.life)STORMS.splice(i,1)}
+  for(let i=meteors.length-1;i>=0;i--){const m=meteors[i];m.t+=dt;const t=Math.min(1,m.t/m.dur);const e=t*t;
+    const q=[lerp(m.from[0],m.to[0],e),lerp(m.from[1],m.to[1],e),lerp(m.from[2],m.to[2],e)];m.q=q;
+    for(let k=0;k<6;k++)spawnP([q[0]+(Math.random()-.5)*.004,q[1]+(Math.random()-.5)*.004,q[2]+(Math.random()-.5)*.004],[0,0,0],.4+Math.random()*.6,k<2?[1,1,.9,1]:[1,.5,.15,.8],.004+Math.random()*.006,5);
+    if(t>=1){meteors.splice(i,1);m.onHit&&m.onHit()}}
+  flash[3]*=Math.pow(.02,dt);shake*=Math.pow(.05,dt);
+}
+
+/* ---------------- camera ---------------- */
+const cam={lat:.35,lon:0,dist:3.1,tLat:.35,tLon:0,tDist:3.1,fly:0,follow:null};
+let VP=null,IVP=null,camPos=[0,0,3],viewW=1,viewH=1,uScale=1;
+function minDist(){const d=dir(cam.lat,cam.lon);return 1+RELIEF*ARD.heightAt(d[0],d[1],d[2])+.0075}
+function updateCamera(dt){
+  if(cam.follow!=null){const i=findAgent(cam.follow);if(i>=0){const [la,lo]=latlon([A.x[i],A.y[i],A.z[i]]);cam.tLat=la;cam.tLon=lo}
+    else{const T=S.tribes.find(t=>t.id===-cam.follow);if(T){const [la,lo]=latlon(T.p);cam.tLat=la;cam.tLon=lo}else cam.follow=null}}
+  let dl=cam.tLon-cam.lon;while(dl>Math.PI)dl-=TAU;while(dl<-Math.PI)dl+=TAU;
+  const k=1-Math.pow(cam.fly?.02:.0005,dt);
+  cam.lat+=(cam.tLat-cam.lat)*k;cam.lon+=dl*k;
+  const md=minDist();cam.tDist=clamp(cam.tDist,md,7);
+  cam.dist+=(cam.tDist-cam.dist)*(1-Math.pow(.004,dt));if(cam.dist<md)cam.dist=md;
+  if(cam.fly&&Math.abs(dl)<.002&&Math.abs(cam.tLat-cam.lat)<.002)cam.fly=0;
+  const d=dir(cam.lat,cam.lon);const near=1-sst(1.01,1.35,cam.dist);
+  const n=[-Math.sin(cam.lat)*Math.cos(cam.lon),Math.cos(cam.lat),-Math.sin(cam.lat)*Math.sin(cam.lon)];
+  const sh=shake*.004*Math.max(.3,cam.dist-1);
+  camPos=[d[0]*cam.dist+(Math.random()-.5)*sh,d[1]*cam.dist+(Math.random()-.5)*sh,d[2]*cam.dist+(Math.random()-.5)*sh];
+  const alt=cam.dist-1;const tilt=near*alt*2.2;
+  const tgt=[d[0]+n[0]*tilt,d[1]+n[1]*tilt,d[2]+n[2]*tilt];
+  const look=[tgt[0]*near,tgt[1]*near,tgt[2]*near];
+  const up=nrm([n[0]*(1-near)+d[0]*near,n[1]*(1-near)+d[1]*near,n[2]*(1-near)+d[2]*near]);
+  const fov=.75;const nearP=Math.max(.0004,(cam.dist-1.025)*.4),farP=cam.dist+1.2;
+  const P=persp(fov,viewW/viewH,Math.min(nearP,alt*.3+.0002),farP);const V=lookAt(camPos,look,up);
+  VP=mul(P,V);IVP=inv(VP);uScale=viewH/(2*Math.tan(fov/2));
+  return{P,V};
+}
+function ray(mx,my){const x=mx/viewW*2-1,y=1-my/viewH*2;const a=xf(IVP,[x,y,-1]),b=xf(IVP,[x,y,1]);return[a,nrm([b[0]-a[0],b[1]-a[1],b[2]-a[2]])]}
+function xf(m,v){const x=v[0],y=v[1],z=v[2];const w=m[3]*x+m[7]*y+m[11]*z+m[15];return[(m[0]*x+m[4]*y+m[8]*z+m[12])/w,(m[1]*x+m[5]*y+m[9]*z+m[13])/w,(m[2]*x+m[6]*y+m[10]*z+m[14])/w]}
+function pickSphere(mx,my,r){const [o,d]=ray(mx,my);r=r||1;const b=dot(o,d),c=dot(o,o)-r*r,h=b*b-c;if(h<0)return null;const t=-b-Math.sqrt(h);if(t<0)return null;return nrm([o[0]+d[0]*t,o[1]+d[1]*t,o[2]+d[2]*t])}
+function project(p){const v=VP;const x=p[0],y=p[1],z=p[2];const w=v[3]*x+v[7]*y+v[11]*z+v[15];if(w<=0)return null;
+  return[((v[0]*x+v[4]*y+v[8]*z+v[12])/w*.5+.5)*viewW,(1-((v[1]*x+v[5]*y+v[9]*z+v[13])/w*.5+.5))*viewH,w]}
+function facing(p){return dot(p,[camPos[0]-p[0],camPos[1]-p[1],camPos[2]-p[2]])>0}
+function flyTo(p,dist){const [la,lo]=latlon(p);cam.tLat=la;cam.tLon=lo;cam.fly=1;if(dist)cam.tDist=dist}
+let agentIndexById=new Map();
+function findAgent(id){const i=agentIndexById.get(id);if(i!=null&&i<A.n&&A.id[i]===id)return i;for(let j=0;j<A.n;j++)if(A.id[j]===id){agentIndexById.set(id,j);return j}return -1}
+
+/* ---------------- input ---------------- */
+let drag=null,pointers=new Map(),pinch0=0,hoverPt=null,aim=null,selected=null;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pointers.size===2){const [a,b]=[...pointers.values()];pinch0=Math.hypot(a[0]-b[0],a[1]-b[1])}
+  drag={x:e.clientX,y:e.clientY,moved:0,lat:cam.tLat,lon:cam.tLon};cv.classList.add('drag')});
+cv.addEventListener('pointermove',e=>{
+  if(pointers.has(e.pointerId))pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  hoverPt=[e.clientX,e.clientY];
+  if(pointers.size===2){const [a,b]=[...pointers.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch0){cam.tDist=1+(cam.tDist-1)*pinch0/d;pinch0=d}drag&&(drag.moved=99);return}
+  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved=Math.max(drag.moved,Math.abs(dx)+Math.abs(dy));
+  if(drag.moved>4){const k=.0021*Math.max(.004,(cam.dist-1))*1.0/Math.max(.3,Math.min(1,(cam.dist-1)))*Math.min(1,(cam.dist-1));
+    const kk=(cam.dist-1)*.0016+.00002;cam.follow=null;cam.fly=0;
+    cam.tLon=drag.lon-dx*kk/Math.max(.25,Math.cos(cam.lat));cam.tLat=clamp(drag.lat+dy*kk,-1.5,1.5)}});
+cv.addEventListener('pointerup',e=>{pointers.delete(e.pointerId);if(pointers.size<2)pinch0=0;cv.classList.remove('drag');
+  if(drag&&drag.moved<=4&&pointers.size===0)clickAt(e.clientX,e.clientY,e.button);drag=pointers.size?drag:null});
+cv.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);drag=null});
+cv.addEventListener('wheel',e=>{e.preventDefault();cam.tDist=1+(cam.tDist-1)*Math.exp(e.deltaY*.0012)},{passive:false});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();setAim(null)});
+function clickAt(x,y,btn){
+  AU.start();
+  if(btn===2){setAim(null);return}
+  const p=pickSphere(x,y,1.0);
+  if(aim){if(!p)return;doCast(aim,p);return}
+  // pick tribe or creature
+  let best=null,bd=18*18;
+  for(const T of S.tribes){if(!T.alive)continue;const s=surf(T.p,.002);if(!facing(s))continue;const q=project(s);if(!q)continue;const d=(q[0]-x)**2+(q[1]-y)**2;if(d<bd*1.6){bd=d;best={t:'tribe',T}}}
+  for(let i=0;i<A.n;i++){const s=[A.x[i],A.y[i],A.z[i]];if(!facing(s))continue;const q=project(s);if(!q)continue;const d=(q[0]-x)**2+(q[1]-y)**2;if(d<bd){bd=d;best={t:'agent',id:A.id[i]}}}
+  if(best){select(best);if(best.t==='tribe')showTab('peoples');else showTab('insp')}
+  else if(p){selected=null;cam.follow=null;renderInspect()}
+}
+function select(s){selected=s;if(s.t==='tribe'){openTribe(s.T.id)}else{renderInspect()}AU.sfx('tick')}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  const k=e.key;
+  if(k===' '){e.preventDefault();setSpeed(speed?0:(lastSpeed||1))}
+  else if(k>='1'&&k<='8'){const m=MIRACLES[+k-1];setAim(aim===m.k?null:m.k)}
+  else if(k==='Escape'){setAim(null)}
+  else if(k==='['){setSpeed(Math.max(0,speed-1))}else if(k===']'){setSpeed(Math.min(4,speed+1))}
+  else if(k==='p'||k==='P'){togglePanel()}else if(k==='m'||k==='M'){AU.toggle()}
+  else if(k==='f'||k==='F'){if(selected&&selected.t==='agent')cam.follow=cam.follow?null:selected.id;else if(selected&&selected.t==='tribe')cam.follow=cam.follow?null:-selected.T.id}
+});
+
+/* ---------------- miracles ---------------- */
+const ICON={
+  rain:'<path d="M5 12a4 4 0 0 1 1-7.9A5 5 0 0 1 15.6 6 3.5 3.5 0 0 1 17 12.8z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 15l-1 3M11 15l-1 3M15 15l-1 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+  harvest:'<path d="M12 21V8" stroke="currentColor" stroke-width="1.6"/><path d="M12 9c-3-1-4-3-4-5 3 0 4 2 4 5zm0 0c3-1 4-3 4-5-3 0-4 2-4 5zm0 5c-3-1-4-3-4-5 3 0 4 2 4 5zm0 0c3-1 4-3 4-5-3 0-4 2-4 5z" fill="currentColor" opacity=".85"/>',
+  fire:'<path d="M13 2L5 13h6l-2 9 9-12h-6z" fill="currentColor"/>',
+  plague:'<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+  star:'<circle cx="15" cy="15" r="4" fill="currentColor"/><path d="M3 3l9 9M7 2l7 8M2 7l8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>',
+  mind:'<path d="M12 4c4 0 7 3 7 7s-3 7-7 7-7-3-7-7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 8c2 0 3 1.5 3 3s-1.5 3-3 3-3-1.5-3-3" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="11" r="1.2" fill="currentColor"/>',
+  life:'<circle cx="8" cy="15" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="15" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="18" r="2" fill="currentColor"/>',
+  sky:'<path d="M3 16c3-6 6-9 9-9s6 3 9 9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 19c2-4 4.5-6 7-6s5 2 7 6" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".6"/>'};
+const MCOL={rain:'#8fc4ff',harvest:'#f0c860',fire:'#fff0a0',plague:'#a4dc6a',star:'#ff8a4a',mind:'#c09bff',life:'#7fe8d6',sky:'#9ff0b8'};
+const MRAD={rain:.2,harvest:.13,fire:.03,plague:.11,star:.17,mind:.1,life:.05,sky:.3};
+const svg=k=>`<svg viewBox="0 0 24 24" style="color:${MCOL[k]}">${ICON[k]}</svg>`;
+$('pwList').innerHTML=MIRACLES.map((m,i)=>`<button class="pw" data-k="${m.k}">${svg(m.k)}<span class="nm">${m.name}</span><span class="ct">${COST[m.k]}</span><kbd>${i+1}</kbd></button>`).join('');
+const pwBtns=[...document.querySelectorAll('.pw')];
+pwBtns.forEach(b=>{b.onclick=()=>{AU.start();setAim(aim===b.dataset.k?null:b.dataset.k)};
+  b.onmouseenter=()=>{const m=MIRACLES.find(x=>x.k===b.dataset.k);$('pwDesc').textContent=m.desc};b.onmouseleave=()=>{$('pwDesc').textContent=aim?MIRACLES.find(x=>x.k===aim).desc:'Pick a miracle, then touch the world.'}});
+function setAim(k){aim=k;pwBtns.forEach(b=>b.classList.toggle('on',b.dataset.k===k));cv.classList.toggle('aim',!!k);
+  $('pwDesc').textContent=k?MIRACLES.find(x=>x.k===k).desc:'Pick a miracle, then touch the world.';if(k)AU.sfx('tick')}
+function doCast(k,p){
+  if(S.power<COST[k]){say2('Not enough belief. Wait, or make them believe.');AU.sfx('deny');return}
+  if(k==='star'){S.power-=COST[k];launchMeteor(p,()=>{ARD.cast('star',p,true);buildPlanet();S.terrainDirty=false;updateTexture(false)});return}
+  ARD.cast(k,p);AU.sfx(k);
+}
+
+/* ---------------- render ---------------- */
+let sunAng=0,visSub=0,storms=new Float32Array(32);
+function frameDraw(t,dt){
+  const r=cv.getBoundingClientRect();const w=Math.round(r.width*DPR),h=Math.round(r.height*DPR);
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}viewW=r.width;viewH=r.height;
+  updateCamera(dt);
+  gl.viewport(0,0,w,h);
+  sunAng+=dt*TAU/110;visSub+=((speed<=1?S.sub:0)-visSub)*Math.min(1,dt*2);
+  const sun=[Math.cos(visSub)*Math.cos(sunAng),Math.sin(visSub),Math.cos(visSub)*Math.sin(sunAng)];
+  const near=1-sst(1.01,1.25,cam.dist);const cd=dir(cam.lat,cam.lon);const dayHere=sst(-.15,.3,dot(cd,sun));
+  const red=Math.min(1,S.redSky/2.5);
+  const sky=[lerp(.32,.85,red),lerp(.52,.35,red),lerp(.82,.25,red)];
+  gl.clearColor(sky[0]*near*dayHere*.85+.012,sky[1]*near*dayHere*.85+.014,sky[2]*near*dayHere*.85+.03,1);
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  // stars (rotation only)
+  gl.disable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+  pN=0;const SR=cam.dist+1.05;const starA=(1-near*dayHere)*(1-near*.5);
+  if(starA>.02){for(const [p,c,b] of STARS){const s=[camPos[0]+p[0]*SR,camPos[1]+p[1]*SR,camPos[2]+p[2]*SR];pt(s[0],s[1],s[2],c[0],c[1],c[2],b*starA*(.75+.25*Math.sin(t*2+p[0]*99)),0,6,1.2+b*2.2)}
+    const sp=[camPos[0]+sun[0]*SR,camPos[1]+sun[1]*SR,camPos[2]+sun[2]*SR];pt(sp[0],sp[1],sp[2],1,.92,.75,1,0,5,70*(1-near*.5));pt(sp[0],sp[1],sp[2],1,.85,.6,.5,0,5,180)}
+  drawPoints(t,sun,true);
+  // planet
+  gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
+  gl.useProgram(Pp.p);gl.uniformMatrix4fv(Pp.u.uVP,false,VP);gl.uniform3fv(Pp.u.uSun,sun);gl.uniform3fv(Pp.u.uCam,camPos);gl.uniform1f(Pp.u.uTime,t);
+  gl.uniform4fv(Pp.u.uFlash,flash);gl.uniform1f(Pp.u.uRed,red);gl.uniform1f(Pp.u.uSel,0);
+  let ring=[0,0,0,0];if(aim&&hoverPt){const p=pickSphere(hoverPt[0],hoverPt[1],1.0);if(p)ring=[p[0],p[1],p[2],MRAD[aim]]}
+  gl.uniform4fv(Pp.u.uRing,ring);const rc=aim?hex(MCOL[aim]):[1,1,1];gl.uniform3fv(Pp.u.uRingC,rc);
+  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);gl.uniform1i(Pp.u.uT,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,aux);gl.uniform1i(Pp.u.uX,1);gl.activeTexture(gl.TEXTURE0);
+  gl.bindVertexArray(planet.vao);gl.drawElements(gl.TRIANGLES,planet.count,gl.UNSIGNED_INT,0);
+  // creatures, villages
+  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);
+  pN=0;buildWorldPoints(t);drawPoints(t,sun,false);
+  // lines (additive)
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE);lN=0;buildLines(t);
+  if(lN){gl.useProgram(Pl.p);gl.uniformMatrix4fv(Pl.u.uVP,false,VP);gl.bindVertexArray(lVao);gl.bindBuffer(gl.ARRAY_BUFFER,lBuf);gl.bufferSubData(gl.ARRAY_BUFFER,0,lData,0,lN*7);gl.drawArrays(gl.LINES,0,lN)}
+  // fx particles
+  pN=0;for(const f of FX){const a=Math.min(1,f.life/f.max*2)*Math.min(1,(f.max-f.life)*8);pt(f.p[0],f.p[1],f.p[2],f.c[0],f.c[1],f.c[2],f.c[3]*a,f.s,f.k,1.4)}
+  for(const m of meteors)if(m.q){pt(m.q[0],m.q[1],m.q[2],1,.95,.8,1,.02,5,6);pt(m.q[0],m.q[1],m.q[2],1,.5,.2,.6,.06,5,10)}
+  drawPoints(t,sun,true);
+  // clouds
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.enable(gl.CULL_FACE);
+  const cFade=sst(1.022,1.12,cam.dist);
+  if(cFade>.01){gl.useProgram(Pc.p);gl.uniformMatrix4fv(Pc.u.uVP,false,VP);gl.uniform3fv(Pc.u.uSun,sun);gl.uniform3fv(Pc.u.uCam,camPos);gl.uniform1f(Pc.u.uTime,t);gl.uniform1f(Pc.u.uFade,cFade);gl.uniform1f(Pc.u.uRed,red);
+    storms.fill(0);STORMS.slice(-8).forEach((s,i)=>{storms.set([s.p[0],s.p[1],s.p[2],s.s*.9],i*4)});
+    // drought-free persistent storms over strongly rained areas skipped
+    gl.uniform4fv(Pc.u.uStorm,storms);gl.bindVertexArray(cloudMesh.vao);gl.drawElements(gl.TRIANGLES,cloudMesh.count,gl.UNSIGNED_INT,0)}
+  // atmosphere
+  gl.blendFunc(gl.ONE,gl.ONE);gl.cullFace(gl.FRONT);gl.useProgram(Pa.p);gl.uniformMatrix4fv(Pa.u.uVP,false,VP);gl.uniform3fv(Pa.u.uSun,sun);gl.uniform3fv(Pa.u.uCam,camPos);gl.uniform1f(Pa.u.uRed,red);gl.uniform1f(Pa.u.uFade,sst(1.02,1.3,cam.dist));
+  gl.bindVertexArray(atmMesh.vao);gl.drawElements(gl.TRIANGLES,atmMesh.count,gl.UNSIGNED_INT,0);gl.cullFace(gl.BACK);
+  gl.bindVertexArray(null);gl.depthMask(true);
+}
+function hex(h){const n=parseInt(h.slice(1),16);return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]}
+function drawPoints(t,sun,additive){if(!pN)return;gl.useProgram(Pt.p);gl.uniformMatrix4fv(Pt.u.uVP,false,VP);gl.uniform1f(Pt.u.uScale,uScale*DPR);gl.uniform3fv(Pt.u.uSun,sun);gl.uniform1f(Pt.u.uTime,t);
+  gl.bindVertexArray(pVao);gl.bindBuffer(gl.ARRAY_BUFFER,pBuf);gl.bufferSubData(gl.ARRAY_BUFFER,0,pData,0,pN*PSTRIDE);gl.drawArrays(gl.POINTS,0,pN)}
+const spCol=[];function speciesColor(s){let c=spCol[s];if(!c){const sp=S.species[s];c=hsl(sp.hue,.62,.56);spCol[s]=c}return c}
+function buildWorldPoints(t){
+  agentIndexById.clear();
+  const selSp=selected&&selected.t==='species'?selected.sp:-1;const camN=nrm(camPos);const close=cam.dist<1.6;
+  const dpr=DPR;
+  for(let i=0;i<A.n;i++){
+    const x=A.x[i],y=A.y[i],z=A.z[i];agentIndexById.set(A.id[i],i);
+    if(x*camN[0]+y*camN[1]+z*camN[2]<.05)continue;
+    const r=1+RELIEF*ARD.heightAt(x,y,z)+.0012;const gi=i*GN;
+    const diet=A.g[gi+3],land=A.g[gi+4];const c=speciesColor(A.sp[i]);
+    let k=land<.45?0:diet>.55?2:1;let a=1;if(selSp>=0&&A.sp[i]!==selSp)a=.18;
+    let cr=c[0],cg=c[1],cb=c[2];if(A.sick[i]>0){cr=lerp(cr,.6,.6);cg=lerp(cg,.9,.6);cb=lerp(cb,.3,.6)}
+    const sz=.0009+.0007*A.sz[i]*(diet>.55?1.2:1);
+    pt(x*r,y*r,z*r,cr,cg,cb,a,sz,k,diet>.55?2.2:1.4);
+  }
+  // tribes
+  for(const T of S.tribes){if(!T.alive)continue;const p=T.p;if(dot(p,camN)<.02)continue;
+    const c=T.atheist?[.7,.7,.7]:hsl(T.hue,.55,.62);const s=surf(p,.0015);
+    const war=T.war?(.5+.5*Math.sin(t*5)):0;
+    pt(s[0],s[1],s[2],lerp(c[0],1,war),lerp(c[1],.25,war),lerp(c[2],.2,war),.95,.006+.0016*Math.sqrt(T.pop/20),3,9);
+    if(T.temples){const [e,n]=tangentFrame(p);for(let k=0;k<T.temples;k++){const a=k*2.4+T.id;const q=nrm([p[0]+(e[0]*Math.cos(a)+n[0]*Math.sin(a))*.004,p[1]+(e[1]*Math.cos(a)+n[1]*Math.sin(a))*.004,p[2]+(e[2]*Math.cos(a)+n[2]*Math.sin(a))*.004]);const s2=surf(q,.002);pt(s2[0],s2[1],s2[2],1,.85,.45,1,.0035+.0006*k,4,close?4:0)}}
+    if(close){const [e,n]=tangentFrame(p);const huts=Math.min(46,3+(T.pop/14)|0);
+      for(let k=0;k<huts;k++){const a=k*2.39996+T.id,rr=.0022*Math.sqrt(k+1);const q=nrm([p[0]+(e[0]*Math.cos(a)+n[0]*Math.sin(a))*rr,p[1]+(e[1]*Math.cos(a)+n[1]*Math.sin(a))*rr,p[2]+(e[2]*Math.cos(a)+n[2]*Math.sin(a))*rr]);
+        const s2=surf(q,.0009);pt(s2[0],s2[1],s2[2],.72,.6,.44,1,.0011,9,0)}
+      const people=Math.min(70,(T.pop/6)|0);
+      for(let k=0;k<people;k++){const ph=k*1.618+T.id*7;const a=ph+t*(.05+.03*Math.sin(k))*((k%2)?1:-1),rr=.003+.012*((Math.sin(ph*3.1)+1)/2)*Math.min(1,Math.sqrt(T.pop/200)+.3);
+        const q=nrm([p[0]+(e[0]*Math.cos(a)+n[0]*Math.sin(a))*rr,p[1]+(e[1]*Math.cos(a)+n[1]*Math.sin(a))*rr,p[2]+(e[2]*Math.cos(a)+n[2]*Math.sin(a))*rr]);
+        const s2=surf(q,.0006);const cc=hsl(T.hue,.4,.7);pt(s2[0],s2[1],s2[2],cc[0],cc[1],cc[2],1,.00045,8,0)}}
+    if(T.prayer&&Math.random()<.25){const q=scatter(p,.006);const s2=surf(q,.002);spawnP(s2,[q[0]*.006,q[1]*.006,q[2]*.006],1.8,[1,.85,.45,.8],.0018,5)}
+    if(T.war&&Math.random()<.15){const q=scatter(p,.01);const s2=surf(q,.002);spawnP(s2,[q[0]*.004,q[1]*.004,q[2]*.004],.8,[1,.3,.15,.9],.0016,5)}
+  }
+  if(selected){let sp=null;if(selected.t==='agent'){const i=findAgent(selected.id);if(i>=0){const x=A.x[i],y=A.y[i],z=A.z[i];const r=1+RELIEF*ARD.heightAt(x,y,z)+.0015;sp=[x*r,y*r,z*r]}}
+    else if(selected.t==='tribe'&&selected.T.alive)sp=surf(selected.T.p,.002);
+    if(sp)pt(sp[0],sp[1],sp[2],1,1,1,1,selected.t==='tribe'?.02:.009,7,22)}
+}
+function buildLines(t){
+  for(const b of BOLTS){const a=b.life/b.max;const fl=Math.random()<.7?1:.3;for(const [p,q,w] of b.segs)ln(p,q,[.85,.9,1,a*fl*w])}
+  // war arcs
+  for(const T of S.tribes){if(!T.alive||!T.war||!(T.id<T.war.foe))continue;const U=S.tribes.find(x=>x.id===T.war.foe);if(!U||!U.alive)continue;
+    let prev=null;for(let k=0;k<=24;k++){const f=k/24;const q=nrm([lerp(T.p[0],U.p[0],f),lerp(T.p[1],U.p[1],f),lerp(T.p[2],U.p[2],f)]);const h=1.002+Math.sin(f*Math.PI)*.012;const s=[q[0]*h,q[1]*h,q[2]*h];
+      if(prev&&((k+(t*6|0))%3))ln(prev,s,[1,.3,.2,.6]);prev=s}}
+  // prayers: thin beams up
+  for(const T of S.tribes){if(!T.alive||!T.prayer)continue;const s=surf(T.p,.001);const top=[T.p[0]*1.05,T.p[1]*1.05,T.p[2]*1.05];ln(s,top,[1,.85,.45,.45,0])}
+}
+
+/* ---------------- audio ---------------- */
+const AU=(function(){
+  let ctx=null,master,rev,dry,on=true,started=false,droneG,windG,windF,dr=[],nextNote=0,mood=0;
+  function start(){if(started){if(ctx&&ctx.state==='suspended')ctx.resume();return}started=true;
+    try{ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}
+    master=ctx.createGain();master.gain.value=on?.8:0;const comp=ctx.createDynamicsCompressor();comp.threshold.value=-18;master.connect(comp);comp.connect(ctx.destination);
+    rev=ctx.createConvolver();const L=ctx.sampleRate*4.5,ir=ctx.createBuffer(2,L,ctx.sampleRate);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<L;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/L,2.6)}
+    rev.buffer=ir;const rg=ctx.createGain();rg.gain.value=.55;rev.connect(rg);rg.connect(master);dry=ctx.createGain();dry.gain.value=.6;dry.connect(master);
+    droneG=ctx.createGain();droneG.gain.value=0;const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;droneG.connect(lp);lp.connect(dry);lp.connect(rev);
+    for(const [f,ty,g] of [[55,'sine',.22],[82.4,'triangle',.07],[110,'sine',.08],[164.8,'sine',.03]]){const o=ctx.createOscillator();o.type=ty;o.frequency.value=f;const lfo=ctx.createOscillator();lfo.frequency.value=.05+Math.random()*.08;const lg=ctx.createGain();lg.gain.value=f*.004;lfo.connect(lg);lg.connect(o.frequency);lfo.start();
+      const gg=ctx.createGain();gg.gain.value=g;o.connect(gg);gg.connect(droneG);o.start();dr.push({o,gg,base:f})}
+    droneG.gain.linearRampToValueAtTime(.5,ctx.currentTime+6);
+    const nb=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);const nd=nb.getChannelData(0);let b=0;for(let i=0;i<nd.length;i++){b=b*.98+(Math.random()*2-1)*.02;nd[i]=b*6}
+    const ns=ctx.createBufferSource();ns.buffer=nb;ns.loop=true;windF=ctx.createBiquadFilter();windF.type='bandpass';windF.frequency.value=500;windF.Q.value=.6;windG=ctx.createGain();windG.gain.value=0;ns.connect(windF);windF.connect(windG);windG.connect(dry);ns.start();
+  }
+  // scales (Hz ratios on D)
+  const ROOT=146.83;
+  const SCALES={sea:[1,9/8,5/4,45/32,3/2,5/3,15/8],land:[1,9/8,5/4,3/2,5/3,2,9/4],hunt:[1,16/15,6/5,4/3,3/2,8/5,9/5],
+    people:[1,16/15,5/4,4/3,3/2,8/5,16/9],bayati:[1,1.0905,6/5,4/3,3/2,8/5,16/9]};
+  function tone(f,t,dur,vol,type,wet){const o=ctx.createOscillator();o.type=type||'triangle';o.frequency.value=f;const g=ctx.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.012);g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+    const f2=ctx.createBiquadFilter();f2.type='lowpass';f2.frequency.value=f*4;o.connect(f2);f2.connect(g);g.connect(dry);if(wet!==0){const s=ctx.createGain();s.gain.value=wet||.8;g.connect(s);s.connect(rev)}o.start(t);o.stop(t+dur+.05)}
+  function noise(t,dur,vol,ftype,f0,f1,q){const len=Math.ceil(ctx.sampleRate*dur);const b=ctx.createBuffer(1,len,ctx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+    const s=ctx.createBufferSource();s.buffer=b;const f=ctx.createBiquadFilter();f.type=ftype;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);f.Q.value=q||1;
+    const g=ctx.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0008,t+dur);s.connect(f);f.connect(g);g.connect(dry);const w=ctx.createGain();w.gain.value=.5;g.connect(w);w.connect(rev);s.start(t);s.stop(t+dur)}
+  function tick(dt,state){if(!ctx||!on)return;const t=ctx.currentTime;
+    const sc=state.tribes?(state.war?SCALES.bayati:SCALES.people):state.pred?SCALES.hunt:state.land?SCALES.land:SCALES.sea;
+    const busy=state.busy;
+    if(t>nextNote){const n=sc[(Math.random()*sc.length)|0]*(Math.random()<.3?.5:1)*(Math.random()<.2?2:1);
+      tone(ROOT*n,t+.02,2.2+Math.random()*2,.05+.03*Math.random(),Math.random()<.5?'triangle':'sine');
+      if(Math.random()<.3)tone(ROOT*n*1.5,t+.25,2,.025,'sine');
+      if(state.tribes&&Math.random()<.25){for(let k=0;k<3;k++)tone(ROOT*.25*(k?1.5:1),t+k*.18,.4,.07,'sine',0)}
+      nextNote=t+(1.4+Math.random()*2.8)/(.6+busy)}
+    const close=state.close;windG.gain.setTargetAtTime(.02+close*.1,t,.8);windF.frequency.setTargetAtTime(300+close*600+Math.random()*80,t,1.5);
+    dr.forEach((d,i)=>{d.o.frequency.setTargetAtTime(d.base*(state.war&&i===1?16/15*.75*4/3:1),t,2)});
+    if(close>.5&&Math.random()<dt*state.creatures*.004){const f=1800+Math.random()*2400;const o=ctx.createOscillator();o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*(.7+Math.random()*.6),t+.08);const g=ctx.createGain();g.gain.setValueAtTime(.012,t);g.gain.exponentialRampToValueAtTime(.0001,t+.1);o.connect(g);g.connect(dry);o.start(t);o.stop(t+.12)}
+  }
+  function sfx(k){if(!ctx||!on)return;const t=ctx.currentTime+.01;
+    if(k==='rain'){noise(t,5,.12,'highpass',3000,1500,.4);noise(t+.3,4,.05,'lowpass',300,120,.5);for(let i=0;i<4;i++)tone(ROOT*[1,5/4,3/2,2][i],t+i*.15,3,.035,'sine')}
+    else if(k==='harvest'){[1,5/4,3/2,2,5/2,3].forEach((r,i)=>tone(ROOT*2*r,t+i*.09,2.5,.045,'sine'))}
+    else if(k==='fire'){noise(t,.12,.6,'highpass',4000,1500,.7);noise(t+.06,3.2,.5,'lowpass',900,40,.8);tone(48,t+.05,1.4,.25,'sine',.3)}
+    else if(k==='plague'){[1,16/15,64/45].forEach((r,i)=>tone(ROOT*.5*r,t+i*.2,3.5,.06,'sawtooth',.9));noise(t,3,.04,'bandpass',400,200,3)}
+    else if(k==='meteorIn'){noise(t,1.6,.15,'bandpass',3000,200,1.5)}
+    else if(k==='impact'){noise(t,5,.8,'lowpass',1200,30,.7);tone(38,t,3,.5,'sine',.4);tone(29,t+.1,4,.4,'sine',.4)}
+    else if(k==='mind'){[1,3/2,9/4,27/8].forEach((r,i)=>tone(ROOT*r,t+i*.25,3,.035,'sine'));noise(t,2.5,.03,'bandpass',1200,2400,8)}
+    else if(k==='life'){for(let i=0;i<7;i++)tone(600+Math.random()*900,t+i*.07,.25,.03,'sine')}
+    else if(k==='sky'){[1,5/4,3/2,15/8,9/4].forEach((r,i)=>tone(ROOT*2*r,t+i*.12,4,.03,'sine'))}
+    else if(k==='prayer'){tone(ROOT*4,t,1.6,.025,'sine');tone(ROOT*5,t+.12,1.4,.018,'sine')}
+    else if(k==='tick'){tone(ROOT*4,t,.15,.02,'sine',.2)}
+    else if(k==='deny'){tone(ROOT*.5,t,.4,.06,'square',.1)}
+    else if(k==='era'){[1,3/2,2,3].forEach((r,i)=>tone(ROOT*.5*r,t+i*.35,5,.06,'triangle'))}
+    else if(k==='war'){for(let i=0;i<6;i++)tone(60,t+i*.32,.35,.18,'sine',.2)}
+    else if(k==='answer'){[1,5/4,3/2,2].forEach((r,i)=>tone(ROOT*2*r,t+i*.06,2,.04,'sine'))}
+  }
+  function toggle(){on=!on;if(master)master.gain.setTargetAtTime(on?.8:0,ctx.currentTime,.2);$('snd').classList.toggle('on',on);$('snd').textContent=on?'♪':'∅'}
+  return{start,tick,sfx,toggle,get on(){return on}};
+})();
+
+/* ---------------- UI ---------------- */
+let speed=1,lastSpeed=1;const SPEEDS=[0,.5,2,8,999];
+const spdBtns=[...document.querySelectorAll('#speed button')];
+spdBtns.forEach(b=>b.onclick=()=>{AU.start();setSpeed(+b.dataset.s)});
+function setSpeed(s){speed=s;if(s)lastSpeed=s;spdBtns.forEach(b=>b.classList.toggle('on',+b.dataset.s===s))}
+setSpeed(1);
+$('snd').onclick=()=>{AU.start();AU.toggle()};
+$('menuBtn').onclick=()=>$('menu').classList.toggle('on');
+$('panelBtn').onclick=togglePanel;function togglePanel(){$('panel').classList.toggle('hide')}
+$('mNew').onclick=()=>{newWorld((Math.random()*1e9)|0);$('menu').classList.remove('on')};
+$('mSeed').onclick=()=>{const s=prompt('Seed (any number):',String(S.seed));if(s){newWorld((parseInt(s,10)||hashStr(s))>>>0);$('menu').classList.remove('on')}};
+$('mHome').onclick=()=>{cam.tDist=3.1;cam.follow=null;$('menu').classList.remove('on')};
+function hashStr(s){let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return h}
+const tabBtns=[...document.querySelectorAll('#tabs button')];let tab='chron';
+tabBtns.forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+function showTab(t){tab=t;tabBtns.forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('.tab').forEach(d=>d.classList.toggle('on',d.id==='t-'+t));$('panel').classList.remove('hide');refreshUI(true)}
+let voiceT=0;const voiceQ=[];
+function say2(t){voiceQ.unshift({t,pri:5})}
+function pumpVoice(dt){voiceT-=dt;if(voiceT<=0){const v=$('voice');if(S.says.length){voiceQ.push(...S.says.splice(0));voiceQ.sort((a,b)=>b.pri-a.pri)}
+  if(voiceQ.length){const n=voiceQ.shift();v.textContent=n.t;v.classList.add('show');voiceT=Math.max(4.5,n.t.length*.065)}else v.classList.remove('show')}}
+// chronicle
+const CF={all:'All',life:'Life',people:'Peoples',faith:'Faith',god:'Your hand'};let cfil='all';
+$('cFilt').innerHTML=Object.entries(CF).map(([k,v])=>`<button data-f="${k}" class="${k==='all'?'on':''}">${v}</button>`).join('');
+$('cFilt').onclick=e=>{const b=e.target.closest('button');if(!b)return;cfil=b.dataset.f;[...$('cFilt').children].forEach(x=>x.classList.toggle('on',x===b));lastLogLen=-1;refreshUI(true)};
+const KCOL={era:'#e8b75c',species:'#7fd8a0',extinct:'#8a7f6a',nature:'#c8a070',god:'#ffd88a',people:'#9ec8ff',faith:'#c79bff',war:'#e0533f'};
+const KGRP={era:'all',species:'life',extinct:'life',nature:'life',god:'god',people:'people',war:'people',faith:'faith'};
+let lastLogLen=-1;
+function renderChron(){
+  if(S.log.length===lastLogLen&&cfil!=='x')return;lastLogLen=S.log.length;
+  const items=S.log.filter(l=>cfil==='all'||KGRP[l.kind]===cfil||l.kind==='era').slice(-220).reverse();
+  $('cList').innerHTML=items.map((l,i)=>`<div class="ev ${l.kind}" data-i="${S.log.indexOf(l)}"><span class="y">${l.y}</span><span class="d" style="background:${KCOL[l.kind]||'#999'}"></span><span class="t">${esc(l.text)}</span></div>`).join('');
+}
+$('cList').onclick=e=>{const d=e.target.closest('.ev');if(!d)return;const l=S.log[+d.dataset.i];if(!l)return;if(l.tribe){openTribe(l.tribe);showTab('peoples')}else if(l.sp!=null){selected={t:'species',sp:l.sp};showTab('insp')}if(l.p)flyTo(l.p,Math.min(cam.tDist,1.6))};
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function drawSpark(){const c=$('spark');const w=c.clientWidth*DPR,h=c.clientHeight*DPR;if(c.width!==w)c.width=w;if(c.height!==h)c.height=h;const x=c.getContext('2d');x.clearRect(0,0,w,h);
+  const L=S.stats.life,T=S.stats.tribes;if(L.length<2)return;const mx=Math.max(...L.map(v=>v[1]),10),ms=Math.max(...L.map(v=>v[2]),3),mt=Math.max(...T.map(v=>v[1]),10);
+  const line=(arr,j,m,col)=>{x.beginPath();arr.forEach((v,i)=>{const px=i/(arr.length-1)*w,py=h-4-(v[j]/m)*(h-10);i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle=col;x.lineWidth=1.4*DPR;x.stroke()};
+  line(L,1,mx,'rgba(127,216,160,.85)');line(L,2,ms,'rgba(232,183,92,.7)');if(mt>10)line(T,1,mt,'rgba(158,200,255,.85)');
+  x.font=`${10*DPR}px ui-monospace,monospace`;x.fillStyle='rgba(127,216,160,.9)';x.fillText('creatures',4,12*DPR);x.fillStyle='rgba(232,183,92,.9)';x.fillText('species',70*DPR,12*DPR);x.fillStyle='rgba(158,200,255,.9)';x.fillText('people',125*DPR,12*DPR)}
+// peoples
+let openT=null;
+function openTribe(id){openT=id;const T=S.tribes.find(t=>t.id===id);if(T){selected={t:'tribe',T};flyTo(T.p,Math.min(cam.tDist,1.35))}renderPeoples(true)}
+function renderPeoples(force){
+  const el=$('pList');
+  if(openT!=null){const T=S.tribes.find(t=>t.id===openT);if(!T){openT=null;return renderPeoples(true)}
+    const key=T.verses.length+':'+(T.pop|0)+':'+T.faith.toFixed(2)+T.atheist+T.god+T.alive;if(!force&&el.dataset.k===key)return;el.dataset.k=key;
+    const C=T.culture;const par=T.parent?S.tribes.find(x=>x.id===T.parent):null;
+    const ap=['rain','harvest','fire','plague','star','mind','life','sky'];const mx=Math.max(.5,...ap.map(a=>Math.max(T.asp[a].l,T.asp[a].f)));
+    const sp=S.species[T.sp];
+    const scrollBook=el.querySelector('.book');const atBottom=!scrollBook;
+    el.innerHTML=`<button id="pBack">← all peoples</button>
+    <h2>The ${esc(T.name)}</h2><div class="sub">${T.alive?'':'Gone since year '+T.died+'. '}${T.kind==='sect'?'A sect of the '+esc(par?par.name:'old faith'):T.kind==='colony'?'Daughters of the '+esc(par?par.name:'old ones'):'First people of the '+esc(sp?sp.name:'')} · ${Math.round(T.pop)} souls · home: ${esc(ARD.placeOf(T.p))}</div>
+    <div class="row"><button id="pGo">Go there</button><button id="pFollow">${cam.follow===-T.id?'Stop following':'Follow'}</button></div>
+    <h3>Their god</h3><div style="font-size:18px;color:${T.atheist?'#999':'#f3dca6'}">${T.atheist?'None. The sky is empty.':esc(T.god||'unnamed, unsure')}</div>
+    <div class="sub">${T.atheist?'Atheists give you no belief. A big enough miracle might change their minds.':`${T.godMood==='fear'?'Feared':'Loved'}${T.temples?' · '+T.temples+' temple'+(T.temples>1?'s':''):''}${T.sacrificed?' · '+T.sacrificed+' sacrificed':''} · faith ${(T.faith*100)|0}%`}</div>
+    <h3>What they think you are</h3>
+    <div class="asp"><span></span><span class="sub">love</span><span class="sub">fear</span>${ap.map(a=>`<span>${({rain:'rain',harvest:'bounty',fire:'fire',plague:'plague',star:'stars',mind:'whisper',life:'life',sky:'omens'})[a]}</span><span class="b l"><i style="width:${T.asp[a].l/mx*100}%"></i></span><span class="b f"><i style="width:${T.asp[a].f/mx*100}%"></i></span>`).join('')}</div>
+    <h3>Temperament</h3><div class="sub">${[C.fear>.6?'fearful':C.fear<.3?'hopeful':'wary',C.zeal>.6?'zealous':C.zeal<.3?'lax':'devout',C.aggr>.6?'warlike':C.aggr<.3?'peaceful':'proud',C.open>.6?'restless':C.open<.3?'traditional':'curious'].join(', ')}${T.tech?' · '+T.tech+' gifts of knowledge':''}${T.wins||T.losses?` · wars won ${T.wins}, lost ${T.losses}`:''}</div>
+    ${T.laws.length?`<h3>Their law</h3>${T.laws.map(l=>`<div class="law">“${esc(l)}”</div>`).join('')}`:''}
+    <h3>The Book of the ${esc(T.name)}</h3>
+    <div class="book">${T.verses.map((v,i)=>`<p class="verse ${v.inherited?'inh':''} k-${v.kind}"><sup>${v.inherited?'·':v.ty}</sup>${esc(v.text)}</p>`).join('')||'<p class="sub">Nothing written yet.</p>'}</div>`;
+    $('pBack').onclick=()=>{openT=null;renderPeoples(true)};$('pGo').onclick=()=>flyTo(T.p,1.08);
+    $('pFollow').onclick=()=>{cam.follow=cam.follow===-T.id?null:-T.id;renderPeoples(true)};
+    return}
+  const al=S.tribes.slice().sort((a,b)=>(b.alive-a.alive)||(b.pop-a.pop));
+  const key=al.map(t=>t.id+':'+(t.pop|0)+t.alive+!!t.war+!!t.prayer+t.atheist).join(',');if(!force&&el.dataset.k===key)return;el.dataset.k=key;
+  if(!al.length){el.innerHTML=`<p class="sub">No one is looking up yet. Something clever has to evolve first. Whispers help.</p>`;return}
+  el.innerHTML=al.slice(0,80).map(T=>`<div class="tribe ${T.alive?'':'dead'}" data-id="${T.id}"><span class="n">The ${esc(T.name)}</span><span class="p">${T.alive?Math.round(T.pop):'gone'}</span>
+    <span class="g">${T.atheist?'no god':esc(T.god||'…')}</span><span class="tags">${T.war?'<span class="tag war">WAR</span>':''}${T.prayer?'<span class="tag pray">PRAYING</span>':''}${T.plague?'<span class="tag plg">SICK</span>':''}${T.atheist?'<span class="tag ath">ATHEIST</span>':''}${T.kind==='sect'?'<span class="tag sect">SECT</span>':''}</span>
+    <span class="fbar"><i style="width:${T.atheist?0:T.faith*100}%"></i></span></div>`).join('');
+}
+$('pList').onclick=e=>{const d=e.target.closest('.tribe');if(d)openTribe(+d.dataset.id)};
+// inspect
+function geneRows(g,off){return GENE_NAMES.map((n,k)=>{const v=g[off+k];let col='#e8b75c',txt=v.toFixed(2);
+  if(k===6){col=`hsl(${v*360},62%,56%)`;txt=''}if(k===3){col=v>.55?'#e0533f':v>.3?'#d9a05a':'#7fd8a0';txt=v>.55?'meat':v>.3?'both':'plants'}
+  if(k===4){txt=v<.4?'sea':v<.6?'shore':'land';col='#7fd8d0'}if(k===5){txt=Math.round(-12+47*v)+'°'}
+  return `<span>${n}</span><span class="b"><i style="width:${v*100}%;background:${col}"></i></span><span class="v">${txt}</span>`}).join('')}
+let inspKey='';
+function renderInspect(){
+  const el=$('iBody');
+  if(!selected){el.innerHTML='<p class="sub">Click a creature, a village, or a branch of the tree.</p>';inspKey='';return}
+  if(selected.t==='agent'){const i=findAgent(selected.id);if(i<0){el.innerHTML=`<p class="sub">It died. Most things do.</p>`;return}
+    const s=S.species[A.sp[i]];const key='a'+selected.id+((A.e[i]*20)|0)+((A.age[i]/40)|0)+A.sick[i];if(key===inspKey)return;inspKey=key;
+    el.innerHTML=`<h2>${esc(s.name)}</h2><div class="sub">${esc(s.latin)} · ${s.role}, ${s.medium} · generation ${A.gen[i]}</div>
+    <div class="row"><button id="iF">${cam.follow===selected.id?'Stop following':'Follow (F)'}</button><button id="iSp">Show its kind</button></div>
+    <h3>This one</h3><div class="genes"><span>energy</span><span class="b"><i style="width:${A.e[i]/A.sz[i]*100}%;background:#9fd36a"></i></span><span class="v">${(A.e[i]/A.sz[i]*100|0)}%</span>
+    <span>age</span><span class="b"><i style="width:${A.age[i]/A.life[i]*100}%;background:#a99a7e"></i></span><span class="v">${(A.age[i]/TPY).toFixed(1)}y</span></div>
+    ${A.sick[i]>0?'<p class="sub" style="color:#9fd36a">Sick. Probably dying.</p>':''}
+    <h3>Genome</h3><div class="genes">${geneRows(A.g,i*GN)}</div>
+    <h3>Lineage</h3><div class="sub">${lineage(s.id)}</div>`;
+    $('iF').onclick=()=>{cam.follow=cam.follow===selected.id?null:selected.id;inspKey='';renderInspect()};$('iSp').onclick=()=>{selected={t:'species',sp:s.id};renderInspect()};return}
+  if(selected.t==='species'){const s=S.species[selected.sp];const key='s'+s.id+s.count+s.died;if(key===inspKey)return;inspKey=key;
+    const kids=s.children.map(c=>S.species[c].name);
+    el.innerHTML=`<h2>${esc(s.name)}</h2><div class="sub">${esc(s.latin)} · ${s.role}, ${s.medium}</div>
+    <p>${s.ascended?`Woke in year ${s.awakenedAt} and became people.`:s.died!=null?`Lived from year ${s.born} to ${s.died}. Extinct${s.godKilled>s.peak*.3?', mostly by your hand':''}.`:`Alive since year ${s.born}. ${s.count} living, peak ${s.peak}.`}</p>
+    <div class="row"><button id="iClr">Clear highlight</button>${s.count?'<button id="iGo">Find one</button>':''}</div>
+    <h3>Average genome</h3><div class="genes">${geneRows(s.mean,0)}</div>
+    <h3>Lineage</h3><div class="sub">${lineage(s.id)}</div>${kids.length?`<h3>Gave rise to</h3><div class="sub">${kids.map(esc).join(', ')}</div>`:''}`;
+    $('iClr').onclick=()=>{selected=null;renderInspect()};const g=$('iGo');if(g)g.onclick=()=>{for(let i=0;i<A.n;i++)if(A.sp[i]===s.id){selected={t:'agent',id:A.id[i]};flyTo([A.x[i],A.y[i],A.z[i]],1.03);cam.follow=A.id[i];renderInspect();break}};return}
+  if(selected.t==='tribe'){el.innerHTML=`<p class="sub">The ${esc(selected.T.name)} are open in the Peoples tab.</p>`}
+}
+function lineage(id){const ch=[];let s=S.species[id];while(s){ch.unshift(s.name);s=s.parent>=0?S.species[s.parent]:null}return ch.map(esc).join(' → ')}
+// tree
+let treeRows=[],treeKey='';
+function renderTree(){
+  const c=$('tree');const sp=S.species;const key=sp.length+':'+S.year;if(key===treeKey)return;treeKey=key;
+  const kc=new Map();const keep=s=>{if(kc.has(s.id))return kc.get(s.id);const v=s.peak>=30||s.count>0||s.ascended||s.children.some(c=>keep(S.species[c]));kc.set(s.id,v);return v};
+  const rows=[];const visit=id=>{const s=sp[id];if(keep(s))rows.push(s);for(const c of s.children)visit(c)};
+  sp.filter(s=>s.parent<0).forEach(s=>visit(s.id));treeRows=rows;
+  const rh=rows.length>120?5:rows.length>60?8:12;const w=c.clientWidth||340;const hgt2=Math.max(180,rows.length*rh+30);
+  c.style.height=hgt2+'px';c.width=w*DPR;c.height=hgt2*DPR;const x=c.getContext('2d');x.scale(DPR,DPR);x.clearRect(0,0,w,hgt2);
+  const Y=Math.max(10,S.year);const lw=w-110;const X=y=>8+y/Y*lw;const rowOf=new Map(rows.map((s,i)=>[s.id,i]));
+  x.strokeStyle='rgba(232,183,92,.12)';x.lineWidth=1;x.font='9px ui-monospace,monospace';x.fillStyle='rgba(169,154,126,.6)';
+  const step=Math.pow(10,Math.floor(Math.log10(Y/4)));for(let yy=0;yy<=Y;yy+=step*(Y/step>8?2:1)){x.beginPath();x.moveTo(X(yy),0);x.lineTo(X(yy),hgt2);x.stroke();x.fillText(yy,X(yy)+2,hgt2-4)}
+  let lastLy=-99;rows.forEach((s,i)=>{const y=12+i*rh;const end=s.died!=null?s.died:s.ascended?s.awakenedAt:S.year;const col=hsl(s.hue,.6,.58);const cs=`rgb(${col.map(v=>v*255|0)})`;
+    const pr=s.parent>=0?rowOf.get(s.parent):null;if(pr!=null){x.strokeStyle='rgba(200,190,160,.25)';x.beginPath();x.moveTo(X(s.born),12+pr*rh);x.lineTo(X(s.born),y);x.stroke()}
+    x.strokeStyle=cs;x.globalAlpha=s.died!=null&&!s.ascended?.35:1;x.lineWidth=s.count>0?Math.min(4,1+Math.sqrt(s.count)/8):1.2;x.beginPath();x.moveTo(X(s.born),y);x.lineTo(X(end),y);x.stroke();x.globalAlpha=1;
+    if(s.ascended){x.fillStyle='#e8b75c';x.beginPath();x.arc(X(end),y,3.5,0,TAU);x.fill();x.font='italic 11px Georgia,serif';x.fillText('✦ '+s.name+' woke',X(end)+6,y+3.5);lastLy=y}
+    else if(s.died!=null){x.strokeStyle='rgba(169,154,126,.6)';x.lineWidth=1;x.beginPath();x.moveTo(X(end)-2,y-2);x.lineTo(X(end)+2,y+2);x.moveTo(X(end)+2,y-2);x.lineTo(X(end)-2,y+2);x.stroke()}
+    else if(y-lastLy>=11){lastLy=y;x.fillStyle=cs;x.font='11px Georgia,serif';x.fillText(s.name,X(end)+5,y+3.5)}});
+  $('treeLeg').innerHTML=`<span><i style="background:#7fd8a0"></i>alive (thicker = more)</span><span><i style="background:#555"></i>extinct ×</span><span style="color:#e8b75c">✦ became people</span><span>${sp.filter(s=>s.count>0).length} alive of ${sp.length} ever</span>`;
+}
+$('tree').addEventListener('mousemove',e=>{const r=$('tree').getBoundingClientRect();const rh=treeRows.length>120?5:treeRows.length>60?8:12;const i=Math.round((e.clientY-r.top-12)/rh);const s=treeRows[i];
+  const tip=$('tip');if(!s){tip.style.display='none';return}tip.style.display='block';tip.style.left=(e.clientX-270)+'px';tip.style.top=(e.clientY+12)+'px';
+  tip.innerHTML=`<b>${esc(s.name)}</b><br>${esc(s.latin)}<br>${s.role}, ${s.medium} · year ${s.born}–${s.died!=null?s.died:s.ascended?s.awakenedAt:'now'}${s.count?'<br>'+s.count+' alive':''}`});
+$('tree').addEventListener('mouseleave',()=>{$('tip').style.display='none'});
+$('tree').addEventListener('click',e=>{const r=$('tree').getBoundingClientRect();const rh=treeRows.length>120?5:treeRows.length>60?8:12;const s=treeRows[Math.round((e.clientY-r.top-12)/rh)];if(s){selected={t:'species',sp:s.id};showTab('insp')}});
+// prayers
+let prayKey='';
+function renderPrayers(){const al=S.tribes.filter(t=>t.alive&&t.prayer).sort((a,b)=>a.prayer.until-b.prayer.until).slice(0,4);
+  const key=al.map(t=>t.id+':'+t.prayer.since+':'+(t.prayer.until-S.year)).join(',');if(key===prayKey)return;
+  const newOnes=al.filter(t=>!prayKey.includes(t.id+':'+t.prayer.since));if(newOnes.length&&prayKey!=='')AU.sfx('prayer');prayKey=key;
+  $('prayers').innerHTML=al.map(T=>{const w=T.prayer.want[0];const foe=T.prayer.target?S.tribes.find(x=>x.id===T.prayer.target):null;
+    return `<div class="prayer glass" data-id="${T.id}">${svg(w)}<span>The ${esc(T.name)} pray for ${foe?'fire upon the '+esc(foe.name):({rain:'rain',harvest:'bounty',fire:'fire'})[w]}</span><span class="tl">${Math.max(0,T.prayer.until-S.year)}y</span></div>`}).join('')}
+$('prayers').onclick=e=>{const d=e.target.closest('.prayer');if(!d)return;const T=S.tribes.find(t=>t.id===+d.dataset.id);if(!T||!T.prayer)return;
+  const tgt=T.prayer.target?S.tribes.find(x=>x.id===T.prayer.target):T;flyTo((tgt||T).p,Math.min(cam.tDist,1.5));setAim(T.prayer.want[0]);AU.start()};
+// top bar
+const SEASON=['Spring','Summer','Autumn','Winter'];
+function eraName(){if(S.tribes.some(t=>t.alive))return S.wars?'Age of Holy Wars':'Age of Peoples';if(S.predFirst)return 'Age of Hunters';if(S.landFirst)return 'Age of Land';return 'Age of the Sea'}
+let lastEra='';
+function refreshUI(force){
+  $('yr').textContent='Year '+S.year.toLocaleString()+' · '+SEASON[Math.floor(S.yearFrac*4)%4];
+  const en=eraName();$('era').textContent=en;if(en!==lastEra){if(lastEra)AU.sfx('era');lastEra=en}
+  $('stA').textContent=A.n.toLocaleString();$('stS').textContent=S.aliveSpecies||S.species.filter(s=>s.count>0).length;
+  const al=S.tribes.filter(t=>t.alive);$('stT').textContent=al.length?al.length+' · '+Math.round(al.reduce((a,t)=>a+t.pop,0)).toLocaleString():'0';
+  $('bFill').style.width=(S.power/S.powerMax*100)+'%';$('bNum').textContent=Math.floor(S.power);$('bMax').textContent='/ '+Math.floor(S.powerMax);$('bRegen').textContent='+'+(S.regen||2.2).toFixed(1)+'/yr';
+  pwBtns.forEach(b=>b.disabled=S.power<COST[b.dataset.k]);
+  renderPrayers();
+  if(tab==='chron'){renderChron();drawSpark()}else if(tab==='peoples')renderPeoples(force);else if(tab==='insp')renderInspect();else if(tab==='tree')renderTree();
+}
+
+/* ---------------- loop ---------------- */
+let last=performance.now(),acc=0,texT=0,uiT=0,simTime=0,started=false;
+function newWorld(seed){ARD.newGame(seed);spCol.length=0;FX.length=0;BOLTS.length=0;STORMS.length=0;meteors.length=0;selected=null;openT=null;cam.follow=null;colInit=false;
+  buildPlanet();updateTexture(false);lastLogLen=-1;treeKey='';prayKey='';lastEra='';$('seedLbl').textContent='Seed '+seed;
+  const o=S.origin;if(o){const [la,lo]=latlon(o);cam.lat=cam.tLat=la;cam.lon=cam.tLon=lo}refreshUI(true)}
+function loop(now){
+  const dt=Math.min(.1,(now-last)/1000);last=now;const t=now/1000;
+  // simulate
+  if(started&&speed>0){const sp=SPEEDS[speed];
+    if(sp>=999){const t0=performance.now();let n=0;while(performance.now()-t0<13&&n<40){ARD.step();n++}}
+    else{acc+=dt*sp*TPY;let n=0;while(acc>=1&&n<60){ARD.step();acc-=1;n++}if(acc>4)acc=0}}
+  // consume sim fx events
+  while(S.fx.length){const e=S.fx.shift();fxFor(e);if(e.type==='answer')AU.sfx('answer');if(e.type==='war')AU.sfx('war');if(e.type==='awaken')AU.sfx('era')}
+  if(S.terrainDirty){S.terrainDirty=false;buildPlanet()}
+  texT-=dt;if(texT<=0){updateTexture(speed>=3);texT=speed>=3?.2:.12}
+  stepFx(dt);
+  frameDraw(t,dt);
+  uiT-=dt;if(uiT<=0){refreshUI(false);uiT=.35}
+  pumpVoice(dt);
+  const al=S.tribes.filter(x=>x.alive);
+  AU.tick(dt,{tribes:al.length>0,war:al.some(x=>x.war),pred:!!S.predFirst,land:!!S.landFirst,busy:speed>=3?.8:.3,close:1-sst(1.02,1.5,cam.dist),creatures:Math.min(400,A.n)});
+  requestAnimationFrame(loop);
+}
+// hover tooltip on globe
+cv.addEventListener('mousemove',e=>{if(aim||drag)return;const tip=$('tip');let best=null,bd=14*14;
+  for(const T of S.tribes){if(!T.alive)continue;const s=surf(T.p,.002);if(!facing(s))continue;const q=project(s);if(!q)continue;const d=(q[0]-e.clientX)**2+(q[1]-e.clientY)**2;if(d<bd*1.6){bd=d;best=T}}
+  if(best){tip.style.display='block';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+10)+'px';
+    tip.innerHTML=`<b>The ${esc(best.name)}</b> · ${Math.round(best.pop)}<br>${best.atheist?'believe in nothing':'worship '+esc(best.god||'something unnamed')}${best.prayer?'<br><span style="color:#e8b75c">praying</span>':''}${best.war?'<br><span style="color:#e0533f">at war</span>':''}`}
+  else tip.style.display='none'});
+$('begin').onclick=()=>{AU.start();$('intro').classList.add('gone');started=true;setTimeout(()=>{$('intro').style.display='none'},1300)};
+window.addEventListener('resize',()=>{DPR=Math.min(2,window.devicePixelRatio||1);treeKey=''});
+const seed0=(new URLSearchParams(location.search).get('seed')|0)||((Math.random()*1e9)|0);
+newWorld(seed0);
+requestAnimationFrame(loop);
+window.__ard={ARD,S,A,cam,setSpeed,doCast,flyTo,newWorld,start:()=>{started=true;$('intro').style.display='none'},select,showTab,openTribe,
+  fast:(years)=>{for(let i=0;i<years*TPY;i++)ARD.step()},refresh:()=>{updateTexture(false);refreshUI(true)}};
+})();
+
+</script>
+</body>
+</html>

@@ -42,6 +42,15 @@
 .now-feed a:hover strong { color: var(--accent); }
 /* One section per orrery body, in orbit order. */
 .planet-section + .planet-section { margin-top: 6rem; }
+.fow-card { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; margin-top: 1.5rem; padding: 2rem; background: #020407; border: 1px solid var(--rule); color: #EEF2F8; }
+.fow-card-art { display: block; }
+.fow-card-art:hover { background: transparent; }
+.fow-card-art img { display: block; width: 100%; height: auto; transition: transform .6s ease; }
+.fow-card:hover .fow-card-art img { transform: translateX(1.5%); }
+.fow-card h3 { margin: 1.25rem 0 .5rem; color: #EEF2F8; font-size: var(--text-display); font-weight: 350; line-height: 1; letter-spacing: -.045em; }
+.fow-card .project-bottom { margin-top: 1.5rem; }
+.fow-card .project-description, .fow-card .project-bottom span { color: #A6B3C6; }
+.fow-card .project-bottom a { color: #EEF2F8; }
 .einstein-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; margin-top: 1.5rem; padding: 2rem; background: var(--surface); border: 1px solid var(--rule); }
 .einstein-copy h3 { margin: .65rem 0 .25rem; font-size: var(--text-heading); font-weight: 350; line-height: 1.1; letter-spacing: -.03em; }
 .einstein-copy .project-bottom { margin-top: 1.5rem; }
@@ -77,7 +86,7 @@
   .intro-content { height: auto; display: block; padding-block: 3rem 2rem; pointer-events: auto; }
   .intro-copy > * { width: auto; }
   .now-feed { grid-template-columns: minmax(0, 1fr); }
-  .einstein-card { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  .einstein-card, .fow-card { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   .home-notes a { grid-template-columns: 7rem minmax(0, 1fr); }
   .home-notes span { grid-column: 2; }
 }
@@ -98,7 +107,7 @@
   .now-feed li + li { border-left: 0; border-top: 1px solid var(--rule); }
   .now-feed a { padding: 1rem 0; }
   .planet-section + .planet-section { margin-top: 4rem; }
-  .einstein-card { padding: 1.5rem; }
+  .einstein-card, .fow-card { padding: 1.5rem; }
   .home-notes a { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
   .home-notes span { grid-column: auto; }
 }

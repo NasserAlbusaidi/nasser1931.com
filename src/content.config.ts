@@ -10,6 +10,10 @@ const stupidshit = defineCollection({
 		date: z.coerce.date(),
 		tags: z.array(z.string()).optional(),
 		notion_id: z.string().optional(),
+		// A playable toy: its single HTML file under public/play/ and a 16:10 cover screenshot beside it.
+		play: z.string().startsWith('/play/').optional(),
+		cover: z.string().startsWith('/play/').optional(),
+		cover_alt: z.string().optional(),
 	}),
 });
 
